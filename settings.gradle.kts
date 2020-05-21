@@ -25,7 +25,6 @@
 
 rootProject.name = "Illumine Plugins"
 
-include(":kotlinexample")
 include(":javaexample")
 include(":botutils")
 

@@ -30,19 +30,6 @@ version = "0.0.2"
 project.extra["PluginName"] = "Java example plugin" // This is the name that is used in the external plugin manager panel
 project.extra["PluginDescription"] = "Java example plugin" // This is the description that is used in the external plugin manager panel
 
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$openosrsVersion+")
-    compileOnly("com.openosrs:runelite-client:$openosrsVersion+")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.javax)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-}
-
 tasks {
     jar {
         manifest {
