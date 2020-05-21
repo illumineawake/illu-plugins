@@ -9,8 +9,11 @@ My development skills are novice at best so please take all of this with a grain
 # Use
 
 Add this repo within OPRS, using:
+
 Github Repository owner: illumineawake
+
 Github Repository name: illumine-plugins
+
 
 # Credits
 
