@@ -84,7 +84,7 @@ public class PowerSkillerPlugin extends Plugin
 
 	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
 	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-			new ThreadPoolExecutor.DiscardPolicy());
+		new ThreadPoolExecutor.DiscardPolicy());
 
 	PowerSkillerState state;
 	GameObject targetObject;
@@ -95,8 +95,8 @@ public class PowerSkillerPlugin extends Plugin
 
 	private final Set<Integer> ids = new HashSet<>();
 	private final List<WidgetItem> items = new ArrayList<>();
-	WorldPoint treeWorldPoint = new WorldPoint(3187,3230,0);
-	WorldPoint treeWorldPoint2 = new WorldPoint(3187,3235,0);
+	WorldPoint treeWorldPoint = new WorldPoint(3187, 3230, 0);
+	WorldPoint treeWorldPoint2 = new WorldPoint(3187, 3235, 0);
 
 	WorldPoint swWorldPoint = new WorldPoint(3160, 3208, 0);
 	WorldPoint neWorldPoint = new WorldPoint(3197, 3241, 0);
@@ -107,7 +107,6 @@ public class PowerSkillerPlugin extends Plugin
 	{
 		return configManager.getConfig(PowerSkillerConfiguration.class);
 	}
-
 
 
 	@Override
@@ -130,40 +129,52 @@ public class PowerSkillerPlugin extends Plugin
 			return;
 		}
 
-		if (event.getKey().equals("volume")) {
+		if (event.getKey().equals("volume"))
+		{
 			//placeholder
 		}
 	}
 
 	//enables run if below given minimum energy with random variation
-	private void handleRun(int minEnergy, int randMax) {
-		if (utils.isRunEnabled()) {
+	private void handleRun(int minEnergy, int randMax)
+	{
+		if (utils.isRunEnabled())
+		{
 			return;
-		} else if (client.getEnergy() > (minEnergy + utils.getRandomIntBetweenRange(0, randMax))) {
+		}
+		else if (client.getEnergy() > (minEnergy + utils.getRandomIntBetweenRange(0, randMax)))
+		{
 			log.info("enabling run");
-			targetMenu = new MenuEntry("Toggle Run","",1,57,-1,10485782,false);
-			utils.clickRandomPoint(0,200);
+			targetMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
+			utils.clickRandomPoint(0, 200);
 		}
 	}
 
-	private void interactTree(){
+	private void interactTree()
+	{
 		//treeArea = new WorldArea(treeWorldPoint, treeWorldPoint2);
 		nextTree = utils.findNearestGameObjectWithin(treeWorldPoint, 20, TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280);
-		if (nextTree != null) {
+		if (nextTree != null)
+		{
 			targetObject = nextTree;
 			//targetMenu = new MenuEntry("Chop down", "<col=ffff>Tree", nextTree.getId(), 3, targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
 			targetMenu = new MenuEntry("", "", nextTree.getId(), 3, targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
-			utils.clickRandomPoint(0,200);
-		} else {
+			utils.clickRandomPoint(0, 200);
+		}
+		else
+		{
 			log.info("tree is null");
 		}
 	}
 
-	private void dropInventory() {
+	private void dropInventory()
+	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
-		if (inventoryWidget != null) {
+		if (inventoryWidget != null)
+		{
 			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
-			if (!items.isEmpty()) {
+			if (!items.isEmpty())
+			{
 				log.info("dropping this many items: " + items.size());
 				state = ITERATING;
 				executorService.submit(() ->
@@ -172,10 +183,10 @@ public class PowerSkillerPlugin extends Plugin
 					{
 						//targetMenu = new MenuEntry("Drop", "Drop", item.getId(), 37, item.getIndex(), 9764864, false);
 						targetMenu = new MenuEntry("", "", item.getId(), 37, item.getIndex(), 9764864, false);
-						utils.clickRandomPoint(0,200);
+						utils.clickRandomPoint(0, 200);
 						try
 						{
-							Thread.sleep(utils.getRandomIntBetweenRange(25,300));
+							Thread.sleep(utils.getRandomIntBetweenRange(25, 300));
 						}
 						catch (InterruptedException e)
 						{
@@ -184,42 +195,55 @@ public class PowerSkillerPlugin extends Plugin
 					}
 					state = CHOPPING; //failsafe so it doesn't get stuck looping. I should probs handle this better
 				});
-			} else {
+			}
+			else
+			{
 				log.info("inventory list is empty");
 				//timeout = 0;
 			}
-		} else {
+		}
+		else
+		{
 			log.info("inventory container is null");
 		}
 	}
 
-	public PowerSkillerState getState() {
-		if (timeout > 0) {
+	public PowerSkillerState getState()
+	{
+		if (timeout > 0)
+		{
 			return TIMEOUT;
 		}
-		if (state == ITERATING && !utils.inventoryEmpty()) {
+		if (state == ITERATING && !utils.inventoryEmpty())
+		{
 			return ITERATING;
 		}
-		if (utils.inventoryFull()) {
+		if (utils.inventoryFull())
+		{
 			return DROPPING;
 		}
-		if (utils.isMoving()) {
+		if (utils.isMoving())
+		{
 			timeout = 2;
 			return MOVING;
 		}
-		if (!utils.isInteracting() && !utils.inventoryFull()) {
+		if (!utils.isInteracting() && !utils.inventoryFull())
+		{
 			return FIND_TREE;
 		}
 		return CHOPPING; //need to determine an appropriate default
 	}
 
 	@Subscribe
-	private void onGameTick(GameTick tick) {
-		if (client != null && client.getLocalPlayer() != null) {
+	private void onGameTick(GameTick tick)
+	{
+		if (client != null && client.getLocalPlayer() != null)
+		{
 			handleRun(40, 20);
 			state = getState();
 			log.info("Current state is: " + state.toString());
-			switch (state) {
+			switch (state)
+			{
 				case TIMEOUT:
 					timeout--;
 					return;
@@ -234,21 +258,28 @@ public class PowerSkillerPlugin extends Plugin
 				case MOVING:
 					return; //not sure yet
 			}
-		} else {
+		}
+		else
+		{
 			log.info("client or player is null");
 			return;
 		}
 	}
 
 	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event) {
-		if (targetMenu == null){
+	public void onMenuOptionClicked(MenuOptionClicked event)
+	{
+		if (targetMenu == null)
+		{
 			log.info("Modified MenuEntry is null");
 			return;
-		} else {
+		}
+		else
+		{
 			//log.info("MenuEntry string event: " + targetMenu.toString());
 			event.setMenuEntry(targetMenu);
-			if (state != ITERATING) {
+			if (state != ITERATING)
+			{
 				timeout = 2;
 			}
 			targetMenu = null; //this allow the player to interact with the client without their clicks being overriden

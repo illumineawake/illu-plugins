@@ -115,17 +115,21 @@ public class AutoClickIllumine extends Plugin
 		return getItems(1993);
 	}
 
-	public List<WidgetItem> getInventoryItems(int... itemIds) {
+	public List<WidgetItem> getInventoryItems(int... itemIds)
+	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		ArrayList<Integer> itemIDs = new ArrayList<>();
 		List<WidgetItem> list = new ArrayList<>();
 
-		for (int i : itemIds) {
+		for (int i : itemIds)
+		{
 			itemIDs.add(i);
 		}
 
-		for (WidgetItem i : inventoryWidget.getWidgetItems()) {
-			if (itemIDs.contains(i.getId())) {
+		for (WidgetItem i : inventoryWidget.getWidgetItems())
+		{
+			if (itemIDs.contains(i.getId()))
+			{
 				list.add(i);
 			}
 
@@ -134,51 +138,64 @@ public class AutoClickIllumine extends Plugin
 		return list;
 	}
 
-	public List<WidgetItem> getAllInventoryItems() {
+	public List<WidgetItem> getAllInventoryItems()
+	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		ArrayList<Integer> itemIDs = new ArrayList<>();
 		List<WidgetItem> list = new ArrayList<>();
 
-		for (WidgetItem item : inventoryWidget.getWidgetItems()) {
+		for (WidgetItem item : inventoryWidget.getWidgetItems())
+		{
 			log.info(String.valueOf(item.getId()));
 			list.add(item);
 		}
 		return list;
 	}
 
-	public void clickInventoryItems(List<WidgetItem> list) {
-		if (list.isEmpty()) {
+	public void clickInventoryItems(List<WidgetItem> list)
+	{
+		if (list.isEmpty())
+		{
 			return;
 		}
 
-		for (WidgetItem item : list) {
+		for (WidgetItem item : list)
+		{
 			clickInventoryItem(item);
 		}
 	}
 
-	public void clickInventoryItem(WidgetItem item) {
-		if (client.getWidget(WidgetInfo.INVENTORY).isHidden()) {
+	public void clickInventoryItem(WidgetItem item)
+	{
+		if (client.getWidget(WidgetInfo.INVENTORY).isHidden())
+		{
 			//this.keyPress(tabUtils.getTabHotkey(Tab.INVENTORY)); not sure how to do this at the moment
 			log.debug("Inventory is not open");
 		}
-		if (item != null) {
+		if (item != null)
+		{
 			String name = Integer.toString(item.getId());
-			if (itemManager.getItemDefinition(item.getId()) != null) {
+			if (itemManager.getItemDefinition(item.getId()) != null)
+			{
 				name = itemManager.getItemDefinition((item.getId())).getName();
 
 			}
 
 			log.debug("Grabbing getCanvasBounds of " + name);
 
-			if (item.getCanvasBounds() != null) {
+			if (item.getCanvasBounds() != null)
+			{
 				clickWidgetItem(item);
-			} else {
+			}
+			else
+			{
 				log.debug("Could not find getCanvasBounds of " + name);
 			}
 		}
 	}
 
-	public void clickWidgetItem(WidgetItem item) {
+	public void clickWidgetItem(WidgetItem item)
+	{
 		//clickPoint(getWidgetItemClickPoint(item)); flexo runelite-bot driven
 		extUtils.click(item.getCanvasBounds());
 	}
@@ -219,7 +236,7 @@ public class AutoClickIllumine extends Plugin
 			}
 
 			point = client.getMouseCanvasPosition();
-			randPoint = new Point(point.getX() + extUtils.getRandomIntBetweenRange(-3,3), point.getY() + extUtils.getRandomIntBetweenRange(-5,5));
+			randPoint = new Point(point.getX() + extUtils.getRandomIntBetweenRange(-3, 3), point.getY() + extUtils.getRandomIntBetweenRange(-5, 5));
 			log.info(getWine().get(0).toString());
 
 			executorService.submit(() ->
@@ -247,10 +264,13 @@ public class AutoClickIllumine extends Plugin
 						{
 							e.printStackTrace();
 						}
-						if(getWine().isEmpty()) {
+						if (getWine().isEmpty())
+						{
 							log.info("We're out of wine");
 							break;
-						} else {
+						}
+						else
+						{
 							log.info("lets eat");
 							extUtils.moveClick(getWine().get(0).getCanvasBounds());
 							randPoint = new Point(point.getX() + extUtils.getRandomIntBetweenRange(-10, 10), point.getY() + extUtils.getRandomIntBetweenRange(-10, 20)); // generate a slightly randomized clickpoint

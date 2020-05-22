@@ -34,10 +34,10 @@ import net.runelite.client.config.Range;
 public interface BlackjackIllumineConfig extends Config
 {
 	@ConfigItem(
-			keyName = "pickpocketOnAggro",
-			name = "Pickpocket when aggro\'d",
-			description = "Switches to \"Pickpocket\" when bandit is aggro\'d. Saves food at the cost of slight xp/h.",
-			position = 0
+		keyName = "pickpocketOnAggro",
+		name = "Pickpocket when aggro\'d",
+		description = "Switches to \"Pickpocket\" when bandit is aggro\'d. Saves food at the cost of slight xp/h.",
+		position = 0
 	)
 	default boolean pickpocketOnAggro()
 	{
@@ -45,11 +45,11 @@ public interface BlackjackIllumineConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "random",
-			name = "Randomly Miss 1 Pickpocket",
-			description = "If enabled, this will randomly miss 1 pickpocket every so often." +
-					"<br> Not sure why'd you want to do that, but you can.",
-			position = 1
+		keyName = "random",
+		name = "Randomly Miss 1 Pickpocket",
+		description = "If enabled, this will randomly miss 1 pickpocket every so often." +
+			"<br> Not sure why'd you want to do that, but you can.",
+		position = 1
 	)
 	default boolean random()
 	{
@@ -57,10 +57,10 @@ public interface BlackjackIllumineConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "toggle",
-			name = "Toggle",
-			description = "Toggles the clicker.",
-			position = 2
+		keyName = "toggle",
+		name = "Toggle",
+		description = "Toggles the clicker.",
+		position = 2
 	)
 	default Keybind toggle()
 	{
@@ -68,15 +68,15 @@ public interface BlackjackIllumineConfig extends Config
 	}
 
 	@Range(
-			min = 5,
-			max = 98
+		min = 5,
+		max = 98
 	)
 	@ConfigItem(
-			keyName = "hpThreshold",
-			name = "Hp Threshold",
-			description = "The hp in which the plugin will auto disable.",
-			position = 3,
-			unhide = "autoDisable"
+		keyName = "hpThreshold",
+		name = "Hp Threshold",
+		description = "The hp in which the plugin will auto disable.",
+		position = 3,
+		unhide = "autoDisable"
 	)
 	default int hpThreshold()
 	{
@@ -84,11 +84,11 @@ public interface BlackjackIllumineConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "flash",
-			name = "Flash on Low HP",
-			description = "Your Screen flashes when you get to low hp.",
-			position = 4,
-			unhide = "autoDisable"
+		keyName = "flash",
+		name = "Flash on Low HP",
+		description = "Your Screen flashes when you get to low hp.",
+		position = 4,
+		unhide = "autoDisable"
 	)
 	default boolean flash()
 	{
@@ -96,11 +96,11 @@ public interface BlackjackIllumineConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "foodToEat",
-			name = "ID of food to eat",
-			description = "The food the plugin will use to eat",
-			position = 5,
-			unhide = "autoDisable"
+		keyName = "foodToEat",
+		name = "ID of food to eat",
+		description = "The food the plugin will use to eat",
+		position = 5,
+		unhide = "autoDisable"
 	)
 	default int foodToEat()
 	{

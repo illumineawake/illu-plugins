@@ -35,10 +35,10 @@ import net.runelite.client.config.Units;
 public interface PowerSkillerConfiguration extends Config
 {
 	@ConfigItem(
-			keyName = "gameObjects",
-			name = "gameObjects (IDs) to power-skill",
-			description = "Seperate with comma",
-			position = 0
+		keyName = "gameObjects",
+		name = "gameObjects (IDs) to power-skill",
+		description = "Seperate with comma",
+		position = 0
 	)
 	default String gameObjects()
 	{
@@ -46,10 +46,10 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
-			keyName = "items",
-			name = "Items to Drop",
-			description = "Seperate with comma",
-			position = 1
+		keyName = "items",
+		name = "Items to Drop",
+		description = "Seperate with comma",
+		position = 1
 	)
 	default String items()
 	{
@@ -57,10 +57,10 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
-			keyName = "worldPointAnchor",
-			name = "World Point Anchor",
-			description = "Central World Point for where you want to power-skill around",
-			position = 2
+		keyName = "worldPointAnchor",
+		name = "World Point Anchor",
+		description = "Central World Point for where you want to power-skill around",
+		position = 2
 	)
 	default int worldPointAnchor()
 	{
@@ -68,10 +68,10 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
-			keyName = "anchorRadius",
-			name = "Anchor Radius",
-			description = "Radius to search for GameObjects. Format: height,width",
-			position = 3
+		keyName = "anchorRadius",
+		name = "Anchor Radius",
+		description = "Radius to search for GameObjects. Format: height,width",
+		position = 3
 	)
 	default String anchorRadius()
 	{
@@ -79,10 +79,10 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
-			keyName = "randLow",
-			name = "Minimum Drop Delay",
-			description = "Minimum delay between dropping items",
-			position = 3
+		keyName = "randLow",
+		name = "Minimum Drop Delay",
+		description = "Minimum delay between dropping items",
+		position = 3
 	)
 	default int randLow()
 	{
@@ -90,10 +90,10 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
-			keyName = "randLower",
-			name = "Maximum Drop Delay",
-			description = "Maximum delay between dropping items",
-			position = 4
+		keyName = "randLower",
+		name = "Maximum Drop Delay",
+		description = "Maximum delay between dropping items",
+		position = 4
 	)
 	default int randHigh()
 	{
@@ -101,10 +101,10 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
-			keyName = "worldHop",
-			name = "World Hop Radius",
-			description = "Hop if player is within radius (-1 = disabled)",
-			position = 5
+		keyName = "worldHop",
+		name = "World Hop Radius",
+		description = "Hop if player is within radius (-1 = disabled)",
+		position = 5
 	)
 	default int worldHop()
 	{
