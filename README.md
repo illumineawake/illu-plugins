@@ -1,29 +1,22 @@
-# OpenOSRS-external-example
+# Illumine Plugins
 
-You can use this repository as base for your external plugins, and host it on GitHub to make your external plugins available for everybody through the external manager plugin panel in the OpenOSRS client.
+External plugins for OpenOSRS that focus on automation, this is a seperate entity, not OpenOSRS.
 
-First of all you need to build the client (refer to the steps in this [guide][1])
-After building you need to upload all the artifacts to your local maven repository.
-You can do this within intellij by going to the gradle panel at the right hand side and click on OpenOSRS -> Tasks -> publishing -> publishToMavenLocal
+The purpose of this repository is primarily for my own learning but also to provide open-source examples of automation using plugins. 
 
-In this repository you'll find two examples one is written in kotlin and the other one is written in java.
-Before you start you need to make a couple changes:
+My development skills are novice at best so please take all of this with a grain of salt, feel free to reach out to me on discord: illumine#0083 to provide feedback or talk OSRS automation.
 
-1. Go to the file "build.gradle.kts" in the main folder
-2. Change the value of "project.extra["GithubUrl"]" to your github name and repository (only needed if you want to upload the plugins)
-3. Change the value of "project.extra["PluginProvider"]" to your name or your alias.
-4. Change the value of "project.extra["ProjectSupportUrl"]" to your discord channel or leave it empty.
+# Use
 
-The file "{project}/{projectname}.gradle.kts" (for example "javaexample/javaexample.gradle.kts") has two values you'll need to change "project.extra["PluginName"]" and "project.extra["PluginDescription"]"
+Add this repo within OPRS, using:
 
-After building your project you can find the plugin jar in the build/libs folder of that project.
-This jar can be used directly by copying it into the "externalmanager" folder in the ".runelite" directory.
+Github Repository owner: illumineawake
 
-If you want to bootstrap your plugins to make them available on GitHub you can just easily run the following task from the gradle panel in intellij Tasks -> other -> bootstrapPlugin
-This will copy your plugin to the release folder in the main directory and fill the plugins.json file with the needed information.
-
-You should always run the clean task before running the bootstrapPlugins task!
-Before bootstrapping make sure you've changed the version number of your project, duplicate version numbers are not allowed and the bootstrap task will fail.
+Github Repository name: illumine-plugins
 
 
-[1]: https://github.com/open-osrs/runelite/wiki/Building-with-IntelliJ-IDEA
+# Credits
+
+The majority of functionality is available thanks to Ganom's ExtUtils. He makes great plugins and has been very generous with open-sourcing. Support him by subscribing to his patreon @https://www.patreon.com/ganom and checking out his repo: https://github.com/Ganom/ExternalPlugin
+
+Additional credit to the likes of: Owain94, Tom C, kyle and others who provide support in the OPRS dev discord.
