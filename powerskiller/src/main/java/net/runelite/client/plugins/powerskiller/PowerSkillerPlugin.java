@@ -68,7 +68,7 @@ import static net.runelite.client.plugins.powerskiller.PowerSkillerState.*;
 	enabledByDefault = false,
 	description = "Illumine auto power-skill plugin",
 	tags = {"tick"},
-	type = PluginType.MISCELLANEOUS
+	type = PluginType.UTILITY
 )
 @Slf4j
 public class PowerSkillerPlugin extends Plugin
@@ -170,7 +170,8 @@ public class PowerSkillerPlugin extends Plugin
 				{
 					for (WidgetItem item : items)
 					{
-						targetMenu = new MenuEntry("Drop", "Drop", item.getId(), 37, item.getIndex(), 9764864, false);
+						//targetMenu = new MenuEntry("Drop", "Drop", item.getId(), 37, item.getIndex(), 9764864, false);
+						targetMenu = new MenuEntry("", "", item.getId(), 37, item.getIndex(), 9764864, false);
 						utils.clickRandomPoint(0,200);
 						try
 						{

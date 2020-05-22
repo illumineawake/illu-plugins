@@ -66,7 +66,7 @@ import net.runelite.client.rsb.botLauncher.*;*/
 	enabledByDefault = false,
 	description = "Illumine test plugin",
 	tags = {"tick"},
-	type = PluginType.MISCELLANEOUS
+	type = PluginType.UTILITY
 )
 @Slf4j
 public class TestPlugin extends Plugin

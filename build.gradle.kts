@@ -17,7 +17,7 @@ apply<BootstrapPlugin>()
 
 subprojects {
     //group = "com.example"
-    group = "com.openosrs.*"
+    group = "com.openosrs.externals"
 
     project.extra["PluginProvider"] = "Illumine"
     project.extra["ProjectSupportUrl"] = ""
