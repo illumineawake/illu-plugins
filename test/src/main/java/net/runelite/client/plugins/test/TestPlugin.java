@@ -136,16 +136,23 @@ public class TestPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick tick) {
 		//object = new GameObjectQuery().idEquals(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280).filter(o -> rsAreaOutsideTest.contains(o.getWorldLocation())).result(client).nearestTo(client.getLocalPlayer());
-		object = utils.findNearestGameObject(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280);
-		if (object != null) {
-			log.info("object found: " + object.getId());
-		}
-		else
+		if (client != null && client.getLocalPlayer() != null)
 		{
-			log.info("object NOT FOUND");
+			object = utils.findNearestGameObject(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280);
+			if (object != null)
+			{
+				log.info("object found: " + object.getId());
+			}
+			else
+			{
+				log.info("object NOT FOUND");
+			}
+		} else
+		{
+			log.info("client or player is null");
 		}
 		//log.info(String.valueOf(worldAreaTest.toWorldPointList().toString()));
-		worldPointList.clear();
+		//worldPointList.clear();
 		//worldPointList.addAll(worldAreaCustom.toWorldPointList());
 		//log.info(String.valueOf(worldPointList.contains(client.getLocalPlayer().getWorldLocation())));
 		//log.info(String.valueOf(rsAreaTest.contains(outsideWorldPoint)));

@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.1"
+version = "1.0.2"
 
 project.extra["PluginName"] = "Test"
 project.extra["PluginDescription"] = "Illumine test plugin"
@@ -32,7 +32,7 @@ dependencies {
     implementation(project(":botutils"))
 }
 
-/*tasks {
+tasks {
     jar {
         manifest {
             attributes(mapOf(
@@ -45,9 +45,9 @@ dependencies {
             ))
         }
     }
-}*/
+}
 
-tasks {
+/*tasks {
     jar {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         from(configurations.runtimeClasspath.get()
@@ -66,4 +66,4 @@ tasks {
             ))
         }
     }
-}
+}*/
