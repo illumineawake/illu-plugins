@@ -27,6 +27,7 @@ rootProject.name = "Illumine Plugins"
 
 include(":javaexample")
 include(":botutils")
+//include(":test")
 
 for (project in rootProject.children) {
     project.apply {

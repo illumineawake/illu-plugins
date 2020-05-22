@@ -391,7 +391,8 @@ public class BotUtils extends Plugin
 		return client.getWidget(PrayerMap.getWidget(spell));
 	}
 
-	public boolean pointOnScreen(Point check) {
+	public boolean pointOnScreen(Point check)
+	{
 		int x = check.getX(), y = check.getY();
 		return x > client.getViewportXOffset() && x < client.getViewportWidth()
 			&& y > client.getViewportYOffset() && y < client.getViewportHeight();
@@ -551,7 +552,8 @@ public class BotUtils extends Plugin
 		client.getCanvas().dispatchEvent(e);
 	}
 
-	public void clickRandomPoint(int min, int max) {
+	public void clickRandomPoint(int min, int max)
+	{
 		Point point = new Point(getRandomIntBetweenRange(min, max), getRandomIntBetweenRange(min, max));
 		click(point);
 	}
@@ -564,29 +566,41 @@ public class BotUtils extends Plugin
 		return (camX != client.getCameraX() || camY != client.getCameraY()) && client.getLocalDestinationLocation() != null;
 	}
 
-	public boolean isInteracting() {
+	public boolean isInteracting()
+	{
 		sleep(25);
 		return isMoving() || client.getLocalPlayer().getAnimation() != -1;
 	}
 
-	public boolean isRunEnabled() {
+	public boolean isRunEnabled()
+	{
 		return client.getVarpValue(173) == 1;
 	}
 
-	public boolean inventoryFull() {
+	public boolean inventoryFull()
+	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
-		if (inventoryWidget != null) {
+		if (inventoryWidget != null)
+		{
 			return inventoryWidget.getWidgetItems().size() >= 28;
-		} else
+		}
+		else
+		{
 			return false;
+		}
 	}
 
-	public boolean inventoryEmpty() {
+	public boolean inventoryEmpty()
+	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
-		if (inventoryWidget != null) {
+		if (inventoryWidget != null)
+		{
 			return inventoryWidget.getWidgetItems().size() <= 0;
-		} else
+		}
+		else
+		{
 			return false;
+		}
 	}
 
 	/**
@@ -597,7 +611,8 @@ public class BotUtils extends Plugin
 	 * @see #sleep(int)
 	 * @see #random(int, int)
 	 */
-	public void sleep(int minSleep, int maxSleep) {
+	public void sleep(int minSleep, int maxSleep)
+	{
 		sleep(random(minSleep, maxSleep));
 	}
 
@@ -606,17 +621,22 @@ public class BotUtils extends Plugin
 	 *
 	 * @param toSleep The time to sleep in milliseconds.
 	 */
-	public void sleep(int toSleep) {
-		try {
+	public void sleep(int toSleep)
+	{
+		try
+		{
 			long start = System.currentTimeMillis();
 			Thread.sleep(toSleep);
 
 			// Guarantee minimum sleep
 			long now;
-			while (start + toSleep > (now = System.currentTimeMillis())) {
+			while (start + toSleep > (now = System.currentTimeMillis()))
+			{
 				Thread.sleep(start + toSleep - now);
 			}
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e)
+		{
 			e.printStackTrace();
 		}
 	}
@@ -629,7 +649,8 @@ public class BotUtils extends Plugin
 	 * @param max The exclusive upper bound.
 	 * @return Random double min <= n < max.
 	 */
-	public static double random(double min, double max) {
+	public static double random(double min, double max)
+	{
 		return Math.min(min, max) + random.nextDouble() * Math.abs(max - min);
 	}
 
@@ -641,7 +662,8 @@ public class BotUtils extends Plugin
 	 * @param max The exclusive upper bound.
 	 * @return Random integer min <= n < max.
 	 */
-	public static int random(int min, int max) {
+	public static int random(int min, int max)
+	{
 		int n = Math.abs(max - min);
 		return Math.min(min, max) + (n == 0 ? 0 : random.nextInt(n));
 	}

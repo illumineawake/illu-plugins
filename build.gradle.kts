@@ -7,8 +7,8 @@ buildscript {
 }
 
 plugins {
-    checkstyle
     java //this enables annotationProcessor and implementation in dependencies
+    checkstyle
 }
 
 project.extra["GithubUrl"] = "http://github.com/illumineawake/illu-plugins"
@@ -16,7 +16,8 @@ project.extra["GithubUrl"] = "http://github.com/illumineawake/illu-plugins"
 apply<BootstrapPlugin>()
 
 subprojects {
-    group = "com.example"
+    //group = "com.example"
+    group = "com.openosrs.externals"
 
     project.extra["PluginProvider"] = "Illumine"
     project.extra["ProjectSupportUrl"] = ""
