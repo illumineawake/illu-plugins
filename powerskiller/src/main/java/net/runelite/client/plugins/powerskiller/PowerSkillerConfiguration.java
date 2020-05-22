@@ -37,7 +37,7 @@ public interface PowerSkillerConfiguration extends Config
 	@ConfigItem(
 		keyName = "gameObjects",
 		name = "gameObjects (IDs) to power-skill",
-		description = "Seperate with comma",
+		description = "Separate with comma",
 		position = 0
 	)
 	default String gameObjects()
@@ -48,7 +48,7 @@ public interface PowerSkillerConfiguration extends Config
 	@ConfigItem(
 		keyName = "items",
 		name = "Items to Drop",
-		description = "Seperate with comma",
+		description = "Separate with comma",
 		position = 1
 	)
 	default String items()
@@ -109,6 +109,17 @@ public interface PowerSkillerConfiguration extends Config
 	default int worldHop()
 	{
 		return -1;
+	}
+
+	@ConfigItem(
+		keyName = "startBot",
+		name = "Start bot",
+		description = "Tick to start",
+		position = 6
+	)
+	default boolean startBot()
+	{
+		return false;
 	}
 
 	/*@ConfigItem(
