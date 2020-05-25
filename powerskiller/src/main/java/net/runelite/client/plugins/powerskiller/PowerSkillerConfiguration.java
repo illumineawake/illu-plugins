@@ -25,6 +25,8 @@
  */
 package net.runelite.client.plugins.powerskiller;
 
+import javax.swing.JButton;
+import javax.swing.JPanel;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -34,6 +36,7 @@ import net.runelite.client.config.Units;
 @ConfigGroup("PowerSkiller")
 public interface PowerSkillerConfiguration extends Config
 {
+
 	@ConfigItem(
 		keyName = "gameObjects",
 		name = "gameObjects (IDs) to power-skill",
@@ -57,26 +60,12 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
-		keyName = "worldPointAnchor",
-		name = "World Point Anchor",
-		description = "Central World Point for where you want to power-skill around",
+		keyName = "locationRadius",
+		name = "Location Radius",
+		description = "Radius to search for GameObjects.",
 		position = 2
 	)
-	default int worldPointAnchor()
-	{
-		return 70;
-	}
-
-	@ConfigItem(
-		keyName = "anchorRadius",
-		name = "Anchor Radius",
-		description = "Radius to search for GameObjects. Format: height,width",
-		position = 3
-	)
-	default String anchorRadius()
-	{
-		return "10,10";
-	}
+	default int locationRadius() { return 10; }
 
 	@ConfigItem(
 		keyName = "randLow",
@@ -86,18 +75,18 @@ public interface PowerSkillerConfiguration extends Config
 	)
 	default int randLow()
 	{
-		return 70;
+		return 60;
 	}
 
 	@ConfigItem(
-		keyName = "randLower",
+		keyName = "randHigh",
 		name = "Maximum Drop Delay",
 		description = "Maximum delay between dropping items",
 		position = 4
 	)
 	default int randHigh()
 	{
-		return 80;
+		return 100;
 	}
 
 	@ConfigItem(

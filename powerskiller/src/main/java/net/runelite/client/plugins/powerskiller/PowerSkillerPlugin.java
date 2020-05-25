@@ -27,19 +27,13 @@ package net.runelite.client.plugins.powerskiller;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
-import javax.sound.sampled.Clip;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.Point;
-import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
-import net.runelite.api.queries.GameObjectQuery;
-import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
-import net.runelite.api.coords.WorldArea;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -47,28 +41,23 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
-//import net.runelite.client.rsb.wrappers.RSTile;
 import org.pf4j.Extension;
-
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import static net.runelite.api.ObjectID.*;
 import static net.runelite.client.plugins.powerskiller.PowerSkillerState.*;
 
 
 @Extension
 @PluginDescriptor(
-	name = "PowerSkiller",
+	name = "Power Skiller",
 	enabledByDefault = false,
 	description = "Illumine auto power-skill plugin",
 	tags = {"tick"},
-	type = PluginType.UTILITY
+	type = PluginType.SKILLING
 )
 @Slf4j
 public class PowerSkillerPlugin extends Plugin
@@ -82,6 +71,9 @@ public class PowerSkillerPlugin extends Plugin
 	@Inject
 	private BotUtils utils;
 
+	@Inject
+	private ConfigManager configManager;
+
 	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
 	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
 		new ThreadPoolExecutor.DiscardPolicy());
@@ -90,24 +82,18 @@ public class PowerSkillerPlugin extends Plugin
 	GameObject targetObject;
 	GameObject nextTree;
 	MenuEntry targetMenu;
-	Point point;
 	int timeout = 0;
+	private final Set<Integer> itemIds = new HashSet<>();
+	private final Set<Integer> gameObjIds = new HashSet<>();
 
-	private final Set<Integer> ids = new HashSet<>();
-	private final List<WidgetItem> items = new ArrayList<>();
-	WorldPoint treeWorldPoint = new WorldPoint(3187, 3230, 0);
-	WorldPoint treeWorldPoint2 = new WorldPoint(3187, 3235, 0);
-
-	WorldPoint swWorldPoint = new WorldPoint(3160, 3208, 0);
-	WorldPoint neWorldPoint = new WorldPoint(3197, 3241, 0);
-	//WorldArea worldAreaTest = new WorldArea(swWorldPoint, neWorldPoint);
+	WorldPoint skillLocation;
 
 	@Provides
 	PowerSkillerConfiguration provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(PowerSkillerConfiguration.class);
+		//TODO make GUI that can be updated in realtime, may require new JPanel
 	}
-
 
 	@Override
 	protected void startUp()
@@ -118,7 +104,7 @@ public class PowerSkillerPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
-
+		configManager.setConfiguration("PowerSkiller", "startBot", false);
 	}
 
 	@Subscribe
@@ -128,14 +114,49 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			return;
 		}
-
-		if (event.getKey().equals("volume"))
+		getConfigValues();
+		if (event.getKey().equals("startBot"))
 		{
-			//placeholder
+			if (client != null && client.getLocalPlayer() != null && client.getGameState().equals(GameState.LOGGED_IN))
+			{
+				if (config.startBot())
+				{
+					skillLocation = client.getLocalPlayer().getWorldLocation();
+					getConfigValues();
+					log.info("Starting power-skiller at location: " + skillLocation);
+				}
+			}
+			else
+			{
+				if (config.startBot())
+				{
+					log.info("Stopping bot");
+					configManager.setConfiguration("PowerSkiller", "startBot", false);
+				}
+				return;
+			}
 		}
 	}
 
-	//enables run if below given minimum energy with random variation
+	private void getConfigValues()
+	{
+		gameObjIds.clear();
+
+		for (int i : utils.stringToIntArray(config.gameObjects()))
+		{
+			gameObjIds.add(i);
+		}
+
+		itemIds.clear();
+
+		for (int i : utils.stringToIntArray(config.items()))
+		{
+			itemIds.add(i);
+		}
+
+	}
+
+	//enables run if below given minimum energy with random positive variation
 	private void handleRun(int minEnergy, int randMax)
 	{
 		if (utils.isRunEnabled())
@@ -152,12 +173,10 @@ public class PowerSkillerPlugin extends Plugin
 
 	private void interactTree()
 	{
-		//treeArea = new WorldArea(treeWorldPoint, treeWorldPoint2);
-		nextTree = utils.findNearestGameObjectWithin(treeWorldPoint, 20, TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280);
+		nextTree = utils.findNearestGameObjectWithin(skillLocation, config.locationRadius(), gameObjIds);
 		if (nextTree != null)
 		{
 			targetObject = nextTree;
-			//targetMenu = new MenuEntry("Chop down", "<col=ffff>Tree", nextTree.getId(), 3, targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
 			targetMenu = new MenuEntry("", "", nextTree.getId(), 3, targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
 			utils.clickRandomPoint(0, 200);
 		}
@@ -172,7 +191,7 @@ public class PowerSkillerPlugin extends Plugin
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		if (inventoryWidget != null)
 		{
-			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			List<WidgetItem> items = utils.getItems(itemIds);
 			if (!items.isEmpty())
 			{
 				log.info("dropping this many items: " + items.size());
@@ -181,19 +200,18 @@ public class PowerSkillerPlugin extends Plugin
 				{
 					for (WidgetItem item : items)
 					{
-						//targetMenu = new MenuEntry("Drop", "Drop", item.getId(), 37, item.getIndex(), 9764864, false);
 						targetMenu = new MenuEntry("", "", item.getId(), 37, item.getIndex(), 9764864, false);
 						utils.clickRandomPoint(0, 200);
 						try
 						{
-							Thread.sleep(utils.getRandomIntBetweenRange(25, 300));
+							Thread.sleep(utils.getRandomIntBetweenRange(config.randLow(), config.randHigh()));
 						}
 						catch (InterruptedException e)
 						{
 							e.printStackTrace();
 						}
 					}
-					state = CHOPPING; //failsafe so it doesn't get stuck looping. I should probs handle this better
+					state = ANIMATING; //failsafe so it doesn't get stuck looping. I should probs handle this better
 				});
 			}
 			else
@@ -229,19 +247,19 @@ public class PowerSkillerPlugin extends Plugin
 		}
 		if (!utils.isInteracting() && !utils.inventoryFull())
 		{
-			return FIND_TREE;
+			return FIND_OBJECT;
 		}
-		return CHOPPING; //need to determine an appropriate default
+		return ANIMATING; //need to determine an appropriate default
 	}
 
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
-		if (client != null && client.getLocalPlayer() != null)
+		if (client != null && client.getLocalPlayer() != null && config.startBot())
 		{
 			handleRun(40, 20);
 			state = getState();
-			log.info("Current state is: " + state.toString());
+			//log.info("Current state is: " + state.toString());
 			switch (state)
 			{
 				case TIMEOUT:
@@ -250,18 +268,18 @@ public class PowerSkillerPlugin extends Plugin
 				case DROPPING:
 					dropInventory();
 					return;
-				case FIND_TREE:
+				case FIND_OBJECT:
 					interactTree();
 					return;
-				case CHOPPING:
+				case ANIMATING:
 				case ITERATING:
 				case MOVING:
-					return; //not sure yet
+					return; //May be needed
 			}
 		}
 		else
 		{
-			log.info("client or player is null");
+			//log.info("client/ player is null or bot isn't started");
 			return;
 		}
 	}
@@ -269,58 +287,27 @@ public class PowerSkillerPlugin extends Plugin
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (targetMenu == null)
+		if (config.startBot())
 		{
-			log.info("Modified MenuEntry is null");
-			return;
+			if (targetMenu == null)
+			{
+				log.info("Modified MenuEntry is null");
+				return;
+			}
+			else
+			{
+				//log.info("MenuEntry string event: " + targetMenu.toString());
+				event.setMenuEntry(targetMenu);
+				if (state != ITERATING)
+				{
+					timeout = 2;
+				}
+				targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
+			}
 		}
 		else
 		{
-			//log.info("MenuEntry string event: " + targetMenu.toString());
-			event.setMenuEntry(targetMenu);
-			if (state != ITERATING)
-			{
-				timeout = 2;
-			}
-			targetMenu = null; //this allow the player to interact with the client without their clicks being overriden
+			//TODO: capture object clicks
 		}
 	}
-
-	/*@Subscribe
-	private void onItemContainerChanged(ItemContainerChanged event) {
-		ItemContainer itemContainer = event.getItemContainer();
-		if(itemContainer != client.getItemContainer(InventoryID.INVENTORY)){
-			return;
-		}
-		if(isInventoryFull()) {
-			dropInventory();
-		}
-	}*/
-
-	/*@Subscribe
-	public void onAnimationChanged(AnimationChanged event) {
-		if (event.getActor() == client.getLocalPlayer()){
-			log.info("animation changed to: " + event.getActor().getAnimation());
-		}
-	}*/
-
-	/*@Subscribe
-	public void onInteractingChanged(InteractingChanged event) {
-		if(event.getSource() == client.getLocalPlayer()) {
-			log.info("interact changed: " + event.toString());
-		}
-	}*/
-
-
-
-	/*private String playerReturner() {
-		if (client == null || client.getLocalPlayer() == null) {
-			return "something is null";
-		}
-		if (logbalanceArea.contains(client.getLocalPlayer().getWorldLocation())) {
-			return "we are IN the area";
-		} else {
-			return "we are NOT in the area";
-		}
-	}*/
 }
