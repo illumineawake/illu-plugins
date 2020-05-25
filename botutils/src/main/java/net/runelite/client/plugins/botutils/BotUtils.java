@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -80,6 +81,23 @@ public class BotUtils extends Plugin
 
 	@Nullable
 	public GameObject findNearestGameObjectWithin(WorldPoint worldPoint, int dist, int... ids)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new GameObjectQuery()
+			.idEquals(ids)
+			.isWithinDistance(worldPoint, dist)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
+	public GameObject findNearestGameObjectWithin(WorldPoint worldPoint, int dist, Set<Integer> ids)
 	{
 		assert client.isClientThread();
 
@@ -293,6 +311,16 @@ public class BotUtils extends Plugin
 	}
 
 	public List<WidgetItem> getItems(int... itemIDs)
+	{
+		assert client.isClientThread();
+
+		return new InventoryWidgetItemQuery()
+			.idEquals(itemIDs)
+			.result(client)
+			.list;
+	}
+
+	public List<WidgetItem> getItems(Set<Integer> itemIDs)
 	{
 		assert client.isClientThread();
 
@@ -667,4 +695,5 @@ public class BotUtils extends Plugin
 		int n = Math.abs(max - min);
 		return Math.min(min, max) + (n == 0 ? 0 : random.nextInt(n));
 	}
+
 }

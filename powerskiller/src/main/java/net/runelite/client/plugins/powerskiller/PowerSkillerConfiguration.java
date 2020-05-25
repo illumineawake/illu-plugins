@@ -25,6 +25,8 @@
  */
 package net.runelite.client.plugins.powerskiller;
 
+import javax.swing.JButton;
+import javax.swing.JPanel;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -34,10 +36,11 @@ import net.runelite.client.config.Units;
 @ConfigGroup("PowerSkiller")
 public interface PowerSkillerConfiguration extends Config
 {
+
 	@ConfigItem(
 		keyName = "gameObjects",
 		name = "gameObjects (IDs) to power-skill",
-		description = "Seperate with comma",
+		description = "Separate with comma",
 		position = 0
 	)
 	default String gameObjects()
@@ -48,7 +51,7 @@ public interface PowerSkillerConfiguration extends Config
 	@ConfigItem(
 		keyName = "items",
 		name = "Items to Drop",
-		description = "Seperate with comma",
+		description = "Separate with comma",
 		position = 1
 	)
 	default String items()
@@ -57,26 +60,12 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
-		keyName = "worldPointAnchor",
-		name = "World Point Anchor",
-		description = "Central World Point for where you want to power-skill around",
+		keyName = "locationRadius",
+		name = "Location Radius",
+		description = "Radius to search for GameObjects.",
 		position = 2
 	)
-	default int worldPointAnchor()
-	{
-		return 70;
-	}
-
-	@ConfigItem(
-		keyName = "anchorRadius",
-		name = "Anchor Radius",
-		description = "Radius to search for GameObjects. Format: height,width",
-		position = 3
-	)
-	default String anchorRadius()
-	{
-		return "10,10";
-	}
+	default int locationRadius() { return 10; }
 
 	@ConfigItem(
 		keyName = "randLow",
@@ -86,18 +75,18 @@ public interface PowerSkillerConfiguration extends Config
 	)
 	default int randLow()
 	{
-		return 70;
+		return 60;
 	}
 
 	@ConfigItem(
-		keyName = "randLower",
+		keyName = "randHigh",
 		name = "Maximum Drop Delay",
 		description = "Maximum delay between dropping items",
 		position = 4
 	)
 	default int randHigh()
 	{
-		return 80;
+		return 100;
 	}
 
 	@ConfigItem(
@@ -109,6 +98,17 @@ public interface PowerSkillerConfiguration extends Config
 	default int worldHop()
 	{
 		return -1;
+	}
+
+	@ConfigItem(
+		keyName = "startBot",
+		name = "Start bot",
+		description = "Tick to start",
+		position = 6
+	)
+	default boolean startBot()
+	{
+		return false;
 	}
 
 	/*@ConfigItem(

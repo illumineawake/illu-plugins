@@ -1,8 +1,8 @@
 package net.runelite.client.plugins.powerskiller;
 
 public enum PowerSkillerState {
-    FIND_TREE,
-    CHOPPING,
+    FIND_OBJECT,
+    ANIMATING,
     DROPPING,
     ITERATING,
     MOVING,
