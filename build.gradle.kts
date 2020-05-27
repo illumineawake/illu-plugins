@@ -1,3 +1,5 @@
+//this works
+
 import ProjectVersions.openosrsVersion
 
 buildscript {
