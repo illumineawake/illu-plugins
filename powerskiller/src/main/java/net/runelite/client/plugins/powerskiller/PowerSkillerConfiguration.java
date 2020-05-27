@@ -102,8 +102,8 @@ public interface PowerSkillerConfiguration extends Config
 
 	@ConfigItem(
 		keyName = "startBot",
-		name = "Start bot",
-		description = "Tick to start",
+		name = "Start bot (must be logged in)",
+		description = "Tick to start (must be logged in)",
 		position = 6
 	)
 	default boolean startBot()

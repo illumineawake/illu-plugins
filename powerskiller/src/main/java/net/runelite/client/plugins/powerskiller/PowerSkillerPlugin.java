@@ -133,7 +133,6 @@ public class PowerSkillerPlugin extends Plugin
 					log.info("Stopping bot");
 					configManager.setConfiguration("PowerSkiller", "startBot", false);
 				}
-				return;
 			}
 		}
 	}
