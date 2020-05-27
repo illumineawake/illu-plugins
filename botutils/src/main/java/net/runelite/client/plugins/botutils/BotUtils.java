@@ -26,7 +26,6 @@ import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-//import net.runelite.client.rsb.wrappers.RSArea;
 import org.jetbrains.annotations.NotNull;
 import org.pf4j.Extension;
 
