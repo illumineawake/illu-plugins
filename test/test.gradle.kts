@@ -29,7 +29,7 @@ project.extra["PluginName"] = "Test"
 project.extra["PluginDescription"] = "Illumine test plugin"
 
 dependencies {
-    implementation(project(":botutils"))
+    compileOnly(project(":botutils"))
 }
 
 tasks {

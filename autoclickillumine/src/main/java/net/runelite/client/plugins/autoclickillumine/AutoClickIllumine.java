@@ -30,6 +30,7 @@ import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
@@ -38,6 +39,7 @@ import net.runelite.client.util.HotkeyListener;
 import org.pf4j.Extension;
 
 @Extension
+@PluginDependency(BotUtils.class)
 @PluginDescriptor(
 	name = "Auto Clicker Illumine",
 	enabledByDefault = false,

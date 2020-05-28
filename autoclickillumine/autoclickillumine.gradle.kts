@@ -30,7 +30,7 @@ project.extra["PluginName"] = "AutoClickIllumine"
 project.extra["PluginDescription"] = "What more is there to say?"
 
 dependencies {
-    implementation(project(":botutils"))
+    compileOnly(project(":botutils"))
 }
 
 tasks {

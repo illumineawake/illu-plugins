@@ -38,12 +38,12 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
 import org.pf4j.Extension;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -52,6 +52,7 @@ import static net.runelite.client.plugins.powerskiller.PowerSkillerState.*;
 
 
 @Extension
+@PluginDependency(BotUtils.class)
 @PluginDescriptor(
 	name = "Power Skiller",
 	enabledByDefault = false,
@@ -83,6 +84,7 @@ public class PowerSkillerPlugin extends Plugin
 	GameObject nextTree;
 	MenuEntry targetMenu;
 	int timeout = 0;
+
 	private final Set<Integer> itemIds = new HashSet<>();
 	private final Set<Integer> gameObjIds = new HashSet<>();
 
@@ -152,7 +154,6 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			itemIds.add(i);
 		}
-
 	}
 
 	//enables run if below given minimum energy with random positive variation
@@ -190,33 +191,33 @@ public class PowerSkillerPlugin extends Plugin
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		if (inventoryWidget != null)
 		{
-			List<WidgetItem> items = utils.getItems(itemIds);
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
 			if (!items.isEmpty())
 			{
 				log.info("dropping this many items: " + items.size());
 				state = ITERATING;
 				executorService.submit(() ->
 				{
-					for (WidgetItem item : items)
-					{
-						targetMenu = new MenuEntry("", "", item.getId(), 37, item.getIndex(), 9764864, false);
-						utils.clickRandomPoint(0, 200);
-						try
-						{
-							Thread.sleep(utils.getRandomIntBetweenRange(config.randLow(), config.randHigh()));
-						}
-						catch (InterruptedException e)
-						{
-							e.printStackTrace();
-						}
-					}
+					items.stream()
+						.filter(item -> itemIds.contains(item.getId()))
+						.forEach((item) -> {
+							targetMenu = new MenuEntry("", "", item.getId(), 37, item.getIndex(), 9764864, false);
+							utils.clickRandomPoint(0, 200);
+							try
+							{
+								Thread.sleep(utils.getRandomIntBetweenRange(config.randLow(), config.randHigh()));
+							}
+							catch (InterruptedException e)
+							{
+								e.printStackTrace();
+							}
+						});
 					state = ANIMATING; //failsafe so it doesn't get stuck looping. I should probs handle this better
 				});
 			}
 			else
 			{
 				log.info("inventory list is empty");
-				//timeout = 0;
 			}
 		}
 		else

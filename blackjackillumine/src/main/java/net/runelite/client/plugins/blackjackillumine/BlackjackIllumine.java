@@ -43,6 +43,7 @@ import net.runelite.client.game.NPCManager;
 import net.runelite.client.menus.AbstractComparableEntry;
 import net.runelite.client.menus.MenuManager;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
@@ -66,6 +67,7 @@ import static java.awt.event.InputEvent.BUTTON1_DOWN_MASK;
  * Authors gazivodag longstreet
  */
 @Extension
+@PluginDependency(BotUtils.class)
 @PluginDescriptor(
 	name = "BlackjackIllumine",
 	enabledByDefault = false,

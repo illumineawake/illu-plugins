@@ -31,7 +31,7 @@ project.extra["PluginName"] = "BlackjackIllumine"
 project.extra["PluginDescription"] = "Allows for one-click blackjacking, both knocking out and pickpocketing"
 
 dependencies {
-    implementation(project(":botutils"))
+    compileOnly(project(":botutils"))
 }
 
 tasks {

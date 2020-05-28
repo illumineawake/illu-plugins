@@ -26,6 +26,8 @@
 package net.runelite.client.plugins.test;
 
 import com.google.inject.Provides;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.sound.sampled.Clip;
 import lombok.extern.slf4j.Slf4j;
@@ -37,11 +39,13 @@ import net.runelite.api.events.*;
 import net.runelite.api.geometry.Shapes;
 import net.runelite.api.queries.GameObjectQuery;
 import net.runelite.api.queries.TileQuery;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.WorldLocation;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
@@ -61,6 +65,7 @@ import net.runelite.client.rsb.botLauncher.*;*/
 
 
 @Extension
+@PluginDependency(BotUtils.class)
 @PluginDescriptor(
 	name = "Test",
 	enabledByDefault = false,
@@ -138,77 +143,12 @@ public class TestPlugin extends Plugin
 		//object = new GameObjectQuery().idEquals(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280).filter(o -> rsAreaOutsideTest.contains(o.getWorldLocation())).result(client).nearestTo(client.getLocalPlayer());
 		if (client != null && client.getLocalPlayer() != null)
 		{
-			object = utils.findNearestGameObject(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280);
-			if (object != null)
-			{
-				log.info("object found: " + object.getId());
-			}
-			else
-			{
-				log.info("object NOT FOUND");
-			}
-		} else
-		{
-			log.info("client or player is null");
+			//log.info(String.valueOf(client.getItemContainer(InventoryID.INVENTORY).getItems().length));
+			//ArrayList<Item> items = utils.getWidgetItems(utils.stringToIntArray("1511,1522"));
+			//log.info(String.valueOf(items.size()));
+
+
 		}
-		//log.info(String.valueOf(worldAreaTest.toWorldPointList().toString()));
-		//worldPointList.clear();
-		//worldPointList.addAll(worldAreaCustom.toWorldPointList());
-		//log.info(String.valueOf(worldPointList.contains(client.getLocalPlayer().getWorldLocation())));
-		//log.info(String.valueOf(rsAreaTest.contains(outsideWorldPoint)));
-		//log.info("********world point list: ********** " + worldPointList.toString());
-		//LocalPoint lp = client.getLocalPlayer().getLocalLocation();
-		//Tile playerTile = client.getScene().getTiles()[client.getPlane()][lp.getSceneX()][lp.getSceneY()];
-		//Tile playerTile = client.getLocalPlayer().getLocalLocation();
-		//log.info(playerTile.getSceneLocation().toString());
-		//utils.findNearestGameObjectWithin(lp, 20, TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280);
-		/*if (client != null && client.getLocalPlayer() != null) {
-			if(utils.isMoving()) {
-				log.info("we are moving");
-				timeout = 2; //there is always a 2 tick delay between players localdest = null and players animation changing from -1
-				return;
-			}
-
-			if(timeout > 0) {
-				timeout--;
-				log.info("timeout: " + timeout);
-				return;
-			} else {
-				if (!utils.isInteracting()) {
-					GameObject nextTree;
-					nextTree = utils.findNearestGameObject(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280);
-					if (nextTree != null) {
-						int distanceTest = nextTree.getWorldLocation().distanceTo(client.getLocalPlayer().getWorldLocation());
-						log.info("not interacting, finding new tree: " + nextTree.getId());
-					} else {
-						log.info("tree is null");
-					}
-				} else {
-					log.info("we're interacting");
-				}
-			}
-
-		//log.info("game tick");
-		//object.getEntity().
-		//log.info(playerReturner());
-		//log.info(client.getLocalPlayer().getWorldLocation().toString());
-
-
-
-		} else {
-			log.info("everything is null");
-			return;
-		}*/
-
-		/*if (client.getLocalPlayer() != null && client.getLocalDestinationLocation() != null) {
-			log.info("player loc: " + client.getLocalPlayer().getWorldLocation());
-			log.info(String.valueOf("local dest: " + client.getLocalDestinationLocation()));
-			if (utils.isMoving()) {
-				log.info("we're moving");
-			}
-		}*/
-
-		//log.info("Animation: " + String.valueOf(client.getLocalPlayer().getAnimation()));
 	}
 
 	/*@Subscribe
