@@ -30,14 +30,10 @@ import java.util.Arrays;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Actor;
-import net.runelite.api.Client;
-import net.runelite.api.MenuOpcode;
-import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
-import net.runelite.api.Player;
+import net.runelite.api.*;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.MenuEntryAdded;
+import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
@@ -176,6 +172,18 @@ public class RandomHandlerPlugin extends Plugin
 				client.setMenuEntries(Arrays.copyOf(client.getMenuEntries(), client.getMenuEntries().length - 1));
 			}
 		}
+	}
+
+	@Subscribe
+	private void onMenuOptionClicked(MenuOptionClicked event)
+	{
+		if (currentRandomEvent == null)
+		{
+			return;
+		}
+		//menuOpCode could be wrong, coordinates could also be wrong
+		MenuEntry dismissMenu = new MenuEntry("", "", currentRandomEvent.getId(), MenuOpcode.NPC_FIRST_OPTION.getId(),currentRandomEvent.getConvexHull().getBounds().x,currentRandomEvent.getConvexHull().getBounds().y, false);
+		event.setMenuEntry(dismissMenu);
 	}
 
 	private boolean shouldNotify(int id)
