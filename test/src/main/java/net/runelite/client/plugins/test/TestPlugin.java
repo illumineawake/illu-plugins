@@ -151,10 +151,10 @@ public class TestPlugin extends Plugin
 		}
 	}
 
-	/*@Subscribe
+	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event) {
 		log.info("Test event to string: " + event.toString());
-	}*/
+	}
 
 	/*@Subscribe
 	public void onAnimationChanged(AnimationChanged event) {

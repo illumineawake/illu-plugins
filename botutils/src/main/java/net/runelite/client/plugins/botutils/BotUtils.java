@@ -23,6 +23,10 @@ import net.runelite.api.queries.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
+import net.runelite.client.chat.ChatColorType;
+import net.runelite.client.chat.ChatMessageBuilder;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
@@ -43,6 +47,9 @@ public class BotUtils extends Plugin
 	@Inject
 	private Client client;
 
+	@Inject
+	private ChatMessageManager chatMessageManager;
+
 	protected static final java.util.Random random = new java.util.Random();
 
 	@Override
@@ -55,6 +62,19 @@ public class BotUtils extends Plugin
 	protected void shutDown()
 	{
 
+	}
+
+	public void sendGameMessage(String message) {
+		String chatMessage = new ChatMessageBuilder()
+				.append(ChatColorType.HIGHLIGHT)
+				.append(message)
+				.build();
+
+		chatMessageManager
+				.queue(QueuedMessage.builder()
+						.type(ChatMessageType.CONSOLE)
+						.runeLiteFormattedMessage(chatMessage)
+						.build());
 	}
 
 	public int[] stringToIntArray(String string)
@@ -111,23 +131,6 @@ public class BotUtils extends Plugin
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}
-
-	/*@Nullable
-	public GameObject findNearestGameObjectWithin(RSArea rsArea, int dist, int... ids)
-	{
-		assert client.isClientThread();
-
-		if (client.getLocalPlayer() == null)
-		{
-			return null;
-		}
-
-		return new GameObjectQuery()
-				.idEquals(ids)
-				.filter(o -> rsArea.contains(o.getWorldLocation()))
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
-	}*/
 
 	@Nullable
 	public NPC findNearestNpc(int... ids)
@@ -207,21 +210,6 @@ public class BotUtils extends Plugin
 			.result(client)
 			.list;
 	}
-
-	/*public List<GameObject> getGameObjects(String name)
-	{
-		assert client.isClientThread();
-
-		if (client.getLocalPlayer() == null)
-		{
-			return new ArrayList<>();
-		}
-
-		return new GameObjectQuery()
-				.idEquals(ids)
-				.result(client)
-				.list;
-	}*/
 
 	public List<NPC> getNPCs(int... ids)
 	{
