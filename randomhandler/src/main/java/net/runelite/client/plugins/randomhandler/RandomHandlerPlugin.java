@@ -50,7 +50,7 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Random Handler",
 	enabledByDefault = false,
-	description = "Auto dismiss random events as well as, notify when random events appear and remove talk/dismiss options on events that aren't yours.",
+	description = "Auto dismiss random events (illumine edit), notify when random events appear and remove talk/dismiss options on events that aren't yours.",
 	type = PluginType.UTILITY
 )
 @Slf4j
@@ -177,12 +177,14 @@ public class RandomHandlerPlugin extends Plugin
 	@Subscribe
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (currentRandomEvent == null)
+		if (currentRandomEvent == null || !config.autoDismiss())
 		{
 			return;
 		}
+		log.info("dismissing random event");
+		utils.sendGameMessage("dismissing random event");
 		//menuOpCode could be wrong, coordinates could also be wrong
-		MenuEntry dismissMenu = new MenuEntry("", "", currentRandomEvent.getId(), MenuOpcode.NPC_FIRST_OPTION.getId(),currentRandomEvent.getConvexHull().getBounds().x,currentRandomEvent.getConvexHull().getBounds().y, false);
+		MenuEntry dismissMenu = new MenuEntry("", "", currentRandomEvent.getId(), MenuOpcode.NPC_SECOND_OPTION.getId(),0,0, true);
 		event.setMenuEntry(dismissMenu);
 	}
 

@@ -26,7 +26,7 @@
 version = "0.0.4"
 
 project.extra["PluginName"] = "Random Handler"
-project.extra["PluginDescription"] = "Auto dismiss random events as well as notify when random events appear, remove talk/dismiss options on events that aren't yours"
+project.extra["PluginDescription"] = "Auto dismiss random events (illumine edit), notify when random events appear, remove talk/dismiss options on events that aren't yours"
 
 dependencies {
     compileOnly(project(":botutils"));

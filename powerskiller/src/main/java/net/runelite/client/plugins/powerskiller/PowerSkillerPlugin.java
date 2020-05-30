@@ -194,7 +194,8 @@ public class PowerSkillerPlugin extends Plugin
 			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
 			if (!items.isEmpty())
 			{
-				log.info("dropping this many items: " + items.size());
+				log.info("dropping " + items.size() + " items.");
+				utils.sendGameMessage("dropping " + items.size() + " items.");
 				state = ITERATING;
 				executorService.submit(() ->
 				{
@@ -308,6 +309,18 @@ public class PowerSkillerPlugin extends Plugin
 		else
 		{
 			//TODO: capture object clicks
+		}
+	}
+
+	@Subscribe
+	public void onGameObjectDespawned(GameObjectDespawned event)
+	{
+		if (nextTree == null || event.getGameObject() != nextTree) {
+			return;
+		} else {
+			if (client.getLocalDestinationLocation() != null) {
+				interactTree(); //This is a failsafe, Player can get stuck with a destination on object despawn and be "forever moving".
+			}
 		}
 	}
 }
