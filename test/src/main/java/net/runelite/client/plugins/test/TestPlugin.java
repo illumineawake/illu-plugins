@@ -26,24 +26,17 @@
 package net.runelite.client.plugins.test;
 
 import com.google.inject.Provides;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.sound.sampled.Clip;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
-import net.runelite.api.geometry.Shapes;
-import net.runelite.api.queries.GameObjectQuery;
-import net.runelite.api.queries.TileQuery;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.queries.NPCQuery;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.game.WorldLocation;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -54,11 +47,8 @@ import net.runelite.client.rsb.wrappers.RSArea;
 import net.runelite.client.rsb.wrappers.RSTile;*/
 import org.pf4j.Extension;
 
-import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.List;
-
-import static net.runelite.api.ObjectID.*;
 
 /*import net.runelite.client.rsb.methods.*;
 import net.runelite.client.rsb.botLauncher.*;*/
@@ -144,14 +134,10 @@ public class TestPlugin extends Plugin
 		//object = new GameObjectQuery().idEquals(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280).filter(o -> rsAreaOutsideTest.contains(o.getWorldLocation())).result(client).nearestTo(client.getLocalPlayer());
 		if (client != null && client.getLocalPlayer() != null)
 		{
-			if (utils.getRandomEvent())
-			{
-				utils.setRandomEvent(false);
-			}
-			else
-			{
-				utils.setRandomEvent(true);
-			}
+			NPC npc = new NPCQuery().idEquals(512).result(client).nearestTo(client.getLocalPlayer());
+			if (npc != null)
+				log.info("NPC interacting status: " + npc.getInteracting());
+
 			//log.info(String.valueOf(client.getItemContainer(InventoryID.INVENTORY).getItems().length));
 			//ArrayList<Item> items = utils.getWidgetItems(utils.stringToIntArray("1511,1522"));
 			//log.info(String.valueOf(items.size()));
@@ -160,11 +146,13 @@ public class TestPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
+	/*@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		log.info("Test event to string: " + event.toString());
-	}
+		MenuEntry dismissMenu = new MenuEntry("", "", 1875, MenuOpcode.EXAMINE_NPC.getId(),0,0, false);
+		event.setMenuEntry(dismissMenu);
+	}*/
 
 	/*@Subscribe
 	public void onAnimationChanged(AnimationChanged event) {

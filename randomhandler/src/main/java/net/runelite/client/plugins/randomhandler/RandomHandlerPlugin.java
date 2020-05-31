@@ -108,10 +108,16 @@ public class RandomHandlerPlugin extends Plugin
 	}
 
 	@Override
+	protected void startUp()
+	{
+		utils.setRandomEvent(false);
+	}
+	@Override
 	protected void shutDown()
 	{
 		lastNotificationTick = 0;
 		currentRandomEvent = null;
+		utils.setRandomEvent(false);
 	}
 
 	@Subscribe
@@ -185,7 +191,7 @@ public class RandomHandlerPlugin extends Plugin
 		}
 		log.info("dismissing random event, menu before modification: " + event.toString());
 		utils.sendGameMessage("dismissing random event, menu before modification: " + event.toString());
-		MenuEntry dismissMenu = new MenuEntry("", "", currentRandomEvent.getId(), MenuOpcode.NPC_FIFTH_OPTION.getId(),0,0, true);
+		MenuEntry dismissMenu = new MenuEntry("", "", currentRandomEvent.getIndex(), MenuOpcode.NPC_FIFTH_OPTION.getId(),0,0, false);
 		event.setMenuEntry(dismissMenu);
 	}
 
