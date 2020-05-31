@@ -145,6 +145,7 @@ public class RandomHandlerPlugin extends Plugin
 				notifier.notify("Random event spawned: " + currentRandomEvent.getName());
 			}
 		}
+		utils.setRandomEvent(true);
 		utils.clickRandomPoint(0,400);
 	}
 
@@ -156,6 +157,7 @@ public class RandomHandlerPlugin extends Plugin
 		if (npc == currentRandomEvent)
 		{
 			currentRandomEvent = null;
+			utils.setRandomEvent(false);
 		}
 	}
 
@@ -181,10 +183,9 @@ public class RandomHandlerPlugin extends Plugin
 		{
 			return;
 		}
-		log.info("dismissing random event");
-		utils.sendGameMessage("dismissing random event");
-		//menuOpCode could be wrong, coordinates could also be wrong
-		MenuEntry dismissMenu = new MenuEntry("", "", currentRandomEvent.getId(), MenuOpcode.NPC_SECOND_OPTION.getId(),0,0, true);
+		log.info("dismissing random event, menu before modification: " + event.toString());
+		utils.sendGameMessage("dismissing random event, menu before modification: " + event.toString());
+		MenuEntry dismissMenu = new MenuEntry("", "", currentRandomEvent.getId(), MenuOpcode.NPC_FIFTH_OPTION.getId(),0,0, true);
 		event.setMenuEntry(dismissMenu);
 	}
 

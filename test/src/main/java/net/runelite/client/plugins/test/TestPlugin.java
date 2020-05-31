@@ -85,19 +85,19 @@ public class TestPlugin extends Plugin
 	@Inject
 	private BotUtils utils;
 
-	Point point = new Point(10,10);
+	Point point = new Point(10, 10);
 	GameObject object;
 	int timeout = 0;
-	public static final MenuEntry BANK_MENU = new MenuEntry("Bank","<col=ffff>Bank booth",10355, 4, 56, 48, true);
+	public static final MenuEntry BANK_MENU = new MenuEntry("Bank", "<col=ffff>Bank booth", 10355, 4, 56, 48, true);
 	public LocalPoint localPoint;
 	MenuEntry BankMenu;
 	private Tile[][][] areaTile = new Tile[3187][3230][0];
 	List<WorldPoint> worldPointList = new ArrayList<>();
-	WorldPoint outsideWorldPoint = new WorldPoint(2500,2500,0);
+	WorldPoint outsideWorldPoint = new WorldPoint(2500, 2500, 0);
 	WorldPoint swWorldPoint = new WorldPoint(3160, 3208, 0);
 	WorldPoint neWorldPoint = new WorldPoint(3197, 3241, 0);
-	WorldArea worldAreaTest = new WorldArea(swWorldPoint,20,10);
-	WorldArea worldAreaCustom = new WorldArea(swWorldPoint,neWorldPoint);
+	WorldArea worldAreaTest = new WorldArea(swWorldPoint, 20, 10);
+	WorldArea worldAreaCustom = new WorldArea(swWorldPoint, neWorldPoint);
 
 	/*MethodContext ctx;
 	RuneLite bot;*/
@@ -110,7 +110,6 @@ public class TestPlugin extends Plugin
 	{
 		return configManager.getConfig(TestPluginConfiguration.class);
 	}
-
 
 
 	@Override
@@ -133,16 +132,26 @@ public class TestPlugin extends Plugin
 			return;
 		}
 
-		if (event.getKey().equals("volume")) {
+		if (event.getKey().equals("volume"))
+		{
 			//placeholder
 		}
 	}
 
 	@Subscribe
-	private void onGameTick(GameTick tick) {
+	private void onGameTick(GameTick tick)
+	{
 		//object = new GameObjectQuery().idEquals(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280).filter(o -> rsAreaOutsideTest.contains(o.getWorldLocation())).result(client).nearestTo(client.getLocalPlayer());
 		if (client != null && client.getLocalPlayer() != null)
 		{
+			if (utils.getRandomEvent())
+			{
+				utils.setRandomEvent(false);
+			}
+			else
+			{
+				utils.setRandomEvent(true);
+			}
 			//log.info(String.valueOf(client.getItemContainer(InventoryID.INVENTORY).getItems().length));
 			//ArrayList<Item> items = utils.getWidgetItems(utils.stringToIntArray("1511,1522"));
 			//log.info(String.valueOf(items.size()));
@@ -152,7 +161,8 @@ public class TestPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event) {
+	public void onMenuOptionClicked(MenuOptionClicked event)
+	{
 		log.info("Test event to string: " + event.toString());
 	}
 

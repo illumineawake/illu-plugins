@@ -52,6 +52,8 @@ public class BotUtils extends Plugin
 
 	protected static final java.util.Random random = new java.util.Random();
 
+	public boolean randomEvent;
+
 	@Override
 	protected void startUp()
 	{
@@ -616,6 +618,16 @@ public class BotUtils extends Plugin
 		{
 			return false;
 		}
+	}
+
+	public void setRandomEvent(boolean random)
+	{
+		randomEvent = random;
+	}
+
+	public boolean getRandomEvent()
+	{
+		return randomEvent;
 	}
 
 	/**

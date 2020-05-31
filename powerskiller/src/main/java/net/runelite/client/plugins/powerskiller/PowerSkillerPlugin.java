@@ -260,7 +260,6 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			handleRun(40, 20);
 			state = getState();
-			//log.info("Current state is: " + state.toString());
 			switch (state)
 			{
 				case TIMEOUT:
@@ -280,7 +279,6 @@ public class PowerSkillerPlugin extends Plugin
 		}
 		else
 		{
-			//log.info("client/ player is null or bot isn't started");
 			return;
 		}
 	}
@@ -293,6 +291,12 @@ public class PowerSkillerPlugin extends Plugin
 			if (targetMenu == null)
 			{
 				log.info("Modified MenuEntry is null");
+				return;
+			}
+			//TODO: build this into utils or use random handler getter?
+			if (utils.getRandomEvent()) //for random events
+			{
+				log.info("Powerskiller not overriding due to random event");
 				return;
 			}
 			else
