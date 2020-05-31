@@ -312,7 +312,7 @@ public class PowerSkillerPlugin extends Plugin
 		}
 		else
 		{
-			//TODO: capture object clicks
+			//TODO: capture object clicks for GUI
 		}
 	}
 
