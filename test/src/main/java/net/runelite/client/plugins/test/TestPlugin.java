@@ -37,7 +37,9 @@ import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.api.geometry.Shapes;
+import net.runelite.api.queries.ActorQuery;
 import net.runelite.api.queries.GameObjectQuery;
+import net.runelite.api.queries.PlayerQuery;
 import net.runelite.api.queries.TileQuery;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
@@ -96,7 +98,8 @@ public class TestPlugin extends Plugin
 	WorldPoint outsideWorldPoint = new WorldPoint(2500,2500,0);
 	WorldPoint swWorldPoint = new WorldPoint(3160, 3208, 0);
 	WorldPoint neWorldPoint = new WorldPoint(3197, 3241, 0);
-	WorldArea worldAreaTest = new WorldArea(swWorldPoint,20,10);
+	//WorldArea worldAreaTest = new WorldArea(swWorldPoint,20,10);
+	WorldArea worldAreaTest = new WorldArea(new WorldPoint(3160, 3208, 0),new WorldPoint(3160, 3208, 0));
 	WorldArea worldAreaCustom = new WorldArea(swWorldPoint,neWorldPoint);
 
 	/*MethodContext ctx;
@@ -143,6 +146,7 @@ public class TestPlugin extends Plugin
 		//object = new GameObjectQuery().idEquals(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280).filter(o -> rsAreaOutsideTest.contains(o.getWorldLocation())).result(client).nearestTo(client.getLocalPlayer());
 		if (client != null && client.getLocalPlayer() != null)
 		{
+			log.info(String.valueOf(worldAreaTest.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0));
 			//log.info(String.valueOf(client.getItemContainer(InventoryID.INVENTORY).getItems().length));
 			//ArrayList<Item> items = utils.getWidgetItems(utils.stringToIntArray("1511,1522"));
 			//log.info(String.valueOf(items.size()));
