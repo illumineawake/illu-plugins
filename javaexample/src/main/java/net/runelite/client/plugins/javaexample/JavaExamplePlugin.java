@@ -23,10 +23,6 @@ import org.pf4j.Extension;
 public class JavaExamplePlugin extends Plugin
 {
 
-	WorldPoint swWorldPoint = new WorldPoint(3160, 3208, 0);
-	WorldPoint neWorldPoint = new WorldPoint(3197, 3241, 0);
-	WorldArea worldAreaTest = new WorldArea(swWorldPoint, neWorldPoint);
-
 	// Injects our config
 	@Inject
 	private JavaExampleConfig config;
@@ -65,4 +61,5 @@ public class JavaExamplePlugin extends Plugin
 		// runs every gametick
 		log.info("Gametick");
 	}
+
 }
