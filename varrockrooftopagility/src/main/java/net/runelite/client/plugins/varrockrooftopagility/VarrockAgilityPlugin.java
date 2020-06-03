@@ -41,6 +41,8 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
 import org.pf4j.Extension;
+import org.pf4j.PluginManager;
+
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -99,7 +101,7 @@ public class VarrockAgilityPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
+		//TODO: PluginManager disable plugins
 	}
 
 	@Override
@@ -115,19 +117,9 @@ public class VarrockAgilityPlugin extends Plugin
 		{
 			return;
 		}
-		getConfigValues();
 		if (event.getKey().equals("startBot"))
 		{
-			if (client != null && client.getLocalPlayer() != null && client.getGameState().equals(GameState.LOGGED_IN))
-			{
-				if (config.startBot())
-				{
-					//skillLocation = client.getLocalPlayer().getWorldLocation();
-					getConfigValues();
-					//log.info("Starting power-skiller at location: " + skillLocation);
-				}
-			}
-			else
+			if (client == null || client.getLocalPlayer() == null || client.getGameState().equals(GameState.LOGGED_IN))
 			{
 				if (config.startBot())
 				{
@@ -135,23 +127,6 @@ public class VarrockAgilityPlugin extends Plugin
 					configManager.setConfiguration("VarrockAgility", "startBot", false);
 				}
 			}
-		}
-	}
-
-	private void getConfigValues()
-	{
-		gameObjIds.clear();
-
-		for (int i : utils.stringToIntArray(config.gameObjects()))
-		{
-			gameObjIds.add(i);
-		}
-
-		itemIds.clear();
-
-		for (int i : utils.stringToIntArray(config.items()))
-		{
-			itemIds.add(i);
 		}
 	}
 
@@ -215,7 +190,7 @@ public class VarrockAgilityPlugin extends Plugin
 			timeout = 2;
 			return MOVING;
 		}
-		if (markOfGrace != null && markOfGraceTile != null)
+		if (markOfGrace != null && markOfGraceTile != null && config.markPickup())
 		{
 			VarrockAgilityObstacles currentObstacle = VarrockAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
 			if (currentObstacle == null)
@@ -304,7 +279,7 @@ public class VarrockAgilityPlugin extends Plugin
 	@Subscribe
 	public void onItemSpawned(ItemSpawned event)
 	{
-		if (!VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) )
+		if (!VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !config.markPickup())
 		{
 			return;
 		}
@@ -323,7 +298,7 @@ public class VarrockAgilityPlugin extends Plugin
 	@Subscribe
 	public void onItemDespawned(ItemDespawned event)
 	{
-		if (!VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
+		if (!VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !config.markPickup())
 		{
 			return;
 		}
