@@ -1,10 +1,9 @@
 package net.runelite.client.plugins.varrockrooftopagility;
 
 public enum VarrockAgilityState {
-    FIND_OBJECT,
+	FIND_OBSTACLE,
     ANIMATING,
-    DROPPING,
-    ITERATING,
+    MARK_OF_GRACE,
     MOVING,
     TIMEOUT;
 }

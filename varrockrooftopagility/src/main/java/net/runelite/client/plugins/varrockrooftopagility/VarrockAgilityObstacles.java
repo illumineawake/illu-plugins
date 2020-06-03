@@ -10,7 +10,6 @@ import lombok.Getter;
 
 public enum VarrockAgilityObstacles
 {
-	//ROUGH_WALL_14412, CLOTHES_LINE, GAP_14414, WALL_14832, GAP_14833, GAP_14834, GAP_14835, LEDGE_14836, EDGE
 	COURSE_GROUND(new WorldArea(new WorldPoint(3184, 3386, 0), new WorldPoint(3243, 3428, 0)),ROUGH_WALL_14412),
 	ROOFTOP_ONE(new WorldArea(new WorldPoint(3213, 3409, 3), new WorldPoint(3220, 3420, 3)),CLOTHES_LINE),
 	ROOFTOP_TWO(new WorldArea(new WorldPoint(3200, 3412, 3), new WorldPoint(3209, 3420, 3)),GAP_14414),
@@ -37,8 +36,7 @@ public enum VarrockAgilityObstacles
 
 	public int getObstacleId() { return obstacleId; }
 
-
-	public static VarrockAgilityObstacles getArea(WorldPoint worldPoint)
+	public static VarrockAgilityObstacles getObstacle(WorldPoint worldPoint)
 	{
 		for (VarrockAgilityObstacles obstacle : values())
 		{

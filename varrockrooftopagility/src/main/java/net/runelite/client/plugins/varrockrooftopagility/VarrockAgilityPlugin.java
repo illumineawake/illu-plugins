@@ -29,12 +29,9 @@ import com.google.inject.Provides;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.coords.WorldArea;
+import static net.runelite.api.ObjectID.ROUGH_WALL_14412;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.*;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -81,14 +78,16 @@ public class VarrockAgilityPlugin extends Plugin
 		new ThreadPoolExecutor.DiscardPolicy());
 
 	VarrockAgilityState state;
-	VarrockAgilityObstacles obstacles;
-	GameObject targetObject;
-	GameObject nextTree;
+
+	TileItem markOfGrace;
+	Tile markOfGraceTile;
 	MenuEntry targetMenu;
+	LocalPoint beforeLoc = new LocalPoint(0,0); //initiate to mitigate npe, this sucks
 	int timeout = 0;
 
 	private final Set<Integer> itemIds = new HashSet<>();
 	private final Set<Integer> gameObjIds = new HashSet<>();
+	private final List<Integer> VARROCK_REGION_IDS = List.of(12853, 12597); //12853, 12597
 
 
 	@Provides
@@ -167,65 +166,43 @@ public class VarrockAgilityPlugin extends Plugin
 		{
 			log.info("enabling run");
 			targetMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
+			utils.sleep(60, 350);
 			utils.clickRandomPoint(0, 200);
 		}
 	}
 
-	/*private void interactTree()
+	private void findObstacle()
 	{
-		nextTree = utils.findNearestGameObjectWithin(skillLocation, config.locationRadius(), gameObjIds);
-		if (nextTree != null)
+		VarrockAgilityObstacles varObstacle = VarrockAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
+		if (varObstacle != null)
 		{
-			targetObject = nextTree;
-			targetMenu = new MenuEntry("", "", nextTree.getId(), 3, targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
-			utils.clickRandomPoint(0, 200);
-		}
-		else
-		{
-			log.info("tree is null");
-		}
-	}*/
-
-	private void dropInventory()
-	{
-		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
-		if (inventoryWidget != null)
-		{
-			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
-			if (!items.isEmpty())
+			log.info(String.valueOf(varObstacle.getObstacleId()));
+			if (varObstacle.getObstacleId() == ROUGH_WALL_14412)
 			{
-				log.info("dropping " + items.size() + " items.");
-				utils.sendGameMessage("dropping " + items.size() + " items.");
-				state = ITERATING;
-				executorService.submit(() ->
+				DecorativeObject decObstacle = utils.findNearestDecorObject(varObstacle.getObstacleId());
+				if (decObstacle != null)
 				{
-					items.stream()
-						.filter(item -> itemIds.contains(item.getId()))
-						.forEach((item) -> {
-							targetMenu = new MenuEntry("", "", item.getId(), 37, item.getIndex(), 9764864, false);
-							utils.clickRandomPoint(0, 200);
-							try
-							{
-								Thread.sleep(utils.getRandomIntBetweenRange(config.randLow(), config.randHigh()));
-							}
-							catch (InterruptedException e)
-							{
-								e.printStackTrace();
-							}
-						});
-					state = ANIMATING; //failsafe so it doesn't get stuck looping. I should probs handle this better
-				});
+					targetMenu = new MenuEntry("", "", decObstacle.getId(), 3, decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
+					utils.sleep(60, 350);
+					utils.clickRandomPoint(client.getCenterX() + utils.getRandomIntBetweenRange(0, 300), client.getCenterY() + utils.getRandomIntBetweenRange(0, 300));
+					return;
+				}
 			}
-			else
+			GameObject objObstacle = utils.findNearestGameObject(varObstacle.getObstacleId()); //this probably doesn't work for climbing rough wall?
+			if (objObstacle != null)
 			{
-				log.info("inventory list is empty");
+				targetMenu = new MenuEntry("", "", objObstacle.getId(), 3, objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
+				utils.sleep(60, 350);
+				utils.clickRandomPoint(client.getCenterX() + utils.getRandomIntBetweenRange(0, 300), client.getCenterY() + utils.getRandomIntBetweenRange(0, 300));
+				return;
 			}
 		}
 		else
 		{
-			log.info("inventory container is null");
+			log.info("enum is null, not in obstacle area");
 		}
 	}
+
 
 	public VarrockAgilityState getState()
 	{
@@ -233,22 +210,27 @@ public class VarrockAgilityPlugin extends Plugin
 		{
 			return TIMEOUT;
 		}
-		if (state == ITERATING && !utils.inventoryEmpty())
-		{
-			return ITERATING;
-		}
-		if (utils.inventoryFull())
-		{
-			return DROPPING;
-		}
-		if (utils.isMoving())
+		if (utils.isMoving(beforeLoc)) //could also test with just isMoving
 		{
 			timeout = 2;
 			return MOVING;
 		}
-		if (!utils.isInteracting() && !utils.inventoryFull())
+		if (markOfGrace != null && markOfGraceTile != null)
 		{
-			return FIND_OBJECT;
+			VarrockAgilityObstacles currentObstacle = VarrockAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
+			if (currentObstacle == null)
+			{
+				timeout = 1;
+				return MOVING;
+			}
+			if (currentObstacle.getLocation().distanceTo(markOfGraceTile.getWorldLocation()) == 0)
+			{
+				return MARK_OF_GRACE;
+			}
+		}
+		if (!utils.isMoving(beforeLoc))
+		{
+			return FIND_OBSTACLE;
 		}
 		return ANIMATING; //need to determine an appropriate default
 	}
@@ -259,16 +241,33 @@ public class VarrockAgilityPlugin extends Plugin
 		//if (client != null && client.getLocalPlayer() != null && config.startBot())
 		if (client != null && client.getLocalPlayer() != null && config.startBot())
 		{
-			handleRun(40, 20);
-
-			VarrockAgilityObstacles varObstacle = VarrockAgilityObstacles.getArea(client.getLocalPlayer().getWorldLocation());
-			if(varObstacle != null)
+			if (!VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
 			{
-				log.info(String.valueOf(varObstacle.getObstacleId()));
+				log.info("not in Varrock course region");
+				return;
 			}
-			else
+			handleRun(40, 20);
+			state = getState();
+			//this seems shit
+			beforeLoc = client.getLocalPlayer().getLocalLocation();
+			switch (state)
 			{
-				log.info("enum is null");
+				case TIMEOUT:
+					timeout--;
+					return;
+				case MARK_OF_GRACE:
+					utils.sendGameMessage("Picking up mark of grace");
+					targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
+					utils.sleep(60, 350);
+					utils.clickRandomPoint(client.getCenterX() + utils.getRandomIntBetweenRange(0, 300), client.getCenterY() + utils.getRandomIntBetweenRange(0, 300));
+					return;
+				case FIND_OBSTACLE:
+					findObstacle();
+					return;
+				case MOVING:
+					break;
+				default:
+					return;
 			}
 		}
 		else
@@ -292,10 +291,7 @@ public class VarrockAgilityPlugin extends Plugin
 			{
 				//log.info("MenuEntry string event: " + targetMenu.toString());
 				event.setMenuEntry(targetMenu);
-				if (state != ITERATING)
-				{
-					timeout = 2;
-				}
+				timeout = 2;
 				targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
 			}
 		}
@@ -306,14 +302,38 @@ public class VarrockAgilityPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onGameObjectDespawned(GameObjectDespawned event)
+	public void onItemSpawned(ItemSpawned event)
 	{
-		if (nextTree == null || event.getGameObject() != nextTree) {
+		if (!VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) )
+		{
 			return;
-		} else {
-			if (client.getLocalDestinationLocation() != null) {
-				//interactTree(); //This is a failsafe, Player can get stuck with a destination on object despawn and be "forever moving".
-			}
+		}
+
+		TileItem item = event.getItem();
+		Tile tile = event.getTile();
+
+		if (item.getId() == ItemID.MARK_OF_GRACE)
+		{
+			utils.sendGameMessage("Mark of grace spawned");
+			markOfGrace = item;
+			markOfGraceTile = tile;
+		}
+	}
+
+	@Subscribe
+	public void onItemDespawned(ItemDespawned event)
+	{
+		if (!VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
+		{
+			return;
+		}
+
+		TileItem item = event.getItem();
+
+		if (item.getId() == ItemID.MARK_OF_GRACE)
+		{
+			utils.sendGameMessage("Mark of grace despawned");
+			markOfGrace = null;
 		}
 	}
 }
