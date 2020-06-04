@@ -85,8 +85,6 @@ public class VarrockAgilityPlugin extends Plugin
 	LocalPoint beforeLoc = new LocalPoint(0,0); //initiate to mitigate npe, this sucks
 	int timeout = 0;
 
-	private final Set<Integer> itemIds = new HashSet<>();
-	private final Set<Integer> gameObjIds = new HashSet<>();
 	private final List<Integer> VARROCK_REGION_IDS = List.of(12853, 12597); //12853, 12597
 
 
@@ -115,19 +113,9 @@ public class VarrockAgilityPlugin extends Plugin
 		{
 			return;
 		}
-		getConfigValues();
 		if (event.getKey().equals("startBot"))
 		{
-			if (client != null && client.getLocalPlayer() != null && client.getGameState().equals(GameState.LOGGED_IN))
-			{
-				if (config.startBot())
-				{
-					//skillLocation = client.getLocalPlayer().getWorldLocation();
-					getConfigValues();
-					//log.info("Starting power-skiller at location: " + skillLocation);
-				}
-			}
-			else
+			if (client == null || client.getLocalPlayer() == null || !client.getGameState().equals(GameState.LOGGED_IN))
 			{
 				if (config.startBot())
 				{
@@ -135,23 +123,6 @@ public class VarrockAgilityPlugin extends Plugin
 					configManager.setConfiguration("VarrockAgility", "startBot", false);
 				}
 			}
-		}
-	}
-
-	private void getConfigValues()
-	{
-		gameObjIds.clear();
-
-		for (int i : utils.stringToIntArray(config.gameObjects()))
-		{
-			gameObjIds.add(i);
-		}
-
-		itemIds.clear();
-
-		for (int i : utils.stringToIntArray(config.items()))
-		{
-			itemIds.add(i);
 		}
 	}
 
@@ -215,7 +186,7 @@ public class VarrockAgilityPlugin extends Plugin
 			timeout = 2;
 			return MOVING;
 		}
-		if (markOfGrace != null && markOfGraceTile != null)
+		if (markOfGrace != null && markOfGraceTile != null && config.markPickup())
 		{
 			VarrockAgilityObstacles currentObstacle = VarrockAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
 			if (currentObstacle == null)
@@ -304,7 +275,7 @@ public class VarrockAgilityPlugin extends Plugin
 	@Subscribe
 	public void onItemSpawned(ItemSpawned event)
 	{
-		if (!VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) )
+		if (!VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !config.markPickup() )
 		{
 			return;
 		}
@@ -323,7 +294,7 @@ public class VarrockAgilityPlugin extends Plugin
 	@Subscribe
 	public void onItemDespawned(ItemDespawned event)
 	{
-		if (!VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
+		if (!VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !config.markPickup())
 		{
 			return;
 		}
