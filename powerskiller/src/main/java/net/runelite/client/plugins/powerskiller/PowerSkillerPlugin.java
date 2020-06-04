@@ -29,6 +29,7 @@ import com.google.inject.Provides;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
@@ -83,7 +84,9 @@ public class PowerSkillerPlugin extends Plugin
 	GameObject targetObject;
 	GameObject nextTree;
 	MenuEntry targetMenu;
+
 	int timeout = 0;
+
 
 	private final Set<Integer> itemIds = new HashSet<>();
 	private final Set<Integer> gameObjIds = new HashSet<>();

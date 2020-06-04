@@ -33,7 +33,16 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
+
+import net.runelite.api.geometry.Shapes;
+import net.runelite.api.queries.ActorQuery;
+import net.runelite.api.queries.GameObjectQuery;
+import net.runelite.api.queries.PlayerQuery;
+import net.runelite.api.queries.TileQuery;
+import net.runelite.api.widgets.WidgetInfo;
+
 import net.runelite.api.queries.NPCQuery;
+
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -80,14 +89,25 @@ public class TestPlugin extends Plugin
 	int timeout = 0;
 	public static final MenuEntry BANK_MENU = new MenuEntry("Bank", "<col=ffff>Bank booth", 10355, 4, 56, 48, true);
 	public LocalPoint localPoint;
-	MenuEntry BankMenu;
+	MenuEntry testMenu;
 	private Tile[][][] areaTile = new Tile[3187][3230][0];
 	List<WorldPoint> worldPointList = new ArrayList<>();
+
+	LocalPoint beforeLoc;
+	WorldPoint outsideWorldPoint = new WorldPoint(2500,2500,0);
+	WorldPoint swWorldPoint = new WorldPoint(3160, 3208, 0);
+	WorldPoint neWorldPoint = new WorldPoint(3197, 3241, 0);
+	//WorldArea worldAreaTest = new WorldArea(swWorldPoint,20,10);
+	WorldArea worldAreaTest = new WorldArea(new WorldPoint(3160, 3208, 0),new WorldPoint(3160, 3208, 0));
+	WorldArea worldAreaCustom = new WorldArea(swWorldPoint,neWorldPoint);
+	private final int VARROCK_REGION_ID = 12853;
+
 	WorldPoint outsideWorldPoint = new WorldPoint(2500, 2500, 0);
 	WorldPoint swWorldPoint = new WorldPoint(3160, 3208, 0);
 	WorldPoint neWorldPoint = new WorldPoint(3197, 3241, 0);
 	WorldArea worldAreaTest = new WorldArea(swWorldPoint, 20, 10);
 	WorldArea worldAreaCustom = new WorldArea(swWorldPoint, neWorldPoint);
+
 
 	/*MethodContext ctx;
 	RuneLite bot;*/
@@ -134,15 +154,77 @@ public class TestPlugin extends Plugin
 		//object = new GameObjectQuery().idEquals(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280).filter(o -> rsAreaOutsideTest.contains(o.getWorldLocation())).result(client).nearestTo(client.getLocalPlayer());
 		if (client != null && client.getLocalPlayer() != null)
 		{
+
+			if (beforeLoc != null)
+			{
+				log.info("Current Loc value: " + client.getLocalPlayer().getLocalLocation() + "before Loc value " + beforeLoc);
+				log.info("Do they equal: " + String.valueOf(client.getLocalPlayer().getLocalLocation().equals(beforeLoc)));
+			}
+			beforeLoc = client.getLocalPlayer().getLocalLocation();
+			//int camX = client.getCameraX();
+			//int camY = client.getCameraY();
+
+			//log.info("local destination value: " + String.valueOf(client.getLocalDestinationLocation() != null));
+			//DecorativeObject decObject = utils.findNearestDecorObject(ROUGH_WALL_14412);
+			//log.info(String.valueOf(decObject.getLocalLocation().getSceneX()));
+			//log.info(String.valueOf(worldAreaTest.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0));
 			NPC npc = new NPCQuery().idEquals(512).result(client).nearestTo(client.getLocalPlayer());
 			if (npc != null)
 				log.info("NPC interacting status: " + npc.getInteracting());
+
 
 			//log.info(String.valueOf(client.getItemContainer(InventoryID.INVENTORY).getItems().length));
 			//ArrayList<Item> items = utils.getWidgetItems(utils.stringToIntArray("1511,1522"));
 			//log.info(String.valueOf(items.size()));
 
 
+		}
+	}
+
+
+	@Subscribe
+	public void onItemSpawned(ItemSpawned event)
+	{
+		if(client.getLocalPlayer().getWorldLocation().getRegionID() != VARROCK_REGION_ID)
+		{
+			return;
+		}
+
+		TileItem item = event.getItem();
+		Tile tile = event.getTile();
+
+		if(item.getId() == ItemID.MARK_OF_GRACE)
+		{
+			utils.sendGameMessage("Mark of grace spawned");
+			testMenu = new MenuEntry("","", ItemID.MARK_OF_GRACE,20,tile.getSceneLocation().getX(),tile.getSceneLocation().getY(),false);
+			utils.clickRandomPoint(200,400);
+		}
+	}
+
+	@Subscribe
+	public void onItemDespawned(ItemDespawned event)
+	{
+		if(client.getLocalPlayer().getWorldLocation().getRegionID() != VARROCK_REGION_ID)
+		{
+			return;
+		}
+
+		TileItem item = event.getItem();
+
+		if(item.getId() == ItemID.MARK_OF_GRACE)
+		{
+			utils.sendGameMessage("Mark of grace despawned");
+		}
+	}
+
+	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked event) {
+		log.info("Test menu, before hook: " + event.toString());
+		if (testMenu != null)
+		{
+			event.setMenuEntry(testMenu);
+			log.info("Test menu, after hook: " + testMenu.toString());
+			testMenu = null;
 		}
 	}
 
@@ -153,7 +235,6 @@ public class TestPlugin extends Plugin
 		MenuEntry dismissMenu = new MenuEntry("", "", 1875, MenuOpcode.EXAMINE_NPC.getId(),0,0, false);
 		event.setMenuEntry(dismissMenu);
 	}*/
-
 	/*@Subscribe
 	public void onAnimationChanged(AnimationChanged event) {
 		if (event.getActor() == client.getLocalPlayer()){
