@@ -62,9 +62,12 @@ public class BotUtils extends Plugin
 
 	protected static final java.util.Random random = new java.util.Random();
 
+
 	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
 	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
 		new ThreadPoolExecutor.DiscardPolicy());
+
+	public boolean randomEvent;
 
 	@Override
 	protected void startUp()
@@ -639,6 +642,16 @@ public class BotUtils extends Plugin
 		{
 			return false;
 		}
+	}
+
+	public void setRandomEvent(boolean random)
+	{
+		randomEvent = random;
+	}
+
+	public boolean getRandomEvent()
+	{
+		return randomEvent;
 	}
 
 	/**
