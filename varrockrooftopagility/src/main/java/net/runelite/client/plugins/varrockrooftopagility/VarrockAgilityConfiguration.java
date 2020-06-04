@@ -38,87 +38,25 @@ public interface VarrockAgilityConfiguration extends Config
 {
 
 	@ConfigItem(
-		keyName = "gameObjects",
-		name = "gameObjects (IDs) to power-skill",
-		description = "Separate with comma",
-		position = 0
-	)
-	default String gameObjects()
-	{
-		return "0";
-	}
-
-	@ConfigItem(
-		keyName = "items",
-		name = "Items to Drop",
-		description = "Separate with comma",
-		position = 1
-	)
-	default String items()
-	{
-		return "0";
-	}
-
-	@ConfigItem(
-		keyName = "locationRadius",
-		name = "Location Radius",
-		description = "Radius to search for GameObjects.",
-		position = 2
-	)
-	default int locationRadius() { return 10; }
-
-	@ConfigItem(
-		keyName = "randLow",
-		name = "Minimum Drop Delay",
-		description = "Minimum delay between dropping items",
-		position = 3
-	)
-	default int randLow()
-	{
-		return 60;
-	}
-
-	@ConfigItem(
-		keyName = "randHigh",
-		name = "Maximum Drop Delay",
-		description = "Maximum delay between dropping items",
-		position = 4
-	)
-	default int randHigh()
-	{
-		return 100;
-	}
-
-	@ConfigItem(
-		keyName = "worldHop",
-		name = "World Hop Radius",
-		description = "Hop if player is within radius (-1 = disabled)",
-		position = 5
-	)
-	default int worldHop()
-	{
-		return -1;
-	}
-
-	@ConfigItem(
 		keyName = "startBot",
 		name = "Start bot (must be logged in)",
 		description = "Tick to start (must be logged in)",
-		position = 6
+		position = 0
 	)
 	default boolean startBot()
 	{
 		return false;
 	}
 
-	/*@ConfigItem(
-			position = 1,
-			keyName = "toggle",
-			name = "Drop Items",
-			description = "Drops Items in config above."
+	@ConfigItem(
+		keyName = "markPickup",
+		name = "Pick up Marks of Grace",
+		description = "Enable to pick up Marks of Grace",
+		position = 1
 	)
-	default Keybind toggle()
+	default boolean markPickup()
 	{
-		return Keybind.NOT_SET;
-	}*/
+		return true;
+	}
+
 }
