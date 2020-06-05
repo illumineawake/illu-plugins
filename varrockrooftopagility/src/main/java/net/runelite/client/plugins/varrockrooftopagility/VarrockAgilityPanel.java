@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
@@ -17,8 +18,6 @@ import net.runelite.client.ui.PluginPanel;
 
 public class VarrockAgilityPanel extends PluginPanel
 {
-	//private final JPanel agilityPanel = new JPanel();
-
 	public boolean startAgility;
 	public boolean markPickup;
 
@@ -33,10 +32,13 @@ public class VarrockAgilityPanel extends PluginPanel
 		JPanel agilityPanel = new JPanel();
 		agilityPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 		agilityPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		agilityPanel.setLayout(new DynamicGridLayout(1, 1));
+		agilityPanel.setLayout(new DynamicGridLayout(2, 1));
 
+		JLabel locationLabel = new JLabel("Location:");
+		JComboBox locationCmb = new JComboBox();
 		JLabel markLabel = new JLabel("Pickup Mark of Grace");
 		JCheckBox markCheck = new JCheckBox();
+		markCheck.setSelected(true);
 		markCheck.addActionListener(ev ->
 		{
 			markPickup = !markPickup;
@@ -46,7 +48,6 @@ public class VarrockAgilityPanel extends PluginPanel
 
 
 		JPanel startPanel = new JPanel();
-		//startPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 		startPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		startPanel.setLayout(new DynamicGridLayout(1, 1));
 
@@ -69,7 +70,8 @@ public class VarrockAgilityPanel extends PluginPanel
 			}
 		});
 
-
+		agilityPanel.add(locationLabel);
+		agilityPanel.add(locationCmb);
 		agilityPanel.add(markLabel);
 		agilityPanel.add(markCheck);
 		startPanel.add(startBot);

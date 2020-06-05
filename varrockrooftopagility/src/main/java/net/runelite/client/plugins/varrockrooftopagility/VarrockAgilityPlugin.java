@@ -31,6 +31,9 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import static net.runelite.api.ObjectID.ROUGH_WALL_14412;
+import static net.runelite.api.ObjectID.ROUGH_WALL_14898;
+import static net.runelite.api.ObjectID.TIGHTROPE_14899;
+import static net.runelite.api.ObjectID.TIGHTROPE_14911;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.*;
 import net.runelite.client.eventbus.Subscribe;
@@ -90,7 +93,7 @@ public class VarrockAgilityPlugin extends Plugin
 	LocalPoint beforeLoc = new LocalPoint(0,0); //initiate to mitigate npe, this sucks
 	int timeout = 0;
 
-	private final List<Integer> VARROCK_REGION_IDS = List.of(12853, 12597); //12853, 12597
+	private final List<Integer> VARROCK_REGION_IDS = List.of(12853, 12597, 12084); //12853, 12597
 
 	@Override
 	protected void startUp()
@@ -137,12 +140,23 @@ public class VarrockAgilityPlugin extends Plugin
 		if (varObstacle != null)
 		{
 			log.info(String.valueOf(varObstacle.getObstacleId()));
-			if (varObstacle.getObstacleId() == ROUGH_WALL_14412)
+			if (varObstacle.getObstacleId() == ROUGH_WALL_14412 || varObstacle.getObstacleId()== ROUGH_WALL_14898)
 			{
 				DecorativeObject decObstacle = utils.findNearestDecorObject(varObstacle.getObstacleId());
 				if (decObstacle != null)
 				{
 					targetMenu = new MenuEntry("", "", decObstacle.getId(), 3, decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
+					utils.sleep(60, 350);
+					utils.clickRandomPoint(client.getCenterX() + utils.getRandomIntBetweenRange(0, 300), client.getCenterY() + utils.getRandomIntBetweenRange(0, 300));
+					return;
+				}
+			}
+			if (varObstacle.getObstacleId() == TIGHTROPE_14899 || varObstacle.getObstacleId()== TIGHTROPE_14911)
+			{
+				GroundObject groundObstacle = utils.findNearestGroundObject(varObstacle.getObstacleId());
+				if (groundObstacle != null)
+				{
+					targetMenu = new MenuEntry("", "", groundObstacle.getId(), 3, groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
 					utils.sleep(60, 350);
 					utils.clickRandomPoint(client.getCenterX() + utils.getRandomIntBetweenRange(0, 300), client.getCenterY() + utils.getRandomIntBetweenRange(0, 300));
 					return;
