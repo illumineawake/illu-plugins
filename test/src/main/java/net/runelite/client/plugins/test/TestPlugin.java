@@ -102,12 +102,6 @@ public class TestPlugin extends Plugin
 	WorldArea worldAreaCustom = new WorldArea(swWorldPoint,neWorldPoint);
 	private final int VARROCK_REGION_ID = 12853;
 
-	WorldPoint outsideWorldPoint = new WorldPoint(2500, 2500, 0);
-	WorldPoint swWorldPoint = new WorldPoint(3160, 3208, 0);
-	WorldPoint neWorldPoint = new WorldPoint(3197, 3241, 0);
-	WorldArea worldAreaTest = new WorldArea(swWorldPoint, 20, 10);
-	WorldArea worldAreaCustom = new WorldArea(swWorldPoint, neWorldPoint);
-
 
 	/*MethodContext ctx;
 	RuneLite bot;*/

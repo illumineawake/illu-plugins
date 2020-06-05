@@ -39,6 +39,7 @@ public class VarrockAgilityPanel extends PluginPanel
 		JLabel markLabel = new JLabel("Pickup Mark of Grace");
 		JCheckBox markCheck = new JCheckBox();
 		markCheck.setSelected(true);
+		markPickup = true;
 		markCheck.addActionListener(ev ->
 		{
 			markPickup = !markPickup;

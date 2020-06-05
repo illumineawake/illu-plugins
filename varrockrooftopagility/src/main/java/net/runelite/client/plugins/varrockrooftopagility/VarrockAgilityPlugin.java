@@ -35,6 +35,7 @@ import static net.runelite.api.ObjectID.ROUGH_WALL_14898;
 import static net.runelite.api.ObjectID.TIGHTROPE_14899;
 import static net.runelite.api.ObjectID.TIGHTROPE_14911;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -92,6 +93,8 @@ public class VarrockAgilityPlugin extends Plugin
 	MenuEntry targetMenu;
 	LocalPoint beforeLoc = new LocalPoint(0,0); //initiate to mitigate npe, this sucks
 	int timeout = 0;
+	List<WorldPoint> path = List.of(new WorldPoint(3013, 3436, 0),new WorldPoint(3013, 3436, 0));
+
 
 	private final List<Integer> VARROCK_REGION_IDS = List.of(12853, 12597, 12084); //12853, 12597
 
@@ -121,6 +124,15 @@ public class VarrockAgilityPlugin extends Plugin
 	//enables run if below given minimum energy with random positive variation
 	private void handleRun(int minEnergy, int randMax)
 	{
+		path.add(new WorldPoint(3013, 3436, 0));
+		path.add(new WorldPoint(3013, 3436, 0));
+		path.add(new WorldPoint(3044, 3433, 0));
+		path.add(new WorldPoint(3075, 3426, 0));
+		path.add(new WorldPoint(3106, 3420, 0));
+		path.add(new WorldPoint(3137, 3422, 0));
+		path.add(new WorldPoint(3168, 3428, 0));
+		path.add(new WorldPoint(3199, 3428, 0));
+		path.add(new WorldPoint(3215, 3422, 0));
 		if (utils.isRunEnabled())
 		{
 			return;
