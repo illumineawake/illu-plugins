@@ -1,7 +1,6 @@
-package net.runelite.client.plugins.varrockrooftopagility;
+package net.runelite.client.plugins.rooftopagility;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.JButton;
@@ -10,13 +9,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
 import javax.swing.border.EmptyBorder;
-import lombok.Getter;
+
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.DynamicGridLayout;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
 
-public class VarrockAgilityPanel extends PluginPanel
+public class RooftopAgilityPanel extends PluginPanel
 {
 	public boolean startAgility;
 	public boolean markPickup;

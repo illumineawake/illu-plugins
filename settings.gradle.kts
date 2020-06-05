@@ -33,7 +33,7 @@ include(":essencehighlighter")
 include(":javaexample")
 include(":powerskiller")
 include(":randomhandler")
-include(":varrockrooftopagility")
+include(":rooftopagility")
 include(":test")
 
 for (project in rootProject.children) {

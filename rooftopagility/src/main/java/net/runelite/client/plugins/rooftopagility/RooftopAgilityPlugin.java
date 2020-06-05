@@ -23,9 +23,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.varrockrooftopagility;
+package net.runelite.client.plugins.rooftopagility;
 
-import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -53,20 +52,20 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import static net.runelite.client.plugins.varrockrooftopagility.VarrockAgilityState.*;
+import static net.runelite.client.plugins.rooftopagility.RooftopAgilityState.*;
 
 
 @Extension
 @PluginDependency(BotUtils.class)
 @PluginDescriptor(
-	name = "Varrock Agility",
+	name = "Rooftop Agility",
 	enabledByDefault = false,
-	description = "Illumine Varrock rooftop agility plugin",
+	description = "Illumine auto rooftop agility plugin",
 	tags = {"agility"},
 	type = PluginType.SKILLING
 )
 @Slf4j
-public class VarrockAgilityPlugin extends Plugin
+public class RooftopAgilityPlugin extends Plugin
 {
 	@Inject
 	private Client client;
@@ -84,8 +83,8 @@ public class VarrockAgilityPlugin extends Plugin
 	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
 		new ThreadPoolExecutor.DiscardPolicy());
 
-	VarrockAgilityState state;
-	VarrockAgilityPanel panel;
+	RooftopAgilityState state;
+	RooftopAgilityPanel panel;
 	private NavigationButton navButton;
 
 	TileItem markOfGrace;
@@ -101,7 +100,7 @@ public class VarrockAgilityPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		panel = injector.getInstance(VarrockAgilityPanel.class);
+		panel = injector.getInstance(RooftopAgilityPanel.class);
 		panel.init();
 		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "panel_icon.png");
 
@@ -124,15 +123,6 @@ public class VarrockAgilityPlugin extends Plugin
 	//enables run if below given minimum energy with random positive variation
 	private void handleRun(int minEnergy, int randMax)
 	{
-		path.add(new WorldPoint(3013, 3436, 0));
-		path.add(new WorldPoint(3013, 3436, 0));
-		path.add(new WorldPoint(3044, 3433, 0));
-		path.add(new WorldPoint(3075, 3426, 0));
-		path.add(new WorldPoint(3106, 3420, 0));
-		path.add(new WorldPoint(3137, 3422, 0));
-		path.add(new WorldPoint(3168, 3428, 0));
-		path.add(new WorldPoint(3199, 3428, 0));
-		path.add(new WorldPoint(3215, 3422, 0));
 		if (utils.isRunEnabled())
 		{
 			return;
@@ -148,7 +138,7 @@ public class VarrockAgilityPlugin extends Plugin
 
 	private void findObstacle()
 	{
-		VarrockAgilityObstacles varObstacle = VarrockAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
+		RooftopAgilityObstacles varObstacle = RooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
 		if (varObstacle != null)
 		{
 			log.info(String.valueOf(varObstacle.getObstacleId()));
@@ -190,7 +180,7 @@ public class VarrockAgilityPlugin extends Plugin
 	}
 
 
-	public VarrockAgilityState getState()
+	public RooftopAgilityState getState()
 	{
 		if (timeout > 0)
 		{
@@ -203,7 +193,7 @@ public class VarrockAgilityPlugin extends Plugin
 		}
 		if (markOfGrace != null && markOfGraceTile != null && panel.markPickup)
 		{
-			VarrockAgilityObstacles currentObstacle = VarrockAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
+			RooftopAgilityObstacles currentObstacle = RooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
 			if (currentObstacle == null)
 			{
 				timeout = 1;

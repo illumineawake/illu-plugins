@@ -25,8 +25,8 @@
 
 version = "0.0.1"
 
-project.extra["PluginName"] = "Varrock Agility"
-project.extra["PluginDescription"] = "Illumine Varrock rooftop agility plugin"
+project.extra["PluginName"] = "Rooftop Agility"
+project.extra["PluginDescription"] = "Illumine automated rooftop agility plugin"
 
 dependencies {
     compileOnly(project(":botutils"))

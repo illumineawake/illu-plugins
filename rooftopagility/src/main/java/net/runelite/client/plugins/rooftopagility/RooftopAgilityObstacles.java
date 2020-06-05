@@ -1,14 +1,10 @@
-package net.runelite.client.plugins.varrockrooftopagility;
+package net.runelite.client.plugins.rooftopagility;
 
-import com.google.common.collect.ImmutableMap;
-import java.util.Map;
 import static net.runelite.api.ObjectID.*;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
-import lombok.AccessLevel;
-import lombok.Getter;
 
-public enum VarrockAgilityObstacles
+public enum RooftopAgilityObstacles
 {
 	//VARROCK
 	COURSE_GROUND(new WorldArea(new WorldPoint(3184, 3386, 0), new WorldPoint(3243, 3428, 0)),ROUGH_WALL_14412),
@@ -45,7 +41,7 @@ public enum VarrockAgilityObstacles
 	//@Getter(AccessLevel.PACKAGE)
 	private final int obstacleId;
 
-	VarrockAgilityObstacles(final WorldArea location, final int obstacleId)
+	RooftopAgilityObstacles(final WorldArea location, final int obstacleId)
 	{
 		this.location = location;
 		this.obstacleId = obstacleId;
@@ -55,9 +51,9 @@ public enum VarrockAgilityObstacles
 
 	public int getObstacleId() { return obstacleId; }
 
-	public static VarrockAgilityObstacles getObstacle(WorldPoint worldPoint)
+	public static RooftopAgilityObstacles getObstacle(WorldPoint worldPoint)
 	{
-		for (VarrockAgilityObstacles obstacle : values())
+		for (RooftopAgilityObstacles obstacle : values())
 		{
 			if (obstacle.getLocation().distanceTo(worldPoint) == 0)
 			{
