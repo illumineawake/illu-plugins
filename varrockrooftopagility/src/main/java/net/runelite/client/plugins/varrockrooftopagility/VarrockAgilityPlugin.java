@@ -26,23 +26,28 @@
 package net.runelite.client.plugins.varrockrooftopagility;
 
 import com.google.inject.Provides;
+import java.awt.image.BufferedImage;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import static net.runelite.api.ObjectID.ROUGH_WALL_14412;
+import static net.runelite.api.ObjectID.ROUGH_WALL_14898;
+import static net.runelite.api.ObjectID.TIGHTROPE_14899;
+import static net.runelite.api.ObjectID.TIGHTROPE_14911;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
-import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
+import net.runelite.client.ui.ClientToolbar;
+import net.runelite.client.ui.NavigationButton;
+import net.runelite.client.util.ImageUtil;
 import org.pf4j.Extension;
-import org.pf4j.PluginManager;
-
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -67,72 +72,67 @@ public class VarrockAgilityPlugin extends Plugin
 	private Client client;
 
 	@Inject
-	private VarrockAgilityConfiguration config;
-
-	@Inject
 	private BotUtils utils;
 
 	@Inject
-	private ConfigManager configManager;
+	private PluginManager pluginManager;
+
+	@Inject
+	ClientToolbar clientToolbar;
 
 	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
 	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
 		new ThreadPoolExecutor.DiscardPolicy());
 
 	VarrockAgilityState state;
+	VarrockAgilityPanel panel;
+	private NavigationButton navButton;
 
 	TileItem markOfGrace;
 	Tile markOfGraceTile;
 	MenuEntry targetMenu;
 	LocalPoint beforeLoc = new LocalPoint(0,0); //initiate to mitigate npe, this sucks
 	int timeout = 0;
-
-	private final Set<Integer> itemIds = new HashSet<>();
-	private final Set<Integer> gameObjIds = new HashSet<>();
-	private final List<Integer> VARROCK_REGION_IDS = List.of(12853, 12597); //12853, 12597
+	List<WorldPoint> path = List.of(new WorldPoint(3013, 3436, 0),new WorldPoint(3013, 3436, 0));
 
 
-	@Provides
-	VarrockAgilityConfiguration provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(VarrockAgilityConfiguration.class);
-	}
+	private final List<Integer> VARROCK_REGION_IDS = List.of(12853, 12597, 12084); //12853, 12597
 
 	@Override
 	protected void startUp()
 	{
-		//TODO: PluginManager disable plugins
+		panel = injector.getInstance(VarrockAgilityPanel.class);
+		panel.init();
+		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "panel_icon.png");
+
+		navButton = NavigationButton.builder()
+			.tooltip("Varrock Agility")
+			.priority(5)
+			.panel(panel)
+			.icon(icon)
+			.build();
+
+		clientToolbar.addNavigation(navButton);
 	}
 
 	@Override
 	protected void shutDown()
 	{
-		configManager.setConfiguration("VarrockAgility", "startBot", false);
-	}
-
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("VarrockAgility"))
-		{
-			return;
-		}
-		if (event.getKey().equals("startBot"))
-		{
-			if (client == null || client.getLocalPlayer() == null || client.getGameState().equals(GameState.LOGGED_IN))
-			{
-				if (config.startBot())
-				{
-					log.info("Stopping bot");
-					configManager.setConfiguration("VarrockAgility", "startBot", false);
-				}
-			}
-		}
+		clientToolbar.removeNavigation(navButton);
 	}
 
 	//enables run if below given minimum energy with random positive variation
 	private void handleRun(int minEnergy, int randMax)
 	{
+		path.add(new WorldPoint(3013, 3436, 0));
+		path.add(new WorldPoint(3013, 3436, 0));
+		path.add(new WorldPoint(3044, 3433, 0));
+		path.add(new WorldPoint(3075, 3426, 0));
+		path.add(new WorldPoint(3106, 3420, 0));
+		path.add(new WorldPoint(3137, 3422, 0));
+		path.add(new WorldPoint(3168, 3428, 0));
+		path.add(new WorldPoint(3199, 3428, 0));
+		path.add(new WorldPoint(3215, 3422, 0));
 		if (utils.isRunEnabled())
 		{
 			return;
@@ -152,12 +152,23 @@ public class VarrockAgilityPlugin extends Plugin
 		if (varObstacle != null)
 		{
 			log.info(String.valueOf(varObstacle.getObstacleId()));
-			if (varObstacle.getObstacleId() == ROUGH_WALL_14412)
+			if (varObstacle.getObstacleId() == ROUGH_WALL_14412 || varObstacle.getObstacleId()== ROUGH_WALL_14898)
 			{
 				DecorativeObject decObstacle = utils.findNearestDecorObject(varObstacle.getObstacleId());
 				if (decObstacle != null)
 				{
 					targetMenu = new MenuEntry("", "", decObstacle.getId(), 3, decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
+					utils.sleep(60, 350);
+					utils.clickRandomPoint(client.getCenterX() + utils.getRandomIntBetweenRange(0, 300), client.getCenterY() + utils.getRandomIntBetweenRange(0, 300));
+					return;
+				}
+			}
+			if (varObstacle.getObstacleId() == TIGHTROPE_14899 || varObstacle.getObstacleId()== TIGHTROPE_14911)
+			{
+				GroundObject groundObstacle = utils.findNearestGroundObject(varObstacle.getObstacleId());
+				if (groundObstacle != null)
+				{
+					targetMenu = new MenuEntry("", "", groundObstacle.getId(), 3, groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
 					utils.sleep(60, 350);
 					utils.clickRandomPoint(client.getCenterX() + utils.getRandomIntBetweenRange(0, 300), client.getCenterY() + utils.getRandomIntBetweenRange(0, 300));
 					return;
@@ -190,7 +201,7 @@ public class VarrockAgilityPlugin extends Plugin
 			timeout = 2;
 			return MOVING;
 		}
-		if (markOfGrace != null && markOfGraceTile != null && config.markPickup())
+		if (markOfGrace != null && markOfGraceTile != null && panel.markPickup)
 		{
 			VarrockAgilityObstacles currentObstacle = VarrockAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
 			if (currentObstacle == null)
@@ -214,7 +225,7 @@ public class VarrockAgilityPlugin extends Plugin
 	private void onGameTick(GameTick tick)
 	{
 		//if (client != null && client.getLocalPlayer() != null && config.startBot())
-		if (client != null && client.getLocalPlayer() != null && config.startBot())
+		if (client != null && client.getLocalPlayer() != null && panel.startAgility)
 		{
 			if (!VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
 			{
@@ -255,31 +266,20 @@ public class VarrockAgilityPlugin extends Plugin
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (config.startBot())
+		if (!panel.startAgility || targetMenu == null)
 		{
-			if (targetMenu == null)
-			{
-				log.info("Modified MenuEntry is null");
-				return;
-			}
-			else
-			{
-				//log.info("MenuEntry string event: " + targetMenu.toString());
-				event.setMenuEntry(targetMenu);
-				timeout = 2;
-				targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
-			}
+			return;
 		}
-		else
-		{
-			//TODO: capture object clicks
-		}
+		//log.info("MenuEntry string event: " + targetMenu.toString());
+		event.setMenuEntry(targetMenu);
+		timeout = 2;
+		targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
 	}
 
 	@Subscribe
 	public void onItemSpawned(ItemSpawned event)
 	{
-		if (!VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !config.markPickup())
+		if (!panel.startAgility || !VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !panel.markPickup)
 		{
 			return;
 		}
@@ -298,7 +298,7 @@ public class VarrockAgilityPlugin extends Plugin
 	@Subscribe
 	public void onItemDespawned(ItemDespawned event)
 	{
-		if (!VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !config.markPickup())
+		if (!panel.startAgility || !VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !panel.markPickup)
 		{
 			return;
 		}

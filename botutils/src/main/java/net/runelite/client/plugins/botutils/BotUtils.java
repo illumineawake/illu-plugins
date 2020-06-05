@@ -13,11 +13,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.queries.*;
 import net.runelite.api.widgets.Widget;
@@ -27,8 +32,13 @@ import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.config.ConfigPanelItem;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import org.jetbrains.annotations.NotNull;
 import org.pf4j.Extension;
@@ -52,6 +62,11 @@ public class BotUtils extends Plugin
 
 	protected static final java.util.Random random = new java.util.Random();
 
+
+	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
+		new ThreadPoolExecutor.DiscardPolicy());
+
 	public boolean randomEvent;
 
 	@Override
@@ -66,17 +81,18 @@ public class BotUtils extends Plugin
 
 	}
 
-	public void sendGameMessage(String message) {
+	public void sendGameMessage(String message)
+	{
 		String chatMessage = new ChatMessageBuilder()
-				.append(ChatColorType.HIGHLIGHT)
-				.append(message)
-				.build();
+			.append(ChatColorType.HIGHLIGHT)
+			.append(message)
+			.build();
 
 		chatMessageManager
-				.queue(QueuedMessage.builder()
-						.type(ChatMessageType.CONSOLE)
-						.runeLiteFormattedMessage(chatMessage)
-						.build());
+			.queue(QueuedMessage.builder()
+				.type(ChatMessageType.CONSOLE)
+				.runeLiteFormattedMessage(chatMessage)
+				.build());
 	}
 
 	public int[] stringToIntArray(String string)
@@ -575,12 +591,20 @@ public class BotUtils extends Plugin
 		click(point);
 	}
 
+	//Not very accurate, recommend using isMovingTick()
 	public boolean isMoving()
 	{
 		int camX = client.getCameraX2();
 		int camY = client.getCameraY2();
 		sleep(25);
+		//should this be all OR's instead of AND?
+		//log.info("CamX2 (before): " + camX + " CamX after: " + client.getCameraX() + "CamY2 (before): " + camY + " CamY after: " + client.getCameraY());
 		return (camX != client.getCameraX() || camY != client.getCameraY()) && client.getLocalDestinationLocation() != null;
+	}
+
+	public boolean isMoving(LocalPoint lastTickLocalPoint)
+	{
+		return !client.getLocalPlayer().getLocalLocation().equals(lastTickLocalPoint);
 	}
 
 	public boolean isInteracting()
@@ -648,7 +672,7 @@ public class BotUtils extends Plugin
 	 *
 	 * @param toSleep The time to sleep in milliseconds.
 	 */
-	public void sleep(int toSleep)
+	/*public void sleep(int toSleep)
 	{
 		try
 		{
@@ -666,6 +690,29 @@ public class BotUtils extends Plugin
 		{
 			e.printStackTrace();
 		}
+	}*/
+
+	public void sleep(int toSleep)
+	{
+		executorService.submit(() ->
+		{
+			try
+			{
+				long start = System.currentTimeMillis();
+				Thread.sleep(toSleep);
+
+				// Guarantee minimum sleep
+				long now;
+				while (start + toSleep > (now = System.currentTimeMillis()))
+				{
+					Thread.sleep(start + toSleep - now);
+				}
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+		});
 	}
 
 	/**
