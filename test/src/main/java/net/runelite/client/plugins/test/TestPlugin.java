@@ -149,12 +149,12 @@ public class TestPlugin extends Plugin
 		if (client != null && client.getLocalPlayer() != null)
 		{
 
-			if (beforeLoc != null)
+			/*if (beforeLoc != null)
 			{
 				log.info("Current Loc value: " + client.getLocalPlayer().getLocalLocation() + "before Loc value " + beforeLoc);
 				log.info("Do they equal: " + String.valueOf(client.getLocalPlayer().getLocalLocation().equals(beforeLoc)));
 			}
-			beforeLoc = client.getLocalPlayer().getLocalLocation();
+			beforeLoc = client.getLocalPlayer().getLocalLocation();*/
 			//int camX = client.getCameraX();
 			//int camY = client.getCameraY();
 
@@ -162,9 +162,9 @@ public class TestPlugin extends Plugin
 			//DecorativeObject decObject = utils.findNearestDecorObject(ROUGH_WALL_14412);
 			//log.info(String.valueOf(decObject.getLocalLocation().getSceneX()));
 			//log.info(String.valueOf(worldAreaTest.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0));
-			NPC npc = new NPCQuery().idEquals(512).result(client).nearestTo(client.getLocalPlayer());
-			if (npc != null)
-				log.info("NPC interacting status: " + npc.getInteracting());
+			//NPC npc = new NPCQuery().idEquals(512).result(client).nearestTo(client.getLocalPlayer());
+			//if (npc != null)
+			//	log.info("NPC interacting status: " + npc.getInteracting());
 
 
 			//log.info(String.valueOf(client.getItemContainer(InventoryID.INVENTORY).getItems().length));
@@ -176,7 +176,7 @@ public class TestPlugin extends Plugin
 	}
 
 
-	@Subscribe
+	/*@Subscribe
 	public void onItemSpawned(ItemSpawned event)
 	{
 		if(client.getLocalPlayer().getWorldLocation().getRegionID() != VARROCK_REGION_ID)
@@ -209,7 +209,15 @@ public class TestPlugin extends Plugin
 		{
 			utils.sendGameMessage("Mark of grace despawned");
 		}
-	}
+	}*/
+
+	/*@Subscribe
+	private void onChatMessage(ChatMessage event)
+	{
+		String eventName = event.getName().replaceAll("[^\\p{ASCII}]", " ");
+		log.info("event name: " + eventName + " local name: " + localName);
+		log.info("chat result " + eventName.equals(localName));
+	}*/
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event) {

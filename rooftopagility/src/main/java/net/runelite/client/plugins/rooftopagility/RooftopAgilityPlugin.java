@@ -117,6 +117,8 @@ public class RooftopAgilityPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
+		markOfGraceTile = null;
+		markOfGrace = null;
 		clientToolbar.removeNavigation(navButton);
 	}
 
