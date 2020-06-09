@@ -31,8 +31,11 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import static net.runelite.api.ObjectID.BALANCING_ROPE_23557;
 import static net.runelite.api.ObjectID.LOG_BALANCE_23145;
+import static net.runelite.api.ObjectID.ROUGH_WALL;
 import static net.runelite.api.ObjectID.ROUGH_WALL_14412;
 import static net.runelite.api.ObjectID.ROUGH_WALL_14898;
+import static net.runelite.api.ObjectID.TIGHTROPE;
+import static net.runelite.api.ObjectID.TIGHTROPE_11406;
 import static net.runelite.api.ObjectID.TIGHTROPE_14899;
 import static net.runelite.api.ObjectID.TIGHTROPE_14911;
 import net.runelite.api.coords.LocalPoint;
@@ -97,7 +100,7 @@ public class RooftopAgilityPlugin extends Plugin
 	List<WorldPoint> path = List.of(new WorldPoint(3013, 3436, 0),new WorldPoint(3013, 3436, 0));
 
 
-	private final List<Integer> VARROCK_REGION_IDS = List.of(9781,12853, 12597, 12084);
+	private final List<Integer> VARROCK_REGION_IDS = List.of(9781,12853, 12597, 12084, 12339, 12338);
 
 	@Override
 	protected void startUp()
@@ -146,7 +149,7 @@ public class RooftopAgilityPlugin extends Plugin
 		if (varObstacle != null)
 		{
 			log.info(String.valueOf(varObstacle.getObstacleId()));
-			if (varObstacle.getObstacleId() == ROUGH_WALL_14412 || varObstacle.getObstacleId()== ROUGH_WALL_14898)
+			if (varObstacle.getObstacleId() == ROUGH_WALL_14412 || varObstacle.getObstacleId()== ROUGH_WALL_14898 || varObstacle.getObstacleId() == ROUGH_WALL)
 			{
 				DecorativeObject decObstacle = utils.findNearestDecorObject(varObstacle.getObstacleId());
 				if (decObstacle != null)
@@ -157,7 +160,7 @@ public class RooftopAgilityPlugin extends Plugin
 					return;
 				}
 			}
-			if (varObstacle.getObstacleId() == TIGHTROPE_14899 || varObstacle.getObstacleId() == TIGHTROPE_14911 || varObstacle.getObstacleId() == LOG_BALANCE_23145 || varObstacle.getObstacleId() == BALANCING_ROPE_23557)
+			if (varObstacle.getObstacleId() == TIGHTROPE_14899 || varObstacle.getObstacleId() == TIGHTROPE_14911 || varObstacle.getObstacleId() == LOG_BALANCE_23145 || varObstacle.getObstacleId() == BALANCING_ROPE_23557 || varObstacle.getObstacleId() == TIGHTROPE || varObstacle.getObstacleId() == TIGHTROPE_11406)
 			{
 				GroundObject groundObstacle = utils.findNearestGroundObject(varObstacle.getObstacleId());
 				if (groundObstacle != null)

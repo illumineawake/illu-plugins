@@ -7,9 +7,6 @@ import net.runelite.api.coords.WorldPoint;
 public enum RooftopAgilityObstacles
 {
 	//TREE GNOME
-	//// Gnome
-	//		OBSTACLE_NET_23134, TREE_BRANCH_23559, TREE_BRANCH_23560, OBSTACLE_NET_23135, OBSTACLE_PIPE_23138,
-	//		OBSTACLE_PIPE_23139, LOG_BALANCE_23145, BALANCING_ROPE_23557,
 	GNOME_LOG(new WorldArea(new WorldPoint(2470, 3435, 0), new WorldPoint(2489, 3447, 0)), LOG_BALANCE_23145), //GROUND_OBJECT
 	GNOME_NET(new WorldArea(new WorldPoint(2470, 3423, 0), new WorldPoint(2477, 3430, 0)), OBSTACLE_NET_23134),
 	GNOME_TREE(new WorldArea(new WorldPoint(2470, 3421, 1), new WorldPoint(2476, 3425, 1)), TREE_BRANCH_23559),
@@ -17,7 +14,15 @@ public enum RooftopAgilityObstacles
 	GNOME_TREE_TWO(new WorldArea(new WorldPoint(2482, 3416, 2), new WorldPoint(2489, 3423, 2)), TREE_BRANCH_23560),
 	GNOME_NET_TWO(new WorldArea(new WorldPoint(2482, 3418, 0), new WorldPoint(2489, 3427, 0)), OBSTACLE_NET_23135),
 	GNOME_PIPE(new WorldArea(new WorldPoint(2482, 3427, 0), new WorldPoint(2489, 3433, 0)),OBSTACLE_PIPE_23139),
-
+	//DRAYNOR
+	//ROUGH_WALL, TIGHTROPE, TIGHTROPE_11406, NARROW_WALL, WALL_11630, GAP_11631, CRATE_11632, STILE_7527
+	DRAY_WALL(new WorldArea(new WorldPoint(3082, 3254, 0), new WorldPoint(3105, 3293, 0)), ROUGH_WALL), //DECORATION
+	DRAY_TIGHTROPE(new WorldArea(new WorldPoint(3096, 3275, 3), new WorldPoint(3103, 3282, 3)), TIGHTROPE), //GROUND OBJECT
+	DRAY_TIGHTROPE_TWO(new WorldArea(new WorldPoint(3086, 3271, 3), new WorldPoint(3093, 3279, 3)), TIGHTROPE_11406), //GROUND OBJECT
+	DRAY_NARROW_WALL(new WorldArea(new WorldPoint(3087, 3263, 3), new WorldPoint(3095, 3269, 3)), NARROW_WALL),
+	DRAY_WALL_TWO(new WorldArea(new WorldPoint(3082, 3256, 3), new WorldPoint(3089, 3262, 3)), WALL_11630), //COULD CONFLICT WITH NEXT LINE
+	DRAY_GAP(new WorldArea(new WorldPoint(3087, 3254, 3), new WorldPoint(3095, 3256, 3)), GAP_11631),
+	DRAY_CRATE(new WorldArea(new WorldPoint(3095, 3255, 3), new WorldPoint(3102, 3262, 3)), CRATE_11632),
 	//VARROCK
 	COURSE_GROUND(new WorldArea(new WorldPoint(3184, 3386, 0), new WorldPoint(3243, 3428, 0)),ROUGH_WALL_14412),
 	ROOFTOP_ONE(new WorldArea(new WorldPoint(3213, 3409, 3), new WorldPoint(3220, 3420, 3)),CLOTHES_LINE),
