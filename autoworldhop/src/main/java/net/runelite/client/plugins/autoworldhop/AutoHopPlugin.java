@@ -348,7 +348,7 @@ public class AutoHopPlugin extends Plugin
 
 		if (config.chatHop() && event.getType() == ChatMessageType.PUBLICCHAT && !eventName.equals(client.getLocalPlayer().getName()) && client.getLocalPlayer().getName() != null)
 		{
-			log.info("Chat message found -> Hopping, event name: " + eventName + " local name: " + client.getLocalPlayer().getName());
+			log.info("Chat message found -> Hopping");
 			hop();
 		}
 	}

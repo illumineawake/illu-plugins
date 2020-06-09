@@ -29,6 +29,8 @@ import java.awt.image.BufferedImage;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import static net.runelite.api.ObjectID.BALANCING_ROPE_23557;
+import static net.runelite.api.ObjectID.LOG_BALANCE_23145;
 import static net.runelite.api.ObjectID.ROUGH_WALL_14412;
 import static net.runelite.api.ObjectID.ROUGH_WALL_14898;
 import static net.runelite.api.ObjectID.TIGHTROPE_14899;
@@ -95,7 +97,7 @@ public class RooftopAgilityPlugin extends Plugin
 	List<WorldPoint> path = List.of(new WorldPoint(3013, 3436, 0),new WorldPoint(3013, 3436, 0));
 
 
-	private final List<Integer> VARROCK_REGION_IDS = List.of(12853, 12597, 12084); //12853, 12597
+	private final List<Integer> VARROCK_REGION_IDS = List.of(9781,12853, 12597, 12084);
 
 	@Override
 	protected void startUp()
@@ -155,7 +157,7 @@ public class RooftopAgilityPlugin extends Plugin
 					return;
 				}
 			}
-			if (varObstacle.getObstacleId() == TIGHTROPE_14899 || varObstacle.getObstacleId()== TIGHTROPE_14911)
+			if (varObstacle.getObstacleId() == TIGHTROPE_14899 || varObstacle.getObstacleId() == TIGHTROPE_14911 || varObstacle.getObstacleId() == LOG_BALANCE_23145 || varObstacle.getObstacleId() == BALANCING_ROPE_23557)
 			{
 				GroundObject groundObstacle = utils.findNearestGroundObject(varObstacle.getObstacleId());
 				if (groundObstacle != null)

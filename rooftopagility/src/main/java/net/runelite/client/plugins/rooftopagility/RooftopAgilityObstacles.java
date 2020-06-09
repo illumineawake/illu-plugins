@@ -6,6 +6,18 @@ import net.runelite.api.coords.WorldPoint;
 
 public enum RooftopAgilityObstacles
 {
+	//TREE GNOME
+	//// Gnome
+	//		OBSTACLE_NET_23134, TREE_BRANCH_23559, TREE_BRANCH_23560, OBSTACLE_NET_23135, OBSTACLE_PIPE_23138,
+	//		OBSTACLE_PIPE_23139, LOG_BALANCE_23145, BALANCING_ROPE_23557,
+	GNOME_LOG(new WorldArea(new WorldPoint(2470, 3435, 0), new WorldPoint(2489, 3447, 0)), LOG_BALANCE_23145), //GROUND_OBJECT
+	GNOME_NET(new WorldArea(new WorldPoint(2470, 3423, 0), new WorldPoint(2477, 3430, 0)), OBSTACLE_NET_23134),
+	GNOME_TREE(new WorldArea(new WorldPoint(2470, 3421, 1), new WorldPoint(2476, 3425, 1)), TREE_BRANCH_23559),
+	GNOME_ROPE(new WorldArea(new WorldPoint(2469, 3416, 2), new WorldPoint(2479, 3423, 2)), BALANCING_ROPE_23557), //GROUND_OBJECT
+	GNOME_TREE_TWO(new WorldArea(new WorldPoint(2482, 3416, 2), new WorldPoint(2489, 3423, 2)), TREE_BRANCH_23560),
+	GNOME_NET_TWO(new WorldArea(new WorldPoint(2482, 3418, 0), new WorldPoint(2489, 3427, 0)), OBSTACLE_NET_23135),
+	GNOME_PIPE(new WorldArea(new WorldPoint(2482, 3427, 0), new WorldPoint(2489, 3433, 0)),OBSTACLE_PIPE_23139),
+
 	//VARROCK
 	COURSE_GROUND(new WorldArea(new WorldPoint(3184, 3386, 0), new WorldPoint(3243, 3428, 0)),ROUGH_WALL_14412),
 	ROOFTOP_ONE(new WorldArea(new WorldPoint(3213, 3409, 3), new WorldPoint(3220, 3420, 3)),CLOTHES_LINE),
