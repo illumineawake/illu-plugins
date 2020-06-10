@@ -88,6 +88,7 @@ public class RandomHandlerPlugin extends Plugin
 
 	private NPC currentRandomEvent;
 	private int lastNotificationTick = -RANDOM_EVENT_TIMEOUT; // to avoid double notifications
+	private int attempts = 0;
 
 	@Inject
 	private Client client;
@@ -112,10 +113,12 @@ public class RandomHandlerPlugin extends Plugin
 	{
 		utils.setRandomEvent(false);
 	}
+
 	@Override
 	protected void shutDown()
 	{
 		lastNotificationTick = 0;
+		attempts = 0;
 		currentRandomEvent = null;
 		utils.setRandomEvent(false);
 	}
@@ -133,8 +136,10 @@ public class RandomHandlerPlugin extends Plugin
 			|| target != player
 			|| player.getInteracting() == source
 			|| !(source instanceof NPC)
-			|| !EVENT_NPCS.contains(((NPC) source).getId()))
+			|| !EVENT_NPCS.contains(((NPC) source).getId())
+			|| attempts > 3)
 		{
+			utils.setRandomEvent(false);
 			return;
 		}
 
@@ -152,7 +157,7 @@ public class RandomHandlerPlugin extends Plugin
 			}
 		}
 		utils.setRandomEvent(true);
-		utils.clickRandomPoint(0,400);
+		utils.clickRandomPoint(0, 400);
 	}
 
 	@Subscribe
@@ -164,6 +169,7 @@ public class RandomHandlerPlugin extends Plugin
 		{
 			currentRandomEvent = null;
 			utils.setRandomEvent(false);
+			attempts = 0;
 		}
 	}
 
@@ -185,11 +191,12 @@ public class RandomHandlerPlugin extends Plugin
 	@Subscribe
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (currentRandomEvent == null || !config.autoDismiss())
+		if (currentRandomEvent == null || !config.autoDismiss() || attempts > 3)
 		{
+			utils.setRandomEvent(false);
 			return;
 		}
-		MenuEntry dismissMenu = new MenuEntry("", "", currentRandomEvent.getIndex(), MenuOpcode.NPC_FIFTH_OPTION.getId(),0,0, false);
+		MenuEntry dismissMenu = new MenuEntry("", "", currentRandomEvent.getIndex(), MenuOpcode.NPC_FIFTH_OPTION.getId(), 0, 0, false);
 		event.setMenuEntry(dismissMenu);
 	}
 
