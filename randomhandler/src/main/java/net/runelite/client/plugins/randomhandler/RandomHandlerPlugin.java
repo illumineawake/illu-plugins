@@ -189,8 +189,6 @@ public class RandomHandlerPlugin extends Plugin
 		{
 			return;
 		}
-		log.info("dismissing random event, menu before modification: " + event.toString());
-		utils.sendGameMessage("dismissing random event, menu before modification: " + event.toString());
 		MenuEntry dismissMenu = new MenuEntry("", "", currentRandomEvent.getIndex(), MenuOpcode.NPC_FIFTH_OPTION.getId(),0,0, false);
 		event.setMenuEntry(dismissMenu);
 	}

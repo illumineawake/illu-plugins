@@ -100,7 +100,7 @@ public class RooftopAgilityPlugin extends Plugin
 	List<WorldPoint> path = List.of(new WorldPoint(3013, 3436, 0),new WorldPoint(3013, 3436, 0));
 
 
-	private final List<Integer> VARROCK_REGION_IDS = List.of(9781,12853, 12597, 12084, 12339, 12338);
+	private final List<Integer> REGION_IDS = List.of(9781,12853, 12597, 12084, 12339, 12338);
 
 	@Override
 	protected void startUp()
@@ -110,7 +110,7 @@ public class RooftopAgilityPlugin extends Plugin
 		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "panel_icon.png");
 
 		navButton = NavigationButton.builder()
-			.tooltip("Varrock Agility")
+			.tooltip("Rooftop Agility")
 			.priority(5)
 			.panel(panel)
 			.icon(icon)
@@ -145,13 +145,13 @@ public class RooftopAgilityPlugin extends Plugin
 
 	private void findObstacle()
 	{
-		RooftopAgilityObstacles varObstacle = RooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
-		if (varObstacle != null)
+		RooftopAgilityObstacles obstacle = RooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
+		if (obstacle != null)
 		{
-			log.info(String.valueOf(varObstacle.getObstacleId()));
-			if (varObstacle.getObstacleId() == ROUGH_WALL_14412 || varObstacle.getObstacleId()== ROUGH_WALL_14898 || varObstacle.getObstacleId() == ROUGH_WALL)
+			log.info(String.valueOf(obstacle.getObstacleId()));
+			if (obstacle.getObstacleId() == ROUGH_WALL_14412 || obstacle.getObstacleId()== ROUGH_WALL_14898 || obstacle.getObstacleId() == ROUGH_WALL)
 			{
-				DecorativeObject decObstacle = utils.findNearestDecorObject(varObstacle.getObstacleId());
+				DecorativeObject decObstacle = utils.findNearestDecorObject(obstacle.getObstacleId());
 				if (decObstacle != null)
 				{
 					targetMenu = new MenuEntry("", "", decObstacle.getId(), 3, decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
@@ -160,9 +160,9 @@ public class RooftopAgilityPlugin extends Plugin
 					return;
 				}
 			}
-			if (varObstacle.getObstacleId() == TIGHTROPE_14899 || varObstacle.getObstacleId() == TIGHTROPE_14911 || varObstacle.getObstacleId() == LOG_BALANCE_23145 || varObstacle.getObstacleId() == BALANCING_ROPE_23557 || varObstacle.getObstacleId() == TIGHTROPE || varObstacle.getObstacleId() == TIGHTROPE_11406)
+			if (obstacle.getObstacleId() == TIGHTROPE_14899 || obstacle.getObstacleId() == TIGHTROPE_14911 || obstacle.getObstacleId() == LOG_BALANCE_23145 || obstacle.getObstacleId() == BALANCING_ROPE_23557 || obstacle.getObstacleId() == TIGHTROPE || obstacle.getObstacleId() == TIGHTROPE_11406)
 			{
-				GroundObject groundObstacle = utils.findNearestGroundObject(varObstacle.getObstacleId());
+				GroundObject groundObstacle = utils.findNearestGroundObject(obstacle.getObstacleId());
 				if (groundObstacle != null)
 				{
 					targetMenu = new MenuEntry("", "", groundObstacle.getId(), 3, groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
@@ -171,7 +171,7 @@ public class RooftopAgilityPlugin extends Plugin
 					return;
 				}
 			}
-			GameObject objObstacle = utils.findNearestGameObject(varObstacle.getObstacleId()); //this probably doesn't work for climbing rough wall?
+			GameObject objObstacle = utils.findNearestGameObject(obstacle.getObstacleId()); //this probably doesn't work for climbing rough wall?
 			if (objObstacle != null)
 			{
 				targetMenu = new MenuEntry("", "", objObstacle.getId(), 3, objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
@@ -182,7 +182,7 @@ public class RooftopAgilityPlugin extends Plugin
 		}
 		else
 		{
-			log.info("enum is null, not in obstacle area");
+			log.info("Not in obstacle area");
 		}
 	}
 
@@ -221,12 +221,11 @@ public class RooftopAgilityPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
-		//if (client != null && client.getLocalPlayer() != null && config.startBot())
 		if (client != null && client.getLocalPlayer() != null && panel.startAgility)
 		{
-			if (!VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
+			if (!REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
 			{
-				log.info("not in Varrock course region");
+				log.info("not in agility course region");
 				return;
 			}
 			handleRun(40, 20);
@@ -239,7 +238,7 @@ public class RooftopAgilityPlugin extends Plugin
 					timeout--;
 					return;
 				case MARK_OF_GRACE:
-					utils.sendGameMessage("Picking up mark of grace");
+					log.info("Picking up mark of grace");
 					targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
 					utils.sleep(60, 350);
 					utils.clickRandomPoint(client.getCenterX() + utils.getRandomIntBetweenRange(0, 300), client.getCenterY() + utils.getRandomIntBetweenRange(0, 300));
@@ -276,7 +275,7 @@ public class RooftopAgilityPlugin extends Plugin
 	@Subscribe
 	public void onItemSpawned(ItemSpawned event)
 	{
-		if (!panel.startAgility || !VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !panel.markPickup)
+		if (!panel.startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !panel.markPickup)
 		{
 			return;
 		}
@@ -286,7 +285,7 @@ public class RooftopAgilityPlugin extends Plugin
 
 		if (item.getId() == ItemID.MARK_OF_GRACE)
 		{
-			utils.sendGameMessage("Mark of grace spawned");
+			log.info("Mark of grace spawned");
 			markOfGrace = item;
 			markOfGraceTile = tile;
 		}
@@ -295,7 +294,7 @@ public class RooftopAgilityPlugin extends Plugin
 	@Subscribe
 	public void onItemDespawned(ItemDespawned event)
 	{
-		if (!panel.startAgility || !VARROCK_REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !panel.markPickup)
+		if (!panel.startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !panel.markPickup)
 		{
 			return;
 		}
@@ -304,7 +303,7 @@ public class RooftopAgilityPlugin extends Plugin
 
 		if (item.getId() == ItemID.MARK_OF_GRACE)
 		{
-			utils.sendGameMessage("Mark of grace despawned");
+			log.info("Mark of grace despawned");
 			markOfGrace = null;
 		}
 	}

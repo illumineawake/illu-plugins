@@ -15,7 +15,6 @@ public enum RooftopAgilityObstacles
 	GNOME_NET_TWO(new WorldArea(new WorldPoint(2482, 3418, 0), new WorldPoint(2489, 3427, 0)), OBSTACLE_NET_23135),
 	GNOME_PIPE(new WorldArea(new WorldPoint(2482, 3427, 0), new WorldPoint(2489, 3433, 0)),OBSTACLE_PIPE_23139),
 	//DRAYNOR
-	//ROUGH_WALL, TIGHTROPE, TIGHTROPE_11406, NARROW_WALL, WALL_11630, GAP_11631, CRATE_11632, STILE_7527
 	DRAY_WALL(new WorldArea(new WorldPoint(3082, 3254, 0), new WorldPoint(3105, 3293, 0)), ROUGH_WALL), //DECORATION
 	DRAY_TIGHTROPE(new WorldArea(new WorldPoint(3096, 3275, 3), new WorldPoint(3103, 3282, 3)), TIGHTROPE), //GROUND OBJECT
 	DRAY_TIGHTROPE_TWO(new WorldArea(new WorldPoint(3086, 3271, 3), new WorldPoint(3093, 3279, 3)), TIGHTROPE_11406), //GROUND OBJECT
@@ -47,10 +46,6 @@ public enum RooftopAgilityObstacles
 	FAL_ROOFTOP_TEN(new WorldArea(new WorldPoint(3008, 3334, 3), new WorldPoint(3014, 3343, 3)),LEDGE_14922),
 	FAL_ROOFTOP_ELEVEN(new WorldArea(new WorldPoint(3013, 3331, 3), new WorldPoint(3018, 3334, 3)),LEDGE_14924),
 	FAL_ROOFTOP_TWELVE(new WorldArea(new WorldPoint(3019, 3331, 3), new WorldPoint(3027, 3335, 3)),EDGE_14925);
-
-
-	/*ROUGH_WALL_14898, TIGHTROPE_14899, HAND_HOLDS_14901, GAP_14903, GAP_14904, TIGHTROPE_14905,
-	TIGHTROPE_14911, GAP_14919, LEDGE_14920, LEDGE_14921, LEDGE_14922, LEDGE_14923, LEDGE_14924, EDGE_14925,*/
 
 	//@Getter(AccessLevel.PACKAGE)
 	private final WorldArea location;
