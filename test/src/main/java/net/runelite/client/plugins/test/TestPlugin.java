@@ -39,6 +39,7 @@ import net.runelite.api.queries.ActorQuery;
 import net.runelite.api.queries.GameObjectQuery;
 import net.runelite.api.queries.PlayerQuery;
 import net.runelite.api.queries.TileQuery;
+import net.runelite.api.util.Text;
 import net.runelite.api.widgets.WidgetInfo;
 
 import net.runelite.api.queries.NPCQuery;
@@ -214,9 +215,10 @@ public class TestPlugin extends Plugin
 	/*@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
-		String eventName = event.getName().replaceAll("[^\\p{ASCII}]", " ");
-		log.info("event name: " + eventName + " local name: " + localName);
-		log.info("chat result " + eventName.equals(localName));
+		String eventName = Text.sanitize(event.getName());
+		//String eventName = event.getName().replaceAll("[^\\p{ASCII}]", " ");
+		log.info("event name: " + eventName + " local name: " + (client.getLocalPlayer().getName()));
+		log.info("chat result " + eventName.equals(client.getLocalPlayer().getName()));
 	}*/
 
 	@Subscribe

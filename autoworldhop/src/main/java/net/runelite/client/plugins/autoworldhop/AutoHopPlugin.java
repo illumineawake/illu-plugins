@@ -14,6 +14,7 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.PlayerSpawned;
+import net.runelite.api.util.Text;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
@@ -334,7 +335,7 @@ public class AutoHopPlugin extends Plugin
 	@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
-		String eventName = event.getName().replaceAll("[^\\p{ASCII}]", " "); //bug where event name translates space to an unknown symbol
+		String eventName = Text.sanitize(event.getName());
 		if (event.getType() != ChatMessageType.GAMEMESSAGE && !(config.chatHop() && event.getType() == ChatMessageType.PUBLICCHAT && eventName != client.getLocalPlayer().getName()) && client.getLocalPlayer().getName() != null)
 		{
 			return;
