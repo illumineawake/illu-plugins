@@ -43,8 +43,8 @@ public enum RooftopAgilityObstacles
 	FAL_ROOFTOP_SEVEN(new WorldArea(new WorldPoint(3008, 3352, 3), new WorldPoint(3021, 3358, 3)),GAP_14919),
 	FAL_ROOFTOP_EIGHT(new WorldArea(new WorldPoint(3015, 3343, 3), new WorldPoint(3022, 3350, 3)),LEDGE_14920),
 	FAL_ROOFTOP_NINE(new WorldArea(new WorldPoint(3010, 3343, 3), new WorldPoint(3015, 3347, 3)),LEDGE_14921),
-	FAL_ROOFTOP_TEN(new WorldArea(new WorldPoint(3008, 3334, 3), new WorldPoint(3014, 3343, 3)),LEDGE_14922),
-	FAL_ROOFTOP_ELEVEN(new WorldArea(new WorldPoint(3013, 3331, 3), new WorldPoint(3018, 3334, 3)),LEDGE_14924),
+	FAL_ROOFTOP_TEN(new WorldArea(new WorldPoint(3008, 3335, 3), new WorldPoint(3014, 3343, 3)),LEDGE_14922),
+	FAL_ROOFTOP_ELEVEN(new WorldArea(new WorldPoint(3013, 3331, 3), new WorldPoint(3018, 3335, 3)),LEDGE_14924),
 	FAL_ROOFTOP_TWELVE(new WorldArea(new WorldPoint(3019, 3331, 3), new WorldPoint(3027, 3335, 3)),EDGE_14925);
 
 	//@Getter(AccessLevel.PACKAGE)
