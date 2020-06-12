@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https:github.com/Owain94>
+ * Copyright (c) 2018, SomeoneWithAnInternetConnection
+ * Copyright (c) 2018, oplosthee <https://github.com/oplosthee>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,28 +23,25 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.tickeat;
 
-rootProject.name = "Illumine Plugins"
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Range;
+import net.runelite.client.config.Units;
 
-include(":autoclickillumine")
-include(":autoworldhop")
-include(":blackjackillumine")
-include(":blastfurnacebot")
-include(":botutils")
-include(":essencehighlighter")
-include(":javaexample")
-include(":powerskiller")
-include(":randomhandler")
-include(":rooftopagility")
-include(":test")
-include(":tickeat")
+@ConfigGroup("TickEat")
+public interface TickEatConfiguration extends Config
+{
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
-
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+	@ConfigItem(
+		keyName = "eatHP",
+		name = "Eat at HP",
+		description = "HP to eat at",
+		position = 0
+	)
+	default int eatHP()	{ return 10; }
 }

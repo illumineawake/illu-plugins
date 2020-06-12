@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -36,6 +37,7 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.config.ConfigPanelItem;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
@@ -335,6 +337,27 @@ public class BotUtils extends Plugin
 			.list;
 	}
 
+	public MenuEntry getInventoryItem(ItemManager itemManager, String menuOption, int opcode) {
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				String[] menuActions = itemManager.getItemDefinition(item.getId()).getInventoryActions();
+				for (String action : menuActions)
+				{
+					if (action != null && action.equals(menuOption))
+					{
+						MenuEntry menuEntry = new MenuEntry("", "", item.getId(), opcode, item.getIndex(), 9764864, false);
+						return menuEntry;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	public List<Widget> getEquippedItems(int[] itemIds)
 	{
 		assert client.isClientThread();
@@ -590,6 +613,13 @@ public class BotUtils extends Plugin
 		Point point = new Point(getRandomIntBetweenRange(min, max), getRandomIntBetweenRange(min, max));
 		click(point);
 	}
+
+	public void clickRandomPointCenter(int min, int max)
+	{
+		Point point = new Point(client.getCenterX() + getRandomIntBetweenRange(min, max), client.getCenterY() + getRandomIntBetweenRange(min, max));
+		click(point);
+	}
+
 
 	//Not very accurate, recommend using isMovingTick()
 	public boolean isMoving()

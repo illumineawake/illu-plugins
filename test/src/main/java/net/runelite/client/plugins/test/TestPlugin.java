@@ -26,9 +26,11 @@
 package net.runelite.client.plugins.test;
 
 import com.google.inject.Provides;
+import java.util.Collection;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import static net.runelite.api.ObjectID.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
@@ -37,16 +39,24 @@ import net.runelite.api.events.*;
 import net.runelite.api.geometry.Shapes;
 import net.runelite.api.queries.ActorQuery;
 import net.runelite.api.queries.GameObjectQuery;
+import net.runelite.api.queries.InventoryItemQuery;
+import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.queries.PlayerQuery;
 import net.runelite.api.queries.TileQuery;
 import net.runelite.api.util.Text;
+import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 
 import net.runelite.api.queries.NPCQuery;
 
+import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.game.ItemManager;
+import net.runelite.client.menus.InventoryComparableEntry;
+import net.runelite.client.menus.MenuManager;
+import net.runelite.client.menus.WidgetMenuOption;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -85,6 +95,9 @@ public class TestPlugin extends Plugin
 	@Inject
 	private BotUtils utils;
 
+	@Inject
+	private ItemManager itemManager;
+
 	Point point = new Point(10, 10);
 	GameObject object;
 	int timeout = 0;
@@ -95,12 +108,12 @@ public class TestPlugin extends Plugin
 	List<WorldPoint> worldPointList = new ArrayList<>();
 
 	LocalPoint beforeLoc;
-	WorldPoint outsideWorldPoint = new WorldPoint(2500,2500,0);
+	WorldPoint outsideWorldPoint = new WorldPoint(2500, 2500, 0);
 	WorldPoint swWorldPoint = new WorldPoint(3160, 3208, 0);
 	WorldPoint neWorldPoint = new WorldPoint(3197, 3241, 0);
 	//WorldArea worldAreaTest = new WorldArea(swWorldPoint,20,10);
-	WorldArea worldAreaTest = new WorldArea(new WorldPoint(3160, 3208, 0),new WorldPoint(3160, 3208, 0));
-	WorldArea worldAreaCustom = new WorldArea(swWorldPoint,neWorldPoint);
+	WorldArea worldAreaTest = new WorldArea(new WorldPoint(3160, 3208, 0), new WorldPoint(3160, 3208, 0));
+	WorldArea worldAreaCustom = new WorldArea(swWorldPoint, neWorldPoint);
 	private final int VARROCK_REGION_ID = 12853;
 
 
@@ -149,7 +162,20 @@ public class TestPlugin extends Plugin
 		//object = new GameObjectQuery().idEquals(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280).filter(o -> rsAreaOutsideTest.contains(o.getWorldLocation())).result(client).nearestTo(client.getLocalPlayer());
 		if (client != null && client.getLocalPlayer() != null)
 		{
+			log.info(String.valueOf(client.getBoostedSkillLevel(Skill.HITPOINTS)));
 
+			/*MenuEntry[] menuEntries = client.getMenuEntries();
+			if (menuEntries != null)
+			{
+				for (MenuEntry entry : menuEntries)
+				{
+					if (entry.getOption().equals("Eat"))
+					{
+						log.info(entry.toString());
+						break;
+					}
+				}
+			}*/
 			/*if (beforeLoc != null)
 			{
 				log.info("Current Loc value: " + client.getLocalPlayer().getLocalLocation() + "before Loc value " + beforeLoc);
@@ -222,7 +248,8 @@ public class TestPlugin extends Plugin
 	}*/
 
 	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event) {
+	public void onMenuOptionClicked(MenuOptionClicked event)
+	{
 		log.info("Test menu, before hook: " + event.toString());
 		if (testMenu != null)
 		{

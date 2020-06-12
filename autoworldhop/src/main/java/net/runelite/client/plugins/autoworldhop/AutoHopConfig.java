@@ -133,11 +133,23 @@ public interface AutoHopConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		keyName = "bankIgnore",
+		name = "Ignore near Bank",
+		description = "Don't hop if within 15 tiles of a bank, to avoid causing your character to hop if you walk into Bank/GE with this plugin turned on",
+		titleSection = "hopTitle",
+		position = 9
+	)
+	default boolean bankIgnore()
+	{
+		return true;
+	}
+
 	@ConfigTitleSection(
 		keyName = "worldsTitle",
 		name = "Worlds",
 		description = "",
-		position = 9
+		position = 10
 	)
 	default Title worldsTitle()
 	{
@@ -149,7 +161,7 @@ public interface AutoHopConfig extends Config
 		name = "American",
 		description = "Allow hopping to American worlds",
 		titleSection = "worldsTitle",
-		position = 10
+		position = 11
 	)
 	default boolean american()
 	{
@@ -161,7 +173,7 @@ public interface AutoHopConfig extends Config
 		name = "UK",
 		description = "Allow hopping to UK worlds",
 		titleSection = "worldsTitle",
-		position = 11
+		position = 12
 	)
 	default boolean unitedkingdom()
 	{
@@ -173,7 +185,7 @@ public interface AutoHopConfig extends Config
 		name = "German",
 		description = "Allow hopping to German worlds",
 		titleSection = "worldsTitle",
-		position = 12
+		position = 13
 	)
 	default boolean germany()
 	{
@@ -185,7 +197,7 @@ public interface AutoHopConfig extends Config
 		name = "Australian",
 		description = "Allow hopping to Australian worlds",
 		titleSection = "worldsTitle",
-		position = 13
+		position = 14
 	)
 	default boolean australia()
 	{
@@ -196,7 +208,7 @@ public interface AutoHopConfig extends Config
 		keyName = "ignoresTitle",
 		name = "Ignore",
 		description = "",
-		position = 14
+		position = 15
 	)
 	default Title ignoresTitle()
 	{
@@ -208,7 +220,7 @@ public interface AutoHopConfig extends Config
 		name = "Friends",
 		description = "Don't hop when the player spawned is on your friend list",
 		titleSection = "ignoresTitle",
-		position = 15
+		position = 16
 	)
 	default boolean friends()
 	{
@@ -220,7 +232,7 @@ public interface AutoHopConfig extends Config
 		name = "Clan members",
 		description = "Don't hop when the player spawned is in your clan chat",
 		titleSection = "ignoresTitle",
-		position = 16
+		position = 17
 	)
 	default boolean clanmember()
 	{

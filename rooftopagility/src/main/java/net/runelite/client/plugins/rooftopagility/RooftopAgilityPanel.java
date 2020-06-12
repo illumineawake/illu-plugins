@@ -38,8 +38,6 @@ public class RooftopAgilityPanel extends PluginPanel
 		agilityPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		agilityPanel.setLayout(new DynamicGridLayout(2, 1));
 
-		JLabel locationLabel = new JLabel("Location:");
-		JComboBox locationCmb = new JComboBox();
 		JLabel markLabel = new JLabel("Pickup Mark of Grace");
 		JCheckBox markCheck = new JCheckBox();
 		markCheck.setSelected(true);
@@ -93,8 +91,6 @@ public class RooftopAgilityPanel extends PluginPanel
 			}
 		});
 
-		agilityPanel.add(locationLabel);
-		agilityPanel.add(locationCmb);
 		agilityPanel.add(markLabel);
 		agilityPanel.add(markCheck);
 		startPanel.add(startBot);

@@ -170,7 +170,7 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			log.info("enabling run");
 			targetMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
-			utils.clickRandomPoint(0, 200);
+			utils.clickRandomPointCenter(-100, 100);
 		}
 	}
 
@@ -181,7 +181,7 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			targetObject = nextTree;
 			targetMenu = new MenuEntry("", "", nextTree.getId(), 3, targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
-			utils.clickRandomPoint(0, 200);
+			utils.clickRandomPointCenter(-100, 100);
 		}
 		else
 		{
@@ -206,7 +206,7 @@ public class PowerSkillerPlugin extends Plugin
 						.filter(item -> itemIds.contains(item.getId()))
 						.forEach((item) -> {
 							targetMenu = new MenuEntry("", "", item.getId(), 37, item.getIndex(), 9764864, false);
-							utils.clickRandomPoint(0, 200);
+							utils.clickRandomPointCenter(-100, 100);
 							try
 							{
 								Thread.sleep(utils.getRandomIntBetweenRange(config.randLow(), config.randHigh()));

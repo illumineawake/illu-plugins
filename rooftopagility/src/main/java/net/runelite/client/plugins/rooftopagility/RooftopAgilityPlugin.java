@@ -130,7 +130,7 @@ public class RooftopAgilityPlugin extends Plugin
 			log.info("enabling run");
 			targetMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
 			utils.sleep(60, 350);
-			utils.clickRandomPoint(0, 200);
+			utils.clickRandomPointCenter(-100, 100);
 		}
 	}
 
@@ -142,7 +142,6 @@ public class RooftopAgilityPlugin extends Plugin
 			List<Integer> decObstacles = List.of(ROUGH_WALL_14412, ROUGH_WALL_14898, ROUGH_WALL, WALL_14927);
 			List<Integer> groundObjObstacles = List.of(TIGHTROPE_14899, TIGHTROPE_14911, LOG_BALANCE_23145, BALANCING_ROPE_23557, TIGHTROPE, TIGHTROPE_11406, TIGHTROPE_14932);
 			log.info(String.valueOf(obstacle.getObstacleId()));
-			//if (obstacle.getObstacleId() == ROUGH_WALL_14412 || obstacle.getObstacleId()== ROUGH_WALL_14898 || obstacle.getObstacleId() == ROUGH_WALL || obstacle.getObstacleId() == WALL_14927)
 			if (decObstacles.contains(obstacle.getObstacleId()))
 			{
 				DecorativeObject decObstacle = utils.findNearestDecorObject(obstacle.getObstacleId());
@@ -150,11 +149,10 @@ public class RooftopAgilityPlugin extends Plugin
 				{
 					targetMenu = new MenuEntry("", "", decObstacle.getId(), 3, decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
 					utils.sleep(60, 350);
-					utils.clickRandomPoint(client.getCenterX() + utils.getRandomIntBetweenRange(0, 300), client.getCenterY() + utils.getRandomIntBetweenRange(0, 300));
+					utils.clickRandomPointCenter(-100, 100);
 					return;
 				}
 			}
-			//if (obstacle.getObstacleId() == TIGHTROPE_14899 || obstacle.getObstacleId() == TIGHTROPE_14911 || obstacle.getObstacleId() == LOG_BALANCE_23145 || obstacle.getObstacleId() == BALANCING_ROPE_23557 || obstacle.getObstacleId() == TIGHTROPE || obstacle.getObstacleId() == TIGHTROPE_11406)
 			if (groundObjObstacles.contains(obstacle.getObstacleId()))
 			{
 				GroundObject groundObstacle = utils.findNearestGroundObject(obstacle.getObstacleId());
@@ -162,7 +160,7 @@ public class RooftopAgilityPlugin extends Plugin
 				{
 					targetMenu = new MenuEntry("", "", groundObstacle.getId(), 3, groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
 					utils.sleep(60, 350);
-					utils.clickRandomPoint(client.getCenterX() + utils.getRandomIntBetweenRange(0, 300), client.getCenterY() + utils.getRandomIntBetweenRange(0, 300));
+					utils.clickRandomPointCenter(-100, 100);
 					return;
 				}
 			}
@@ -171,7 +169,7 @@ public class RooftopAgilityPlugin extends Plugin
 			{
 				targetMenu = new MenuEntry("", "", objObstacle.getId(), 3, objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
 				utils.sleep(60, 350);
-				utils.clickRandomPoint(client.getCenterX() + utils.getRandomIntBetweenRange(0, 300), client.getCenterY() + utils.getRandomIntBetweenRange(0, 300));
+				utils.clickRandomPointCenter(-100, 100);
 				return;
 			}
 		}
@@ -236,8 +234,7 @@ public class RooftopAgilityPlugin extends Plugin
 					log.info("Picking up mark of grace");
 					targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
 					utils.sleep(60, 350);
-					utils.clickRandomPoint(client.getCenterX() + utils.getRandomIntBetweenRange(0, 300), client.getCenterY() + utils.getRandomIntBetweenRange(0, 300));
-					return;
+					utils.clickRandomPointCenter(-100, 100);					return;
 				case FIND_OBSTACLE:
 					findObstacle();
 					return;
