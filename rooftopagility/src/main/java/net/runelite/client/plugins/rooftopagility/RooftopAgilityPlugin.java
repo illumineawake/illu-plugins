@@ -29,15 +29,7 @@ import java.awt.image.BufferedImage;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import static net.runelite.api.ObjectID.BALANCING_ROPE_23557;
-import static net.runelite.api.ObjectID.LOG_BALANCE_23145;
-import static net.runelite.api.ObjectID.ROUGH_WALL;
-import static net.runelite.api.ObjectID.ROUGH_WALL_14412;
-import static net.runelite.api.ObjectID.ROUGH_WALL_14898;
-import static net.runelite.api.ObjectID.TIGHTROPE;
-import static net.runelite.api.ObjectID.TIGHTROPE_11406;
-import static net.runelite.api.ObjectID.TIGHTROPE_14899;
-import static net.runelite.api.ObjectID.TIGHTROPE_14911;
+import static net.runelite.api.ObjectID.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
@@ -99,8 +91,7 @@ public class RooftopAgilityPlugin extends Plugin
 	int timeout = 0;
 	List<WorldPoint> path = List.of(new WorldPoint(3013, 3436, 0),new WorldPoint(3013, 3436, 0));
 
-
-	private final List<Integer> REGION_IDS = List.of(9781,12853, 12597, 12084, 12339, 12338);
+	private final List<Integer> REGION_IDS = List.of(9781,12853, 12597, 12084, 12339, 12338, 10806);
 
 	@Override
 	protected void startUp()
@@ -148,8 +139,11 @@ public class RooftopAgilityPlugin extends Plugin
 		RooftopAgilityObstacles obstacle = RooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
 		if (obstacle != null)
 		{
+			List<Integer> decObstacles = List.of(ROUGH_WALL_14412, ROUGH_WALL_14898, ROUGH_WALL, WALL_14927);
+			List<Integer> groundObjObstacles = List.of(TIGHTROPE_14899, TIGHTROPE_14911, LOG_BALANCE_23145, BALANCING_ROPE_23557, TIGHTROPE, TIGHTROPE_11406, TIGHTROPE_14932);
 			log.info(String.valueOf(obstacle.getObstacleId()));
-			if (obstacle.getObstacleId() == ROUGH_WALL_14412 || obstacle.getObstacleId()== ROUGH_WALL_14898 || obstacle.getObstacleId() == ROUGH_WALL)
+			//if (obstacle.getObstacleId() == ROUGH_WALL_14412 || obstacle.getObstacleId()== ROUGH_WALL_14898 || obstacle.getObstacleId() == ROUGH_WALL || obstacle.getObstacleId() == WALL_14927)
+			if (decObstacles.contains(obstacle.getObstacleId()))
 			{
 				DecorativeObject decObstacle = utils.findNearestDecorObject(obstacle.getObstacleId());
 				if (decObstacle != null)
@@ -160,7 +154,8 @@ public class RooftopAgilityPlugin extends Plugin
 					return;
 				}
 			}
-			if (obstacle.getObstacleId() == TIGHTROPE_14899 || obstacle.getObstacleId() == TIGHTROPE_14911 || obstacle.getObstacleId() == LOG_BALANCE_23145 || obstacle.getObstacleId() == BALANCING_ROPE_23557 || obstacle.getObstacleId() == TIGHTROPE || obstacle.getObstacleId() == TIGHTROPE_11406)
+			//if (obstacle.getObstacleId() == TIGHTROPE_14899 || obstacle.getObstacleId() == TIGHTROPE_14911 || obstacle.getObstacleId() == LOG_BALANCE_23145 || obstacle.getObstacleId() == BALANCING_ROPE_23557 || obstacle.getObstacleId() == TIGHTROPE || obstacle.getObstacleId() == TIGHTROPE_11406)
+			if (groundObjObstacles.contains(obstacle.getObstacleId()))
 			{
 				GroundObject groundObstacle = utils.findNearestGroundObject(obstacle.getObstacleId());
 				if (groundObstacle != null)

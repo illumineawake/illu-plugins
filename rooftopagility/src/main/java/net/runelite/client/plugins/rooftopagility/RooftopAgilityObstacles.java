@@ -45,7 +45,14 @@ public enum RooftopAgilityObstacles
 	FAL_ROOFTOP_NINE(new WorldArea(new WorldPoint(3010, 3343, 3), new WorldPoint(3015, 3347, 3)),LEDGE_14921),
 	FAL_ROOFTOP_TEN(new WorldArea(new WorldPoint(3008, 3335, 3), new WorldPoint(3014, 3343, 3)),LEDGE_14922),
 	FAL_ROOFTOP_ELEVEN(new WorldArea(new WorldPoint(3013, 3331, 3), new WorldPoint(3018, 3335, 3)),LEDGE_14924),
-	FAL_ROOFTOP_TWELVE(new WorldArea(new WorldPoint(3019, 3331, 3), new WorldPoint(3027, 3335, 3)),EDGE_14925);
+	FAL_ROOFTOP_TWELVE(new WorldArea(new WorldPoint(3019, 3331, 3), new WorldPoint(3027, 3335, 3)),EDGE_14925),
+	//SEERS
+	SEERS_GROUND(new WorldArea(new WorldPoint(2689, 3457, 0), new WorldPoint(2750, 3517, 0)), WALL_14927), //DECORATION
+	SEERS_ROOF_ONE(new WorldArea(new WorldPoint(2720, 3489, 3), new WorldPoint(2731, 3498, 3)), GAP_14928),
+	SEERS_ROOF_TWO(new WorldArea(new WorldPoint(2702, 3486, 2), new WorldPoint(2714, 3499, 2)), TIGHTROPE_14932), //GROUND OBJECT
+	SEERS_ROOF_THREE(new WorldArea(new WorldPoint(2707, 3475, 2), new WorldPoint(2717, 3483, 2)),GAP_14929),
+	SEERS_ROOF_FOUR(new WorldArea(new WorldPoint(2697, 3468, 3), new WorldPoint(2718, 3478, 3)), GAP_14930),
+	SEERS_ROOF_FIVE(new WorldArea(new WorldPoint(2689, 3458, 2), new WorldPoint(2704, 3467, 2)), EDGE_14931);
 
 	//@Getter(AccessLevel.PACKAGE)
 	private final WorldArea location;
