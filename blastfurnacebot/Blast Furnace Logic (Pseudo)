@@ -27,11 +27,11 @@ BANK IS NOT OPEN: //Potential logic flaw if I'm not in BANK or BELT location and
 			-TIMEOUT = 1
 			RETURN;
 	LOCATION NEAR BANK:
-		COAL BAG NOT FULL: //Essentially coal bag is empty 
-			INVENTORY DOES NOT CONTAIN COAL || RUNITE ORE:
-				-Open Bank
-				-TIMEOUT = 1
-				RETURN;
+	    INVENTORY DOES NOT CONTAIN COAL || RUNITE ORE:
+            -Open Bank
+            -TIMEOUT = 1
+            RETURN;
+		COAL BAG NOT FULL: //Essentially coal bag is empty
 			INVENTORY CONTAINS COAL:
 				-Fill Coal Bag
 				-BOOL coalBagFull = true
@@ -42,10 +42,6 @@ BANK IS NOT OPEN: //Potential logic flaw if I'm not in BANK or BELT location and
 		COAL BAG IS FULL:
 			INVENTORY CONTAINS COAL/ORE:
 				-Click Conveyor Belt/Place Ore on belt
-				-TIMEOUT = 1
-				RETURN;
-			INVENTORY DOES NOT CONTAIN COAL/ORE:
-				-Open Bank
 				-TIMEOUT = 1
 				RETURN;
 	LOCATION CONVEYOR BELT:		
