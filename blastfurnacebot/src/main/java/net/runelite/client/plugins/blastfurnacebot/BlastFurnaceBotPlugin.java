@@ -32,25 +32,16 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
-import net.runelite.api.Client;
-import net.runelite.api.GameObject;
-import net.runelite.api.GameState;
-import net.runelite.api.InventoryID;
-import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemID;
-import net.runelite.api.MenuEntry;
+import net.runelite.api.*;
+
 import static net.runelite.api.NullObjectID.NULL_9092;
-import net.runelite.api.ObjectID;
-import static net.runelite.api.ObjectID.CONVEYOR_BELT;
-import net.runelite.api.Skill;
-import net.runelite.api.Varbits;
-import net.runelite.api.events.GameObjectDespawned;
-import net.runelite.api.events.GameObjectSpawned;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
+
+import net.runelite.api.events.*;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
@@ -58,6 +49,8 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+
+import static net.runelite.api.ObjectID.*;
 import static net.runelite.client.plugins.blastfurnacebot.BlastFurnaceState.*;
 import net.runelite.client.plugins.botutils.BotUtils;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -117,6 +110,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 	MenuEntry targetMenu;
 
 	private int timeout = 0;
+	private boolean coalBagFull;
 
 	@Override
 	protected void startUp()
@@ -165,7 +159,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 		}
 		if (!utils.isBankOpen())
 		{
-			//handleRun()
+			//utils.handleRun()
 			if(!utils.getItems(ItemID.RUNITE_ORE).isEmpty()) //will update botutils to take a String contains, so can search if inventory has any Bars
 			{ //INVENTORY CONTAINS BARS
 				openBank();
@@ -183,6 +177,56 @@ public class BlastFurnaceBotPlugin extends Plugin
 				timeout = 2;
 				//WIDGET GROUP 270 is the collection window for bars, need to add to WidgetLoaded event
 				return COLLECTING_BARS;
+			}
+			if(client.getVar(Varbits.BLAST_FURNACE_COFFER) < config.cofferThreshold())
+			{
+				if(utils.inventoryContains(COINS, config.cofferAmount()))
+				{
+					//TODO handle filling up coffer
+					GameObject coffer = utils.findNearestGameObject(COFFER);
+					if(coffer != null)
+					{
+						targetMenu = new MenuEntry("","",coffer.getId(),3,coffer.getSceneMinLocation().getX(), coffer.getSceneMinLocation().getY(), false);
+						utils.sleep(50, 250);
+						utils.clickRandomPointCenter(-100, 100);
+						timeout = 2;
+					}
+					else
+					{
+						utils.sendGameMessage("Coffer is null, wrong world?");
+					}
+					return FILL_COFFER;
+				}
+				else
+				{
+					openBank();
+					return OPENING_BANK;
+				}
+			}
+			GameObject bank = utils.findNearestGameObject(BANK_CHEST_26707);
+			if (bank != null)
+			{
+				if (client.getLocalPlayer().getWorldLocation().distanceTo(bank.getWorldLocation()) < 8) //At bank location
+				{
+					if (utils.getItems(ItemID.COAL, ItemID.RUNITE_ORE).isEmpty()) //Inventory does not contain coal or runite ore
+					{
+						openBank();
+						return OPENING_BANK;
+					}
+					WidgetItem coalBag = utils.getInventoryWidgetItem(ItemID.COAL_BAG_12019);
+					if (coalBag != null) {
+						if (!coalBagFull) {
+							if (utils.inventoryContains(ItemID.COAL)) {
+								targetMenu = new MenuEntry("", "", coalBag.getId(), 33, coalBag.getIndex(), 9764864, false);
+								utils.sleep(10,100);
+							}
+						}
+					} //TODO handle not having a coal bag
+				}
+				else //Not near bank chest, assume near conveyor belt
+				{
+
+				}
 			}
 		}
 
@@ -241,6 +285,17 @@ public class BlastFurnaceBotPlugin extends Plugin
 			conveyorBelt = null;
 			barDispenser = null;
 		}
+	}
+
+	@Subscribe
+	private void onWidgetLoaded(WidgetLoaded event)
+	{
+		if (event.getGroupId() != WidgetID.MULTISKILL_MENU_GROUP_ID)
+		{
+			return;
+		}
+		targetMenu = new MenuEntry("","",1, 57, -1, 17694734, false); //Take Runite Bar from Bar Dispenser
+		utils.clickRandomPointCenter(-100, 100);
 	}
 
 	@Subscribe

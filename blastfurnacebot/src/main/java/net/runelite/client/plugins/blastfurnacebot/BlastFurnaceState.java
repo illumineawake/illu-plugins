@@ -8,6 +8,7 @@ public enum BlastFurnaceState
 	BANK_NOT_OPEN,
 	OPENING_BANK,
 	COLLECTING_BARS,
+	FILL_COFFER,
 	BELT,
 	MOVING,
 	OUT_OF_AREA,

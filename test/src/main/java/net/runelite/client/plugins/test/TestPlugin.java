@@ -31,6 +31,8 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import static net.runelite.api.ObjectID.*;
+import static net.runelite.api.Varbits.BLAST_FURNACE_COFFER;
+
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
@@ -164,6 +166,8 @@ public class TestPlugin extends Plugin
 		//object = new GameObjectQuery().idEquals(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280).filter(o -> rsAreaOutsideTest.contains(o.getWorldLocation())).result(client).nearestTo(client.getLocalPlayer());
 		if (client != null && client.getLocalPlayer() != null)
 		{
+			//final int coffer = client.getVar(BLAST_FURNACE_COFFER);
+			//log.info("Coffer value: " + coffer);
 			//log.info(String.valueOf(client.getItemContainer(InventoryID.BANK) == null));
 			//log.info(String.valueOf(bankWidget != null));)
 			//log.info("Free inv spaces: " + new InventoryItemQuery(InventoryID.INVENTORY).idEquals(-1).result(client).size());

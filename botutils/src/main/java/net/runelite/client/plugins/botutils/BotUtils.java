@@ -320,48 +320,6 @@ public class BotUtils extends Plugin
 		return findNearestGroundObject(ids);
 	}
 
-	public List<WidgetItem> getItems(int... itemIDs)
-	{
-		assert client.isClientThread();
-
-		return new InventoryWidgetItemQuery()
-			.idEquals(itemIDs)
-			.result(client)
-			.list;
-	}
-
-	public List<WidgetItem> getItems(Set<Integer> itemIDs)
-	{
-		assert client.isClientThread();
-
-		return new InventoryWidgetItemQuery()
-			.idEquals(itemIDs)
-			.result(client)
-			.list;
-	}
-
-	public MenuEntry getInventoryItem(ItemManager itemManager, String menuOption, int opcode)
-	{
-		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
-		if (inventoryWidget != null)
-		{
-			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
-			for (WidgetItem item : items)
-			{
-				String[] menuActions = itemManager.getItemDefinition(item.getId()).getInventoryActions();
-				for (String action : menuActions)
-				{
-					if (action != null && action.equals(menuOption))
-					{
-						MenuEntry menuEntry = new MenuEntry("", "", item.getId(), opcode, item.getIndex(), 9764864, false);
-						return menuEntry;
-					}
-				}
-			}
-		}
-		return null;
-	}
-
 	public List<Widget> getEquippedItems(int[] itemIds)
 	{
 		assert client.isClientThread();
@@ -701,6 +659,85 @@ public class BotUtils extends Plugin
 			.size();
 	}
 
+	public List<WidgetItem> getItems(int... itemIDs)
+	{
+		assert client.isClientThread();
+
+		return new InventoryWidgetItemQuery()
+				.idEquals(itemIDs)
+				.result(client)
+				.list;
+	}
+
+	public List<WidgetItem> getItems(Set<Integer> itemIDs)
+	{
+		assert client.isClientThread();
+
+		return new InventoryWidgetItemQuery()
+				.idEquals(itemIDs)
+				.result(client)
+				.list;
+	}
+
+	public WidgetItem getInventoryWidgetItem(int itemID)
+	{
+		assert client.isClientThread();
+
+		return new InventoryWidgetItemQuery()
+				.idEquals(itemID)
+				.result(client)
+				.first();
+	}
+
+	public MenuEntry getInventoryItemMenu(ItemManager itemManager, String menuOption, int opcode)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				String[] menuActions = itemManager.getItemDefinition(item.getId()).getInventoryActions();
+				for (String action : menuActions)
+				{
+					if (action != null && action.equals(menuOption))
+					{
+						MenuEntry menuEntry = new MenuEntry("", "", item.getId(), opcode, item.getIndex(), 9764864, false);
+						return menuEntry;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	//untested
+	public boolean inventoryContains(int itemID)
+	{
+		if (client.getItemContainer(InventoryID.INVENTORY) == null)
+		{
+			return false;
+		}
+		return new InventoryItemQuery(InventoryID.INVENTORY)
+				.idEquals(itemID)
+				.result(client)
+				.size() >= 1;
+	}
+
+	public boolean inventoryContains(int itemID, int minStackAmount)
+	{
+		if (client.getItemContainer(InventoryID.INVENTORY) == null)
+		{
+			return false;
+		}
+		Item item =  new InventoryItemQuery(InventoryID.INVENTORY)
+				.idEquals(itemID)
+				.result(client)
+				.first();
+
+		return item != null && item.getQuantity() >= minStackAmount;
+	}
+
 	/**
 	 *
 	 *  BANKING FUNCTIONS
@@ -711,7 +748,7 @@ public class BotUtils extends Plugin
 		return client.getItemContainer(InventoryID.BANK) != null;
 	}
 
-	public boolean bankHasItem(String itemName)
+	public boolean bankContains(String itemName)
 	{
 		if (isBankOpen())
 		{
@@ -727,7 +764,7 @@ public class BotUtils extends Plugin
 	}
 
 	//This is untested
-	public boolean bankHasItem(int itemID)
+	public boolean bankContains(int itemID)
 	{
 		if (isBankOpen())
 		{
@@ -738,7 +775,7 @@ public class BotUtils extends Plugin
 		return false;
 	}
 
-	public boolean bankHasItem(String itemName, int minAmount)
+	public boolean bankContains(String itemName, int minStackAmount)
 	{
 		if (isBankOpen())
 		{
@@ -746,21 +783,21 @@ public class BotUtils extends Plugin
 
 			for (Item item: bankItemContainer.getItems())
 			{
-				if (itemManager.getItemDefinition(item.getId()).getName().equalsIgnoreCase(itemName) && item.getQuantity() >= minAmount)
+				if (itemManager.getItemDefinition(item.getId()).getName().equalsIgnoreCase(itemName) && item.getQuantity() >= minStackAmount)
 					return true;
 			}
 		}
 		return false;
 	}
 
-	public boolean bankHasItem(int itemID, int minAmount)
+	public boolean bankContains(int itemID, int minStackAmount)
 	{
 		if (isBankOpen())
 		{
 			ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
 			WidgetItem bankItem = new BankItemQuery().idEquals(itemID).result(client).first();
 
-			return bankItem != null && bankItem.getQuantity() > minAmount;
+			return bankItem != null && bankItem.getQuantity() > minStackAmount;
 		}
 		return false;
 	}

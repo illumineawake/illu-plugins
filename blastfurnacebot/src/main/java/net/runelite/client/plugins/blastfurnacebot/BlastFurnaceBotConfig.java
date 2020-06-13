@@ -32,10 +32,32 @@ import net.runelite.client.config.ConfigItem;
 public interface BlastFurnaceBotConfig extends Config
 {
 	@ConfigItem(
+			keyName = "cofferThreshold",
+			name = "Minimum Coffer amount",
+			description = "Minimum amount of GP to have in coffer before refilling",
+			position = 1
+	)
+	default int cofferThreshold()
+	{
+		return 5000;
+	}
+
+	@ConfigItem(
+			keyName = "cofferAmount",
+			name = "GP into Coffer",
+			description = "How much GP to put into coffer when refilling",
+			position = 2
+	)
+	default int cofferAmount()
+	{
+		return 50000;
+	}
+
+	@ConfigItem(
 		keyName = "showConveyorBelt",
 		name = "Show conveyor belt clickbox",
 		description = "Configures whether or not the clickbox for the conveyor belt is displayed",
-		position = 1
+		position = 10
 	)
 	default boolean showConveyorBelt()
 	{
@@ -46,7 +68,7 @@ public interface BlastFurnaceBotConfig extends Config
 		keyName = "showBarDispenser",
 		name = "Show bar dispenser clickbox",
 		description = "Configures whether or not the clickbox for the bar dispenser is displayed",
-		position = 2
+		position = 20
 	)
 	default boolean showBarDispenser()
 	{
@@ -57,7 +79,7 @@ public interface BlastFurnaceBotConfig extends Config
 		keyName = "showCofferTime",
 		name = "Show coffer time remaining",
 		description = "Configures whether or not the coffer time remaining is displayed",
-		position = 3
+		position = 30
 	)
 	default boolean showCofferTime()
 	{
