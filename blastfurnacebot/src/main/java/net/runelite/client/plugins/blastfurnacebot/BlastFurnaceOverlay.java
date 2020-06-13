@@ -59,12 +59,12 @@ class BlastFurnaceOverlay extends OverlayPanel
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Blast furnace overlay"));
 	}
 
-	@Override
-	public Dimension render(Graphics2D graphics)
+	//this only returns the amount of ore, may need to be scrapped
+	public int getFurnaceAmount()
 	{
 		if (plugin.getConveyorBelt() == null)
 		{
-			return null;
+			return 0;
 		}
 
 		for (BarsOres varbit : BarsOres.values())
@@ -79,7 +79,8 @@ class BlastFurnaceOverlay extends OverlayPanel
 			panelComponent.getChildren().add(new ImageComponent(getImage(varbit.getItemID(), amount)));
 		}
 
-		return super.render(graphics);
+		//return super.render(graphics);
+		return 0;
 	}
 
 	private BufferedImage getImage(int itemID, int amount)

@@ -62,6 +62,9 @@ public class BotUtils extends Plugin
 	@Inject
 	private ChatMessageManager chatMessageManager;
 
+	@Inject
+	private ItemManager itemManager;
+
 	protected static final java.util.Random random = new java.util.Random();
 
 
@@ -337,7 +340,8 @@ public class BotUtils extends Plugin
 			.list;
 	}
 
-	public MenuEntry getInventoryItem(ItemManager itemManager, String menuOption, int opcode) {
+	public MenuEntry getInventoryItem(ItemManager itemManager, String menuOption, int opcode)
+	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		if (inventoryWidget != null)
 		{
@@ -620,6 +624,11 @@ public class BotUtils extends Plugin
 		click(point);
 	}
 
+	/**
+	 *
+	 *  PLAYER FUNCTIONS
+	 *
+	 */
 
 	//Not very accurate, recommend using isMovingTick()
 	public boolean isMoving()
@@ -648,6 +657,12 @@ public class BotUtils extends Plugin
 		return client.getVarpValue(173) == 1;
 	}
 
+	/**
+	 *
+	 *  INVENTORY FUNCTIONS
+	 *
+	 */
+
 	public boolean inventoryFull()
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -674,6 +689,87 @@ public class BotUtils extends Plugin
 		}
 	}
 
+	public int getInventorySpace()
+	{
+		if (client.getItemContainer(InventoryID.INVENTORY) == null)
+		{
+			return 0;
+		}
+		return new InventoryItemQuery(InventoryID.INVENTORY)
+			.idEquals(-1)
+			.result(client)
+			.size();
+	}
+
+	/**
+	 *
+	 *  BANKING FUNCTIONS
+	 *
+	 */
+	public boolean isBankOpen()
+	{
+		return client.getItemContainer(InventoryID.BANK) != null;
+	}
+
+	public boolean bankHasItem(String itemName)
+	{
+		if (isBankOpen())
+		{
+			ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
+
+			for (Item item: bankItemContainer.getItems())
+			{
+				if (itemManager.getItemDefinition(item.getId()).getName().equalsIgnoreCase(itemName))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	//This is untested
+	public boolean bankHasItem(int itemID)
+	{
+		if (isBankOpen())
+		{
+			ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
+
+			return new BankItemQuery().idEquals(itemID).result(client).isEmpty();
+		}
+		return false;
+	}
+
+	public boolean bankHasItem(String itemName, int minAmount)
+	{
+		if (isBankOpen())
+		{
+			ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
+
+			for (Item item: bankItemContainer.getItems())
+			{
+				if (itemManager.getItemDefinition(item.getId()).getName().equalsIgnoreCase(itemName) && item.getQuantity() >= minAmount)
+					return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean bankHasItem(int itemID, int minAmount)
+	{
+		if (isBankOpen())
+		{
+			ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
+			WidgetItem bankItem = new BankItemQuery().idEquals(itemID).result(client).first();
+
+			return bankItem != null && bankItem.getQuantity() > minAmount;
+		}
+		return false;
+	}
+
+	/**
+	 *
+	 *  RANDOM EVENT FUNCTIONS
+	 *
+	 */
 	public void setRandomEvent(boolean random)
 	{
 		randomEvent = random;
@@ -683,6 +779,12 @@ public class BotUtils extends Plugin
 	{
 		return randomEvent;
 	}
+
+	/**
+	 *
+	 *  UTILITY FUNCTIONS
+	 *
+	 */
 
 	/**
 	 * Pauses execution for a random amount of time between two values.
@@ -721,7 +823,6 @@ public class BotUtils extends Plugin
 			e.printStackTrace();
 		}
 	}*/
-
 	public void sleep(int toSleep)
 	{
 		executorService.submit(() ->

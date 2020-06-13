@@ -38,6 +38,7 @@ import net.runelite.api.events.*;
 
 import net.runelite.api.geometry.Shapes;
 import net.runelite.api.queries.ActorQuery;
+import net.runelite.api.queries.BankItemQuery;
 import net.runelite.api.queries.GameObjectQuery;
 import net.runelite.api.queries.InventoryItemQuery;
 import net.runelite.api.queries.InventoryWidgetItemQuery;
@@ -101,6 +102,7 @@ public class TestPlugin extends Plugin
 	Point point = new Point(10, 10);
 	GameObject object;
 	int timeout = 0;
+	int itemCount = 0;
 	public static final MenuEntry BANK_MENU = new MenuEntry("Bank", "<col=ffff>Bank booth", 10355, 4, 56, 48, true);
 	public LocalPoint localPoint;
 	MenuEntry testMenu;
@@ -162,7 +164,18 @@ public class TestPlugin extends Plugin
 		//object = new GameObjectQuery().idEquals(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280).filter(o -> rsAreaOutsideTest.contains(o.getWorldLocation())).result(client).nearestTo(client.getLocalPlayer());
 		if (client != null && client.getLocalPlayer() != null)
 		{
-			log.info(String.valueOf(client.getBoostedSkillLevel(Skill.HITPOINTS)));
+			//log.info(String.valueOf(client.getItemContainer(InventoryID.BANK) == null));
+			//log.info(String.valueOf(bankWidget != null));)
+			//log.info("Free inv spaces: " + new InventoryItemQuery(InventoryID.INVENTORY).idEquals(-1).result(client).size());
+			/*1for (Item item : client.getItemContainer(InventoryID.INVENTORY).getItems())
+			{
+				if (item.getId() != -1)
+				{
+					itemCount++;
+				}
+			}
+			log.info("Items in inventory: " + itemCount);
+			itemCount = 0;*/
 
 			/*MenuEntry[] menuEntries = client.getMenuEntries();
 			if (menuEntries != null)
@@ -241,10 +254,14 @@ public class TestPlugin extends Plugin
 	/*@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
-		String eventName = Text.sanitize(event.getName());
-		//String eventName = event.getName().replaceAll("[^\\p{ASCII}]", " ");
-		log.info("event name: " + eventName + " local name: " + (client.getLocalPlayer().getName()));
-		log.info("chat result " + eventName.equals(client.getLocalPlayer().getName()));
+		event.getType();
+	}*/
+
+	/*@Subscribe
+	private void onWidget(WidgetLoaded event)
+	{
+		log.info(event.toString());
+		event.getGroupId(
 	}*/
 
 	@Subscribe

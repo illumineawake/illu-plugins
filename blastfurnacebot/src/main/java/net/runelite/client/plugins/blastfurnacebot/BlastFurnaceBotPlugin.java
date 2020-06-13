@@ -35,9 +35,15 @@ import lombok.Getter;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
+import net.runelite.api.InventoryID;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.ItemID;
+import net.runelite.api.MenuEntry;
 import static net.runelite.api.NullObjectID.NULL_9092;
+import net.runelite.api.ObjectID;
 import static net.runelite.api.ObjectID.CONVEYOR_BELT;
 import net.runelite.api.Skill;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
@@ -52,6 +58,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import static net.runelite.client.plugins.blastfurnacebot.BlastFurnaceState.*;
 import net.runelite.client.plugins.botutils.BotUtils;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
@@ -103,6 +110,14 @@ public class BlastFurnaceBotPlugin extends Plugin
 	@Inject
 	private BlastFurnaceBotConfig config;
 
+	@Inject
+	private BotUtils utils;
+
+	BlastFurnaceState state;
+	MenuEntry targetMenu;
+
+	private int timeout = 0;
+
 	@Override
 	protected void startUp()
 	{
@@ -121,6 +136,61 @@ public class BlastFurnaceBotPlugin extends Plugin
 		conveyorBelt = null;
 		barDispenser = null;
 		foremanTimer = null;
+	}
+
+	private void openBank() {
+		GameObject bankObject = utils.findNearestGameObject(26707);
+		if (bankObject != null)
+		{
+			targetMenu = new MenuEntry("", "", bankObject.getId(), 3, bankObject.getSceneMinLocation().getX(), bankObject.getSceneMinLocation().getY(), true);
+			utils.clickRandomPointCenter(-100, 100);
+			timeout = 2;
+		}
+	}
+
+	private BlastFurnaceState getState()
+	{
+		if(conveyorBelt == null || barDispenser == null)
+		{
+			return OUT_OF_AREA;
+		}
+		if (timeout > 0)
+		{
+			return TIMEOUT;
+		}
+		if (utils.isMoving())
+		{
+			timeout = 2;
+			return MOVING;
+		}
+		if (!utils.isBankOpen())
+		{
+			//handleRun()
+			if(!utils.getItems(ItemID.RUNITE_ORE).isEmpty()) //will update botutils to take a String contains, so can search if inventory has any Bars
+			{ //INVENTORY CONTAINS BARS
+				openBank();
+				return OPENING_BANK;
+			}
+			if(client.getVar(Varbits.BAR_DISPENSER) > 0) //BARS IN FURNACE
+			{
+				if (utils.getInventorySpace() < 26)
+				{
+					openBank();
+					return OPENING_BANK;
+				}
+				targetMenu = new MenuEntry("","",barDispenser.getId(), 3, barDispenser.getSceneMinLocation().getX(), barDispenser.getSceneMinLocation().getY(), false);
+				utils.clickRandomPointCenter(-100, 100);
+				timeout = 2;
+				//WIDGET GROUP 270 is the collection window for bars, need to add to WidgetLoaded event
+				return COLLECTING_BARS;
+			}
+		}
+
+		if (utils.inventoryFull())
+		{
+			return BELT;
+		}
+		return null;
 	}
 
 	@Provides
@@ -176,6 +246,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick event)
 	{
+		getState();
 		Widget npcDialog = client.getWidget(WidgetInfo.DIALOG_NPC_TEXT);
 		if (npcDialog == null)
 		{

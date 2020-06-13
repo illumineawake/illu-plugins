@@ -1,0 +1,131 @@
+BLAST FURNACE: 
+
+TIMEOUT > 0:
+	-Timeout--;
+	RETURN;
+
+PLAYER IS MOVING || INTERACTING:
+	-Timeout = 1
+	RETURN;
+
+BANK IS NOT OPEN: //Potential logic flaw if I'm not in BANK or BELT location and the other conditions are not met. May need to add a default condition.
+	-HandleRun()
+	INVENTORY CONTAINS BARS:
+		-Open Bank
+		RETURN;
+	BARS IN FURNACE: //28 is max - Varbit 936 for whether there is bars in furnace
+		INVENTORY < 26 SPACES:
+			-Open Bank
+			RETURN;
+		-Collect bars/click furnace
+		RETURN;
+	COINS IN COFFER BELOW THRESHOLD //Varbit 5357 for coffer amount
+		COINS >= CONFIG.DEPOSITAMOUNT IN INVENTORY
+			-Fill Coffer
+		ELSE COINS < CONFIG.DEPOSITAMOUNT IN INVENTORY
+			-Open Bank
+			-TIMEOUT = 1
+			RETURN;
+	LOCATION NEAR BANK:
+		COAL BAG NOT FULL: //Essentially coal bag is empty 
+			INVENTORY DOES NOT CONTAIN COAL || RUNITE ORE:
+				-Open Bank
+				-TIMEOUT = 1
+				RETURN;
+			INVENTORY CONTAINS COAL:
+				-Fill Coal Bag
+				-BOOL coalBagFull = true
+			INVENTORY CONTAINS RUNITE ORE: //Shouldn't happen, but if it does I might need to handle better
+				-Click Conveyor Belt/Place Ore on belt
+				-TIMEOUT = 1
+				RETURN;
+		COAL BAG IS FULL:
+			INVENTORY CONTAINS COAL/ORE:
+				-Click Conveyor Belt/Place Ore on belt
+				-TIMEOUT = 1
+				RETURN;
+			INVENTORY DOES NOT CONTAIN COAL/ORE:
+				-Open Bank
+				-TIMEOUT = 1
+				RETURN;
+	LOCATION CONVEYOR BELT:		
+		INVENTORY DOES NOT CONTAIN ORE:
+			COAL BAG EMPTY:
+				FURNACE CONTAINS BARS: //or expected to
+					-Walk to furnace //or maybe return?
+					-TIMEOUT = 1
+					RETURN;
+				FURNACE DOES NOT CONTAIN BARS: //or not expected to
+					-Open Bank
+					TIMEOUT = 1
+					RETURN;
+			COAL BAG CONTAINS ORE:
+				-Empty Coal Bag
+				-BOOL coalBagFull = false;
+		INVENTORY DOES CONTAIN ORE: 
+			-Click Conveyor Belt/Place Ore on belt
+			COAL BAG EMPTY: //Should always be empty at this point but using as failsafe
+				-GameTick Timeout = 1 //Need to test timeout length
+				RETURN;
+			
+BANK OPEN:
+	INVENTORY CONTAINS BARS:
+		-Deposit Bars
+	BARS IN FURNACE: //28 is max - Varbit 936 for whether there is bars in furnace
+		INVENTORY < 26 SPACES:
+			-Deposit inventory
+		-Collect bars/click furnace
+		RETURN;
+	COINS IN COFFER BELOW THRESHOLD
+		INVENTORY CONTAINS COINS >= CONFIG.DEPOSITAMOUNT //failsafe
+			-Close Bank
+			RETURN;
+		INVENTORY FULL
+			-Deposit inventory
+		BANK CONTAINS COINS >= CONFIG.DEPOSITAMOUNT
+			-Withdraw Coins
+			-Close Bank
+			RETURN;
+		ELSE BANK CONTAINS COINS < CONFIG.DEPOSITAMOUNT
+			-Close Bank
+			-Log off
+			RETURN;
+	INVENTORY CONTAINS EMPTY VIAL:
+		-Deposit Vial
+		-Sleep
+	INVENTORY DOESN'T CONTAIN STAMINA AND BANK DOES:
+		INVENTORY FULL:
+			-Deposit Inventory
+			-Sleep
+		-Withdraw Stamina
+	CONVEYOR BELT < 81 COAL || COAL BAG IS EMPTY:
+		INVENTORY EMPTY:
+			BANK CONTAINS MIN COAL
+				-Withdraw Coal
+				-Sleep
+			ELSE BANK DOES NOT CONTAIN MIN COAL
+				-Close Bank
+				-Log Off
+				RETURN;
+		INVENTORY CONTAINS COAL && COAL BAG IS EMPTY:
+			-Close Bank //Bank not open will handle filling coal bag and reopening bank
+			RETURN;
+		INVENTORY CONTAINS COAL && COAL BAG IS FULL:
+			-Click Conveyor Belt/Place Ore on belt
+			TIMEOUT = 1;
+			RETURN;
+	CONVEYOR BELT >= 81 COAL && COAL BAG IS NOT EMPTY: //May need to remove Coal Bag empty condition
+		INVENTORY DOESN'T CONTAIN RUNITE ORES:
+			BANK CONTAINS RUNITE ORES:
+				-Withdraw Runite Ores
+			ELSE BANK DOESN'T CONTAIN RUNITE ORES: 
+				-Close Bank
+				-Log off
+				RETURN;
+		INVENTORY CONTAINS RUNITE ORES:
+			-Click Conveyor Belt/Place Ore on belt
+			-TIMEOUT = 1
+			RETURN;			
+
+	//254 is max amount of COAL
+	
