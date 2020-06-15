@@ -200,15 +200,22 @@ public class BlastFurnaceBotPlugin extends Plugin
 		utils.sleep(50, 250);
 	}
 
-	//TODO: move to utils and take key for argument
-	private void pressEnter()
+	//TODO: move to utils and handle stamina pot client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0; is off
+	//enables run if below given minimum energy with random positive variation
+	private void handleRun(int minEnergy, int randMax)
 	{
-		KeyEvent keyPress = new KeyEvent(this.client.getCanvas(), KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_ENTER);
-		this.client.getCanvas().dispatchEvent(keyPress);
-		KeyEvent keyRelease = new KeyEvent(this.client.getCanvas(), KeyEvent.KEY_RELEASED, System.currentTimeMillis(), 0, KeyEvent.VK_ENTER);
-		this.client.getCanvas().dispatchEvent(keyRelease);
-		KeyEvent keyTyped = new KeyEvent(this.client.getCanvas(), KeyEvent.KEY_TYPED, System.currentTimeMillis(), 0, KeyEvent.VK_ENTER);
-		this.client.getCanvas().dispatchEvent(keyTyped);
+		if (utils.isRunEnabled())
+		{
+			return;
+		}
+		else if (client.getEnergy() > (minEnergy + utils.getRandomIntBetweenRange(0, randMax)))
+		{
+			//client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0;
+			log.info("enabling run");
+			targetMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
+			utils.sleep(60, 350);
+			utils.clickRandomPointCenter(-100, 100);
+		}
 	}
 
 	private BlastFurnaceState getState()
@@ -233,9 +240,8 @@ public class BlastFurnaceBotPlugin extends Plugin
 		}
 		if (!utils.isBankOpen())
 		{
-			if (!client.getWidget(162, 40).isHidden())
+			if (!client.getWidget(162, 40).isHidden()) //deposit amount for coffer widget
 			{
-				log.info("Deposit amount widget loaded");
 				if(!utils.inventoryContains(ItemID.COINS_995, config.cofferAmount()))
 				{
 					openBank();
@@ -245,7 +251,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				int depositAmount = (utils.inventoryContains(ItemID.COINS_995, randDepositAmount)) ? randDepositAmount : config.cofferAmount();
 				utils.typeString(String.valueOf(depositAmount));
 				utils.sleep(10,50);
-				pressEnter(); //this is probably wrong
+				utils.pressKey(KeyEvent.VK_ENTER);
 				utils.sleep(200,350);
 				return FILL_COFFER;
 			}

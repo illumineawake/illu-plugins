@@ -26,6 +26,8 @@
 package net.runelite.client.plugins.test;
 
 import com.google.inject.Provides;
+
+import java.awt.event.KeyEvent;
 import java.util.Collection;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -166,6 +168,8 @@ public class TestPlugin extends Plugin
 		//object = new GameObjectQuery().idEquals(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280).filter(o -> rsAreaOutsideTest.contains(o.getWorldLocation())).result(client).nearestTo(client.getLocalPlayer());
 		if (client != null && client.getLocalPlayer() != null)
 		{
+			utils.typeString(".");
+
 			//final int coffer = client.getVar(BLAST_FURNACE_COFFER);
 			//log.info("Coffer value: " + coffer);
 			//log.info(String.valueOf(client.getItemContainer(InventoryID.BANK) == null));
