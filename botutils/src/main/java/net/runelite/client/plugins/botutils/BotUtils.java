@@ -764,13 +764,13 @@ public class BotUtils extends Plugin
 	}
 
 	//This is untested
-	public boolean bankContains(int itemID)
+	public boolean bankContains(int... ids)
 	{
 		if (isBankOpen())
 		{
 			ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
 
-			return new BankItemQuery().idEquals(itemID).result(client).isEmpty();
+			return new BankItemQuery().idEquals(ids).result(client).isEmpty();
 		}
 		return false;
 	}
@@ -800,6 +800,20 @@ public class BotUtils extends Plugin
 			return bankItem != null && bankItem.getQuantity() > minStackAmount;
 		}
 		return false;
+	}
+
+	public Widget getBankItemWidget(int... ids)
+	{
+		ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
+		if (!isBankOpen() || bankItemContainer == null)
+		{
+			return null;
+		}
+
+		return new BankItemQuery()
+				.idEquals(ids)
+				.result(client)
+				.first().getWidget();
 	}
 
 	/**
@@ -841,7 +855,7 @@ public class BotUtils extends Plugin
 	 *
 	 * @param toSleep The time to sleep in milliseconds.
 	 */
-	/*public void sleep(int toSleep)
+	public void sleep(int toSleep)
 	{
 		try
 		{
@@ -859,8 +873,8 @@ public class BotUtils extends Plugin
 		{
 			e.printStackTrace();
 		}
-	}*/
-	public void sleep(int toSleep)
+	}
+	/*public void sleep(int toSleep)
 	{
 		executorService.submit(() ->
 		{
@@ -881,7 +895,7 @@ public class BotUtils extends Plugin
 				e.printStackTrace();
 			}
 		});
-	}
+	}*/
 
 	/**
 	 * Returns a random double with min as the inclusive lower bound and max as

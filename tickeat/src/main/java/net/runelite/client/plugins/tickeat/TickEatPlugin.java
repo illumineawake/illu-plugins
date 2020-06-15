@@ -98,9 +98,9 @@ public class TickEatPlugin extends Plugin
 		{
 			return;
 		}
-		if (utils.getInventoryItem(itemManager, "Eat", 33) != null)
+		if (utils.getInventoryItemMenu(itemManager, "Eat", 33) != null)
 		{
-			targetMenu = utils.getInventoryItem(itemManager, "Eat", 33);
+			targetMenu = utils.getInventoryItemMenu(itemManager, "Eat", 33);
 			utils.clickRandomPointCenter(-100, 100);
 		}
 		else

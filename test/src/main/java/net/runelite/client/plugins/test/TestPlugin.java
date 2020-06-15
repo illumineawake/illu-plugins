@@ -219,6 +219,17 @@ public class TestPlugin extends Plugin
 		}
 	}
 
+	@Subscribe
+	public void onWidgetLoaded(WidgetLoaded event)
+	{
+		log.info(event.toString());
+		event.getGroupId();
+		Widget optionWidget = client.getWidget(219,1);
+		if (optionWidget != null)
+		{
+			log.info("our widget loaded");
+		}
+	}
 
 	/*@Subscribe
 	public void onItemSpawned(ItemSpawned event)
