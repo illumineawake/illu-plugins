@@ -178,7 +178,6 @@ public class BlastFurnaceBotPlugin extends Plugin
 
 	private void depositAllItem(WidgetItem itemWidget)
 	{
-		log.info(itemWidget.toString());
 		targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), itemWidget.getIndex(), 983043, false);
 		utils.clickRandomPointCenter(-100, 100);
 		utils.sleep(50, 250);
@@ -200,10 +199,30 @@ public class BlastFurnaceBotPlugin extends Plugin
 		utils.sleep(50, 250);
 	}
 
+	private WidgetItem shouldStamPot()
+	{
+		if (!utils.getItems(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4).isEmpty()
+			&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0)
+		{
+			return utils.getInventoryWidgetItem(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
+		}
+		else {
+			return null;
+		}
+	}
 	//TODO: move to utils and handle stamina pot client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0; is off
 	//enables run if below given minimum energy with random positive variation
 	private void handleRun(int minEnergy, int randMax)
 	{
+		WidgetItem staminaPotion = shouldStamPot();
+		if (staminaPotion != null)
+		{
+			log.info("using stam pot");
+			targetMenu = new MenuEntry("", "", staminaPotion.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), staminaPotion.getIndex(), 9764864, false);
+			utils.sleep(25, 100);
+			utils.clickRandomPointCenter(-100, 100);
+			return;
+		}
 		if (utils.isRunEnabled())
 		{
 			return;
@@ -215,6 +234,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 			targetMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
 			utils.sleep(60, 350);
 			utils.clickRandomPointCenter(-100, 100);
+			return;
 		}
 	}
 

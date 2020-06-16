@@ -717,6 +717,16 @@ public class BotUtils extends Plugin
 				.first();
 	}
 
+	public WidgetItem getInventoryWidgetItem(int... ids)
+	{
+		assert client.isClientThread();
+
+		return new InventoryWidgetItemQuery()
+			.idEquals(ids)
+			.result(client)
+			.first();
+	}
+
 	public MenuEntry getInventoryItemMenu(ItemManager itemManager, String menuOption, int opcode)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
