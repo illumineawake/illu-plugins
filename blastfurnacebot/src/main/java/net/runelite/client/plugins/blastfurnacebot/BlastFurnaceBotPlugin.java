@@ -135,7 +135,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 		{
 			targetMenu = new MenuEntry("", "", bankObject.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), bankObject.getSceneMinLocation().getX(), bankObject.getSceneMinLocation().getY(), true);
 			utils.clickRandomPointCenter(-100, 100);
-			timeout = utils.getRandomIntBetweenRange(1,4);
+			timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
 		}
 	}
 
@@ -144,14 +144,15 @@ public class BlastFurnaceBotPlugin extends Plugin
 		targetMenu = new MenuEntry("", "", conveyorBelt.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), conveyorBelt.getSceneMinLocation().getX(), conveyorBelt.getSceneMinLocation().getY(), false);
 		utils.sleep(10, 100);
 		utils.clickRandomPointCenter(-100, 100);
-		timeout = utils.getRandomIntBetweenRange(1,4);
+		timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
 	}
 
 	private void collectFurnace()
 	{
+		log.info("At collectFurnace(), collecting bars");
 		targetMenu = new MenuEntry("", "", barDispenser.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), barDispenser.getSceneMinLocation().getX(), barDispenser.getSceneMinLocation().getY(), false);
 		utils.clickRandomPointCenter(-100, 100);
-		timeout = utils.getRandomIntBetweenRange(1,4);
+		timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
 	}
 
 	private void fillCoalBag(WidgetItem coalBag)
@@ -172,6 +173,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 	{
 		if (utils.getInventorySpace() < 26)
 		{
+			log.info("collect bars but need inventory space first");
 			openBank();
 			return OPENING_BANK;
 		}
@@ -197,7 +199,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 		}
 		if (utils.isMoving(beforeLoc))
 		{
-			timeout = utils.getRandomIntBetweenRange(1,4);
+			timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
 			return MOVING;
 		}
 		if (!utils.isBankOpen())
@@ -219,7 +221,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				return FILL_COFFER;
 			}
 			utils.handleRun(20, 20);
-			if (!utils.getItems(ItemID.RUNITE_BAR).isEmpty()) //will update botutils to take a String contains, so can search if inventory has any Bars
+			if(utils.inventoryContains(ItemID.RUNITE_BAR)) //TODO: update botutils to take a String contains, so can search if inventory has any Bars
 			{ //INVENTORY CONTAINS BARS
 				openBank();
 				return OPENING_BANK;
@@ -245,7 +247,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 						targetMenu = new MenuEntry("", "", coffer.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), coffer.getSceneMinLocation().getX(), coffer.getSceneMinLocation().getY(), false);
 						utils.sleep(50, 250);
 						utils.clickRandomPointCenter(-100, 100);
-						timeout = utils.getRandomIntBetweenRange(1,4);
+						timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
 					}
 					else
 					{
@@ -265,7 +267,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				WidgetItem coalBag = utils.getInventoryWidgetItem(ItemID.COAL_BAG_12019);
 				if (client.getLocalPlayer().getWorldLocation().distanceTo(bank.getWorldLocation()) < 8) //At bank location
 				{
-					if (utils.getItems(ItemID.COAL, ItemID.RUNITE_ORE).isEmpty()) //Inventory does not contain coal or runite ore
+					if (utils.getItems(List.of(ItemID.COAL, ItemID.RUNITE_ORE)).isEmpty()) //Inventory does not contain coal or runite ore
 					{
 						openBank();
 						return OPENING_BANK;
@@ -286,7 +288,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 						}
 						if (coalBagFull)
 						{
-							if (utils.getItems(ItemID.COAL, ItemID.RUNITE_ORE).size() > 0)
+							if (!utils.getItems(List.of(ItemID.COAL, ItemID.RUNITE_ORE)).isEmpty())
 							{
 								putConveyorBelt();
 								return PUT_CONVEYOR_BELT;
@@ -296,7 +298,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				}
 				else //Not near bank chest, assume near conveyor belt
 				{
-					if (utils.getItems(ItemID.COAL, ItemID.RUNITE_ORE).isEmpty())
+					if (utils.getItems(List.of(ItemID.COAL, ItemID.RUNITE_ORE)).isEmpty())
 					{
 						if (!coalBagFull)
 						{
@@ -317,12 +319,12 @@ public class BlastFurnaceBotPlugin extends Plugin
 							emptyCoalBag(coalBag);
 						}
 					}
-					if (utils.getItems(ItemID.COAL, ItemID.RUNITE_ORE).size() > 0)
+					if (!utils.getItems(List.of(ItemID.COAL, ItemID.RUNITE_ORE)).isEmpty())
 					{
 						putConveyorBelt();
 						if (!coalBagFull)
 						{
-							timeout = utils.getRandomIntBetweenRange(1,4);
+							timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
 							return PUT_CONVEYOR_BELT;
 						}
 					}
@@ -334,12 +336,18 @@ public class BlastFurnaceBotPlugin extends Plugin
 			WidgetItem runiteBar = utils.getInventoryWidgetItem(ItemID.RUNITE_BAR);
 			if (runiteBar != null) //TODO: Make into a function and make compatible with all bars
 			{
+				log.info("depositing runite bar");
 				utils.depositAllExcept(INVENTORY_SETUP);
 				return DEPOSITING;
 			}
 			if (client.getVar(Varbits.BAR_DISPENSER) > 0) //Bars in dispenser
 			{
-				utils.depositAllExcept(INVENTORY_SETUP);
+				log.info("bars ready for collection, bank is open, depositing inventory and collecting");
+				if (utils.getInventorySpace() < 26 ) //TODO: create inventoryContainsExcept method in utils
+				{
+					utils.depositAllExcept(INVENTORY_SETUP);
+					return DEPOSITING;
+				}
 				return collectBars();
 			}
 			if (client.getVar(Varbits.BLAST_FURNACE_COFFER) < config.cofferThreshold())
@@ -375,8 +383,8 @@ public class BlastFurnaceBotPlugin extends Plugin
 				utils.depositAllOfItem(emptyVial);
                 return DEPOSITING;
             }*/
-			Widget staminaPotionBank = utils.getBankItemWidget(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
-			if (staminaPotionBank != null && utils.getItems(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4).isEmpty())
+			Widget staminaPotionBank = utils.getBankItemWidgetAnyOf(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
+			if (staminaPotionBank != null && utils.getItems(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4)).isEmpty())
 			{
                 /*if (utils.inventoryFull()) {
                     log.info("depositing inventory to make room for stamina pot");
@@ -460,7 +468,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 					utils.depositAllExcept(INVENTORY_SETUP);
 					log.info("withdrawing runite ore");
 					utils.withdrawAllItem(bankRuniteOre);
-					timeout = utils.getRandomIntBetweenRange(1,4);
+					timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
 					return WITHDRAWING;
 				}
 				else
@@ -499,9 +507,9 @@ public class BlastFurnaceBotPlugin extends Plugin
 				coalBagFull = false;
 			}
 		}
-		log.info("clicking in event");
+		log.info("inserting menu at MOC event: " + targetMenu.toString());
 		event.setMenuEntry(targetMenu);
-		timeout = utils.getRandomIntBetweenRange(1,4);
+		timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
 		targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
 	}
 

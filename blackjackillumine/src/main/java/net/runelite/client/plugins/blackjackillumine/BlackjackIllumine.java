@@ -326,7 +326,7 @@ public class BlackjackIllumine extends Plugin
 
 	private List<WidgetItem> getFood()
 	{
-		return extUtils.getItems(config.foodToEat());
+		return extUtils.getItems(List.of(config.foodToEat()));
 	}
 
 	private void doubleClick()

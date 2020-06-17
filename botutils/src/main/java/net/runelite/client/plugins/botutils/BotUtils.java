@@ -665,10 +665,10 @@ public class BotUtils extends Plugin
 	//Checks if Stamina enhancement is active and if stamina potion is in inventory
 	public WidgetItem shouldStamPot()
 	{
-		if (!getItems(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4).isEmpty()
+		if (!getItems(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4)).isEmpty()
 			&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < 15 + getRandomIntBetweenRange(0,30) && !isBankOpen())
 		{
-			return getInventoryWidgetItem(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
+			return getInventoryWidgetItem(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4));
 		}
 		else
 		{
@@ -708,17 +708,19 @@ public class BotUtils extends Plugin
 
 	public int getInventorySpace()
 	{
-		if (client.getItemContainer(InventoryID.INVENTORY) == null)
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		if (inventoryWidget != null)
 		{
-			return 0;
+			return 28 - inventoryWidget.getWidgetItems().size();
 		}
-		return new InventoryItemQuery(InventoryID.INVENTORY)
-			.idEquals(-1)
-			.result(client)
-			.size();
+		else
+		{
+			return -1;
+		}
 	}
 
-	public List<WidgetItem> getItems(int... itemIDs)
+	//Requires inventory visible
+	/*public List<WidgetItem> getItems(int... itemIDs)
 	{
 		assert client.isClientThread();
 
@@ -726,8 +728,28 @@ public class BotUtils extends Plugin
 			.idEquals(itemIDs)
 			.result(client)
 			.list;
+	}*/
+
+	//Doesn't require a visible inventory
+	public List<WidgetItem> getItems(List<Integer> ids)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		List<WidgetItem> matchedItems = new ArrayList<>();
+
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				if (ids.contains(item.getId()))
+					matchedItems.add(item);
+			}
+			return matchedItems;
+		}
+		return null;
 	}
 
+	//Requires inventory visible
 	public List<WidgetItem> getItems(Set<Integer> itemIDs)
 	{
 		assert client.isClientThread();
@@ -738,16 +760,17 @@ public class BotUtils extends Plugin
 			.list;
 	}
 
-	public List<WidgetItem> getAllInventoryItems()
+	//Requires inventory visible
+	public Collection<WidgetItem> getAllInventoryItems()
 	{
-		assert client.isClientThread();
-
-		return new InventoryWidgetItemQuery()
-			.result(client)
-			.list;
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		if (inventoryWidget != null)
+			return inventoryWidget.getWidgetItems();
+		return null;
 	}
 
-	public WidgetItem getInventoryWidgetItem(int itemID)
+	//Requires inventory visible and returns null if not
+	/*public WidgetItem getInventoryWidgetItem(int itemID)
 	{
 		assert client.isClientThread();
 
@@ -755,9 +778,42 @@ public class BotUtils extends Plugin
 			.idEquals(itemID)
 			.result(client)
 			.first();
+	}*/
+
+	//Inventory doesn't need to be visible, will return null if not wrapped
+	public WidgetItem getInventoryWidgetItem(int id)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				if (item.getId() == id)
+					return item;
+			}
+		}
+		return null;
 	}
 
-	public WidgetItem getInventoryWidgetItem(int... ids)
+	//Inventory doesn't need to be visible, will return null if not wrapped - use List.of(Ids) in parameter
+	public WidgetItem getInventoryWidgetItem(List<Integer> ids)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				if (ids.contains(item.getId()))
+					return item;
+			}
+		}
+		return null;
+	}
+
+	//Requires inventory visible and returns null if not
+	/*public WidgetItem getInventoryWidgetItem(int... ids)
 	{
 		assert client.isClientThread();
 
@@ -765,8 +821,9 @@ public class BotUtils extends Plugin
 			.idEquals(ids)
 			.result(client)
 			.first();
-	}
+	}*/
 
+	//Works without inventory being visible and doesn't NPE
 	public MenuEntry getInventoryItemMenu(ItemManager itemManager, String menuOption, int opcode)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -789,7 +846,7 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
-	//untested
+	//Works without inventory being visible and doesn't NPE
 	public boolean inventoryContains(int itemID)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
@@ -802,6 +859,7 @@ public class BotUtils extends Plugin
 			.size() >= 1;
 	}
 
+	//Works without inventory being visible and doesn't NPE
 	public boolean inventoryContains(int itemID, int minStackAmount)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
@@ -835,6 +893,7 @@ public class BotUtils extends Plugin
 		clickRandomPointCenter(-100, 100);
 	}
 
+	//doesn't NPE
 	public boolean bankContains(String itemName)
 	{
 		if (isBankOpen())
@@ -852,18 +911,19 @@ public class BotUtils extends Plugin
 		return false;
 	}
 
-	//This is untested
-	public boolean bankContains(int... ids)
+	//doesn't NPE
+	public boolean bankContainsAnyOf(int... ids)
 	{
 		if (isBankOpen())
 		{
 			ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
 
-			return new BankItemQuery().idEquals(ids).result(client).isEmpty();
+			return new BankItemQuery().idEquals(ids).result(client).size() > 0;
 		}
 		return false;
 	}
 
+	//Placeholders count as being found
 	public boolean bankContains(String itemName, int minStackAmount)
 	{
 		if (isBankOpen())
@@ -888,22 +948,39 @@ public class BotUtils extends Plugin
 			ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
 			WidgetItem bankItem = new BankItemQuery().idEquals(itemID).result(client).first();
 
-			return bankItem != null && bankItem.getQuantity() > minStackAmount;
+			return bankItem != null && bankItem.getQuantity() >= minStackAmount;
 		}
 		return false;
 	}
 
-	public Widget getBankItemWidget(int... ids)
+	//doesn't NPE
+	public Widget getBankItemWidget(int id)
 	{
 		if (!isBankOpen())
 		{
 			return null;
 		}
 
-		return new BankItemQuery()
-			.idEquals(ids)
-			.result(client)
-			.first().getWidget();
+		WidgetItem bankItem = new BankItemQuery().idEquals(id).result(client).first();
+		if (bankItem != null)
+			return bankItem.getWidget();
+		else
+			return null;
+	}
+
+	//doesn't NPE
+	public Widget getBankItemWidgetAnyOf(int... ids)
+	{
+		if (!isBankOpen())
+		{
+			return null;
+		}
+
+		WidgetItem bankItem = new BankItemQuery().idEquals(ids).result(client).first();
+		if (bankItem != null)
+			return bankItem.getWidget();
+		else
+			return null;
 	}
 
 	public void depositAll()
@@ -922,7 +999,7 @@ public class BotUtils extends Plugin
 		{
 			return;
 		}
-		List<WidgetItem> inventoryItems = getAllInventoryItems();
+		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
 		List<Integer> depositedItems = new ArrayList<>();
 		executorService.submit(() ->
 		{

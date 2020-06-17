@@ -53,6 +53,7 @@ import net.runelite.api.queries.InventoryItemQuery;
 import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.queries.PlayerQuery;
 import net.runelite.api.queries.TileQuery;
+import net.runelite.api.queries.WidgetItemQuery;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -171,55 +172,18 @@ public class TestPlugin extends Plugin
 		}
 	}
 
-	public void arrayParamTest(List<Integer> ids)
+	public Widget getBankItemWidgetAnyOf(int... ids)
 	{
-		log.info("List length: " + ids.size() + " List to string " + ids.toString());
-		List<WidgetItem> inventoryItems = utils.getAllInventoryItems();
-
-		for (WidgetItem item : inventoryItems)
+		if (!utils.isBankOpen())
 		{
-			if(ids.contains(item.getId()))
-			{
-				log.info("item is in our list: " + item.getId());
-			} else
-			{
-				log.info("item is not in our list: " + item.getId());
-			}
+			return null;
 		}
-	}
 
-	//enables run if below given minimum energy with random positive variation
-	public void handleRun(int minEnergy, int randMax)
-	{
-		log.info("hit handleRun method");
-		if (client.getEnergy() > (minEnergy + utils.getRandomIntBetweenRange(0, randMax)))
-		{
-			log.info("hit handleRun method");
-			executorService.submit(() -> {
-				try
-				{
-					log.info("hit handleRun start of thread");
-					WidgetItem staminaPotion = utils.shouldStamPot();
-					if (staminaPotion != null)
-					{
-						log.info("using stam pot");
-						testMenu = new MenuEntry("", "", staminaPotion.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), staminaPotion.getIndex(), 9764864, false);
-						utils.clickRandomPointCenter(-100, 100);
-						utils.sleep(10, 50);
-					}
-					if (!utils.isRunEnabled())
-					{
-						log.info("enabling run");
-						testMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
-						utils.clickRandomPointCenter(-100, 100);
-					}
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			});
-		}
+		WidgetItem bankItem = new BankItemQuery().idEquals(ids).result(client).first();
+		if (bankItem != null)
+			return bankItem.getWidget();
+		else
+			return null;
 	}
 
 	@Subscribe
@@ -231,7 +195,9 @@ public class TestPlugin extends Plugin
 		{
 			if(!utils.iterating)
 			{
-				log.info(String.valueOf(utils.isBankOpen()));
+				//Collection<WidgetItem> items = getAllInventoryItems();
+				//MenuEntry test = utils.getInventoryItemMenu(itemManager, "Check", 35);
+				log.info(String.valueOf(getBankItemWidgetAnyOf(ItemID.COAL_BAG_12019, ItemID.SWORDFISH)));
 				//handleRun(20,20);
 				//utils.depositAllExcept(ItemID.COAL_BAG_12019, ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
 				//utils.depositAllExcept(inventorySetup);

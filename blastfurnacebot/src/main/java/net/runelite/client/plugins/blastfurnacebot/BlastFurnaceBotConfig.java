@@ -54,35 +54,14 @@ public interface BlastFurnaceBotConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "showConveyorBelt",
-		name = "Show conveyor belt clickbox",
-		description = "Configures whether or not the clickbox for the conveyor belt is displayed",
-		position = 10
+		keyName = "delayAmount",
+		name = "Random delay amount",
+		description = "(in game ticks) higher is slower",
+		position = 3
 	)
-	default boolean showConveyorBelt()
+	default int delayAmount()
 	{
-		return false;
+		return 3;
 	}
 
-	@ConfigItem(
-		keyName = "showBarDispenser",
-		name = "Show bar dispenser clickbox",
-		description = "Configures whether or not the clickbox for the bar dispenser is displayed",
-		position = 20
-	)
-	default boolean showBarDispenser()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "showCofferTime",
-		name = "Show coffer time remaining",
-		description = "Configures whether or not the coffer time remaining is displayed",
-		position = 30
-	)
-	default boolean showCofferTime()
-	{
-		return true;
-	}
 }
