@@ -28,7 +28,12 @@ package net.runelite.client.plugins.test;
 import com.google.inject.Provides;
 
 import java.awt.event.KeyEvent;
+import static java.awt.event.KeyEvent.VK_ENTER;
 import java.util.Collection;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
@@ -103,6 +108,10 @@ public class TestPlugin extends Plugin
 	@Inject
 	private ItemManager itemManager;
 
+	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
+		new ThreadPoolExecutor.DiscardPolicy());
+
 	Point point = new Point(10, 10);
 	GameObject object;
 	int timeout = 0;
@@ -162,12 +171,72 @@ public class TestPlugin extends Plugin
 		}
 	}
 
+	public void arrayParamTest(List<Integer> ids)
+	{
+		log.info("List length: " + ids.size() + " List to string " + ids.toString());
+		List<WidgetItem> inventoryItems = utils.getAllInventoryItems();
+
+		for (WidgetItem item : inventoryItems)
+		{
+			if(ids.contains(item.getId()))
+			{
+				log.info("item is in our list: " + item.getId());
+			} else
+			{
+				log.info("item is not in our list: " + item.getId());
+			}
+		}
+	}
+
+	//enables run if below given minimum energy with random positive variation
+	public void handleRun(int minEnergy, int randMax)
+	{
+		log.info("hit handleRun method");
+		if (client.getEnergy() > (minEnergy + utils.getRandomIntBetweenRange(0, randMax)))
+		{
+			log.info("hit handleRun method");
+			executorService.submit(() -> {
+				try
+				{
+					log.info("hit handleRun start of thread");
+					WidgetItem staminaPotion = utils.shouldStamPot();
+					if (staminaPotion != null)
+					{
+						log.info("using stam pot");
+						testMenu = new MenuEntry("", "", staminaPotion.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), staminaPotion.getIndex(), 9764864, false);
+						utils.clickRandomPointCenter(-100, 100);
+						utils.sleep(10, 50);
+					}
+					if (!utils.isRunEnabled())
+					{
+						log.info("enabling run");
+						testMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
+						utils.clickRandomPointCenter(-100, 100);
+					}
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			});
+		}
+	}
+
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
+		List<Integer> inventorySetup = List.of(ItemID.COAL_BAG_12019, ItemID.SMALL_FISHING_NET);
 		//object = new GameObjectQuery().idEquals(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280).filter(o -> rsAreaOutsideTest.contains(o.getWorldLocation())).result(client).nearestTo(client.getLocalPlayer());
 		if (client != null && client.getLocalPlayer() != null)
 		{
+			if(!utils.iterating)
+			{
+				log.info(String.valueOf(utils.isBankOpen()));
+				//handleRun(20,20);
+				//utils.depositAllExcept(ItemID.COAL_BAG_12019, ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
+				//utils.depositAllExcept(inventorySetup);
+				//arrayParamTest(inventorySetup);
+			}
 			//final int coffer = client.getVar(BLAST_FURNACE_COFFER);
 			//log.info("Coffer value: " + coffer);
 			//log.info(String.valueOf(client.getItemContainer(InventoryID.BANK) == null));
