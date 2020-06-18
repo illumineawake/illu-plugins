@@ -27,6 +27,7 @@ package net.runelite.client.plugins.test;
 
 import com.google.inject.Provides;
 
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_ENTER;
 import java.util.Collection;
@@ -76,6 +77,10 @@ import net.runelite.client.plugins.botutils.BotUtils;
 /*import net.runelite.client.rsb.methods.Tiles;
 import net.runelite.client.rsb.wrappers.RSArea;
 import net.runelite.client.rsb.wrappers.RSTile;*/
+import net.runelite.client.util.QuantityFormatter;
+import net.runelite.http.api.ge.GrandExchangeClient;
+import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
+import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
 import org.pf4j.Extension;
 
 import java.util.ArrayList;
@@ -115,6 +120,7 @@ public class TestPlugin extends Plugin
 
 	Point point = new Point(10, 10);
 	GameObject object;
+
 	int timeout = 0;
 	int itemCount = 0;
 	public static final MenuEntry BANK_MENU = new MenuEntry("Bank", "<col=ffff>Bank booth", 10355, 4, 56, 48, true);
@@ -195,9 +201,16 @@ public class TestPlugin extends Plugin
 		{
 			if(!utils.iterating)
 			{
+				OSBGrandExchangeResult runiteBarGX = utils.getOSBItem(ItemID.RUNITE_BAR);
+
+				if (runiteBarGX != null)
+				{
+					log.info("ItemID: " + runiteBarGX.getItem_id() + " Avg buy amount: " + runiteBarGX.getBuy_average() + " Avg sell amount: " + runiteBarGX.getSell_average() + " Overall avg: " + runiteBarGX.getOverall_average());
+					log.info(runiteBarGX.toString());
+				}
 				//Collection<WidgetItem> items = getAllInventoryItems();
 				//MenuEntry test = utils.getInventoryItemMenu(itemManager, "Check", 35);
-				log.info(String.valueOf(getBankItemWidgetAnyOf(ItemID.COAL_BAG_12019, ItemID.SWORDFISH)));
+				//log.info(String.valueOf(getBankItemWidgetAnyOf(ItemID.COAL_BAG_12019, ItemID.SWORDFISH)));
 				//handleRun(20,20);
 				//utils.depositAllExcept(ItemID.COAL_BAG_12019, ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
 				//utils.depositAllExcept(inventorySetup);

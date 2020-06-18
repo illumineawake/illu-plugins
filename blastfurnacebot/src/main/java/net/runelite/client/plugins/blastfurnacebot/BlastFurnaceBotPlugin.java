@@ -63,6 +63,7 @@ import static net.runelite.api.ObjectID.*;
 import static net.runelite.client.plugins.blastfurnacebot.BlastFurnaceState.*;
 
 import net.runelite.client.plugins.botutils.BotUtils;
+import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
 @Extension
@@ -95,6 +96,12 @@ public class BlastFurnaceBotPlugin extends Plugin
 	@Inject
 	private ItemManager itemManager;
 
+	@Inject
+	private OverlayManager overlayManager;
+
+	@Inject
+	private BotOverlay overlay;
+
 	/*@Inject
 	private InfoBoxManager infoBoxManager;*/
 
@@ -107,6 +114,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 	BlastFurnaceState state;
 	MenuEntry targetMenu;
 	LocalPoint beforeLoc = new LocalPoint(0, 0); //initiate to mitigate npe, this sucks
+	Instant botTimer;
 
 	private int timeout = 0;
 	private boolean coalBagFull;
@@ -114,14 +122,17 @@ public class BlastFurnaceBotPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
+		overlayManager.add(overlay);
 		coalBagFull = false;
 		timeout = 0;
 		targetMenu = null;
+		botTimer = Instant.now();
 	}
 
 	@Override
 	protected void shutDown()
 	{
+		overlayManager.remove(overlay);
 		//infoBoxManager.removeIf(ForemanTimer.class::isInstance);
 		conveyorBelt = null;
 		barDispenser = null;
@@ -444,6 +455,11 @@ public class BlastFurnaceBotPlugin extends Plugin
 					log.info("sleeping");
 					return WITHDRAWING; //This might be the wrong return
 				}
+				else
+				{
+					utils.sendGameMessage("out of coal, log off.");
+					return OUT_OF_ITEMS;
+				}
 			}
 			if (client.getVar(BarsOres.COAL.getVarbit()) >= 81 && coalBagFull) //logic probably needs updating
 			{
@@ -474,7 +490,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				else
 				{
 					utils.closeBank();
-					utils.sendGameMessage("Log off");
+					utils.sendGameMessage("Out of Runite ore, log off");
 					return OUT_OF_ITEMS;
 				}
 			}

@@ -5,6 +5,7 @@
  */
 package net.runelite.client.plugins.botutils;
 
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
@@ -40,6 +41,9 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import net.runelite.http.api.ge.GrandExchangeClient;
+import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
+import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
 import org.jetbrains.annotations.NotNull;
 import org.pf4j.Extension;
 
@@ -63,6 +67,9 @@ public class BotUtils extends Plugin
 	@Inject
 	private ItemManager itemManager;
 
+	@Inject
+	private GrandExchangeClient grandExchangeClient;
+
 	MenuEntry targetMenu;
 	protected static final java.util.Random random = new java.util.Random();
 
@@ -70,7 +77,8 @@ public class BotUtils extends Plugin
 	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
 	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
 		new ThreadPoolExecutor.DiscardPolicy());
-
+	private OSBGrandExchangeResult osbGrandExchangeResult;
+	private static final OSBGrandExchangeClient OSBCLIENT = new OSBGrandExchangeClient();
 	public boolean randomEvent;
 	public boolean iterating;
 
@@ -853,6 +861,7 @@ public class BotUtils extends Plugin
 		{
 			return false;
 		}
+
 		return new InventoryItemQuery(InventoryID.INVENTORY)
 			.idEquals(itemID)
 			.result(client)
@@ -1048,6 +1057,36 @@ public class BotUtils extends Plugin
 		targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
 		clickRandomPointCenter(-100, 100);
 		sleep(50, 250);
+	}
+
+	/**
+	 *
+	 * GRAND EXCHANGE FUNCTIONS
+	 *
+ 	 */
+	public OSBGrandExchangeResult getOSBItem(int itemId){
+		log.debug("Looking up OSB item price {}", itemId);
+		executorService.submit(() ->
+		{
+			OSBCLIENT.lookupItem(itemId)
+				.subscribeOn(Schedulers.io())
+				.observeOn(Schedulers.single())
+				.subscribe(
+					(osbresult) ->
+					{
+						if (osbresult != null && osbresult.getOverall_average() > 0)
+						{
+							osbGrandExchangeResult = osbresult;
+							//log.info("ItemID: " + osbGrandExchangeResult.getItem_id() + " Avg buy amount: " + osbGrandExchangeResult.getBuy_average() + " Avg sell amount: " + osbGrandExchangeResult.getSell_average());
+						}
+					},
+					(e) -> log.debug("Error getting price of item {}", itemId, e)
+				);
+		});
+		if (osbGrandExchangeResult != null)
+			return osbGrandExchangeResult;
+		else
+			return null;
 	}
 
 	/**
