@@ -51,7 +51,7 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "BotUtils",
 	type = PluginType.UTILITY,
-	hidden = true
+	hidden = false
 )
 @Slf4j
 @SuppressWarnings("unused")
@@ -641,6 +641,11 @@ public class BotUtils extends Plugin
 		return isMoving() || client.getLocalPlayer().getAnimation() != -1;
 	}
 
+	public boolean isAnimating()
+	{
+		return client.getLocalPlayer().getAnimation() != -1;
+	}
+
 	public boolean isRunEnabled()
 	{
 		return client.getVarpValue(173) == 1;
@@ -739,6 +744,24 @@ public class BotUtils extends Plugin
 	}*/
 
 	//Doesn't require a visible inventory
+	public List<WidgetItem> getItems(Set<Integer> ids)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		List<WidgetItem> matchedItems = new ArrayList<>();
+
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				if (ids.contains(item.getId()))
+					matchedItems.add(item);
+			}
+			return matchedItems;
+		}
+		return null;
+	}
+
 	public List<WidgetItem> getItems(List<Integer> ids)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -757,7 +780,7 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
-	//Requires inventory visible
+	/*//Requires inventory visible
 	public List<WidgetItem> getItems(Set<Integer> itemIDs)
 	{
 		assert client.isClientThread();
@@ -766,9 +789,8 @@ public class BotUtils extends Plugin
 			.idEquals(itemIDs)
 			.result(client)
 			.list;
-	}
+	}*/
 
-	//Requires inventory visible
 	public Collection<WidgetItem> getAllInventoryItems()
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -868,6 +890,16 @@ public class BotUtils extends Plugin
 			.size() >= 1;
 	}
 
+	//UNTESTED
+	public boolean inventoryContains(Set<Integer> itemIds)
+	{
+		if (client.getItemContainer(InventoryID.INVENTORY) == null)
+		{
+			return false;
+		}
+		return getItems(itemIds).size() > 0;
+	}
+
 	//Works without inventory being visible and doesn't NPE
 	public boolean inventoryContains(int itemID, int minStackAmount)
 	{
@@ -883,9 +915,48 @@ public class BotUtils extends Plugin
 		return item != null && item.getQuantity() >= minStackAmount;
 	}
 
+	public void dropAll(List<Integer> ids)
+	{
+		if (isBankOpen() || isDepositBoxOpen())
+		{
+			log.info("can't drop item, bank is open");
+			return;
+		}
+		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
+		executorService.submit(() ->
+		{
+			try
+			{
+				iterating = true;
+				for (WidgetItem item : inventoryItems)
+				{
+					if (ids.contains(item.getId())) //6512 is empty widget slot
+					{
+						log.info("dropping item: " + item.getId());
+						depositAllOfItem(item);
+						sleep(80, 170);
+						targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(), item.getIndex(), 9764864, false);
+						clickRandomPointCenter(-100, 100);
+					}
+				}
+				iterating = false;
+			}
+			catch (Exception e)
+			{
+				iterating = false;
+				e.printStackTrace();
+			}
+		});
+	}
+
 	/**
 	 * BANKING FUNCTIONS
 	 */
+
+	public boolean isDepositBoxOpen()
+	{
+		return client.getWidget(WidgetInfo.DEPOSIT_BOX_INVENTORY_ITEMS_CONTAINER) != null;
+	}
 
 	public boolean isBankOpen()
 	{
@@ -994,12 +1065,21 @@ public class BotUtils extends Plugin
 
 	public void depositAll()
 	{
-		if (!isBankOpen())
+		if (!isBankOpen() && !isDepositBoxOpen())
 		{
 			return;
 		}
-		targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 786473, false); //deposit all in bank interface
-		clickRandomPointCenter(-100, 100);
+		if(isDepositBoxOpen())
+		{
+			targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 12582916, false); //deposit all in bank interface
+			clickRandomPointCenter(-100, 100);
+			return;
+		}
+		else
+		{
+			targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 786473, false); //deposit all in bank interface
+			clickRandomPointCenter(-100, 100);
+		}
 	}
 
 	public void depositAllExcept(List<Integer> ids)
@@ -1077,7 +1157,6 @@ public class BotUtils extends Plugin
 						if (osbresult != null && osbresult.getOverall_average() > 0)
 						{
 							osbGrandExchangeResult = osbresult;
-							//log.info("ItemID: " + osbGrandExchangeResult.getItem_id() + " Avg buy amount: " + osbGrandExchangeResult.getBuy_average() + " Avg sell amount: " + osbGrandExchangeResult.getSell_average());
 						}
 					},
 					(e) -> log.debug("Error getting price of item {}", itemId, e)

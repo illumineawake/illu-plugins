@@ -31,6 +31,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_ENTER;
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -123,10 +124,16 @@ public class TestPlugin extends Plugin
 
 	int timeout = 0;
 	int itemCount = 0;
+	private static final Set<Integer> MLM_ORE_TYPES = Set.of(ItemID.RUNITE_ORE, ItemID.ADAMANTITE_ORE,
+		ItemID.MITHRIL_ORE, ItemID.GOLD_ORE, ItemID.COAL, ItemID.GOLDEN_NUGGET);
 	public static final MenuEntry BANK_MENU = new MenuEntry("Bank", "<col=ffff>Bank booth", 10355, 4, 56, 48, true);
 	public LocalPoint localPoint;
 	MenuEntry testMenu;
 	private Tile[][][] areaTile = new Tile[3187][3230][0];
+
+	private static final Set<Integer> ROCK_OBSTACLES = Set.of(ROCKFALL, ROCKFALL_26680);
+	private static final WorldArea mineArea = new WorldArea(new WorldPoint(3760, 5638, 0), new WorldPoint(3770, 5653, 0));
+
 	List<WorldPoint> worldPointList = new ArrayList<>();
 
 	LocalPoint beforeLoc;
@@ -195,19 +202,22 @@ public class TestPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
-		List<Integer> inventorySetup = List.of(ItemID.COAL_BAG_12019, ItemID.SMALL_FISHING_NET);
+		//List<Integer> inventorySetup = List.of(ItemID.COAL_BAG_12019, ItemID.SMALL_FISHING_NET);
 		//object = new GameObjectQuery().idEquals(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280).filter(o -> rsAreaOutsideTest.contains(o.getWorldLocation())).result(client).nearestTo(client.getLocalPlayer());
 		if (client != null && client.getLocalPlayer() != null)
 		{
 			if(!utils.iterating)
 			{
-				OSBGrandExchangeResult runiteBarGX = utils.getOSBItem(ItemID.RUNITE_BAR);
+				//log.info("Bank widget" + (client.getWidget(WidgetInfo.DEPOSIT_BOX_INVENTORY_ITEMS_CONTAINER) != null));
+
+
+				/*OSBGrandExchangeResult runiteBarGX = utils.getOSBItem(ItemID.RUNITE_BAR);
 
 				if (runiteBarGX != null)
 				{
 					log.info("ItemID: " + runiteBarGX.getItem_id() + " Avg buy amount: " + runiteBarGX.getBuy_average() + " Avg sell amount: " + runiteBarGX.getSell_average() + " Overall avg: " + runiteBarGX.getOverall_average());
 					log.info(runiteBarGX.toString());
-				}
+				}*/
 				//Collection<WidgetItem> items = getAllInventoryItems();
 				//MenuEntry test = utils.getInventoryItemMenu(itemManager, "Check", 35);
 				//log.info(String.valueOf(getBankItemWidgetAnyOf(ItemID.COAL_BAG_12019, ItemID.SWORDFISH)));
