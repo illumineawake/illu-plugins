@@ -113,6 +113,7 @@ public class MotherlodeBotPlugin extends Plugin
 	private static final WorldArea bankArea = new WorldArea(new WorldPoint(3738, 5649, 0), new WorldPoint(3762, 5675, 0));
 	private static final WorldArea mineArea = new WorldArea(new WorldPoint(3764, 5633, 0), new WorldPoint(3776, 5644, 0));
 	private static final WorldArea obstacleArea = new WorldArea(new WorldPoint(3760, 5638, 0), new WorldPoint(3770, 5653, 0));
+	private static final WorldArea stuckArea = new WorldArea(new WorldPoint(3764, 5644, 0), new WorldPoint(3769, 5649, 0));
 
 	LocalPoint beforeLoc = new LocalPoint(0, 0);
 
@@ -158,6 +159,11 @@ public class MotherlodeBotPlugin extends Plugin
 		if (state == WALK_TO_MINE)
 		{
 			GameObject rockObstacleToMineArea = new GameObjectQuery().idEquals(ROCK_OBSTACLES).filter(o -> (obstacleArea.distanceTo(o.getWorldLocation()) == 0) && (client.getLocalPlayer().getWorldLocation().getX() <= o.getWorldLocation().getX()) && client.getLocalPlayer().getWorldLocation().getY() >= o.getWorldLocation().getY()).result(client).nearestTo(client.getLocalPlayer());
+			return rockObstacleToMineArea;
+		}
+		if (state == STUCK)
+		{
+			GameObject rockObstacleToMineArea = new GameObjectQuery().idEquals(ROCK_OBSTACLES).filter(o -> (stuckArea.distanceTo(o.getWorldLocation()) == 0)).result(client).nearestTo(client.getLocalPlayer());
 			return rockObstacleToMineArea;
 		}
 		if (state == WALK_TO_BANK)
@@ -388,10 +394,6 @@ public class MotherlodeBotPlugin extends Plugin
 			log.info("Motherlode Mine not overriding click due to random event");
 			return;
 		}
-		/*if (event.getIdentifier() == ObjectID.HOPPER_26674)
-		{
-
-		}*/
 		event.setMenuEntry(targetMenu);
 		timeout = 2;
 		targetMenu = null;
@@ -438,6 +440,13 @@ public class MotherlodeBotPlugin extends Plugin
 		{
 			return;
 		}
-		log.info("We are stuck.");
+		if (stuckArea.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0)
+		{
+			utils.sendGameMessage("We are stuck. Trying to get unstuck");
+			state = STUCK;
+			return;
+		}
+		else
+			utils.sendGameMessage("ERROR: We are stuck somewhere outside of the unstuck area.");
 	}
 }

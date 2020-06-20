@@ -6,6 +6,7 @@ public enum MotherlodeBotState {
     FIND_OBJECT,
     INTERACTING,
 	OUT_OF_AREA,
+	STUCK,
     TIMEOUT,
 	WAITING,
 	WALK_TO_BANK,
