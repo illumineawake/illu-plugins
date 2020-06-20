@@ -31,7 +31,7 @@ import lombok.Getter;
 import net.runelite.api.ItemID;
 import net.runelite.api.Varbits;
 
-public enum BarsOres
+public enum Ores
 {
 	COPPER_ORE(Varbits.BLAST_FURNACE_COPPER_ORE, ItemID.COPPER_ORE),
 	TIN_ORE(Varbits.BLAST_FURNACE_TIN_ORE, ItemID.TIN_ORE),
@@ -41,23 +41,15 @@ public enum BarsOres
 	ADAMANTITE_ORE(Varbits.BLAST_FURNACE_ADAMANTITE_ORE, ItemID.ADAMANTITE_ORE),
 	RUNITE_ORE(Varbits.BLAST_FURNACE_RUNITE_ORE, ItemID.RUNITE_ORE),
 	SILVER_ORE(Varbits.BLAST_FURNACE_SILVER_ORE, ItemID.SILVER_ORE),
-	GOLD_ORE(Varbits.BLAST_FURNACE_GOLD_ORE, ItemID.GOLD_ORE),
-	BRONZE_BAR(Varbits.BLAST_FURNACE_BRONZE_BAR, ItemID.BRONZE_BAR),
-	IRON_BAR(Varbits.BLAST_FURNACE_IRON_BAR, ItemID.IRON_BAR),
-	STEEL_BAR(Varbits.BLAST_FURNACE_STEEL_BAR, ItemID.STEEL_BAR),
-	MITHRIL_BAR(Varbits.BLAST_FURNACE_MITHRIL_BAR, ItemID.MITHRIL_BAR),
-	ADAMANTITE_BAR(Varbits.BLAST_FURNACE_ADAMANTITE_BAR, ItemID.ADAMANTITE_BAR),
-	RUNITE_BAR(Varbits.BLAST_FURNACE_RUNITE_BAR, ItemID.RUNITE_BAR),
-	SILVER_BAR(Varbits.BLAST_FURNACE_SILVER_BAR, ItemID.SILVER_BAR),
-	GOLD_BAR(Varbits.BLAST_FURNACE_GOLD_BAR, ItemID.GOLD_BAR);
+	GOLD_ORE(Varbits.BLAST_FURNACE_GOLD_ORE, ItemID.GOLD_ORE);
 
-	private static final Map<Varbits, BarsOres> VARBIT;
+	private static final Map<Varbits, Ores> VARBIT;
 
 	static
 	{
-		ImmutableMap.Builder<Varbits, BarsOres> builder = new ImmutableMap.Builder<>();
+		ImmutableMap.Builder<Varbits, Ores> builder = new ImmutableMap.Builder<>();
 
-		for (BarsOres s : values())
+		for (Ores s : values())
 		{
 			builder.put(s.getVarbit(), s);
 		}
@@ -70,14 +62,15 @@ public enum BarsOres
 	@Getter(AccessLevel.PACKAGE)
 	private final int itemID;
 
-	BarsOres(Varbits varbit, int itemID)
+	Ores(Varbits varbit, int itemID)
 	{
 		this.varbit = varbit;
 		this.itemID = itemID;
 	}
 
-	public static BarsOres getVarbit(Varbits varbit)
+	public static Ores getVarbit(Varbits varbit)
 	{
 		return VARBIT.get(varbit);
 	}
+
 }

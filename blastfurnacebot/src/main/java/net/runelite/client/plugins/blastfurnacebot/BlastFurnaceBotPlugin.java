@@ -28,11 +28,9 @@ package net.runelite.client.plugins.blastfurnacebot;
 import com.google.inject.Provides;
 
 import java.awt.event.KeyEvent;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -45,14 +43,12 @@ import static net.runelite.api.NullObjectID.NULL_9092;
 
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.*;
-import net.runelite.api.queries.BankItemQuery;
-import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
@@ -102,8 +98,8 @@ public class BlastFurnaceBotPlugin extends Plugin
 	@Inject
 	private BotOverlay overlay;
 
-	/*@Inject
-	private InfoBoxManager infoBoxManager;*/
+	@Inject
+	private ProfitOverlay profitOverlay;
 
 	@Inject
 	private BlastFurnaceBotConfig config;
@@ -115,7 +111,15 @@ public class BlastFurnaceBotPlugin extends Plugin
 	MenuEntry targetMenu;
 	LocalPoint beforeLoc = new LocalPoint(0, 0); //initiate to mitigate npe, this sucks
 	Instant botTimer;
+	Bars bar;
 
+	int cofferRefill;
+	int cofferMinValue;
+	int tickDelay;
+	int barPrice;
+	int orePrice;
+	int coalPrice;
+	int staminaPotPrice;
 	private int timeout = 0;
 	private boolean coalBagFull;
 
@@ -123,20 +127,64 @@ public class BlastFurnaceBotPlugin extends Plugin
 	protected void startUp()
 	{
 		overlayManager.add(overlay);
+		overlayManager.add(profitOverlay);
 		coalBagFull = false;
 		timeout = 0;
 		targetMenu = null;
 		botTimer = Instant.now();
+		bar = config.getBar();
+		cofferMinValue = config.cofferThreshold();
+		cofferRefill = config.cofferAmount();
+		tickDelay = config.delayAmount();
+		getItemPrices();
 	}
 
 	@Override
 	protected void shutDown()
 	{
 		overlayManager.remove(overlay);
-		//infoBoxManager.removeIf(ForemanTimer.class::isInstance);
+		overlayManager.remove(profitOverlay);
 		conveyorBelt = null;
 		barDispenser = null;
 		foremanTimer = null;
+	}
+
+	@Subscribe
+	private void onConfigChange(ConfigChanged event)
+	{
+		if (event.getGroup().equals("blastfurnacebot"))
+		{
+			switch (event.getKey())
+			{
+				case "cofferThreshold":
+					cofferMinValue = config.cofferThreshold();
+					log.info("Minimum coffer value updated to: " + cofferMinValue);
+					break;
+				case "cofferAmount":
+					cofferRefill = config.cofferAmount();
+					log.info("Coffer refill value updated to: " + cofferRefill);
+					break;
+				case "delayAmount":
+					tickDelay = config.delayAmount();
+					log.info("tick delay value updated to: " + tickDelay);
+					break;
+				case "bar":
+					bar = config.getBar();
+					getItemPrices();
+					log.info("Bar configured to: " + bar.name());
+					break;
+			}
+		}
+	}
+
+	private void getItemPrices()
+	{
+		barPrice = utils.getOSBItem(bar.getItemID()).getSell_average();
+		orePrice = utils.getOSBItem(bar.getOreID()).getBuy_average();
+		coalPrice = utils.getOSBItem(Ores.COAL.getItemID()).getBuy_average();
+		staminaPotPrice = utils.getOSBItem(ItemID.STAMINA_POTION4).getBuy_average();
+
+		log.info("{} price: {}, Ore price: {}, Coal price: {}, stamina pot price: {}", bar.name(), barPrice, orePrice, coalPrice, staminaPotPrice);
 	}
 
 	private void openBank()
@@ -146,7 +194,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 		{
 			targetMenu = new MenuEntry("", "", bankObject.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), bankObject.getSceneMinLocation().getX(), bankObject.getSceneMinLocation().getY(), true);
 			utils.clickRandomPointCenter(-100, 100);
-			timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
+			timeout = utils.getRandomIntBetweenRange(1,tickDelay);
 		}
 	}
 
@@ -155,7 +203,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 		targetMenu = new MenuEntry("", "", conveyorBelt.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), conveyorBelt.getSceneMinLocation().getX(), conveyorBelt.getSceneMinLocation().getY(), false);
 		utils.sleep(10, 100);
 		utils.clickRandomPointCenter(-100, 100);
-		timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
+		timeout = utils.getRandomIntBetweenRange(1,tickDelay);
 	}
 
 	private void collectFurnace()
@@ -163,7 +211,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 		log.info("At collectFurnace(), collecting bars");
 		targetMenu = new MenuEntry("", "", barDispenser.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), barDispenser.getSceneMinLocation().getX(), barDispenser.getSceneMinLocation().getY(), false);
 		utils.clickRandomPointCenter(-100, 100);
-		timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
+		timeout = utils.getRandomIntBetweenRange(1,tickDelay);
 	}
 
 	private void fillCoalBag(WidgetItem coalBag)
@@ -203,6 +251,11 @@ public class BlastFurnaceBotPlugin extends Plugin
 				return OUT_OF_AREA;
 			}
 		}
+		if (state == OUT_OF_ITEMS)
+		{
+			utils.sendGameMessage("Out of of materials, log off!!!");
+			return OUT_OF_AREA;
+		}
 		if (timeout > 0)
 		{
 			utils.handleRun(10, 30);
@@ -210,20 +263,20 @@ public class BlastFurnaceBotPlugin extends Plugin
 		}
 		if (utils.isMoving(beforeLoc))
 		{
-			timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
+			timeout = utils.getRandomIntBetweenRange(1,tickDelay);
 			return MOVING;
 		}
 		if (!utils.isBankOpen())
 		{
 			if (!client.getWidget(162, 40).isHidden()) //deposit amount for coffer widget
 			{
-				if (!utils.inventoryContains(ItemID.COINS_995, config.cofferAmount()))
+				if (!utils.inventoryContains(ItemID.COINS_995, cofferRefill))
 				{
 					openBank();
 					return OPENING_BANK;
 				}
-				int randDepositAmount = utils.getRandomIntBetweenRange(config.cofferAmount(), 10000);
-				int depositAmount = (utils.inventoryContains(ItemID.COINS_995, randDepositAmount)) ? randDepositAmount : config.cofferAmount();
+				int randDepositAmount = utils.getRandomIntBetweenRange(cofferRefill, 10000);
+				int depositAmount = (utils.inventoryContains(ItemID.COINS_995, randDepositAmount)) ? randDepositAmount : cofferRefill;
 
 				utils.typeString(String.valueOf(depositAmount));
 				utils.sleep(10, 50);
@@ -232,7 +285,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				return FILL_COFFER;
 			}
 			utils.handleRun(20, 20);
-			if(utils.inventoryContains(ItemID.RUNITE_BAR)) //TODO: update botutils to take a String contains, so can search if inventory has any Bars
+			if(utils.inventoryContains(bar.getItemID())) //TODO: update botutils to take a String contains, so can search if inventory has any Bars
 			{ //INVENTORY CONTAINS BARS
 				openBank();
 				return OPENING_BANK;
@@ -247,9 +300,9 @@ public class BlastFurnaceBotPlugin extends Plugin
 				collectFurnace();
 				return COLLECTING_BARS;
 			}
-			if (client.getVar(Varbits.BLAST_FURNACE_COFFER) < config.cofferThreshold())
+			if (client.getVar(Varbits.BLAST_FURNACE_COFFER) < cofferMinValue)
 			{
-				if (utils.inventoryContains(ItemID.COINS_995, config.cofferAmount()))
+				if (utils.inventoryContains(ItemID.COINS_995, cofferRefill))
 				{
 					//TODO handle filling up coffer
 					GameObject coffer = utils.findNearestGameObject(BF_COFFER);
@@ -258,7 +311,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 						targetMenu = new MenuEntry("", "", coffer.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), coffer.getSceneMinLocation().getX(), coffer.getSceneMinLocation().getY(), false);
 						utils.sleep(50, 250);
 						utils.clickRandomPointCenter(-100, 100);
-						timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
+						timeout = utils.getRandomIntBetweenRange(1,tickDelay);
 					}
 					else
 					{
@@ -278,7 +331,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				WidgetItem coalBag = utils.getInventoryWidgetItem(ItemID.COAL_BAG_12019);
 				if (client.getLocalPlayer().getWorldLocation().distanceTo(bank.getWorldLocation()) < 8) //At bank location
 				{
-					if (utils.getItems(List.of(ItemID.COAL, ItemID.RUNITE_ORE)).isEmpty()) //Inventory does not contain coal or runite ore
+					if (utils.getItems(List.of(ItemID.COAL, bar.getOreID())).isEmpty()) //Inventory does not contain coal or ore
 					{
 						openBank();
 						return OPENING_BANK;
@@ -291,7 +344,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 							{
 								fillCoalBag(coalBag);
 							}
-							if (utils.inventoryContains(ItemID.RUNITE_ORE)) //shouldn't happen
+							if (utils.inventoryContains(bar.getOreID())) //shouldn't happen
 							{
 								putConveyorBelt();
 								return PUT_CONVEYOR_BELT;
@@ -299,7 +352,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 						}
 						if (coalBagFull)
 						{
-							if (!utils.getItems(List.of(ItemID.COAL, ItemID.RUNITE_ORE)).isEmpty())
+							if (!utils.getItems(List.of(ItemID.COAL, bar.getOreID())).isEmpty())
 							{
 								putConveyorBelt();
 								return PUT_CONVEYOR_BELT;
@@ -309,7 +362,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				}
 				else //Not near bank chest, assume near conveyor belt
 				{
-					if (utils.getItems(List.of(ItemID.COAL, ItemID.RUNITE_ORE)).isEmpty())
+					if (utils.getItems(List.of(ItemID.COAL, bar.getOreID())).isEmpty())
 					{
 						if (!coalBagFull)
 						{
@@ -330,12 +383,12 @@ public class BlastFurnaceBotPlugin extends Plugin
 							emptyCoalBag(coalBag);
 						}
 					}
-					if (!utils.getItems(List.of(ItemID.COAL, ItemID.RUNITE_ORE)).isEmpty())
+					if (!utils.getItems(List.of(ItemID.COAL, bar.getOreID())).isEmpty())
 					{
 						putConveyorBelt();
 						if (!coalBagFull)
 						{
-							timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
+							timeout = utils.getRandomIntBetweenRange(1,tickDelay);
 							return PUT_CONVEYOR_BELT;
 						}
 					}
@@ -344,26 +397,27 @@ public class BlastFurnaceBotPlugin extends Plugin
 		}
 		else if (utils.isBankOpen()) //redundant but doing for readability
 		{
-			WidgetItem runiteBar = utils.getInventoryWidgetItem(ItemID.RUNITE_BAR);
-			if (runiteBar != null) //TODO: Make into a function and make compatible with all bars
+			WidgetItem inventoryBar = utils.getInventoryWidgetItem(bar.getItemID());
+			if (inventoryBar != null)
 			{
-				log.info("depositing runite bar");
+				log.info("depositing bars");
 				utils.depositAllExcept(INVENTORY_SETUP);
 				return DEPOSITING;
 			}
 			if (client.getVar(Varbits.BAR_DISPENSER) > 0) //Bars in dispenser
 			{
 				log.info("bars ready for collection, bank is open, depositing inventory and collecting");
-				if (utils.getInventorySpace() < 26 ) //TODO: create inventoryContainsExcept method in utils
+				if (utils.getInventorySpace() < 26) //TODO: create inventoryContainsExcluding method in utils
 				{
-					utils.depositAllExcept(INVENTORY_SETUP);
+					//utils.depositAllExcept(INVENTORY_SETUP);
+					utils.depositAll();
 					return DEPOSITING;
 				}
 				return collectBars();
 			}
-			if (client.getVar(Varbits.BLAST_FURNACE_COFFER) < config.cofferThreshold())
+			if (client.getVar(Varbits.BLAST_FURNACE_COFFER) < cofferMinValue)
 			{
-				if (utils.inventoryContains(ItemID.COINS_995, config.cofferAmount()))
+				if (utils.inventoryContains(ItemID.COINS_995, cofferRefill))
 				{
 					utils.closeBank();
 					return FILL_COFFER;
@@ -374,7 +428,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 					utils.depositAllExcept(INVENTORY_SETUP);
 					return DEPOSITING;
 				}
-				if (utils.bankContains(ItemID.COINS_995, config.cofferAmount()))
+				if (utils.bankContains(ItemID.COINS_995, cofferRefill))
 				{
 					Widget bankCoins = utils.getBankItemWidget(ItemID.COINS_995);
 					utils.withdrawAllItem(bankCoins);
@@ -425,7 +479,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 					return OUT_OF_ITEMS;
 				}
 			}
-			if (client.getVar(BarsOres.COAL.getVarbit()) < 81 || !coalBagFull)
+			if (client.getVar(Ores.COAL.getVarbit()) <= bar.getMinCoalAmount() || !coalBagFull)
 			{
 				if (utils.inventoryContains(ItemID.COAL))
 				{
@@ -461,36 +515,36 @@ public class BlastFurnaceBotPlugin extends Plugin
 					return OUT_OF_ITEMS;
 				}
 			}
-			if (client.getVar(BarsOres.COAL.getVarbit()) >= 81 && coalBagFull) //logic probably needs updating
+			if (client.getVar(Ores.COAL.getVarbit()) > bar.getMinCoalAmount() && coalBagFull) //logic probably needs updating
 			{
-				if (utils.inventoryFull() || utils.inventoryContains(ItemID.RUNITE_ORE))
+				if (utils.inventoryFull() || utils.inventoryContains(bar.getOreID()))
 				{
-					if (utils.inventoryContains(ItemID.RUNITE_ORE))
+					if (utils.inventoryContains(bar.getOreID()))
 					{
-						log.info("putting runite ore onto belt");
+						log.info("putting Ore onto belt");
 						putConveyorBelt();
 						return PUT_CONVEYOR_BELT;
 					}
 					else
 					{
 						utils.depositAllExcept(INVENTORY_SETUP);
-						utils.sendGameMessage("need to withdraw runite ore but inventory is full, something went wrong.");
+						utils.sendGameMessage("need to withdraw Ore but inventory is full, something went wrong.");
 						return OUT_OF_ITEMS;
 					}
 				}
-				Widget bankRuniteOre = utils.getBankItemWidget(ItemID.RUNITE_ORE);
-				if (bankRuniteOre != null)
+				Widget bankOre = utils.getBankItemWidget(bar.getOreID());
+				if (bankOre != null)
 				{
 					utils.depositAllExcept(INVENTORY_SETUP);
-					log.info("withdrawing runite ore");
-					utils.withdrawAllItem(bankRuniteOre);
-					timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
+					log.info("withdrawing ore");
+					utils.withdrawAllItem(bankOre);
+					timeout = utils.getRandomIntBetweenRange(1,tickDelay);
 					return WITHDRAWING;
 				}
 				else
 				{
 					utils.closeBank();
-					utils.sendGameMessage("Out of Runite ore, log off");
+					utils.sendGameMessage("Out of ore, log off");
 					return OUT_OF_ITEMS;
 				}
 			}
@@ -525,7 +579,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 		}
 		log.info("inserting menu at MOC event: " + targetMenu.toString());
 		event.setMenuEntry(targetMenu);
-		timeout = utils.getRandomIntBetweenRange(1,config.delayAmount());
+		timeout = utils.getRandomIntBetweenRange(1,tickDelay);
 		targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
 	}
 
@@ -589,14 +643,14 @@ public class BlastFurnaceBotPlugin extends Plugin
 		//Collect Bars
 		if (event.getGroupId() == WidgetID.MULTISKILL_MENU_GROUP_ID)
 		{
-			targetMenu = new MenuEntry("", "", 1, 57, -1, 17694734, false); //Take Runite Bar from Bar Dispenser
+			targetMenu = new MenuEntry("", "", 1, 57, -1, 17694734, false); //Take Bar from Bar Dispenser
 			utils.clickRandomPointCenter(-100, 100);
 			return;
 		}
 		//Deposit coins widget option
 		if (event.getGroupId() == WidgetID.DIALOG_OPTION_GROUP_ID)
 		{
-			targetMenu = new MenuEntry("", "", 0, 30, 1, 14352385, false); //Take Runite Bar from Bar Dispenser
+			targetMenu = new MenuEntry("", "", 0, 30, 1, 14352385, false); //Take Bar from Bar Dispenser
 			utils.clickRandomPointCenter(-100, 100);
 			return;
 		}

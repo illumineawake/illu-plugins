@@ -28,7 +28,7 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-@ConfigGroup("blastfurnace")
+@ConfigGroup("blastfurnacebot")
 public interface BlastFurnaceBotConfig extends Config
 {
 	@ConfigItem(
@@ -63,5 +63,13 @@ public interface BlastFurnaceBotConfig extends Config
 	{
 		return 3;
 	}
+
+	@ConfigItem(
+		keyName = "bar",
+		name = "Bar to smelt",
+		description = "Select the type of bar to smelt",
+		position = 4
+	)
+	default Bars getBar() { return Bars.RUNITE_BAR; }
 
 }
