@@ -28,7 +28,7 @@ import ProjectVersions.openosrsVersion
 version = "1.0.2"
 
 project.extra["PluginName"] = "BotUtils" // This is the name that is used in the external plugin manager panel
-project.extra["PluginDescription"] = "Utils required for plugins to function with added automation" // This is the description that is used in the external plugin manager panel
+project.extra["PluginDescription"] = "Illumine - Utils required for plugins to function with added automation" // This is the description that is used in the external plugin manager panel
 
 tasks {
     jar {

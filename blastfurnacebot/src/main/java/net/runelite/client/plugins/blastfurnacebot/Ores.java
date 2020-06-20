@@ -60,12 +60,12 @@ public enum Ores
 	@Getter(AccessLevel.PACKAGE)
 	private final Varbits varbit;
 	@Getter(AccessLevel.PACKAGE)
-	private final int itemID;
+	private final int oreID;
 
-	Ores(Varbits varbit, int itemID)
+	Ores(Varbits varbit, int oreID)
 	{
 		this.varbit = varbit;
-		this.itemID = itemID;
+		this.oreID = oreID;
 	}
 
 	public static Ores getVarbit(Varbits varbit)

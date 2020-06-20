@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
@@ -51,6 +53,7 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "BotUtils",
 	type = PluginType.UTILITY,
+	description = "Illumine bot utilities",
 	hidden = false
 )
 @Slf4j
@@ -679,7 +682,7 @@ public class BotUtils extends Plugin
 	public WidgetItem shouldStamPot()
 	{
 		if (!getItems(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4)).isEmpty()
-			&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < 15 + getRandomIntBetweenRange(0,30) && !isBankOpen())
+			&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < 15 + getRandomIntBetweenRange(0, 30) && !isBankOpen())
 		{
 			return getInventoryWidgetItem(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4));
 		}
@@ -755,7 +758,9 @@ public class BotUtils extends Plugin
 			for (WidgetItem item : items)
 			{
 				if (ids.contains(item.getId()))
+				{
 					matchedItems.add(item);
+				}
 			}
 			return matchedItems;
 		}
@@ -773,7 +778,9 @@ public class BotUtils extends Plugin
 			for (WidgetItem item : items)
 			{
 				if (ids.contains(item.getId()))
+				{
 					matchedItems.add(item);
+				}
 			}
 			return matchedItems;
 		}
@@ -795,7 +802,9 @@ public class BotUtils extends Plugin
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		if (inventoryWidget != null)
+		{
 			return inventoryWidget.getWidgetItems();
+		}
 		return null;
 	}
 
@@ -820,7 +829,9 @@ public class BotUtils extends Plugin
 			for (WidgetItem item : items)
 			{
 				if (item.getId() == id)
+				{
 					return item;
+				}
 			}
 		}
 		return null;
@@ -836,7 +847,9 @@ public class BotUtils extends Plugin
 			for (WidgetItem item : items)
 			{
 				if (ids.contains(item.getId()))
+				{
 					return item;
+				}
 			}
 		}
 		return null;
@@ -1043,9 +1056,13 @@ public class BotUtils extends Plugin
 
 		WidgetItem bankItem = new BankItemQuery().idEquals(id).result(client).first();
 		if (bankItem != null)
+		{
 			return bankItem.getWidget();
+		}
 		else
+		{
 			return null;
+		}
 	}
 
 	//doesn't NPE
@@ -1058,9 +1075,13 @@ public class BotUtils extends Plugin
 
 		WidgetItem bankItem = new BankItemQuery().idEquals(ids).result(client).first();
 		if (bankItem != null)
+		{
 			return bankItem.getWidget();
+		}
 		else
+		{
 			return null;
+		}
 	}
 
 	public void depositAll()
@@ -1069,7 +1090,7 @@ public class BotUtils extends Plugin
 		{
 			return;
 		}
-		if(isDepositBoxOpen())
+		if (isDepositBoxOpen())
 		{
 			targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 12582916, false); //deposit all in bank interface
 			clickRandomPointCenter(-100, 100);
@@ -1140,11 +1161,9 @@ public class BotUtils extends Plugin
 	}
 
 	/**
-	 *
 	 * GRAND EXCHANGE FUNCTIONS
-	 *
- 	 */
-	public OSBGrandExchangeResult getOSBItem(int itemId){
+	 */
+	/*public OSBGrandExchangeResult getOSBItem(int itemId){
 		log.debug("Looking up OSB item price {}", itemId);
 		executorService.submit(() ->
 		{
@@ -1162,10 +1181,34 @@ public class BotUtils extends Plugin
 					(e) -> log.debug("Error getting price of item {}", itemId, e)
 				);
 		});
+		sleep(100);
 		if (osbGrandExchangeResult != null)
 			return osbGrandExchangeResult;
 		else
 			return null;
+	}*/
+	public OSBGrandExchangeResult getOSBItem(int itemId)
+	{
+		log.debug("Looking up OSB item price {}", itemId);
+		OSBCLIENT.lookupItem(itemId)
+			.subscribe(
+				(osbresult) ->
+				{
+					if (osbresult != null && osbresult.getOverall_average() > 0)
+					{
+						osbGrandExchangeResult = osbresult;
+					}
+				},
+				(e) -> log.debug("Error getting price of item {}", itemId, e)
+			);
+		if (osbGrandExchangeResult != null)
+		{
+			return osbGrandExchangeResult;
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	/**
