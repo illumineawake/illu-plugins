@@ -30,6 +30,7 @@ import com.google.inject.Provides;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_ENTER;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -78,6 +79,7 @@ import net.runelite.client.plugins.botutils.BotUtils;
 /*import net.runelite.client.rsb.methods.Tiles;
 import net.runelite.client.rsb.wrappers.RSArea;
 import net.runelite.client.rsb.wrappers.RSTile;*/
+import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
@@ -115,9 +117,14 @@ public class TestPlugin extends Plugin
 	@Inject
 	private ItemManager itemManager;
 
+	@Inject
+	InfoBoxManager infoBoxManager;
+
 	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
 	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
 		new ThreadPoolExecutor.DiscardPolicy());
+
+	private static final String FOREMAN_PERMISSION_TEXT = "Okay, you can use the furnace for ten minutes. Remember, you only need half as much coal as with a regular furnace.";
 
 	Point point = new Point(10, 10);
 	GameObject object;
@@ -283,12 +290,23 @@ public class TestPlugin extends Plugin
 	public void onWidgetLoaded(WidgetLoaded event)
 	{
 		log.info(event.toString());
-		event.getGroupId();
-		Widget optionWidget = client.getWidget(219,1);
-		if (optionWidget != null)
+		log.info(String.valueOf(event.getGroupId()));
+		//Widget optionWidget = client.getWidget(WidgetInfo.DIALOG_NPC_TEXT);
+		Widget npcDialog = client.getWidget(WidgetInfo.DIALOG_NPC_TEXT);
+		if (npcDialog == null)
 		{
-			log.info("our widget loaded");
+			return;
 		}
+
+		// blocking dialog check until 5 minutes needed to avoid re-adding while dialog message still displayed
+		/*boolean shouldCheckForemanFee = client.getRealSkillLevel(Skill.SMITHING) < 60
+			&& (foremanTimer == null || Duration.between(Instant.now(), foremanTimer.getEndTime()).toMinutes() <= 5);
+
+		if (shouldCheckForemanFee)
+		{*/
+
+
+		//}
 	}
 
 	/*@Subscribe

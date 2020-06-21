@@ -12,7 +12,6 @@ import javax.inject.Singleton;
 import net.runelite.api.Client;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
 import net.runelite.client.game.ItemManager;
-import net.runelite.client.plugins.botutils.BotUtils;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
 import net.runelite.client.ui.overlay.OverlayPanel;
@@ -29,19 +28,12 @@ class BotOverlay extends OverlayPanel
 	@Inject
 	ItemManager itemManager;
 
-	@Inject
-	BotUtils utils;
-
-	private static final float COST_PER_HOUR = 72000.0f;
-
 	private final Client client;
 	private final BlastFurnaceBotPlugin plugin;
 	private final BlastFurnaceBotConfig config;
 
-	private int previousAmount = 0;
-	private int barsAmount = 0;
-	public long barsPerHour = 0;
 	String timeFormat;
+	private String infoStatus = "Starting...";
 
 	@Inject
 	private BotOverlay(final Client client, final BlastFurnaceBotPlugin plugin, final BlastFurnaceBotConfig config)
@@ -57,36 +49,31 @@ class BotOverlay extends OverlayPanel
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		/*if (plugin.getConveyorBelt() == null)
+		if (plugin.getConveyorBelt() == null)
 		{
 			return null;
-		}*/
+		}
 		TableComponent tableComponent = new TableComponent();
 		tableComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
 
 		Duration duration = Duration.between(plugin.botTimer, Instant.now());
-		int amount = client.getVar(Bars.RUNITE_BAR.getVarbit());
-		if (amount != previousAmount)
-		{
-			barsAmount += amount;
-			previousAmount = amount;
-		}
 		timeFormat = (duration.toHours() < 1) ? "mm:ss" : "HH:mm:ss";
 		tableComponent.addRow("Time running:", formatDuration(duration.toMillis(),timeFormat));
-		if (barsAmount > 0)
+		if (plugin.state != null)
+			infoStatus = plugin.state.name();
+		tableComponent.addRow("Status:", infoStatus);
+		if (plugin.barsAmount > 0)
 		{
-			barsPerHour = barsAmount * (3600000 / duration.toMillis());
-			tableComponent.addRow("Bars made:", String.valueOf(barsAmount));
+			tableComponent.addRow("Bars made:", String.valueOf(plugin.barsAmount));
 		}
 		else
 		{
 			tableComponent.addRow("Bars made:", "0");
 		}
-		tableComponent.addRow();
 		if (!tableComponent.isEmpty())
 		{
 			panelComponent.setBackgroundColor(ColorUtil.fromHex("#121212")); //Material Dark default
-			panelComponent.setPreferredSize(new Dimension(150,150));
+			panelComponent.setPreferredSize(new Dimension(200,200));
 			panelComponent.setBorder(new Rectangle(5,5,5,5));
 			panelComponent.getChildren().add(TitleComponent.builder()
 				.text("Illumine Blast Furnace")
@@ -95,9 +82,5 @@ class BotOverlay extends OverlayPanel
 			panelComponent.getChildren().add(tableComponent);
 		}
 		return super.render(graphics);
-	}
-	private BufferedImage getImage(int itemID, int amount)
-	{
-		return itemManager.getImage(itemID, amount, true);
 	}
 }

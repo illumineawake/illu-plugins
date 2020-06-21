@@ -28,6 +28,7 @@ package net.runelite.client.plugins.blastfurnacebot;
 import com.google.inject.Provides;
 
 import java.awt.event.KeyEvent;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import javax.inject.Inject;
@@ -43,8 +44,10 @@ import static net.runelite.api.NullObjectID.NULL_9092;
 
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.*;
+import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -60,6 +63,7 @@ import static net.runelite.client.plugins.blastfurnacebot.BlastFurnaceState.*;
 
 import net.runelite.client.plugins.botutils.BotUtils;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import org.pf4j.Extension;
 
 @Extension
@@ -75,6 +79,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 {
 	private static final int BAR_DISPENSER = NULL_9092;
 	private static final int BF_COFFER = NULL_29330;
+	private static final long COST_PER_HOUR = 72000;
 	private static final String FOREMAN_PERMISSION_TEXT = "Okay, you can use the furnace for ten minutes. Remember, you only need half as much coal as with a regular furnace.";
 	private final List<Integer> INVENTORY_SETUP = List.of(ItemID.COAL_BAG_12019, ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
 
@@ -102,6 +107,9 @@ public class BlastFurnaceBotPlugin extends Plugin
 	private ProfitOverlay profitOverlay;
 
 	@Inject
+	private InfoBoxManager infoBoxManager;
+
+	@Inject
 	private BlastFurnaceBotConfig config;
 
 	@Inject
@@ -120,6 +128,10 @@ public class BlastFurnaceBotPlugin extends Plugin
 	int orePrice;
 	int coalPrice;
 	int staminaPotPrice;
+	int previousAmount = 0;
+	long barsPerHour = 0;
+	long barsAmount = 0;
+	long profit = 0;
 	private int timeout = 0;
 	private boolean coalBagFull;
 
@@ -147,6 +159,11 @@ public class BlastFurnaceBotPlugin extends Plugin
 		conveyorBelt = null;
 		barDispenser = null;
 		foremanTimer = null;
+		botTimer = null;
+		barsAmount = 0;
+		previousAmount = 0;
+		barsPerHour = 0;
+		profit = 0;
 	}
 
 	@Subscribe
@@ -172,6 +189,11 @@ public class BlastFurnaceBotPlugin extends Plugin
 					bar = config.getBar();
 					getItemPrices();
 					log.info("Bar configured to: " + bar.name());
+					barsAmount = 0;
+					previousAmount = 0;
+					barsPerHour = 0;
+					profit = 0;
+					botTimer = Instant.now();
 					break;
 			}
 		}
@@ -185,6 +207,50 @@ public class BlastFurnaceBotPlugin extends Plugin
 		staminaPotPrice = utils.getOSBItem(ItemID.STAMINA_POTION4).getBuy_average();
 
 		log.info("{} price: {}, Ore price: {}, Coal price: {}, stamina pot price: {}", bar.name(), barPrice, orePrice, coalPrice, staminaPotPrice);
+	}
+
+	public void barsMade()
+	{
+		int amount = client.getVar(bar.getVarbit());
+		if (amount != previousAmount)
+		{
+			previousAmount = amount;
+			barsAmount += amount;
+		}
+	}
+
+	public long profitPerHour()
+	{
+		int foremanMultiplier = (client.getRealSkillLevel(Skill.SMITHING) < 60) ? 1 : 0;
+		switch (bar.name())
+		{
+			case "IRON_BAR":
+			case "SILVER_BAR":
+			case "GOLD_BAR":
+				return (barsPerHour * barPrice) - ((barsPerHour * orePrice) + (9 * staminaPotPrice) + COST_PER_HOUR + (foremanMultiplier * 60000));
+			case "STEEL_BAR":
+				return (barsPerHour * barPrice) - ((barsPerHour * orePrice) + (barsPerHour * coalPrice) + (9 * staminaPotPrice) + COST_PER_HOUR + (foremanMultiplier * 60000));
+			case "MITHRIL_BAR":
+				return (barsPerHour * barPrice) - ((barsPerHour * orePrice) + ((barsPerHour * 2) * coalPrice) + (9 * staminaPotPrice) + COST_PER_HOUR + (foremanMultiplier * 60000));
+			case "ADAMANTITE_BAR":
+				return (barsPerHour * barPrice) - ((barsPerHour * orePrice) + ((barsPerHour * 3) * coalPrice) + (9 * staminaPotPrice) + COST_PER_HOUR);
+			case "RUNITE_BAR":
+				return (barsPerHour * barPrice) - ((barsPerHour * orePrice) + ((barsPerHour * 4) * coalPrice) + (9 * staminaPotPrice) + COST_PER_HOUR);
+		}
+		return 0;
+	}
+
+	public long getBarsPH()
+	{
+		Duration duration = Duration.between(botTimer, Instant.now());
+		return barsAmount * (3600000 / duration.toMillis());
+	}
+
+	private void updateCalc()
+	{
+		barsMade();
+		barsPerHour = getBarsPH();
+		profit = profitPerHour();
 	}
 
 	private void openBank()
@@ -240,6 +306,22 @@ public class BlastFurnaceBotPlugin extends Plugin
 		return COLLECTING_BARS;
 	}
 
+	private boolean shouldCheckForemanFee()
+	{
+		return client.getRealSkillLevel(Skill.SMITHING) < 60
+			&& (foremanTimer == null || Duration.between(Instant.now(), foremanTimer.getEndTime()).toSeconds() <= 30);
+	}
+
+	private void setForemanTime(Widget npcDialog)
+	{
+		String npcText = Text.sanitizeMultilineText(npcDialog.getText());
+
+		if (npcText.equals(FOREMAN_PERMISSION_TEXT))
+		{
+			foremanTimer = new ForemanTimer(this, itemManager);
+		}
+	}
+
 	private BlastFurnaceState getState()
 	{
 		if (conveyorBelt == null || barDispenser == null)
@@ -268,6 +350,34 @@ public class BlastFurnaceBotPlugin extends Plugin
 		}
 		if (!utils.isBankOpen())
 		{
+			if (shouldCheckForemanFee())
+			{
+				if (!utils.inventoryContains(ItemID.COINS_995, 2500))
+				{
+					openBank();
+					return OPENING_BANK;
+				}
+				Widget payDialog = client.getWidget(WidgetInfo.DIALOG_OPTION_OPTION1);
+				if (payDialog != null)
+				{
+					targetMenu = new MenuEntry("", "", 0,MenuOpcode.WIDGET_TYPE_6.getId(), 1, 14352385,false );
+					utils.clickRandomPointCenter(-100, 100);
+					return PAY_FOREMAN;
+				}
+				Widget npcDialog = client.getWidget(WidgetInfo.DIALOG_NPC_TEXT);
+				if (npcDialog != null)
+				{
+					setForemanTime(npcDialog);
+					return PAY_FOREMAN;
+				}
+				NPC foreman = utils.findNearestNpc(2923);
+				if (foreman != null)
+				{
+					targetMenu = new MenuEntry("", "", foreman.getIndex(), MenuOpcode.NPC_THIRD_OPTION.getId(), 0, 0, false);
+					utils.clickRandomPointCenter(-100, 100);
+					return PAY_FOREMAN;
+				}
+			}
 			if (!client.getWidget(162, 40).isHidden()) //deposit amount for coffer widget
 			{
 				if (!utils.inventoryContains(ItemID.COINS_995, cofferRefill))
@@ -279,7 +389,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				int depositAmount = (utils.inventoryContains(ItemID.COINS_995, randDepositAmount)) ? randDepositAmount : cofferRefill;
 
 				utils.typeString(String.valueOf(depositAmount));
-				utils.sleep(10, 50);
+				utils.sleep(50, 100);
 				utils.pressKey(KeyEvent.VK_ENTER);
 				utils.sleep(200, 350);
 				return FILL_COFFER;
@@ -415,7 +525,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				}
 				return collectBars();
 			}
-			if (client.getVar(Varbits.BLAST_FURNACE_COFFER) < cofferMinValue)
+			if ((client.getVar(Varbits.BLAST_FURNACE_COFFER) < cofferMinValue) || shouldCheckForemanFee())
 			{
 				if (utils.inventoryContains(ItemID.COINS_995, cofferRefill))
 				{
@@ -424,7 +534,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				}
 				if (utils.inventoryFull() && !utils.inventoryContains(ItemID.COINS_995))
 				{
-					log.info("Depositing inventory to make room for coins for coffer");
+					log.info("Depositing inventory to make room for coins");
 					utils.depositAllExcept(INVENTORY_SETUP);
 					return DEPOSITING;
 				}
@@ -436,26 +546,15 @@ public class BlastFurnaceBotPlugin extends Plugin
 				}
 				else
 				{
-					utils.sendGameMessage("Out of coins");
+					utils.sendGameMessage("Out of coins, required: " + cofferRefill);
 					utils.closeBank();
 					utils.sendGameMessage("Log Off.");
 					return OUT_OF_ITEMS;
 				}
 			}
-            /*WidgetItem emptyVial = utils.getInventoryWidgetItem(ItemID.VIAL);
-            if (emptyVial != null) {
-                log.info("depositing empty vial");
-				utils.depositAllOfItem(emptyVial);
-                return DEPOSITING;
-            }*/
 			Widget staminaPotionBank = utils.getBankItemWidgetAnyOf(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
 			if (staminaPotionBank != null && utils.getItems(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4)).isEmpty())
 			{
-                /*if (utils.inventoryFull()) {
-                    log.info("depositing inventory to make room for stamina pot");
-					utils.depositAllExcept(INVENTORY_SETUP);
-					return DEPOSITING;
-                }*/
 				utils.depositAllExcept(INVENTORY_SETUP);
 				log.info("withdrawing stam pot");
 				utils.withdrawItem(staminaPotionBank);
@@ -479,7 +578,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 					return OUT_OF_ITEMS;
 				}
 			}
-			if (client.getVar(Ores.COAL.getVarbit()) <= bar.getMinCoalAmount() || !coalBagFull)
+			if ((client.getVar(Ores.COAL.getVarbit()) <= bar.getMinCoalAmount() || !coalBagFull) && client.getVar(Ores.COAL.getVarbit()) < 220 && bar.getMinCoalAmount() != 0)
 			{
 				if (utils.inventoryContains(ItemID.COAL))
 				{
@@ -515,7 +614,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 					return OUT_OF_ITEMS;
 				}
 			}
-			if (client.getVar(Ores.COAL.getVarbit()) > bar.getMinCoalAmount() && coalBagFull) //logic probably needs updating
+			if (client.getVar(Ores.COAL.getVarbit()) > bar.getMinCoalAmount() || bar.getMinCoalAmount() == 0) //logic probably needs updating
 			{
 				if (utils.inventoryFull() || utils.inventoryContains(bar.getOreID()))
 				{
@@ -543,7 +642,6 @@ public class BlastFurnaceBotPlugin extends Plugin
 				}
 				else
 				{
-					utils.closeBank();
 					utils.sendGameMessage("Out of ore, log off");
 					return OUT_OF_ITEMS;
 				}
@@ -661,6 +759,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 	{
 		if (client != null && client.getLocalPlayer() != null && client.getGameState() == GameState.LOGGED_IN)
 		{
+			updateCalc();
 			if (!utils.iterating)
 			{
 				state = getState();
@@ -679,28 +778,6 @@ public class BlastFurnaceBotPlugin extends Plugin
 				{
 					log.info("state is null");
 				}
-		/*Widget npcDialog = client.getWidget(WidgetInfo.DIALOG_NPC_TEXT);
-		if (npcDialog == null)
-		{
-			return;
-		}
-
-		// blocking dialog check until 5 minutes needed to avoid re-adding while dialog message still displayed
-		boolean shouldCheckForemanFee = client.getRealSkillLevel(Skill.SMITHING) < 60
-			&& (foremanTimer == null || Duration.between(Instant.now(), foremanTimer.getEndTime()).toMinutes() <= 5);
-
-		if (shouldCheckForemanFee)
-		{
-			String npcText = Text.sanitizeMultilineText(npcDialog.getText());
-
-			if (npcText.equals(FOREMAN_PERMISSION_TEXT))
-			{
-				infoBoxManager.removeIf(ForemanTimer.class::isInstance);
-
-				foremanTimer = new ForemanTimer(this, itemManager);
-				infoBoxManager.addInfoBox(foremanTimer);
-			}
-		}*/
 			}
 			else
 			{
