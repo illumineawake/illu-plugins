@@ -12,7 +12,7 @@ Add this repo within OPRS, using:
 
 Github Repository owner: illumineawake
 
-Github Repository name: illumine-plugins
+Github Repository name: illu-plugins
 
 
 # Credits
