@@ -30,6 +30,7 @@ import com.google.inject.Provides;
 import java.awt.event.KeyEvent;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -81,7 +82,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 	private static final int BF_COFFER = NULL_29330;
 	private static final long COST_PER_HOUR = 72000;
 	private static final String FOREMAN_PERMISSION_TEXT = "Okay, you can use the furnace for ten minutes. Remember, you only need half as much coal as with a regular furnace.";
-	private final List<Integer> INVENTORY_SETUP = List.of(ItemID.COAL_BAG_12019, ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
+	List<Integer> inventorySetup = new ArrayList<>();
 
 	@Getter(AccessLevel.PACKAGE)
 	private GameObject conveyorBelt;
@@ -145,6 +146,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 		targetMenu = null;
 		botTimer = Instant.now();
 		bar = config.getBar();
+		initInventory();
 		cofferMinValue = config.cofferThreshold();
 		cofferRefill = config.cofferAmount();
 		tickDelay = config.delayAmount();
@@ -193,10 +195,20 @@ public class BlastFurnaceBotPlugin extends Plugin
 					previousAmount = 0;
 					barsPerHour = 0;
 					profit = 0;
+					initInventory();
 					botTimer = Instant.now();
 					break;
 			}
 		}
+	}
+
+	private void initInventory()
+	{
+		inventorySetup.clear();
+		inventorySetup = (bar.getMinCoalAmount() == 0) ?
+			List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4) :
+			List.of(ItemID.COAL_BAG_12019, ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
+		log.info("required inventory items: {}", inventorySetup.toString());
 	}
 
 	private void getItemPrices()
@@ -275,7 +287,10 @@ public class BlastFurnaceBotPlugin extends Plugin
 	private void collectFurnace()
 	{
 		log.info("At collectFurnace(), collecting bars");
-		targetMenu = new MenuEntry("", "", barDispenser.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), barDispenser.getSceneMinLocation().getX(), barDispenser.getSceneMinLocation().getY(), false);
+		targetMenu = (client.getVar(Varbits.BAR_DISPENSER) == 1) ?
+			new MenuEntry("", "", 0, MenuOpcode.WALK.getId(), barDispenser.getSceneMinLocation().getX(), barDispenser.getSceneMinLocation().getY(), false)
+			: new MenuEntry("", "", barDispenser.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), barDispenser.getSceneMinLocation().getX(), barDispenser.getSceneMinLocation().getY(), false);
+
 		utils.clickRandomPointCenter(-100, 100);
 		timeout = utils.getRandomIntBetweenRange(1,tickDelay);
 	}
@@ -474,7 +489,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				{
 					if (utils.getItems(List.of(ItemID.COAL, bar.getOreID())).isEmpty())
 					{
-						if (!coalBagFull)
+						if (!coalBagFull || coalBag == null)
 						{
 							utils.sleep(60, 250);
 							if (client.getVar(Varbits.BAR_DISPENSER) > 0)
@@ -488,7 +503,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 								return OPENING_BANK;
 							}
 						}
-						if (coalBagFull)
+						if (coalBagFull && coalBag != null)
 						{
 							emptyCoalBag(coalBag);
 						}
@@ -496,7 +511,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 					if (!utils.getItems(List.of(ItemID.COAL, bar.getOreID())).isEmpty())
 					{
 						putConveyorBelt();
-						if (!coalBagFull)
+						if (!coalBagFull || coalBag == null)
 						{
 							timeout = utils.getRandomIntBetweenRange(1,tickDelay);
 							return PUT_CONVEYOR_BELT;
@@ -511,7 +526,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 			if (inventoryBar != null)
 			{
 				log.info("depositing bars");
-				utils.depositAllExcept(INVENTORY_SETUP);
+				utils.depositAllExcept(inventorySetup);
 				return DEPOSITING;
 			}
 			if (client.getVar(Varbits.BAR_DISPENSER) > 0) //Bars in dispenser
@@ -519,7 +534,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				log.info("bars ready for collection, bank is open, depositing inventory and collecting");
 				if (utils.getInventorySpace() < 26) //TODO: create inventoryContainsExcluding method in utils
 				{
-					//utils.depositAllExcept(INVENTORY_SETUP);
+					//utils.depositAllExcept(inventorySetup);
 					utils.depositAll();
 					return DEPOSITING;
 				}
@@ -535,7 +550,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				if (utils.inventoryFull() && !utils.inventoryContains(ItemID.COINS_995))
 				{
 					log.info("Depositing inventory to make room for coins");
-					utils.depositAllExcept(INVENTORY_SETUP);
+					utils.depositAllExcept(inventorySetup);
 					return DEPOSITING;
 				}
 				if (utils.bankContains(ItemID.COINS_995, cofferRefill))
@@ -555,17 +570,17 @@ public class BlastFurnaceBotPlugin extends Plugin
 			Widget staminaPotionBank = utils.getBankItemWidgetAnyOf(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
 			if (staminaPotionBank != null && utils.getItems(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4)).isEmpty())
 			{
-				utils.depositAllExcept(INVENTORY_SETUP);
+				utils.depositAllExcept(inventorySetup);
 				log.info("withdrawing stam pot");
 				utils.withdrawItem(staminaPotionBank);
 				return WITHDRAWING;
 			}
-			if (!utils.inventoryContains(ItemID.COAL_BAG_12019))
+			if (!utils.inventoryContains(ItemID.COAL_BAG_12019) && inventorySetup.contains(ItemID.COAL_BAG_12019))
 			{
 				Widget coalBagBank = utils.getBankItemWidget(ItemID.COAL_BAG_12019);
 				if (coalBagBank != null)
 				{
-					utils.depositAllExcept(INVENTORY_SETUP);
+					utils.depositAllExcept(inventorySetup);
 					log.info("withdrawing coal bag");
 					utils.withdrawItem(coalBagBank);
 					return WITHDRAWING;
@@ -595,14 +610,14 @@ public class BlastFurnaceBotPlugin extends Plugin
 				}
 				if (utils.inventoryFull()) //TODO: actually handle this properly
 				{
-					utils.depositAllExcept(INVENTORY_SETUP);
+					utils.depositAllExcept(inventorySetup);
 					utils.sendGameMessage("inventory is full but need to withdraw coal");
 					return OUT_OF_ITEMS;
 				}
 				Widget coalBank = utils.getBankItemWidget(ItemID.COAL);
 				if (coalBank != null)
 				{
-					utils.depositAllExcept(INVENTORY_SETUP);
+					utils.depositAllExcept(inventorySetup);
 					log.info("withdrawing coal");
 					utils.withdrawAllItem(coalBank);
 					log.info("sleeping");
@@ -626,7 +641,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 					}
 					else
 					{
-						utils.depositAllExcept(INVENTORY_SETUP);
+						utils.depositAllExcept(inventorySetup);
 						utils.sendGameMessage("need to withdraw Ore but inventory is full, something went wrong.");
 						return OUT_OF_ITEMS;
 					}
@@ -634,7 +649,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				Widget bankOre = utils.getBankItemWidget(bar.getOreID());
 				if (bankOre != null)
 				{
-					utils.depositAllExcept(INVENTORY_SETUP);
+					utils.depositAllExcept(inventorySetup);
 					log.info("withdrawing ore");
 					utils.withdrawAllItem(bankOre);
 					timeout = utils.getRandomIntBetweenRange(1,tickDelay);
