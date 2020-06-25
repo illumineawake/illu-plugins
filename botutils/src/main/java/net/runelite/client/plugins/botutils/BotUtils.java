@@ -5,7 +5,6 @@
  */
 package net.runelite.client.plugins.botutils;
 
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
@@ -17,8 +16,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
@@ -495,14 +492,14 @@ public class BotUtils extends Plugin
 	 */
 	public void click(Rectangle rectangle)
 	{
-		assert !client.isClientThread();
+		//assert !client.isClientThread();
 		Point point = getClickPoint(rectangle);
 		click(point);
 	}
 
 	public void click(Point p)
 	{
-		assert !client.isClientThread();
+		//assert !client.isClientThread();
 
 		if (client.isStretchedEnabled())
 		{
@@ -523,14 +520,14 @@ public class BotUtils extends Plugin
 
 	public void moveClick(Rectangle rectangle)
 	{
-		assert !client.isClientThread();
+		//assert !client.isClientThread();
 		Point point = getClickPoint(rectangle);
 		moveClick(point);
 	}
 
 	public void moveClick(Point p)
 	{
-		assert !client.isClientThread();
+		//assert !client.isClientThread();
 
 		if (client.isStretchedEnabled())
 		{
@@ -565,14 +562,14 @@ public class BotUtils extends Plugin
 
 	public void moveMouseEvent(Rectangle rectangle)
 	{
-		assert !client.isClientThread();
+		//assert !client.isClientThread();
 		Point point = getClickPoint(rectangle);
 		moveClick(point);
 	}
 
 	public void moveMouseEvent(Point p)
 	{
-		assert !client.isClientThread();
+		//assert !client.isClientThread();
 
 		if (client.isStretchedEnabled())
 		{

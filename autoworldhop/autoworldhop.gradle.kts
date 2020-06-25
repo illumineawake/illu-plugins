@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.1"
+version = "1.0.1"
 
 project.extra["PluginName"] = "Auto World Hop"
 project.extra["PluginDescription"] = "Auto world hop plugin Illumine edits"

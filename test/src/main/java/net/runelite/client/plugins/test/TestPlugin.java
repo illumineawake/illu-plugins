@@ -215,6 +215,8 @@ public class TestPlugin extends Plugin
 		{
 			if(!utils.iterating)
 			{
+				Point point = new Point(100,200);
+				utils.click(point);
 				//log.info("Bank widget" + (client.getWidget(WidgetInfo.DEPOSIT_BOX_INVENTORY_ITEMS_CONTAINER) != null));
 
 
