@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.5"
+version = "1.0.6"
 
 project.extra["PluginName"] = "Tick Eat"
 project.extra["PluginDescription"] = "Illumine auto eat food below given HP on tick"

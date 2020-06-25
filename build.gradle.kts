@@ -21,7 +21,7 @@ subprojects {
     //group = "com.example"
     group = "com.openosrs.externals"
 
-    project.extra["PluginProvider"] = "Illumine"
+    project.extra["PluginProvider"] = "illumine"
     project.extra["ProjectSupportUrl"] = ""
     project.extra["PluginLicense"] = "3-Clause BSD License"
 
