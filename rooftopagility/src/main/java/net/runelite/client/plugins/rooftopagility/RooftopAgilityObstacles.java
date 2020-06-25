@@ -52,7 +52,15 @@ public enum RooftopAgilityObstacles
 	SEERS_ROOF_TWO(new WorldArea(new WorldPoint(2702, 3486, 2), new WorldPoint(2714, 3499, 2)), TIGHTROPE_14932), //GROUND OBJECT
 	SEERS_ROOF_THREE(new WorldArea(new WorldPoint(2707, 3475, 2), new WorldPoint(2717, 3483, 2)),GAP_14929),
 	SEERS_ROOF_FOUR(new WorldArea(new WorldPoint(2697, 3468, 3), new WorldPoint(2718, 3478, 3)), GAP_14930),
-	SEERS_ROOF_FIVE(new WorldArea(new WorldPoint(2689, 3458, 2), new WorldPoint(2704, 3467, 2)), EDGE_14931);
+	SEERS_ROOF_FIVE(new WorldArea(new WorldPoint(2689, 3458, 2), new WorldPoint(2704, 3467, 2)), EDGE_14931),
+	//Rellekka
+	RELL_GROUND(new WorldArea(new WorldPoint(2612, 3654, 0), new WorldPoint(2672, 3687, 0)), ROUGH_WALL_14946), //Decoration
+	RELL_ROOF_ONE(new WorldArea(new WorldPoint(2621, 3671, 3), new WorldPoint(2627, 3677, 3)), GAP_14947),
+	RELL_ROOF_TWO(new WorldArea(new WorldPoint(2614, 3657, 3), new WorldPoint(2623, 3669, 3)), TIGHTROPE_14987),
+	RELL_ROOF_THREE(new WorldArea(new WorldPoint(2625, 3649, 3), new WorldPoint(2631, 3656, 3)), GAP_14990),
+	RELL_ROOF_FOUR(new WorldArea(new WorldPoint(2638, 3648, 3), new WorldPoint(2645, 3654, 3)), GAP_14991),
+	RELL_ROOF_FIVE(new WorldArea(new WorldPoint(2642, 3656, 3), new WorldPoint(2651, 3663, 3)), TIGHTROPE_14992),
+	RELL_ROOF_SIX(new WorldArea(new WorldPoint(2654, 3663, 3), new WorldPoint(2667, 3686, 3)), PILE_OF_FISH);
 
 	//@Getter(AccessLevel.PACKAGE)
 	private final WorldArea location;
