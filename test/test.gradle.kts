@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.4"
+version = "1.0.6"
 
 project.extra["PluginName"] = "Test"
 project.extra["PluginDescription"] = "Illumine test plugin"

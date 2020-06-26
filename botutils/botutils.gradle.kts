@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.8"
+version = "1.0.9.1"
 
 project.extra["PluginName"] = "BotUtils" // This is the name that is used in the external plugin manager panel
 project.extra["PluginDescription"] = "Illumine - Utils required for plugins to function with added automation" // This is the description that is used in the external plugin manager panel

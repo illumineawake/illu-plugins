@@ -13,7 +13,7 @@ plugins {
     checkstyle
 }
 
-project.extra["GithubUrl"] = "http://github.com/illumineawake/illu-plugins"
+project.extra["GithubUrl"] = "https://github.com/illumineawake/illu-plugins"
 
 apply<BootstrapPlugin>()
 

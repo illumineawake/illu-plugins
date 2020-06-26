@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.2"
+version = "1.0.4"
 
 project.extra["PluginName"] = "Blast Furnace - Illumine"
 project.extra["PluginDescription"] = "Illumine bot for Blast Furnace minigame"

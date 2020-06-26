@@ -24,7 +24,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "5.16.0"
+version = "5.18.0"
 
 project.extra["PluginName"] = "AutoClickIllumine"
 project.extra["PluginDescription"] = "What more is there to say?"
