@@ -15,7 +15,6 @@ classes/artifacts/client_jar/client.jar
 !gradle-wrapper.jar
 .live/
 **/build/*
-release/
 */out/
 .gradle/
 runelite-client/src/main/resources/runelite/*
@@ -23,3 +22,4 @@ runelite-client/dependencies.txt
 .staging/
 hs_err*
 replay_pid*
+/release/
