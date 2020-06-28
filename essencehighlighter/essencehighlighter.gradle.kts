@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.4"
+version = "1.0.7"
 
 project.extra["PluginName"] = "Dense Essence Highlighter" // This is the name that is used in the external plugin manager panel
 project.extra["PluginDescription"] = "Dense Essence highlighter" // This is the description that is used in the external plugin manager panel

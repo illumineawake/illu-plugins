@@ -83,7 +83,7 @@ subprojects {
             doLast {
                 copy {
                     from("./build/libs/")
-                    into("C:/Users/joshm/.runelite/externalmanager")
+                    into("C:\\Users\\joshm\\Documents\\JavaProjects\\My Plugins Jars")
                 }
             }
         }

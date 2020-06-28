@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.9.1"
+version = "0.1.0"
 
 project.extra["PluginName"] = "BlackjackIllumine"
 project.extra["PluginDescription"] = "Allows for one-click blackjacking, both knocking out and pickpocketing"

@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.9"
+version = "1.0.9.2"
 
 project.extra["PluginName"] = "Motherlode Mine Bot"
 project.extra["PluginDescription"] = "Illumine Motherlode Mine bot plugin"
