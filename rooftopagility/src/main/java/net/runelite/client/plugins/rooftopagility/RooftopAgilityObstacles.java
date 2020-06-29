@@ -1,5 +1,7 @@
 package net.runelite.client.plugins.rooftopagility;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import static net.runelite.api.ObjectID.*;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
@@ -62,14 +64,6 @@ public enum RooftopAgilityObstacles
 	SEERS_ROOF_THREE(new WorldPoint(2707, 3475, 2), new WorldPoint(2717, 3483, 2), GAP_14929),
 	SEERS_ROOF_FOUR(new WorldPoint(2697, 3468, 3), new WorldPoint(2718, 3478, 3), GAP_14930),
 	SEERS_ROOF_FIVE(new WorldPoint(2689, 3458, 2), new WorldPoint(2704, 3467, 2), EDGE_14931),
-	//Rellekka
-	RELL_GROUND(new WorldPoint(2612, 3654, 0), new WorldPoint(2672, 3687, 0), ROUGH_WALL_14946, RooftopAgilityObstacleType.DECORATION),
-	RELL_ROOF_ONE(new WorldPoint(2621, 3671, 3), new WorldPoint(2627, 3677, 3), GAP_14947),
-	RELL_ROOF_TWO(new WorldPoint(2614, 3657, 3), new WorldPoint(2623, 3669, 3), TIGHTROPE_14987),
-	RELL_ROOF_THREE(new WorldPoint(2625, 3649, 3), new WorldPoint(2631, 3656, 3), GAP_14990),
-	RELL_ROOF_FOUR(new WorldPoint(2638, 3648, 3), new WorldPoint(2645, 3654, 3), GAP_14991),
-	RELL_ROOF_FIVE(new WorldPoint(2642, 3656, 3), new WorldPoint(2651, 3663, 3), TIGHTROPE_14992),
-	RELL_ROOF_SIX(new WorldPoint(2654, 3663, 3), new WorldPoint(2667, 3686, 3), PILE_OF_FISH),
 	//Pollniveach
 	POLL_GROUND(new WorldPoint(3328, 2944, 0), new WorldPoint(3392, 3008, 0), BASKET_14935),
 	POLL_ROOF_ONE(new WorldPoint(3346, 2963, 1), new WorldPoint(3352, 2969, 1), MARKET_STALL_14936),
@@ -79,12 +73,20 @@ public enum RooftopAgilityObstacles
 	POLL_ROOF_FIVE(new WorldPoint(3365, 2982, 1), new WorldPoint(3370, 2987, 1), ROUGH_WALL_14940, RooftopAgilityObstacleType.DECORATION),
 	POLL_ROOF_SIX(new WorldPoint(3355, 2980, 2), new WorldPoint(3366, 2986, 2), MONKEYBARS),
 	POLL_ROOF_SEVEN(new WorldPoint(3357, 2991, 2), new WorldPoint(3367, 2996, 2), TREE_14944),
-	POLL_ROOF_EIGHT(new WorldPoint(3356, 3000, 2), new WorldPoint(3363, 3005, 2), DRYING_LINE);
+	POLL_ROOF_EIGHT(new WorldPoint(3356, 3000, 2), new WorldPoint(3363, 3005, 2), DRYING_LINE),
+	//Rellekka
+	RELL_GROUND(new WorldPoint(2612, 3654, 0), new WorldPoint(2672, 3687, 0), ROUGH_WALL_14946, RooftopAgilityObstacleType.DECORATION),
+	RELL_ROOF_ONE(new WorldPoint(2621, 3671, 3), new WorldPoint(2627, 3677, 3), GAP_14947),
+	RELL_ROOF_TWO(new WorldPoint(2614, 3657, 3), new WorldPoint(2623, 3669, 3), TIGHTROPE_14987),
+	RELL_ROOF_THREE(new WorldPoint(2625, 3649, 3), new WorldPoint(2631, 3656, 3), GAP_14990),
+	RELL_ROOF_FOUR(new WorldPoint(2638, 3648, 3), new WorldPoint(2645, 3654, 3), GAP_14991),
+	RELL_ROOF_FIVE(new WorldPoint(2642, 3656, 3), new WorldPoint(2651, 3663, 3), TIGHTROPE_14992),
+	RELL_ROOF_SIX(new WorldPoint(2654, 3663, 3), new WorldPoint(2667, 3686, 3), PILE_OF_FISH);
 
-	//@Getter(AccessLevel.PACKAGE)
+	@Getter(AccessLevel.PACKAGE)
 	private final WorldArea location;
 
-	//@Getter(AccessLevel.PACKAGE)
+	@Getter(AccessLevel.PACKAGE)
 	private final int obstacleId;
 
 	private RooftopAgilityObstacleType type = RooftopAgilityObstacleType.NORMAL;
@@ -100,16 +102,6 @@ public enum RooftopAgilityObstacles
 		this.location = new WorldArea(min, max);
 		this.obstacleId = obstacleId;
 		this.type = type;
-	}
-
-	public WorldArea getLocation()
-	{
-		return location;
-	}
-
-	public int getObstacleId()
-	{
-		return obstacleId;
 	}
 
 	public RooftopAgilityObstacleType getObstacleType()

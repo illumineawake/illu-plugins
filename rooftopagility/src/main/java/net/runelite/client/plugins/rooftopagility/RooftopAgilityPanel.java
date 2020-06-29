@@ -40,7 +40,8 @@ public class RooftopAgilityPanel extends PluginPanel
 		supportedCoursesText.setLineWrap(true);
 		supportedCoursesText.setEditable(false);
 		supportedCoursesText.setFont(smallFont);
-		supportedCoursesText.setText("Courses:\r\nTree Gnome\r\nDraynor\r\nVarrock\r\nCanifis\r\nFalador\r\nSeers Village\r\nRellekka\r\nPollniveach\r\n");
+		supportedCoursesText.setText("Supported Courses:\r\nTree Gnome\r\nDraynor\r\nVarrock\r\nCanifis\r\nFalador\r\nSeers Village\r\nRellekka\r\nPollniveach" +
+			"\r\n\r\nInstructions: Stand near the course and click start!\r\n");
 
 		JCheckBox markCheck = new JCheckBox();
 		markCheck.setFont(smallFont);

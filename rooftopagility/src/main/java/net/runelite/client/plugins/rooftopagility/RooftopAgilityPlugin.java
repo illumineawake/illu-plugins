@@ -26,13 +26,15 @@
 package net.runelite.client.plugins.rooftopagility;
 
 import java.awt.image.BufferedImage;
+import java.util.Set;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import static net.runelite.api.ObjectID.*;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.*;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.events.ItemSpawned;
+import net.runelite.api.events.ItemDespawned;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
@@ -44,11 +46,6 @@ import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ImageUtil;
 import org.pf4j.Extension;
-import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import static net.runelite.client.plugins.rooftopagility.RooftopAgilityState.*;
 
 
@@ -83,9 +80,9 @@ public class RooftopAgilityPlugin extends Plugin
 	TileItem markOfGrace;
 	Tile markOfGraceTile;
 	MenuEntry targetMenu;
-	LocalPoint beforeLoc = new LocalPoint(0,0); //initiate to mitigate npe, this sucks
+	LocalPoint beforeLoc = new LocalPoint(0, 0); //initiate to mitigate npe
 	int timeout = 0;
-	private final List<Integer> REGION_IDS = List.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878);
+	private final Set<Integer> REGION_IDS = Set.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878);
 
 	@Override
 	protected void startUp()
@@ -110,22 +107,6 @@ public class RooftopAgilityPlugin extends Plugin
 		markOfGraceTile = null;
 		markOfGrace = null;
 		clientToolbar.removeNavigation(navButton);
-	}
-
-	//enables run if below given minimum energy with random positive variation
-	private void handleRun(int minEnergy, int randMax)
-	{
-		if (utils.isRunEnabled())
-		{
-			return;
-		}
-		else if (client.getEnergy() > (minEnergy + utils.getRandomIntBetweenRange(0, randMax)))
-		{
-			log.info("enabling run");
-			targetMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
-			utils.sleep(60, 350);
-			utils.clickRandomPointCenter(-100, 100);
-		}
 	}
 
 	private void findObstacle()
@@ -157,7 +138,7 @@ public class RooftopAgilityPlugin extends Plugin
 					return;
 				}
 			}
-			GameObject objObstacle = utils.findNearestGameObject(obstacle.getObstacleId()); //this probably doesn't work for climbing rough wall?
+			GameObject objObstacle = utils.findNearestGameObject(obstacle.getObstacleId());
 			if (objObstacle != null)
 			{
 				targetMenu = new MenuEntry("", "", objObstacle.getId(), 3, objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
@@ -171,7 +152,6 @@ public class RooftopAgilityPlugin extends Plugin
 			log.info("Not in obstacle area");
 		}
 	}
-
 
 	public RooftopAgilityState getState()
 	{
@@ -207,14 +187,14 @@ public class RooftopAgilityPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
-		if (client != null && client.getLocalPlayer() != null && panel.startAgility)
+		if (client != null && client.getLocalPlayer() != null && client.getGameState() == GameState.LOGGED_IN && panel.startAgility)
 		{
 			if (!REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
 			{
 				log.info("not in agility course region");
 				return;
 			}
-			handleRun(40, 20);
+			utils.handleRun(40, 20);
 			state = getState();
 			//this seems shit
 			beforeLoc = client.getLocalPlayer().getLocalLocation();
@@ -227,7 +207,8 @@ public class RooftopAgilityPlugin extends Plugin
 					log.info("Picking up mark of grace");
 					targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
 					utils.sleep(60, 350);
-					utils.clickRandomPointCenter(-100, 100);					return;
+					utils.clickRandomPointCenter(-100, 100);
+					return;
 				case FIND_OBSTACLE:
 					findObstacle();
 					return;
@@ -253,7 +234,7 @@ public class RooftopAgilityPlugin extends Plugin
 		}
 		//log.info("MenuEntry string event: " + targetMenu.toString());
 		event.setMenuEntry(targetMenu);
-		timeout = 2;
+		timeout = 2 + utils.getRandomIntBetweenRange(0, 2);
 		targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
 	}
 
