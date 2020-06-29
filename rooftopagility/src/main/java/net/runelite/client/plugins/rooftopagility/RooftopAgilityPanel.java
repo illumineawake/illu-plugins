@@ -5,12 +5,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import javax.inject.Inject;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
-
 import net.runelite.client.plugins.botutils.BotUtils;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.DynamicGridLayout;
@@ -20,7 +18,7 @@ import net.runelite.client.ui.PluginPanel;
 public class RooftopAgilityPanel extends PluginPanel
 {
 	public boolean startAgility;
-	public boolean markPickup;
+	public boolean markPickup = true;
 
 	@Inject
 	BotUtils utils;
@@ -36,12 +34,19 @@ public class RooftopAgilityPanel extends PluginPanel
 		JPanel agilityPanel = new JPanel();
 		agilityPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 		agilityPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		agilityPanel.setLayout(new DynamicGridLayout(2, 1));
+		agilityPanel.setLayout(new DynamicGridLayout(3, 1));
 
-		JLabel markLabel = new JLabel("Pickup Mark of Grace");
+		JTextArea supportedCoursesText = new JTextArea();
+		supportedCoursesText.setLineWrap(true);
+		supportedCoursesText.setEditable(false);
+		supportedCoursesText.setFont(smallFont);
+		supportedCoursesText.setText("Courses:\r\nTree Gnome\r\nDraynor\r\nVarrock\r\nCanifis\r\nFalador\r\nSeers Village\r\nRellekka\r\nPollniveach\r\n");
+
 		JCheckBox markCheck = new JCheckBox();
+		markCheck.setFont(smallFont);
 		markCheck.setSelected(true);
-		markPickup = true;
+		markCheck.setText("Pickup Mark of Grace");
+
 		markCheck.addActionListener(ev ->
 		{
 			if (markCheck.isSelected())
@@ -55,9 +60,6 @@ public class RooftopAgilityPanel extends PluginPanel
 				markPickup = false;
 			}
 		});
-
-		markLabel.setFont(smallFont);
-
 
 		JPanel startPanel = new JPanel();
 		startPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -74,7 +76,7 @@ public class RooftopAgilityPanel extends PluginPanel
 			{
 				if (markCheck.isSelected())
 				{
-					utils.sendGameMessage("picking up marks of grace"); //this is bad
+					utils.sendGameMessage("Picking up marks of grace"); //this is bad
 					markPickup = true;
 				}
 				startAgility = true;
@@ -91,7 +93,7 @@ public class RooftopAgilityPanel extends PluginPanel
 			}
 		});
 
-		agilityPanel.add(markLabel);
+		agilityPanel.add(supportedCoursesText);
 		agilityPanel.add(markCheck);
 		startPanel.add(startBot);
 

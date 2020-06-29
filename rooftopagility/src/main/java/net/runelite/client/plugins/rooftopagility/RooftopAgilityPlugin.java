@@ -85,8 +85,7 @@ public class RooftopAgilityPlugin extends Plugin
 	MenuEntry targetMenu;
 	LocalPoint beforeLoc = new LocalPoint(0,0); //initiate to mitigate npe, this sucks
 	int timeout = 0;
-	List<WorldPoint> path = List.of(new WorldPoint(3013, 3436, 0),new WorldPoint(3013, 3436, 0));
-	private final List<Integer> REGION_IDS = List.of(9781,12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358);
+	private final List<Integer> REGION_IDS = List.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878);
 
 	@Override
 	protected void startUp()
