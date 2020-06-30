@@ -87,8 +87,8 @@ public enum RooftopAgilityObstacles
 	ARDY_GAP(new WorldPoint(2670, 3298, 3), new WorldPoint(2675, 3312, 3), GAP_15609),
 	ARDY_BEAM(new WorldPoint(2660, 3317, 3), new WorldPoint(2666, 3323, 3), PLANK_26635, RooftopAgilityObstacleType.GROUND_OBJECT),
 	ARDY_GAP_TWO(new WorldPoint(2652, 3317, 3), new WorldPoint(2658, 3322, 3),  GAP_15610),
-	ARDY_GAP_THREE(new WorldPoint(2647, 3307, 3), new WorldPoint(2653, 3315, 3), GAP_15611),
-	ARDY_STEEP_ROOF(new WorldPoint(2650, 3299, 3), new WorldPoint(2656, 3309, 3), STEEP_ROOF),
+	ARDY_GAP_THREE(new WorldPoint(2647, 3309, 3), new WorldPoint(2654, 3315, 3), GAP_15611),
+	ARDY_STEEP_ROOF(new WorldPoint(2650, 3299, 3), new WorldPoint(2656, 3310, 3), STEEP_ROOF),
 	ARDY_GAP_FOUR(new WorldPoint(2653, 3290, 3), new WorldPoint(2658, 3298, 3), GAP_15612);
 
 	@Getter(AccessLevel.PACKAGE)

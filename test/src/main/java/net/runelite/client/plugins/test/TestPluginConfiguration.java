@@ -171,4 +171,16 @@ public interface TestPluginConfiguration extends Config
 			System.out.println("test button was pressed in config, status is: " + testPlugin.startBot);
 		};
 	}
+
+	@ConfigItem(
+		keyName = "testCourses",
+		name = "Supported Courses (Don't edit, FYI only)",
+		description = "Support agility courses, don't enter anything into this field",
+		position = 11
+
+	)
+	default String testCourses()
+	{
+		return "Gnome, Draynor, Varrock, Canifis, Falador, Seers, Rellekka, Ardougne";
+	}
 }
