@@ -228,32 +228,29 @@ public class RooftopAgilityPlugin extends Plugin
 				log.info("not in agility course region");
 				return;
 			}
-			//executorService.submit(() ->
-			//{
-				utils.handleRun(40, 20);
-				state = getState();
-				//this seems shit
-				beforeLoc = client.getLocalPlayer().getLocalLocation();
-				switch (state)
-				{
-					case TIMEOUT:
-						timeout--;
-						return;
-					case MARK_OF_GRACE:
-						log.info("Picking up mark of grace");
-						targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
-						sleepDelay();
-						utils.clickRandomPointCenter(-100, 100);
-						return;
-					case FIND_OBSTACLE:
-						findObstacle();
-						return;
-					case MOVING:
-						break;
-					default:
-						return;
-				}
-			//});
+			utils.handleRun(40, 20);
+			state = getState();
+			//this seems shit
+			beforeLoc = client.getLocalPlayer().getLocalLocation();
+			switch (state)
+			{
+				case TIMEOUT:
+					timeout--;
+					return;
+				case MARK_OF_GRACE:
+					log.info("Picking up mark of grace");
+					targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
+					sleepDelay();
+					utils.clickRandomPointCenter(-100, 100);
+					return;
+				case FIND_OBSTACLE:
+					findObstacle();
+					return;
+				case MOVING:
+					break;
+				default:
+					return;
+			}
 		}
 		else
 		{
@@ -269,7 +266,7 @@ public class RooftopAgilityPlugin extends Plugin
 		{
 			return;
 		}
-		//log.info("MenuEntry string event: " + targetMenu.toString());
+		log.debug("MenuEntry string event: " + targetMenu.toString());
 		event.setMenuEntry(targetMenu);
 		timeout = tickDelay();
 		targetMenu = null; //this allow the player to interact with the client without their clicks being overridden

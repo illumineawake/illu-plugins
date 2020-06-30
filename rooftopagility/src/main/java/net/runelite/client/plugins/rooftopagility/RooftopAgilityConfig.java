@@ -37,11 +37,34 @@ import net.runelite.client.config.Title;
 @ConfigGroup("RooftopAgility")
 public interface RooftopAgilityConfig extends Config
 {
+	@ConfigTitleSection(
+		keyName = "courseTitle",
+		name = "Supported Courses (don't edit)",
+		description = "",
+		position = 0
+	)
+	default Title courseTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "supportedCourses",
+		name = "",
+		description = "Support agility courses, don't enter anything into this field",
+		position = 1,
+		titleSection = "courseTitle"
+	)
+	default String supportedCourses()
+	{
+		return "Gnome, Draynor, Varrock, Canifis, Falador, Seers, Pollnivneach, Rellekka, Ardougne";
+	}
+
 	@ConfigSection(
 		keyName = "delayConfig",
 		name = "Sleep Delay Configuration",
 		description = "Configure how the bot handles sleep delays",
-		position = 1
+		position = 2
 	)
 	default boolean delayConfig()
 	{
@@ -56,7 +79,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "sleepMin",
 		name = "Sleep Min",
 		description = "",
-		position = 2,
+		position = 3,
 		section = "delayConfig"
 	)
 	default int sleepMin()
@@ -72,7 +95,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "sleepMax",
 		name = "Sleep Max",
 		description = "",
-		position = 3,
+		position = 4,
 		section = "delayConfig"
 	)
 	default int sleepMax()
@@ -88,7 +111,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "sleepTarget",
 		name = "Sleep Target",
 		description = "",
-		position = 4,
+		position = 5,
 		section = "delayConfig"
 	)
 	default int sleepTarget()
@@ -104,7 +127,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "sleepDeviation",
 		name = "Sleep Deviation",
 		description = "",
-		position = 5,
+		position = 6,
 		section = "delayConfig"
 	)
 	default int sleepDeviation()
@@ -116,7 +139,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "sleepWeightedDistribution",
 		name = "Sleep Weighted Distribution",
 		description = "Shifts the random distribution towards the lower end at the target, otherwise it will be an even distribution",
-		position = 6,
+		position = 7,
 		section = "delayConfig"
 	)
 	default boolean sleepWeightedDistribution()
@@ -128,7 +151,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "delayTickConfig",
 		name = "Game Tick Configuration",
 		description = "Configure how the bot handles game tick delays, 1 game tick equates to roughly 600ms",
-		position = 7
+		position = 8
 	)
 	default boolean delayTickConfig()
 	{
@@ -143,7 +166,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "tickDelayMin",
 		name = "Game Tick Min",
 		description = "",
-		position = 8,
+		position = 9,
 		section = "delayTickConfig"
 	)
 	default int tickDelayMin()
@@ -159,7 +182,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "tickDelayMax",
 		name = "Game Tick Max",
 		description = "",
-		position = 9,
+		position = 10,
 		section = "delayTickConfig"
 	)
 	default int tickDelayMax()
@@ -175,7 +198,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "tickDelayTarget",
 		name = "Game Tick Target",
 		description = "",
-		position = 10,
+		position = 11,
 		section = "delayTickConfig"
 	)
 	default int tickDelayTarget()
@@ -191,7 +214,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "tickDelayDeviation",
 		name = "Game Tick Deviation",
 		description = "",
-		position = 11,
+		position = 12,
 		section = "delayTickConfig"
 	)
 	default int tickDelayDeviation()
@@ -203,18 +226,19 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "tickDelayWeightedDistribution",
 		name = "Game Tick Weighted Distribution",
 		description = "Shifts the random distribution towards the lower end at the target, otherwise it will be an even distribution",
-		position = 12,
+		position = 13,
 		section = "delayTickConfig"
 	)
 	default boolean tickDelayWeightedDistribution()
 	{
 		return false;
 	}
+
 	@ConfigTitleSection(
 		keyName = "agilityTitle",
 		name = "Agility Configuration",
 		description = "Supported courses: Gnome, Draynor, Varrock, Canifis, Falador, Pollnivneach, Seers, Rellekka",
-		position = 13
+		position = 14
 	)
 	default Title agilityTitle()
 	{
@@ -225,7 +249,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "mogPickup",
 		name = "Pick up Mark of Grace",
 		description = "Enable to pick up Marks of Grace",
-		position = 14,
+		position = 15,
 		titleSection = "agilityTitle"
 	)
 	default boolean mogPickup()
@@ -237,7 +261,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "startButton",
 		name = "Start/Stop",
 		description = "Test button that changes variable value",
-		position = 15,
+		position = 16,
 		titleSection = "agilityTitle"
 	)
 	default Consumer<RooftopAgilityPlugin> testButton()
@@ -254,16 +278,5 @@ public interface RooftopAgilityConfig extends Config
 			}
 			System.out.println("Start button was pressed in config, status is: " + plugin.startAgility);
 		};
-	}
-	@ConfigItem(
-		keyName = "supportedCourses",
-		name = "Supported Courses (Don't edit)",
-		description = "Support agility courses, don't enter anything into this field",
-		position = 11
-
-	)
-	default String supportedCourses()
-	{
-		return "Gnome, Draynor, Varrock, Canifis, Falador, Seers, Pollnivneach, Rellekka, Ardougne";
 	}
 }
