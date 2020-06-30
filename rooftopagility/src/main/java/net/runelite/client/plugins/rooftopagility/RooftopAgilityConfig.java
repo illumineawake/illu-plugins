@@ -255,4 +255,15 @@ public interface RooftopAgilityConfig extends Config
 			System.out.println("Start button was pressed in config, status is: " + plugin.startAgility);
 		};
 	}
+	@ConfigItem(
+		keyName = "supportedCourses",
+		name = "Supported Courses (Don't edit)",
+		description = "Support agility courses, don't enter anything into this field",
+		position = 11
+
+	)
+	default String supportedCourses()
+	{
+		return "Gnome, Draynor, Varrock, Canifis, Falador, Seers, Pollnivneach, Rellekka, Ardougne";
+	}
 }
