@@ -25,8 +25,13 @@
  */
 package net.runelite.client.plugins.rooftopagility;
 
+import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
@@ -35,6 +40,8 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.ItemDespawned;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
@@ -68,7 +75,10 @@ public class RooftopAgilityPlugin extends Plugin
 	private BotUtils utils;
 
 	@Inject
-	private PluginManager pluginManager;
+	private RooftopAgilityConfig config;
+
+	@Inject
+	PluginManager pluginManager;
 
 	@Inject
 	ClientToolbar clientToolbar;
@@ -82,12 +92,16 @@ public class RooftopAgilityPlugin extends Plugin
 	MenuEntry targetMenu;
 	LocalPoint beforeLoc = new LocalPoint(0, 0); //initiate to mitigate npe
 	int timeout = 0;
-	private final Set<Integer> REGION_IDS = Set.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878);
+	boolean startAgility;
+	private final Set<Integer> REGION_IDS = Set.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878, 10547);
+	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
+		new ThreadPoolExecutor.DiscardPolicy());
 
 	@Override
 	protected void startUp()
 	{
-		panel = injector.getInstance(RooftopAgilityPanel.class);
+		/*panel = injector.getInstance(RooftopAgilityPanel.class);
 		panel.init();
 		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "panel_icon.png");
 
@@ -97,8 +111,7 @@ public class RooftopAgilityPlugin extends Plugin
 			.panel(panel)
 			.icon(icon)
 			.build();
-
-		clientToolbar.addNavigation(navButton);
+		clientToolbar.addNavigation(navButton);*/
 	}
 
 	@Override
@@ -106,7 +119,28 @@ public class RooftopAgilityPlugin extends Plugin
 	{
 		markOfGraceTile = null;
 		markOfGrace = null;
-		clientToolbar.removeNavigation(navButton);
+		startAgility = false;
+		//clientToolbar.removeNavigation(navButton);
+	}
+
+	private void sleepDelay()
+	{
+		long sleepLength = utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
+		log.info("Sleeping for {}ms", sleepLength);
+		utils.sleep(sleepLength);
+	}
+
+	private int tickDelay()
+	{
+		int tickLength = (int) utils.randomDelay(config.tickDelayWeightedDistribution(), config.tickDelayMin(), config.tickDelayMax(), config.tickDelayDeviation(), config.tickDelayTarget());
+		log.info("tick delay for {} ticks", tickLength);
+		return tickLength;
+	}
+
+	@Provides
+	RooftopAgilityConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(RooftopAgilityConfig.class);
 	}
 
 	private void findObstacle()
@@ -122,7 +156,7 @@ public class RooftopAgilityPlugin extends Plugin
 				if (decObstacle != null)
 				{
 					targetMenu = new MenuEntry("", "", decObstacle.getId(), 3, decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
-					utils.sleep(60, 350);
+					sleepDelay();
 					utils.clickRandomPointCenter(-100, 100);
 					return;
 				}
@@ -133,7 +167,7 @@ public class RooftopAgilityPlugin extends Plugin
 				if (groundObstacle != null)
 				{
 					targetMenu = new MenuEntry("", "", groundObstacle.getId(), 3, groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
-					utils.sleep(60, 350);
+					sleepDelay();
 					utils.clickRandomPointCenter(-100, 100);
 					return;
 				}
@@ -142,7 +176,7 @@ public class RooftopAgilityPlugin extends Plugin
 			if (objObstacle != null)
 			{
 				targetMenu = new MenuEntry("", "", objObstacle.getId(), 3, objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
-				utils.sleep(60, 350);
+				sleepDelay();
 				utils.clickRandomPointCenter(-100, 100);
 				return;
 			}
@@ -161,15 +195,15 @@ public class RooftopAgilityPlugin extends Plugin
 		}
 		if (utils.isMoving(beforeLoc)) //could also test with just isMoving
 		{
-			timeout = 2;
+			timeout = tickDelay();
 			return MOVING;
 		}
-		if (markOfGrace != null && markOfGraceTile != null && panel.markPickup)
+		if (markOfGrace != null && markOfGraceTile != null && config.mogPickup())
 		{
 			RooftopAgilityObstacles currentObstacle = RooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
 			if (currentObstacle == null)
 			{
-				timeout = 1;
+				timeout = tickDelay();
 				return MOVING;
 			}
 			if (currentObstacle.getLocation().distanceTo(markOfGraceTile.getWorldLocation()) == 0)
@@ -187,36 +221,39 @@ public class RooftopAgilityPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
-		if (client != null && client.getLocalPlayer() != null && client.getGameState() == GameState.LOGGED_IN && panel.startAgility)
+		if (client != null && client.getLocalPlayer() != null && client.getGameState() == GameState.LOGGED_IN && startAgility)
 		{
 			if (!REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
 			{
 				log.info("not in agility course region");
 				return;
 			}
-			utils.handleRun(40, 20);
-			state = getState();
-			//this seems shit
-			beforeLoc = client.getLocalPlayer().getLocalLocation();
-			switch (state)
-			{
-				case TIMEOUT:
-					timeout--;
-					return;
-				case MARK_OF_GRACE:
-					log.info("Picking up mark of grace");
-					targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
-					utils.sleep(60, 350);
-					utils.clickRandomPointCenter(-100, 100);
-					return;
-				case FIND_OBSTACLE:
-					findObstacle();
-					return;
-				case MOVING:
-					break;
-				default:
-					return;
-			}
+			//executorService.submit(() ->
+			//{
+				utils.handleRun(40, 20);
+				state = getState();
+				//this seems shit
+				beforeLoc = client.getLocalPlayer().getLocalLocation();
+				switch (state)
+				{
+					case TIMEOUT:
+						timeout--;
+						return;
+					case MARK_OF_GRACE:
+						log.info("Picking up mark of grace");
+						targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
+						sleepDelay();
+						utils.clickRandomPointCenter(-100, 100);
+						return;
+					case FIND_OBSTACLE:
+						findObstacle();
+						return;
+					case MOVING:
+						break;
+					default:
+						return;
+				}
+			//});
 		}
 		else
 		{
@@ -228,20 +265,20 @@ public class RooftopAgilityPlugin extends Plugin
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (!panel.startAgility || targetMenu == null)
+		if (!startAgility || targetMenu == null)
 		{
 			return;
 		}
 		//log.info("MenuEntry string event: " + targetMenu.toString());
 		event.setMenuEntry(targetMenu);
-		timeout = 2 + utils.getRandomIntBetweenRange(0, 2);
+		timeout = tickDelay();
 		targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
 	}
 
 	@Subscribe
 	public void onItemSpawned(ItemSpawned event)
 	{
-		if (!panel.startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !panel.markPickup)
+		if (!startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !config.mogPickup())
 		{
 			return;
 		}
@@ -260,7 +297,7 @@ public class RooftopAgilityPlugin extends Plugin
 	@Subscribe
 	public void onItemDespawned(ItemDespawned event)
 	{
-		if (!panel.startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !panel.markPickup)
+		if (!startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !config.mogPickup())
 		{
 			return;
 		}

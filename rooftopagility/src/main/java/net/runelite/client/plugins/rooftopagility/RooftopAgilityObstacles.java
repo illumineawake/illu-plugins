@@ -81,7 +81,15 @@ public enum RooftopAgilityObstacles
 	RELL_ROOF_THREE(new WorldPoint(2625, 3649, 3), new WorldPoint(2631, 3656, 3), GAP_14990),
 	RELL_ROOF_FOUR(new WorldPoint(2638, 3648, 3), new WorldPoint(2645, 3654, 3), GAP_14991),
 	RELL_ROOF_FIVE(new WorldPoint(2642, 3656, 3), new WorldPoint(2651, 3663, 3), TIGHTROPE_14992),
-	RELL_ROOF_SIX(new WorldPoint(2654, 3663, 3), new WorldPoint(2667, 3686, 3), PILE_OF_FISH);
+	RELL_ROOF_SIX(new WorldPoint(2654, 3663, 3), new WorldPoint(2667, 3686, 3), PILE_OF_FISH),
+	//Ardougne
+	ARDY_GROUND(new WorldPoint(2640, 3274, 0), new WorldPoint(2678, 3321, 0), WOODEN_BEAMS, RooftopAgilityObstacleType.DECORATION),
+	ARDY_GAP(new WorldPoint(2670, 3298, 3), new WorldPoint(2675, 3312, 3), GAP_15609),
+	ARDY_BEAM(new WorldPoint(2660, 3317, 3), new WorldPoint(2666, 3323, 3), PLANK_26635, RooftopAgilityObstacleType.GROUND_OBJECT),
+	ARDY_GAP_TWO(new WorldPoint(2652, 3317, 3), new WorldPoint(2658, 3322, 3),  GAP_15610),
+	ARDY_GAP_THREE(new WorldPoint(2647, 3307, 3), new WorldPoint(2653, 3315, 3), GAP_15611),
+	ARDY_STEEP_ROOF(new WorldPoint(2650, 3299, 3), new WorldPoint(2656, 3309, 3), STEEP_ROOF),
+	ARDY_GAP_FOUR(new WorldPoint(2653, 3290, 3), new WorldPoint(2658, 3298, 3), GAP_15612);
 
 	@Getter(AccessLevel.PACKAGE)
 	private final WorldArea location;

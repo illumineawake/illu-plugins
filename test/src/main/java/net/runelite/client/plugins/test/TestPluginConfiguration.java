@@ -25,75 +25,111 @@
  */
 package net.runelite.client.plugins.test;
 
+import java.util.function.Consumer;
+import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigSection;
+import net.runelite.client.config.ConfigTitleSection;
 import net.runelite.client.config.Range;
 import net.runelite.client.config.Units;
 
 @ConfigGroup("Test")
 public interface TestPluginConfiguration extends Config
 {
-	@ConfigItem(
-		keyName = "tickCount",
-		name = "Tick count",
-		description = "Configures the number of game ticks between metronome sounds"
+	@ConfigTitleSection(
+		keyName = "delayTitle",
+		name = "Delay Title",
+		description = "Delay settings are below this title",
+		position = 2
 	)
-	@Units(Units.TICKS)
-	default int tickCount()
-	{
-		return 1;
-	}
-
+	@Range
+		(
+			min = 0,
+			max = 550
+		)
 	@ConfigItem(
-		keyName = "enableTock",
-		name = "Enable tock (alternating) sound",
-		description = "Toggles whether to play \"tock\" sounds"
+		keyName = "minDelay",
+		name = "Absolute Delay Min",
+		description = "",
+		position = 3,
+		titleSection = "delayTitle"
 	)
-	default boolean enableTock()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "tockNumber",
-		name = "Tock every nth \"tick\"",
-		description = "Configures how many \"ticks\" between each \"tock\""
-	)
-	@Units(Units.TICKS)
-	default int tockNumber()
-	{
-		return 2;
-	}
-
-	@ConfigItem(
-		keyName = "tickOffset",
-		name = "Offset",
-		description = "Amount of ticks to offset the metronome (only useful for \"tocks\")"
-	)
-	default int tickOffset()
+	default int min()
 	{
 		return 0;
 	}
 
-	@ConfigItem(
-		keyName = "tickSoundFilePath",
-		name = "Tick .wav file path",
-		description = "The path to the file to be used for \"tick\" sounds (short .wav only)"
+	@Range(
+		min = 0,
+		max = 550
 	)
-	default String tickPath()
+	@ConfigItem(
+		keyName = "maxDelay",
+		name = "Absolute Delay Max",
+		description = "",
+		position = 4,
+		titleSection = "delayTitle"
+	)
+	default int max()
 	{
-		return "";
+		return 5;
+	}
+
+	@Range(
+		min = 0,
+		max = 550
+	)
+	@ConfigItem(
+		keyName = "target",
+		name = "Delay Target",
+		description = "",
+		position = 5,
+		titleSection = "delayTitle"
+	)
+	default int target()
+	{
+		return 3;
+	}
+
+	@Range(
+		min = 0,
+		max = 550
+	)
+	@ConfigItem(
+		keyName = "deviation",
+		name = "Delay Deviation",
+		description = "",
+		position = 6,
+		titleSection = "delayTitle"
+	)
+	default int deviation()
+	{
+		return 0;//10
 	}
 
 	@ConfigItem(
-		keyName = "tockSoundFilePath",
-		name = "Tock .wav file path",
-		description = "The path to the file to be used for \"tock\" sounds (short .wav only)"
+		keyName = "weightedDistribution",
+		name = "Weighted Distribution",
+		description = "Shifts the random distribution towards the lower end at the target, otherwise it will be an even distribution",
+		position = 7,
+		titleSection = "delayTitle"
 	)
-	default String tockPath()
+	default boolean weightedDistribution()
 	{
-		return "";
+		return false;
+	}
+
+	@ConfigSection(
+		keyName = "buttonSection",
+		name = "Button config section",
+		description = "This is the button config section",
+		position = 8
+	)
+	default boolean buttonSection()
+	{
+		return false;
 	}
 
 	@Range(
@@ -103,11 +139,36 @@ public interface TestPluginConfiguration extends Config
 	@ConfigItem(
 		keyName = "volume",
 		name = "Volume modification",
-		description = "Configures tick/tock volume; only effects custom sounds."
+		description = "Configures tick/tock volume; only effects custom sounds.",
+		position = 9,
+		section = "buttonSection"
 	)
 	@Units(Units.PERCENT)
 	default int volume()
 	{
 		return 35;
+	}
+
+	@ConfigItem(
+		keyName = "testButton",
+		name = "Test Button",
+		description = "Test button that changes variable value",
+		position = 10,
+		section = "buttonSection"
+	)
+	default Consumer<TestPlugin> testButton()
+	{
+		return (testPlugin) ->
+		{
+			if (testPlugin.pluginManager.isPluginEnabled(testPlugin))
+			{
+				testPlugin.startBot = !testPlugin.startBot;
+			}
+			else
+			{
+				testPlugin.startBot = false;
+			}
+			System.out.println("test button was pressed in config, status is: " + testPlugin.startBot);
+		};
 	}
 }

@@ -32,6 +32,7 @@ import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_ENTER;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -74,6 +75,7 @@ import net.runelite.client.menus.WidgetMenuOption;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
 /*import net.runelite.client.rsb.methods.Tiles;
@@ -118,12 +120,14 @@ public class TestPlugin extends Plugin
 	private ItemManager itemManager;
 
 	@Inject
+	PluginManager pluginManager;
+
+	@Inject
 	InfoBoxManager infoBoxManager;
 
 	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
 	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
 		new ThreadPoolExecutor.DiscardPolicy());
-
 	private static final String FOREMAN_PERMISSION_TEXT = "Okay, you can use the furnace for ten minutes. Remember, you only need half as much coal as with a regular furnace.";
 
 	Point point = new Point(10, 10);
@@ -131,6 +135,8 @@ public class TestPlugin extends Plugin
 
 	int timeout = 0;
 	int itemCount = 0;
+	private Random random;
+	public boolean startBot;
 	private static final Set<Integer> MLM_ORE_TYPES = Set.of(ItemID.RUNITE_ORE, ItemID.ADAMANTITE_ORE,
 		ItemID.MITHRIL_ORE, ItemID.GOLD_ORE, ItemID.COAL, ItemID.GOLDEN_NUGGET);
 	public static final MenuEntry BANK_MENU = new MenuEntry("Bank", "<col=ffff>Bank booth", 10355, 4, 56, 48, true);
@@ -169,13 +175,15 @@ public class TestPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
+		log.info("startBot status on startup = {}", startBot);
+		random = new Random();
 	}
 
 	@Override
 	protected void shutDown()
 	{
-
+		startBot = false;
+		random = null;
 	}
 
 	@Subscribe
@@ -192,20 +200,6 @@ public class TestPlugin extends Plugin
 		}
 	}
 
-	public Widget getBankItemWidgetAnyOf(int... ids)
-	{
-		if (!utils.isBankOpen())
-		{
-			return null;
-		}
-
-		WidgetItem bankItem = new BankItemQuery().idEquals(ids).result(client).first();
-		if (bankItem != null)
-			return bankItem.getWidget();
-		else
-			return null;
-	}
-
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
@@ -215,8 +209,10 @@ public class TestPlugin extends Plugin
 		{
 			if(!utils.iterating)
 			{
-				Point point = new Point(100,200);
-				utils.click(point);
+				executorService.submit(() ->
+				{
+					utils.clickRandomPointCenter(-100, 100);
+			});
 				//log.info("Bank widget" + (client.getWidget(WidgetInfo.DEPOSIT_BOX_INVENTORY_ITEMS_CONTAINER) != null));
 
 

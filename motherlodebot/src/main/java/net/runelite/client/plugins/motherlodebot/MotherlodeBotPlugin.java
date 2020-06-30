@@ -204,7 +204,7 @@ public class MotherlodeBotPlugin extends Plugin
 		collecting = true;
 		if (getSackSize() == 0 && utils.inventoryEmpty())
 		{
-			log.info("unitialising collect values");
+			log.info("uninitialising collect values");
 			collecting = false;
 			banking = false;
 			predictedSackSize = 0;
