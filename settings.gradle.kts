@@ -26,7 +26,6 @@
 rootProject.name = "Illumine Plugins"
 
 include(":autoclickillumine")
-include(":autoworldhop")
 include(":blackjackillumine")
 include(":blastfurnacebot")
 include(":botutils")

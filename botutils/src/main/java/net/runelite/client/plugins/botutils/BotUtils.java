@@ -1264,28 +1264,50 @@ public class BotUtils extends Plugin
 			e.printStackTrace();
 		}
 	}
-	/*public void sleep(int toSleep)
-	{
-		executorService.submit(() ->
-		{
-			try
-			{
-				long start = System.currentTimeMillis();
-				Thread.sleep(toSleep);
 
-				// Guarantee minimum sleep
-				long now;
-				while (start + toSleep > (now = System.currentTimeMillis()))
-				{
-					Thread.sleep(start + toSleep - now);
-				}
-			}
-			catch (InterruptedException e)
+	public void sleep(long toSleep)
+	{
+		try
+		{
+			long start = System.currentTimeMillis();
+			Thread.sleep(toSleep);
+
+			// Guarantee minimum sleep
+			long now;
+			while (start + toSleep > (now = System.currentTimeMillis()))
 			{
-				e.printStackTrace();
+				Thread.sleep(start + toSleep - now);
 			}
-		});
-	}*/
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	//Ganom's function, generates a random number allowing for curve and weight
+	public long randomDelay(boolean weightedDistribution, int min, int max, int deviation, int target)
+	{
+		if (weightedDistribution)
+		{
+			/* generate a gaussian random (average at 0.0, std dev of 1.0)
+			 * take the absolute value of it (if we don't, every negative value will be clamped at the minimum value)
+			 * get the log base e of it to make it shifted towards the right side
+			 * invert it to shift the distribution to the other end
+			 * clamp it to min max, any values outside of range are set to min or max */
+			return (long) clamp((-Math.log(Math.abs(random.nextGaussian()))) * deviation + target, min, max);
+		}
+		else
+		{
+			/* generate a normal even distribution random */
+			return (long) clamp(Math.round(random.nextGaussian() * deviation + target), min, max);
+		}
+	}
+
+	private double clamp(double val, int min, int max)
+	{
+		return Math.max(min, Math.min(max, val));
+	}
 
 	/**
 	 * Returns a random double with min as the inclusive lower bound and max as
