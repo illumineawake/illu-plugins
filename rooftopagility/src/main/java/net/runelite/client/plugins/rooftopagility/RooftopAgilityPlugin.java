@@ -186,7 +186,7 @@ public class RooftopAgilityPlugin extends Plugin
 		RooftopAgilityObstacles obstacle = RooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
 		if (obstacle != null)
 		{
-			log.info(String.valueOf(obstacle.getObstacleId()));
+			log.debug(String.valueOf(obstacle.getObstacleId()));
 
 			if (obstacle.getObstacleType() == RooftopAgilityObstacleType.DECORATION)
 			{
@@ -221,7 +221,7 @@ public class RooftopAgilityPlugin extends Plugin
 		}
 		else
 		{
-			log.info("Not in obstacle area");
+			log.debug("Not in obstacle area");
 		}
 	}
 
@@ -263,7 +263,7 @@ public class RooftopAgilityPlugin extends Plugin
 		{
 			if (!REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
 			{
-				log.info("not in agility course region");
+				log.debug("not in agility course region");
 				return;
 			}
 			marksPerHour = (int) getMarksPH();
@@ -277,7 +277,7 @@ public class RooftopAgilityPlugin extends Plugin
 					timeout--;
 					return;
 				case MARK_OF_GRACE:
-					log.info("Picking up mark of grace");
+					log.debug("Picking up mark of grace");
 					targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
 					sleepDelay();
 					utils.clickRandomPointCenter(-100, 100);
@@ -293,7 +293,7 @@ public class RooftopAgilityPlugin extends Plugin
 		}
 		else
 		{
-			//log.info("client/ player is null or bot isn't started");
+			log.debug("client/ player is null or bot isn't started");
 			return;
 		}
 	}
@@ -324,7 +324,7 @@ public class RooftopAgilityPlugin extends Plugin
 
 		if (item.getId() == ItemID.MARK_OF_GRACE)
 		{
-			log.info("Mark of grace spawned");
+			log.debug("Mark of grace spawned");
 			markOfGrace = item;
 			markOfGraceTile = tile;
 			WidgetItem mogInventory = utils.getInventoryWidgetItem(ItemID.MARK_OF_GRACE);
@@ -345,7 +345,7 @@ public class RooftopAgilityPlugin extends Plugin
 
 		if (item.getId() == ItemID.MARK_OF_GRACE)
 		{
-			log.info("Mark of grace despawned");
+			log.debug("Mark of grace despawned");
 			markOfGrace = null;
 		}
 	}

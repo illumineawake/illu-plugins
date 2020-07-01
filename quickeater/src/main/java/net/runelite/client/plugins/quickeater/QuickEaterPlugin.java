@@ -23,17 +23,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.tickeat;
+package net.runelite.client.plugins.quickeater;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
@@ -46,20 +44,20 @@ import org.pf4j.Extension;
 @Extension
 @PluginDependency(BotUtils.class)
 @PluginDescriptor(
-	name = "Tick Eater",
+	name = "Quick Eater",
 	enabledByDefault = false,
-	description = "Illumine tick eater",
-	tags = {"tick"},
+	description = "Illumine - auto eat food below configured HP",
+	tags = {"illumine","auto","bot","eat","food"},
 	type = PluginType.UTILITY
 )
 @Slf4j
-public class TickEatPlugin extends Plugin
+public class QuickEaterPlugin extends Plugin
 {
 	@Inject
 	private Client client;
 
 	@Inject
-	private TickEatConfiguration config;
+	private QuickEaterConfiguration config;
 
 	@Inject
 	private BotUtils utils;
@@ -73,9 +71,9 @@ public class TickEatPlugin extends Plugin
 	MenuEntry targetMenu;
 
 	@Provides
-	TickEatConfiguration provideConfig(ConfigManager configManager)
+	QuickEaterConfiguration provideConfig(ConfigManager configManager)
 	{
-		return configManager.getConfig(TickEatConfiguration.class);
+		return configManager.getConfig(QuickEaterConfiguration.class);
 	}
 
 	@Override
@@ -87,7 +85,7 @@ public class TickEatPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
-		configManager.setConfiguration("TickEat", "startBot", false);
+
 	}
 
 
@@ -118,7 +116,7 @@ public class TickEatPlugin extends Plugin
 		}
 		if (utils.getRandomEvent()) //for random events
 		{
-			log.info("Powerskiller not overriding due to random event");
+			log.debug("Quick Eater not overriding due to random event");
 			return;
 		}
 		else
