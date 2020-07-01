@@ -27,6 +27,8 @@ package net.runelite.client.plugins.rooftopagility;
 
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -37,9 +39,12 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.ItemDespawned;
+import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -51,6 +56,7 @@ import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
+import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ImageUtil;
 import org.pf4j.Extension;
 import static net.runelite.client.plugins.rooftopagility.RooftopAgilityState.*;
@@ -83,15 +89,28 @@ public class RooftopAgilityPlugin extends Plugin
 	@Inject
 	ClientToolbar clientToolbar;
 
-	RooftopAgilityState state;
+	@Inject
+	private OverlayManager overlayManager;
+
+	@Inject
+	RooftopAgilityOverlay overlay;
+
+
 	RooftopAgilityPanel panel;
 	private NavigationButton navButton;
 
+	RooftopAgilityState state;
+	Instant botTimer;
 	TileItem markOfGrace;
 	Tile markOfGraceTile;
 	MenuEntry targetMenu;
 	LocalPoint beforeLoc = new LocalPoint(0, 0); //initiate to mitigate npe
 	int timeout = 0;
+	int mogSpawnCount = 0;
+	int mogCollectCount = 0;
+	int mogInventoryCount = -1;
+	int marksPerHour = 0;
+	long sleepLength = 0;
 	boolean startAgility;
 	private final Set<Integer> REGION_IDS = Set.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878, 10547);
 	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
@@ -101,6 +120,8 @@ public class RooftopAgilityPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
+		botTimer = Instant.now();
+		overlayManager.add(overlay);
 		/*panel = injector.getInstance(RooftopAgilityPanel.class);
 		panel.init();
 		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "panel_icon.png");
@@ -117,30 +138,47 @@ public class RooftopAgilityPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
+		overlayManager.remove(overlay);
 		markOfGraceTile = null;
 		markOfGrace = null;
 		startAgility = false;
+		botTimer = null;
+		int mogSpawnCount = 0;
+		int mogCollectCount = 0;
+		int mogInventoryCount = -1;
+		int marksPerHour = 0;
 		//clientToolbar.removeNavigation(navButton);
-	}
-
-	private void sleepDelay()
-	{
-		long sleepLength = utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
-		log.info("Sleeping for {}ms", sleepLength);
-		utils.sleep(sleepLength);
-	}
-
-	private int tickDelay()
-	{
-		int tickLength = (int) utils.randomDelay(config.tickDelayWeightedDistribution(), config.tickDelayMin(), config.tickDelayMax(), config.tickDelayDeviation(), config.tickDelayTarget());
-		log.info("tick delay for {} ticks", tickLength);
-		return tickLength;
 	}
 
 	@Provides
 	RooftopAgilityConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(RooftopAgilityConfig.class);
+	}
+
+	private void sleepDelay()
+	{
+		sleepLength = utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
+		log.debug("Sleeping for {}ms", sleepLength);
+		utils.sleep(sleepLength);
+		//sleepLength = 0;
+	}
+
+	private int tickDelay()
+	{
+		int tickLength = (int) utils.randomDelay(config.tickDelayWeightedDistribution(), config.tickDelayMin(), config.tickDelayMax(), config.tickDelayDeviation(), config.tickDelayTarget());
+		log.debug("tick delay for {} ticks", tickLength);
+		return tickLength;
+	}
+
+	public long getMarksPH()
+	{
+		Duration timeSinceStart = Duration.between(botTimer, Instant.now());
+		if (!timeSinceStart.isZero())
+		{
+			return (int) ((double) mogCollectCount * (double) Duration.ofHours(1).toMillis() / (double) timeSinceStart.toMillis());
+		}
+		return 0;
 	}
 
 	private void findObstacle()
@@ -228,6 +266,7 @@ public class RooftopAgilityPlugin extends Plugin
 				log.info("not in agility course region");
 				return;
 			}
+			marksPerHour = (int) getMarksPH();
 			utils.handleRun(40, 20);
 			state = getState();
 			//this seems shit
@@ -288,6 +327,9 @@ public class RooftopAgilityPlugin extends Plugin
 			log.info("Mark of grace spawned");
 			markOfGrace = item;
 			markOfGraceTile = tile;
+			WidgetItem mogInventory = utils.getInventoryWidgetItem(ItemID.MARK_OF_GRACE);
+			mogInventoryCount = (mogInventory != null) ? mogInventory.getQuantity() : 0;
+			mogSpawnCount++;
 		}
 	}
 
@@ -305,6 +347,20 @@ public class RooftopAgilityPlugin extends Plugin
 		{
 			log.info("Mark of grace despawned");
 			markOfGrace = null;
+		}
+	}
+
+	@Subscribe
+	public void onItemContainerChanged(ItemContainerChanged event)
+	{
+		if (event.getContainerId() != 93 || mogInventoryCount == -1)
+		{
+			return;
+		}
+		if (event.getItemContainer().count(ItemID.MARK_OF_GRACE) > mogInventoryCount)
+		{
+			mogCollectCount++;
+			mogInventoryCount = -1;
 		}
 	}
 }

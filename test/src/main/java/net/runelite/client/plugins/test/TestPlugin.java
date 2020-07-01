@@ -209,10 +209,7 @@ public class TestPlugin extends Plugin
 		{
 			if(!utils.iterating)
 			{
-				executorService.submit(() ->
-				{
-					utils.clickRandomPointCenter(-100, 100);
-			});
+
 				//log.info("Bank widget" + (client.getWidget(WidgetInfo.DEPOSIT_BOX_INVENTORY_ITEMS_CONTAINER) != null));
 
 
@@ -282,6 +279,13 @@ public class TestPlugin extends Plugin
 
 
 		}
+	}
+
+	@Subscribe
+	public void onItemContainerChanged(ItemContainerChanged event)
+	{
+		log.info("Event container ID: {}, inventory container ID: {} ", event.getContainerId(),WidgetInfo.INVENTORY);
+		log.info(String.valueOf(event.getItemContainer().count(ItemID.MARK_OF_GRACE)));
 	}
 
 	@Subscribe

@@ -25,6 +25,7 @@
  */
 package net.runelite.client.plugins.rooftopagility;
 
+import java.time.Instant;
 import java.util.function.Consumer;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -258,10 +259,22 @@ public interface RooftopAgilityConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "enableUI",
+		name = "Enable UI",
+		description = "Enable to turn on in game UI",
+		position = 16,
+		titleSection = "agilityTitle"
+	)
+	default boolean enableUI()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "startButton",
 		name = "Start/Stop",
 		description = "Test button that changes variable value",
-		position = 16,
+		position = 17,
 		titleSection = "agilityTitle"
 	)
 	default Consumer<RooftopAgilityPlugin> testButton()
@@ -271,12 +284,12 @@ public interface RooftopAgilityConfig extends Config
 			if (plugin.pluginManager.isPluginEnabled(plugin))
 			{
 				plugin.startAgility = !plugin.startAgility;
+				plugin.botTimer = plugin.startAgility ? Instant.now() : null;
 			}
 			else
 			{
 				plugin.startAgility = false;
 			}
-			System.out.println("Start button was pressed in config, status is: " + plugin.startAgility);
 		};
 	}
 }
