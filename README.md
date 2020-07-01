@@ -8,12 +8,17 @@ My development skills are novice at best so please take all of this with a grain
 
 # Use
 
+**Supported plugins:**
+
 Add this repo within OPRS, using:
 
-Github Repository owner: illumineawake
+**Github Repository owner:** illumineawake
 
-Github Repository name: illu-plugins
+**Github Repository name:** illu-plugins
 
+**_Unsupported plugins:_**
+
+Install manually from the archive folder within this repo. Download (or compile) the jar and add it to your .runelite/externalmanager folder. Note that these plugins are unsupported and I won't be fixing any bugs for the meantime.
 
 # Credits
 
