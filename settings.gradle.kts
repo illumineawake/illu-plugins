@@ -27,7 +27,7 @@ rootProject.name = "Illumine Plugins"
 
 include(":botutils")
 include(":rooftopagility")
-include(":tickeat")
+include(":quickeater")
 
 for (project in rootProject.children) {
     project.apply {
