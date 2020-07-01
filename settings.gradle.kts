@@ -25,16 +25,8 @@
 
 rootProject.name = "Illumine Plugins"
 
-include(":autoclickillumine")
-include(":blackjackillumine")
-include(":blastfurnacebot")
 include(":botutils")
-include(":essencehighlighter")
-include(":motherlodebot")
-include(":powerskiller")
-include(":randomhandler")
 include(":rooftopagility")
-include(":test")
 include(":tickeat")
 
 for (project in rootProject.children) {
