@@ -695,28 +695,12 @@ public class BotUtils extends Plugin
 
 	public boolean inventoryFull()
 	{
-		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
-		if (inventoryWidget != null)
-		{
-			return inventoryWidget.getWidgetItems().size() >= 28;
-		}
-		else
-		{
-			return false;
-		}
+		return getInventorySpace() <= 0;
 	}
 
 	public boolean inventoryEmpty()
 	{
-		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
-		if (inventoryWidget != null)
-		{
-			return inventoryWidget.getWidgetItems().size() <= 0;
-		}
-		else
-		{
-			return false;
-		}
+		return getInventorySpace() >= 28;
 	}
 
 	public int getInventorySpace()

@@ -143,10 +143,10 @@ public class RooftopAgilityPlugin extends Plugin
 		markOfGrace = null;
 		startAgility = false;
 		botTimer = null;
-		int mogSpawnCount = 0;
-		int mogCollectCount = 0;
-		int mogInventoryCount = -1;
-		int marksPerHour = 0;
+		mogSpawnCount = 0;
+		mogCollectCount = 0;
+		mogInventoryCount = -1;
+		marksPerHour = 0;
 		//clientToolbar.removeNavigation(navButton);
 	}
 

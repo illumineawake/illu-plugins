@@ -30,6 +30,8 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
+import net.runelite.api.queries.GameObjectQuery;
+import net.runelite.api.queries.TileObjectQuery;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
@@ -100,6 +102,7 @@ public class QuickEaterPlugin extends Plugin
 		{
 			targetMenu = utils.getInventoryItemMenu(itemManager, "Eat", 33);
 			utils.clickRandomPointCenter(-100, 100);
+			TileObject tileObject = new GameObjectQuery().idEquals(12345).result(client).nearestTo(client.getLocalPlayer());
 		}
 		else
 		{
