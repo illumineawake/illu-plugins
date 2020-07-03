@@ -689,6 +689,12 @@ public class BotUtils extends Plugin
 		}
 	}
 
+	public void logout()
+	{
+		targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 11927560, false);
+		clickRandomPointCenter(-100, 100);
+	}
+
 	/**
 	 * INVENTORY FUNCTIONS
 	 */

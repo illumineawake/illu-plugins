@@ -26,13 +26,7 @@
 package net.runelite.client.plugins.magicsplasher;
 
 import com.google.inject.Provides;
-import java.time.Duration;
 import java.time.Instant;
-import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
@@ -43,7 +37,6 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.queries.NPCQuery;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -53,7 +46,6 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
-import net.runelite.client.plugins.magicsplasher.MagicSplasherConfig;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 import static net.runelite.client.plugins.magicsplasher.MagicSplasherState.*;
@@ -90,7 +82,6 @@ public class MagicSplasherPlugin extends Plugin
 	MagicSplasherOverlay overlay;
 
 	SplashSpells selectedSpell;
-	Widget spell;
 	MagicSplasherState state;
 	Instant botTimer;
 	MenuEntry targetMenu;
@@ -106,9 +97,6 @@ public class MagicSplasherPlugin extends Plugin
 	private static final String OUT_OF_RUNES_MSG = "You do not have enough";
 	private static final String UNREACHABLE_MSG = "I can't reach that";
 	private final int MAX_FAILURE = 10;
-	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
-	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-		new ThreadPoolExecutor.DiscardPolicy());
 
 	@Override
 	protected void startUp()
@@ -127,6 +115,7 @@ public class MagicSplasherPlugin extends Plugin
 		botTimer = null;
 		failureCount = 0;
 		npcID = -1;
+		timeout = 0;
 	}
 
 	@Provides
@@ -169,21 +158,49 @@ public class MagicSplasherPlugin extends Plugin
 		return tickLength;
 	}
 
+	private void openSpellBook()
+	{
+		targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 10551356, false); //open spellbook
+		sleepDelay();
+		utils.clickRandomPointCenter(-100, 100);
+	}
+
 	private boolean canCastSpell()
 	{
-		//spell = client.getWidget(selectedSpell.getInfo());
-		//return spell != null && spell.getSpriteId() == selectedSpell.getSpellSpriteID();
 		return client.getVar(VarPlayer.ATTACK_STYLE) == 3 || client.getVar(VarPlayer.ATTACK_STYLE) == 4;
 	}
 
 	private NPC findNPC()
 	{
 		log.debug("looking for NPC");
+		NPC npc = new NPCQuery().idEquals(npcID).filter(n -> n.getInteracting() == client.getLocalPlayer()).result(client).nearestTo(player);
+		if (npc != null)
+		{
+			return npc;
+		}
 		return new NPCQuery().idEquals(npcID).filter(n -> n.getInteracting() == null || n.getInteracting() == client.getLocalPlayer()).result(client).nearestTo(player);
+	}
+
+	private void castNPC()
+	{
+		int menuOpcodeId;
+		if (selectedSpell.getName() == "Single cast")
+		{
+			menuOpcodeId = MenuOpcode.SPELL_CAST_ON_NPC.getId();
+			timeout = 4 + tickDelay();
+		} else
+		{
+			menuOpcodeId = MenuOpcode.NPC_SECOND_OPTION.getId();
+			timeout = 10 + tickDelay();
+		}
+		targetMenu = new MenuEntry(selectedSpell.getMenuOption(), "", splashNPC.getIndex(), menuOpcodeId, 0, 0, false);
+		sleepDelay();
+		utils.clickRandomPointCenter(-100, 100);
 	}
 
 	public MagicSplasherState getState()
 	{
+		log.info(selectedSpell.getName());
 		if (timeout > 0)
 		{
 			return IDLING;
@@ -191,14 +208,6 @@ public class MagicSplasherPlugin extends Plugin
 		if (utils.isMoving(beforeLoc)) //could also test with just isMoving
 		{
 			return MOVING;
-		}
-		if(player.getAnimation() != -1)
-		{
-			return ANIMATING;
-		}
-		if(!canCastSpell())
-		{
-			return SPELL_UNAVAILABLE;
 		}
 		splashNPC = findNPC();
 		return (splashNPC != null) ? FIND_NPC : NPC_NOT_FOUND;
@@ -221,10 +230,8 @@ public class MagicSplasherPlugin extends Plugin
 				case MOVING:
 					timeout = tickDelay();
 					break;
-				case SPELL_UNAVAILABLE:
-					log.debug("Auto-cast is not setup or out of runes");
-					utils.sendGameMessage("Auto-cast is not setup or out of runes");
-					startSplasher = false; //TODO: add logout support
+				case OPENING_SPELLBOOK:
+					openSpellBook();
 					break;
 				case NPC_NOT_FOUND:
 					log.debug("NPC not found");
@@ -232,9 +239,7 @@ public class MagicSplasherPlugin extends Plugin
 					timeout = tickDelay();
 					break;
 				case FIND_NPC:
-					targetMenu = new MenuEntry("", "", splashNPC.getIndex(), MenuOpcode.NPC_SECOND_OPTION.getId(), 0, 0, false);
-					sleepDelay();
-					utils.clickRandomPointCenter(-100, 100);
+					castNPC();
 					break;
 			}
 		}
@@ -253,37 +258,42 @@ public class MagicSplasherPlugin extends Plugin
 		}
 		log.debug("MenuEntry string event: " + targetMenu.toString());
 		event.setMenuEntry(targetMenu);
-		timeout = 10 + tickDelay();
 		targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
 	}
 
 	@Subscribe
 	public void onAnimationChanged(AnimationChanged event)
 	{
-		if (!startSplasher || event.getActor() != player ||
-			event.getActor().getAnimation() != AnimationID.LOW_LEVEL_MAGIC_ATTACK)
+		if (!startSplasher || event.getActor() != player)
 		{
 			return;
 		}
 		log.debug("Animation ID changed to {}, resetting timeout", event.getActor().getAnimation());
-		timeout = 10 + tickDelay();
-		failureCount = 0;
+		if(event.getActor().getAnimation() == AnimationID.LOW_LEVEL_MAGIC_ATTACK)
+		{
+			timeout = 10 + tickDelay();
+			failureCount = 0;
+			return;
+		}
 	}
 
 	@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
-		if (event.getType() != ChatMessageType.GAMEMESSAGE ||
-		event.getType() != ChatMessageType.ENGINE)
+		if (event.getType() != ChatMessageType.GAMEMESSAGE &&
+			event.getType() != ChatMessageType.ENGINE)
 		{
 			return;
 		}
-
 		if(event.getMessage().contains(OUT_OF_RUNES_MSG))
 		{
 			log.debug("Out of runes!");
 			utils.sendGameMessage("Out of runes!");
 			startSplasher = false;
+			if(config.logout())
+			{
+				utils.logout();
+			}
 			return;
 		}
 		if(event.getMessage().contains(UNREACHABLE_MSG))
@@ -293,6 +303,10 @@ public class MagicSplasherPlugin extends Plugin
 			{
 				utils.sendGameMessage("failed to reach NPC too many times, stopping");
 				startSplasher = false;
+				if(config.logout())
+				{
+					utils.logout();
+				}
 				return;
 			}
 			failureCount++;

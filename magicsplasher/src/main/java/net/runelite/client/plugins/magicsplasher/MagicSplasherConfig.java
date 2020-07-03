@@ -54,8 +54,16 @@ public interface MagicSplasherConfig extends Config
 	)
 	default SplashSpells getSpells()
 	{
-		return SplashSpells.FIRE_STRIKE;
+		return SplashSpells.AUTO_CAST;
 	}
+
+	@ConfigItem(
+		keyName = "logout",
+		name = "Logout when out of runes",
+		description = "Enable to logout when out of runes. Won't work if you are splashing an npc that attacks you",
+		position = 3
+	)
+	default boolean logout() { return true; }
 
 	@ConfigSection(
 		keyName = "delayConfig",
