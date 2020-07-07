@@ -915,6 +915,23 @@ public class BotUtils extends Plugin
 		return item != null && item.getQuantity() >= minStackAmount;
 	}
 
+	public boolean inventoryContainsExcept(Set<Integer> itemIds)
+	{
+		if (client.getItemContainer(InventoryID.INVENTORY) == null)
+		{
+			return false;
+		}
+		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
+		List<Integer> depositedItems = new ArrayList<>();
+
+		for (WidgetItem item : inventoryItems)
+		{
+			if (!itemIds.contains(item.getId()))
+				return true;
+		}
+		return false;
+	}
+
 	public void dropAll(List<Integer> ids)
 	{
 		if (isBankOpen() || isDepositBoxOpen())

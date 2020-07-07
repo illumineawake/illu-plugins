@@ -47,10 +47,18 @@ public interface MagicSplasherConfig extends Config
 	default int npcID()	{ return 0;	}
 
 	@ConfigItem(
+		keyName = "itemID",
+		name = "Item ID",
+		description = "Provide ID of the item to High Alc",
+		position = 2
+	)
+	default int itemID()	{ return 0;	}
+
+	@ConfigItem(
 		keyName = "spell",
 		name = "Splash Spell",
 		description = "Choose a spell",
-		position = 2
+		position = 3
 	)
 	default SplashSpells getSpells()
 	{
@@ -61,7 +69,7 @@ public interface MagicSplasherConfig extends Config
 		keyName = "logout",
 		name = "Logout when out of runes",
 		description = "Enable to logout when out of runes. Won't work if you are splashing an npc that attacks you",
-		position = 3
+		position = 4
 	)
 	default boolean logout() { return true; }
 

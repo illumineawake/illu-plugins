@@ -37,6 +37,7 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.queries.NPCQuery;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -88,8 +89,10 @@ public class MagicSplasherPlugin extends Plugin
 	LocalPoint beforeLoc = new LocalPoint(0, 0); //initiate to mitigate npe
 	Player player;
 	NPC splashNPC;
+	WidgetItem targetItem;
 
 	int npcID = -1;
+	int itemID = -1;
 	int timeout = 0;
 	int failureCount = 0;
 	long sleepLength = 0;
@@ -105,6 +108,7 @@ public class MagicSplasherPlugin extends Plugin
 		overlayManager.add(overlay);
 		selectedSpell = config.getSpells();
 		npcID = config.npcID();
+		itemID = config.itemID();
 	}
 
 	@Override
@@ -115,6 +119,7 @@ public class MagicSplasherPlugin extends Plugin
 		botTimer = null;
 		failureCount = 0;
 		npcID = -1;
+		itemID = -1;
 		timeout = 0;
 	}
 
@@ -131,11 +136,15 @@ public class MagicSplasherPlugin extends Plugin
 		{
 			return;
 		}
-		switch(event.getKey())
+		switch (event.getKey())
 		{
 			case "npcID":
 				npcID = config.npcID();
 				log.debug("NPC ID set to {}", npcID);
+				break;
+			case "itemID":
+				itemID = config.itemID();
+				log.debug("Item ID set to {}", itemID);
 				break;
 			case "spell":
 				selectedSpell = config.getSpells();
@@ -181,19 +190,26 @@ public class MagicSplasherPlugin extends Plugin
 		return new NPCQuery().idEquals(npcID).filter(n -> n.getInteracting() == null || n.getInteracting() == client.getLocalPlayer()).result(client).nearestTo(player);
 	}
 
-	private void castNPC()
+	private WidgetItem getItem()
 	{
-		int menuOpcodeId;
-		if (selectedSpell.getName() == "Single cast")
+		log.debug("finding item");
+		return utils.getInventoryWidgetItem(itemID);
+	}
+
+	private void castSpell()
+	{
+		switch (selectedSpell.getName())
 		{
-			menuOpcodeId = MenuOpcode.SPELL_CAST_ON_NPC.getId();
-			timeout = 4 + tickDelay();
-		} else
-		{
-			menuOpcodeId = MenuOpcode.NPC_SECOND_OPTION.getId();
-			timeout = 10 + tickDelay();
+			case "Single cast":
+				targetMenu = new MenuEntry(selectedSpell.getMenuOption(), "", splashNPC.getIndex(), MenuOpcode.SPELL_CAST_ON_NPC.getId(), 0, 0, false);
+				timeout = 4 + tickDelay();
+			case "Auto-cast":
+				targetMenu = new MenuEntry(selectedSpell.getMenuOption(), "", splashNPC.getIndex(), MenuOpcode.NPC_SECOND_OPTION.getId(), 0, 0, false);
+				timeout = 10 + tickDelay();
+			case "High Alchemy":
+				targetMenu = new MenuEntry("Cast", "", targetItem.getId(), MenuOpcode.ITEM_USE_ON_WIDGET.getId(), targetItem.getIndex(), 9764864, true);
+				timeout = 3 + tickDelay();
 		}
-		targetMenu = new MenuEntry(selectedSpell.getMenuOption(), "", splashNPC.getIndex(), menuOpcodeId, 0, 0, false);
 		sleepDelay();
 		utils.clickRandomPointCenter(-100, 100);
 	}
@@ -208,6 +224,11 @@ public class MagicSplasherPlugin extends Plugin
 		if (utils.isMoving(beforeLoc)) //could also test with just isMoving
 		{
 			return MOVING;
+		}
+		if(selectedSpell.getName().equals("High Alchemy"))
+		{
+			targetItem = getItem();
+			return (targetItem != null && targetItem.getQuantity() > 0) ? FIND_ITEM : ITEM_NOT_FOUND;
 		}
 		splashNPC = findNPC();
 		return (splashNPC != null) ? FIND_NPC : NPC_NOT_FOUND;
@@ -238,8 +259,17 @@ public class MagicSplasherPlugin extends Plugin
 					utils.sendGameMessage("NPC not found");
 					timeout = tickDelay();
 					break;
+				case ITEM_NOT_FOUND:
+					log.info("Item not found, config: {}, ID: {}, quantity {}", config.itemID(), targetItem.getId(), targetItem.getQuantity());
+					utils.sendGameMessage("Item not found");
+					if (config.logout())
+						utils.logout();
+					else
+						timeout = tickDelay();
+					break;
 				case FIND_NPC:
-					castNPC();
+				case FIND_ITEM:
+					castSpell();
 					break;
 			}
 		}
@@ -269,7 +299,7 @@ public class MagicSplasherPlugin extends Plugin
 			return;
 		}
 		log.debug("Animation ID changed to {}, resetting timeout", event.getActor().getAnimation());
-		if(event.getActor().getAnimation() == AnimationID.LOW_LEVEL_MAGIC_ATTACK)
+		if (event.getActor().getAnimation() == AnimationID.LOW_LEVEL_MAGIC_ATTACK)
 		{
 			timeout = 10 + tickDelay();
 			failureCount = 0;
@@ -285,25 +315,25 @@ public class MagicSplasherPlugin extends Plugin
 		{
 			return;
 		}
-		if(event.getMessage().contains(OUT_OF_RUNES_MSG))
+		if (event.getMessage().contains(OUT_OF_RUNES_MSG))
 		{
 			log.debug("Out of runes!");
 			utils.sendGameMessage("Out of runes!");
 			startSplasher = false;
-			if(config.logout())
+			if (config.logout())
 			{
 				utils.logout();
 			}
 			return;
 		}
-		if(event.getMessage().contains(UNREACHABLE_MSG))
+		if (event.getMessage().contains(UNREACHABLE_MSG))
 		{
 			log.debug("unreachable message, fail count: " + failureCount);
 			if (failureCount >= MAX_FAILURE)
 			{
 				utils.sendGameMessage("failed to reach NPC too many times, stopping");
 				startSplasher = false;
-				if(config.logout())
+				if (config.logout())
 				{
 					utils.logout();
 				}

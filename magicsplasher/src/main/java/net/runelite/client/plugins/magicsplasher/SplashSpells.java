@@ -21,7 +21,8 @@ public enum SplashSpells
 	CURSE("Curse", WidgetInfo.SPELL_CURSE, SpriteID.SPELL_CURSE, "Cast");*/
 
 	AUTO_CAST("Auto-cast"),
-	SINGLE_CAST("Single cast", "Cast");
+	SINGLE_CAST("Single cast", "Cast"),
+	HIGH_ALCHEMY("High Alchemy", "Cast");
 
 	private final String name;
 	private String menuOption = "";
