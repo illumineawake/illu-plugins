@@ -2,6 +2,7 @@ package net.runelite.client.plugins.rooftopagility;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import net.runelite.api.ObjectID;
 import static net.runelite.api.ObjectID.*;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
@@ -17,7 +18,7 @@ public enum RooftopAgilityObstacles
 	GNOME_NET_TWO(new WorldPoint(2482, 3418, 0), new WorldPoint(2489, 3427, 0), OBSTACLE_NET_23135),
 	GNOME_PIPE(new WorldPoint(2482, 3427, 0), new WorldPoint(2489, 3433, 0), OBSTACLE_PIPE_23139),
 	//DRAYNOR
-	DRAY_WALL(new WorldPoint(3082, 3254, 0), new WorldPoint(3105, 3293, 0), ROUGH_WALL, RooftopAgilityObstacleType.DECORATION),
+	DRAY_WALL(new WorldPoint(3082, 3238, 0), new WorldPoint(3105, 3293, 0), ROUGH_WALL, RooftopAgilityObstacleType.DECORATION, BANK_BOOTH_10355),
 	DRAY_TIGHTROPE(new WorldPoint(3096, 3275, 3), new WorldPoint(3103, 3282, 3), TIGHTROPE, RooftopAgilityObstacleType.GROUND_OBJECT),
 	DRAY_TIGHTROPE_TWO(new WorldPoint(3086, 3271, 3), new WorldPoint(3093, 3279, 3), TIGHTROPE_11406, RooftopAgilityObstacleType.GROUND_OBJECT),
 	DRAY_NARROW_WALL(new WorldPoint(3087, 3263, 3), new WorldPoint(3095, 3269, 3), NARROW_WALL),
@@ -25,17 +26,17 @@ public enum RooftopAgilityObstacles
 	DRAY_GAP(new WorldPoint(3087, 3254, 3), new WorldPoint(3095, 3256, 3), GAP_11631),
 	DRAY_CRATE(new WorldPoint(3095, 3255, 3), new WorldPoint(3102, 3262, 3), CRATE_11632),
 	//VARROCK
-	COURSE_GROUND(new WorldPoint(3184, 3386, 0), new WorldPoint(3243, 3428, 0), ROUGH_WALL_14412, RooftopAgilityObstacleType.DECORATION),
+	COURSE_GROUND(new WorldPoint(3184, 3386, 0), new WorldPoint(3258, 3428, 0), ROUGH_WALL_14412, RooftopAgilityObstacleType.DECORATION, ObjectID.BANK_BOOTH_10583),
 	ROOFTOP_ONE(new WorldPoint(3213, 3409, 3), new WorldPoint(3220, 3420, 3), CLOTHES_LINE),
 	ROOFTOP_TWO(new WorldPoint(3200, 3412, 3), new WorldPoint(3209, 3420, 3), GAP_14414),
 	CROSSWALK(new WorldPoint(3192, 3415, 1), new WorldPoint(3198, 3417, 1), WALL_14832),
 	ROOFTOP_THREE(new WorldPoint(3191, 3401, 3), new WorldPoint(3198, 3407, 3), GAP_14833),
-	ROOFTOP_FOUR(new WorldPoint(3181, 3393, 3), new WorldPoint(3208, 3401, 3), GAP_14834),
+	ROOFTOP_FOUR(new WorldPoint(3181, 3393, 3), new WorldPoint(3209, 3401, 3), GAP_14834),
 	ROOFTOP_FIVE(new WorldPoint(3217, 3392, 3), new WorldPoint(3233, 3404, 3), GAP_14835),
 	ROOFTOP_SIX(new WorldPoint(3235, 3402, 3), new WorldPoint(3240, 3409, 3), LEDGE_14836),
 	ROOFTOP_SEVEN(new WorldPoint(3235, 3410, 3), new WorldPoint(3240, 3416, 3), EDGE),
 	//Canifis
-	CAN_GROUND(new WorldPoint(3459, 3464, 0), new WorldPoint(3519, 3514, 0), TALL_TREE_14843),
+	CAN_GROUND(new WorldPoint(3459, 3464, 0), new WorldPoint(3519, 3514, 0), TALL_TREE_14843, BANK_BOOTH_24347),
 	CAN_ROOFTOP_ONE(new WorldPoint(3504, 3491, 2), new WorldPoint(3512, 3499, 2), GAP_14844),
 	CAN_ROOFTOP_TWO(new WorldPoint(3495, 3503, 2), new WorldPoint(3505, 3508, 2), GAP_14845),
 	CAN_ROOFTOP_THREE(new WorldPoint(3484, 3498, 2), new WorldPoint(3494, 3506, 2), GAP_14848),
@@ -44,9 +45,9 @@ public enum RooftopAgilityObstacles
 	CAN_ROOFTOP_SIX(new WorldPoint(3488, 3468, 3), new WorldPoint(3505, 3480, 3), GAP_14847),
 	CAN_ROOFTOP_SEVEN(new WorldPoint(3508, 3474, 2), new WorldPoint(3517, 3484, 2), GAP_14897),
 	//FALADOR
-	FAL_GROUND(new WorldPoint(3008, 3328, 0), new WorldPoint(3071, 3391, 0), ROUGH_WALL_14898, RooftopAgilityObstacleType.DECORATION),
+	FAL_GROUND(new WorldPoint(3008, 3328, 0), new WorldPoint(3071, 3391, 0), ROUGH_WALL_14898, RooftopAgilityObstacleType.DECORATION, ObjectID.BANK_BOOTH_24101),
 	FAL_ROOFTOP_ONE(new WorldPoint(3034, 3342, 3), new WorldPoint(3040, 3347, 3), TIGHTROPE_14899, RooftopAgilityObstacleType.GROUND_OBJECT),
-	FAL_ROOFTOP_TWO(new WorldPoint(3043, 3341, 3), new WorldPoint(3051, 3349, 3), HAND_HOLDS_14901),
+	FAL_ROOFTOP_TWO(new WorldPoint(3043, 3341, 3), new WorldPoint(3051, 3350, 3), HAND_HOLDS_14901),
 	FAL_ROOFTOP_THREE(new WorldPoint(3047, 3356, 3), new WorldPoint(3051, 3359, 3), GAP_14903),
 	FAL_ROOFTOP_FOUR(new WorldPoint(3044, 3360, 3), new WorldPoint(3049, 3367, 3), GAP_14904),
 	FAL_ROOFTOP_FIVE(new WorldPoint(3033, 3360, 3), new WorldPoint(3042, 3364, 3), TIGHTROPE_14905),
@@ -58,7 +59,7 @@ public enum RooftopAgilityObstacles
 	FAL_ROOFTOP_ELEVEN(new WorldPoint(3013, 3331, 3), new WorldPoint(3018, 3335, 3), LEDGE_14924),
 	FAL_ROOFTOP_TWELVE(new WorldPoint(3019, 3331, 3), new WorldPoint(3027, 3335, 3), EDGE_14925),
 	//SEERS
-	SEERS_GROUND(new WorldPoint(2689, 3457, 0), new WorldPoint(2750, 3517, 0), WALL_14927, RooftopAgilityObstacleType.DECORATION),
+	SEERS_GROUND(new WorldPoint(2689, 3457, 0), new WorldPoint(2750, 3517, 0), WALL_14927, RooftopAgilityObstacleType.DECORATION, BANK_BOOTH_25808),
 	SEERS_ROOF_ONE(new WorldPoint(2720, 3489, 3), new WorldPoint(2731, 3498, 3), GAP_14928),
 	SEERS_ROOF_TWO(new WorldPoint(2702, 3486, 2), new WorldPoint(2714, 3499, 2), TIGHTROPE_14932, RooftopAgilityObstacleType.GROUND_OBJECT),
 	SEERS_ROOF_THREE(new WorldPoint(2707, 3475, 2), new WorldPoint(2717, 3483, 2), GAP_14929),
@@ -83,7 +84,7 @@ public enum RooftopAgilityObstacles
 	RELL_ROOF_FIVE(new WorldPoint(2642, 3656, 3), new WorldPoint(2651, 3663, 3), TIGHTROPE_14992),
 	RELL_ROOF_SIX(new WorldPoint(2654, 3663, 3), new WorldPoint(2667, 3686, 3), PILE_OF_FISH),
 	//Ardougne
-	ARDY_GROUND(new WorldPoint(2640, 3274, 0), new WorldPoint(2678, 3321, 0), WOODEN_BEAMS, RooftopAgilityObstacleType.DECORATION),
+	ARDY_GROUND(new WorldPoint(2640, 3274, 0), new WorldPoint(2678, 3321, 0), WOODEN_BEAMS, RooftopAgilityObstacleType.DECORATION, ObjectID.BANK_BOOTH_10355),
 	ARDY_GAP(new WorldPoint(2670, 3298, 3), new WorldPoint(2675, 3312, 3), GAP_15609),
 	ARDY_BEAM(new WorldPoint(2660, 3317, 3), new WorldPoint(2666, 3323, 3), PLANK_26635, RooftopAgilityObstacleType.GROUND_OBJECT),
 	ARDY_GAP_TWO(new WorldPoint(2652, 3317, 3), new WorldPoint(2658, 3322, 3),  GAP_15610),
@@ -97,7 +98,11 @@ public enum RooftopAgilityObstacles
 	@Getter(AccessLevel.PACKAGE)
 	private final int obstacleId;
 
+	@Getter(AccessLevel.PACKAGE)
 	private RooftopAgilityObstacleType type = RooftopAgilityObstacleType.NORMAL;
+
+	@Getter(AccessLevel.PACKAGE)
+	private int bankID = 0;
 
 	RooftopAgilityObstacles(final WorldPoint min, final WorldPoint max, final int obstacleId)
 	{
@@ -105,11 +110,26 @@ public enum RooftopAgilityObstacles
 		this.obstacleId = obstacleId;
 	}
 
+	RooftopAgilityObstacles(final WorldPoint min, final WorldPoint max, final int obstacleId, final int bankID)
+	{
+		this.location = new WorldArea(min, max);
+		this.obstacleId = obstacleId;
+		this.bankID = bankID;
+	}
+
 	RooftopAgilityObstacles(final WorldPoint min, final WorldPoint max, final int obstacleId, final RooftopAgilityObstacleType type)
 	{
 		this.location = new WorldArea(min, max);
 		this.obstacleId = obstacleId;
 		this.type = type;
+	}
+
+	RooftopAgilityObstacles(final WorldPoint min, final WorldPoint max, final int obstacleId, final RooftopAgilityObstacleType type, final int bankID)
+	{
+		this.location = new WorldArea(min, max);
+		this.obstacleId = obstacleId;
+		this.type = type;
+		this.bankID = bankID;
 	}
 
 	public RooftopAgilityObstacleType getObstacleType()

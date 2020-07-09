@@ -40,7 +40,7 @@ public interface RooftopAgilityConfig extends Config
 {
 	@ConfigTitleSection(
 		keyName = "courseTitle",
-		name = "Supported Courses (don't edit)",
+		name = "Supported Courses",
 		description = "",
 		position = 0
 	)
@@ -50,15 +50,15 @@ public interface RooftopAgilityConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "supportedCourses",
+		keyName = "Courses",
 		name = "",
-		description = "Support agility courses, don't enter anything into this field",
+		description = "Supported agility courses (don't enter anything into this field)",
 		position = 1,
 		titleSection = "courseTitle"
 	)
-	default String supportedCourses()
+	default String Courses()
 	{
-		return "Gnome, Draynor, Varrock, Canifis, Falador, Seers, Pollnivneach, Rellekka, Ardougne";
+		return "Gnome, Draynor (banking), Varrock (banking), Canifis (banking), Falador (banking), Seers (banking), Pollnivneach, Rellekka, Ardougne (banking)";
 	}
 
 	@ConfigSection(
@@ -238,7 +238,7 @@ public interface RooftopAgilityConfig extends Config
 	@ConfigTitleSection(
 		keyName = "agilityTitle",
 		name = "Agility Configuration",
-		description = "Supported courses: Gnome, Draynor, Varrock, Canifis, Falador, Pollnivneach, Seers, Rellekka",
+		description = "",
 		position = 14
 	)
 	default Title agilityTitle()
@@ -259,10 +259,62 @@ public interface RooftopAgilityConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "lowHP",
+		name = "Stop at HP",
+		description = "Stop if HP goes below given threshold",
+		position = 16,
+		titleSection = "agilityTitle"
+	)
+	default int lowHP()
+	{
+		return 9;
+	}
+
+	@ConfigItem(
+		keyName = "highAlch",
+		name = "High Alch",
+		description = "Enable to High Alch while running",
+		position = 17,
+		titleSection = "agilityTitle"
+	)
+	default boolean highAlch()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "alchItemID",
+		name = "Alch Item ID (un-noted)",
+		description = "Item ID (un-noted) of item you wish to high alch.",
+		position = 18,
+		titleSection = "agilityTitle",
+		hidden = true,
+		unhide = "highAlch"
+	)
+	default int alchItemID()
+	{
+		return 0;
+	}
+
+	@ConfigItem(
+		keyName = "bankRestock",
+		name = "Bank to restock items",
+		description = "Go to bank to restock items for high alch. Auto-disables at unsupported locations or bank doesn't contain item.",
+		position = 19,
+		titleSection = "agilityTitle",
+		hidden = true,
+		unhide = "highAlch"
+	)
+	default boolean bankRestock()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "enableUI",
 		name = "Enable UI",
 		description = "Enable to turn on in game UI",
-		position = 16,
+		position = 25,
 		titleSection = "agilityTitle"
 	)
 	default boolean enableUI()
@@ -274,7 +326,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "startButton",
 		name = "Start/Stop",
 		description = "Test button that changes variable value",
-		position = 17,
+		position = 30,
 		titleSection = "agilityTitle"
 	)
 	default Consumer<RooftopAgilityPlugin> testButton()

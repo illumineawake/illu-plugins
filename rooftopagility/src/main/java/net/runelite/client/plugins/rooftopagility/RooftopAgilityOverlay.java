@@ -73,6 +73,7 @@ class RooftopAgilityOverlay extends OverlayPanel
 
 		tableDelayComponent.addRow("Sleep delay:", plugin.sleepLength + "ms");
 		tableDelayComponent.addRow("Tick delay:", String.valueOf(plugin.timeout));
+		tableDelayComponent.addRow("Alch delay:", String.valueOf(plugin.alchTimeout));
 
 		if (!tableComponent.isEmpty())
 		{

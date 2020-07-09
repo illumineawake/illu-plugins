@@ -29,9 +29,15 @@ import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -40,6 +46,7 @@ import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.Menu;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.ItemDespawned;
@@ -48,12 +55,16 @@ import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
+import static net.runelite.client.plugins.rooftopagility.RooftopAgilityState.HIGH_ALCH;
+import static net.runelite.client.plugins.rooftopagility.RooftopAgilityState.RESTOCK_ITEMS;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -95,33 +106,50 @@ public class RooftopAgilityPlugin extends Plugin
 	@Inject
 	RooftopAgilityOverlay overlay;
 
+	@Inject
+	ItemManager itemManager;
 
 	RooftopAgilityPanel panel;
 	private NavigationButton navButton;
 
+	Player player;
 	RooftopAgilityState state;
 	Instant botTimer;
 	TileItem markOfGrace;
 	Tile markOfGraceTile;
 	MenuEntry targetMenu;
 	LocalPoint beforeLoc = new LocalPoint(0, 0); //initiate to mitigate npe
-	int timeout = 0;
-	int mogSpawnCount = 0;
-	int mogCollectCount = 0;
+	WidgetItem alchItem;
+	Set<Integer> inventoryItems = new HashSet<>();
+
+	int timeout;
+	int alchTimeout;
+	int mogSpawnCount;
+	int mogCollectCount;
 	int mogInventoryCount = -1;
-	int marksPerHour = 0;
-	long sleepLength = 0;
+	int marksPerHour;
+	long sleepLength;
 	boolean startAgility;
+	boolean restockBank;
+	boolean setHighAlch;
+	boolean alchClick;
 	private final Set<Integer> REGION_IDS = Set.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878, 10547);
-	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+	/*private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
 	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-		new ThreadPoolExecutor.DiscardPolicy());
+		new ThreadPoolExecutor.DiscardPolicy());*/
+	private ExecutorService executorService;
 
 	@Override
 	protected void startUp()
 	{
+		executorService = Executors.newSingleThreadExecutor();
 		botTimer = Instant.now();
 		overlayManager.add(overlay);
+		restockBank = config.bankRestock();
+		inventoryItems.addAll(Set.of(ItemID.NATURE_RUNE, ItemID.MARK_OF_GRACE));
+		if (config.alchItemID() != 0)
+			inventoryItems.addAll(Set.of(config.alchItemID(),(config.alchItemID() + 1)));
+		log.debug("Inventory items: {}", inventoryItems.toString());
 		/*panel = injector.getInstance(RooftopAgilityPanel.class);
 		panel.init();
 		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "panel_icon.png");
@@ -138,6 +166,7 @@ public class RooftopAgilityPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
+		executorService.shutdown();
 		overlayManager.remove(overlay);
 		markOfGraceTile = null;
 		markOfGrace = null;
@@ -147,6 +176,8 @@ public class RooftopAgilityPlugin extends Plugin
 		mogCollectCount = 0;
 		mogInventoryCount = -1;
 		marksPerHour = 0;
+		alchTimeout = 0;
+		inventoryItems.clear();
 		//clientToolbar.removeNavigation(navButton);
 	}
 
@@ -154,6 +185,24 @@ public class RooftopAgilityPlugin extends Plugin
 	RooftopAgilityConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(RooftopAgilityConfig.class);
+	}
+
+	@Subscribe
+	private void onConfigChanged(ConfigChanged event)
+	{
+		if (event.getGroup() == "RooftopAgility")
+		{
+			switch(event.getKey())
+			{
+				case "bankRestock":
+					restockBank = config.bankRestock();
+					break;
+				case "alchItemID":
+					inventoryItems.clear();
+					inventoryItems.addAll(Set.of(ItemID.NATURE_RUNE, ItemID.MARK_OF_GRACE, config.alchItemID(), (config.alchItemID() + 1)));
+					break;
+			}
+		}
 	}
 
 	private void sleepDelay()
@@ -171,6 +220,22 @@ public class RooftopAgilityPlugin extends Plugin
 		return tickLength;
 	}
 
+	private void handleMouseClick()
+	{
+		executorService.submit(() ->
+		{
+			try
+			{
+				sleepDelay();
+				utils.clickRandomPointCenter(-100, 100);
+			}
+			catch (RuntimeException e)
+			{
+				e.printStackTrace();
+			}
+		});
+	}
+
 	public long getMarksPH()
 	{
 		Duration timeSinceStart = Duration.between(botTimer, Instant.now());
@@ -181,9 +246,116 @@ public class RooftopAgilityPlugin extends Plugin
 		return 0;
 	}
 
+	private boolean shouldAlch()
+	{
+		return config.highAlch() &&
+			config.alchItemID() != 0 &&
+			client.getBoostedSkillLevel(Skill.MAGIC) >= 55;
+	}
+
+	private void highAlchItem()
+	{
+		if(!setHighAlch)
+		{
+			targetMenu = new MenuEntry("Cast", "<col=00ff00>High Level Alchemy</col>", 0,
+				MenuOpcode.WIDGET_TYPE_2.getId(), -1, 14286887, false);
+			handleMouseClick();
+			setHighAlch = true;
+		}
+		else
+		{
+			alchItem = utils.getInventoryWidgetItem(List.of(config.alchItemID(), (config.alchItemID() + 1)));
+			targetMenu = new MenuEntry("Cast", "<col=00ff00>High Level Alchemy</col><col=ffffff> ->",
+				alchItem.getId(),
+				MenuOpcode.ITEM_USE_ON_WIDGET.getId(),
+				alchItem.getIndex(), 9764864,
+				false);
+			handleMouseClick();
+			alchTimeout = 4 + tickDelay();
+		}
+	}
+
+	private boolean shouldRestock()
+	{
+		if (!config.highAlch() ||
+			config.alchItemID() == 0 ||
+			!restockBank ||
+			client.getBoostedSkillLevel(Skill.MAGIC) < 55)
+		{
+			return false;
+		}
+		return !utils.inventoryContains(ItemID.NATURE_RUNE) || !utils.inventoryContains(Set.of(config.alchItemID(), (config.alchItemID() + 1)));
+	}
+
+	private void restockItems()
+	{
+		if (utils.isBankOpen())
+		{
+			if (client.getVarbitValue(Varbits.BANK_NOTE_FLAG.getId()) != 1)
+			{
+				targetMenu = new MenuEntry("Note", "", 1, MenuOpcode.CC_OP.getId(), -1, 786455, false);
+				handleMouseClick();
+				return;
+			}
+			if ((!utils.bankContains(ItemID.NATURE_RUNE, 1) && !utils.inventoryContains(ItemID.NATURE_RUNE)) ||
+				(!utils.bankContains(config.alchItemID(), 1) && !utils.inventoryContains(Set.of(config.alchItemID(), config.alchItemID() + 1))))
+			{
+				log.debug("out of alching items");
+				restockBank = false;
+				return;
+			}
+			else
+			{
+				WidgetItem food = utils.getInventoryWidgetItemMenu(itemManager, "Eat", 33);
+				if (food != null)
+					inventoryItems.add(food.getId());
+				if (utils.inventoryContainsExcept(inventoryItems))
+				{
+					log.debug("depositing items");
+					utils.depositAllExcept(inventoryItems);
+					timeout = tickDelay();
+					return;
+				}
+				if (!utils.inventoryFull())
+				{
+					if (!utils.inventoryContains(ItemID.NATURE_RUNE))
+					{
+						log.debug("withdrawing Nature runes");
+						utils.withdrawAllItem(ItemID.NATURE_RUNE);
+						return;
+					}
+					if (!utils.inventoryContains(Set.of(config.alchItemID(), config.alchItemID() + 1)))
+					{
+						log.debug("withdrawing Config Alch Item");
+						utils.withdrawAllItem(config.alchItemID());
+						return;
+					}
+				} else
+					log.debug("inventory is full but trying to withdraw items");
+			}
+		}
+		else
+		{
+			GameObject bankBooth = utils.findNearestGameObject(getCurrentObstacle().getBankID());
+			if (bankBooth != null)
+			{
+				targetMenu = new MenuEntry("", "", bankBooth.getId(),
+					MenuOpcode.GAME_OBJECT_SECOND_OPTION.getId(), bankBooth.getSceneMinLocation().getX(),
+					bankBooth.getSceneMinLocation().getY(), false);
+				handleMouseClick();
+				timeout = tickDelay();
+			}
+		}
+	}
+
+	private RooftopAgilityObstacles getCurrentObstacle()
+	{
+		return RooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
+	}
+
 	private void findObstacle()
 	{
-		RooftopAgilityObstacles obstacle = RooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
+		RooftopAgilityObstacles obstacle = getCurrentObstacle();
 		if (obstacle != null)
 		{
 			log.debug(String.valueOf(obstacle.getObstacleId()));
@@ -194,8 +366,7 @@ public class RooftopAgilityPlugin extends Plugin
 				if (decObstacle != null)
 				{
 					targetMenu = new MenuEntry("", "", decObstacle.getId(), 3, decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
-					sleepDelay();
-					utils.clickRandomPointCenter(-100, 100);
+					handleMouseClick();
 					return;
 				}
 			}
@@ -205,8 +376,7 @@ public class RooftopAgilityPlugin extends Plugin
 				if (groundObstacle != null)
 				{
 					targetMenu = new MenuEntry("", "", groundObstacle.getId(), 3, groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
-					sleepDelay();
-					utils.clickRandomPointCenter(-100, 100);
+					handleMouseClick();
 					return;
 				}
 			}
@@ -214,8 +384,7 @@ public class RooftopAgilityPlugin extends Plugin
 			if (objObstacle != null)
 			{
 				targetMenu = new MenuEntry("", "", objObstacle.getId(), 3, objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
-				sleepDelay();
-				utils.clickRandomPointCenter(-100, 100);
+				handleMouseClick();
 				return;
 			}
 		}
@@ -229,21 +398,59 @@ public class RooftopAgilityPlugin extends Plugin
 	{
 		if (timeout > 0)
 		{
+			if (alchTimeout <= 0 && shouldAlch() &&	utils.inventoryContains(ItemID.NATURE_RUNE) &&
+				utils.inventoryContains(Set.of(config.alchItemID(), (config.alchItemID() + 1))))
+			{
+				timeout--;
+				return HIGH_ALCH;
+			}
+			if(alchClick)
+			{
+				RooftopAgilityObstacles currentObstacle = getCurrentObstacle();
+				if (currentObstacle != null)
+				{
+					if (markOfGrace != null && markOfGraceTile != null && config.mogPickup() && (!utils.inventoryFull() || utils.inventoryContains(ItemID.MARK_OF_GRACE)))
+					{
+						if (currentObstacle.getLocation().distanceTo(markOfGraceTile.getWorldLocation()) == 0)
+						{
+							return MARK_OF_GRACE;
+						}
+					}
+					if (currentObstacle.getBankID() == 0 || !shouldRestock())
+					{
+						timeout--;
+						return FIND_OBSTACLE;
+					}
+				}
+			}
 			return TIMEOUT;
 		}
-		if (utils.isMoving(beforeLoc)) //could also test with just isMoving
+		if (utils.isMoving(beforeLoc))
+		{
+			if (alchTimeout <= 0 && shouldAlch() &&	(utils.inventoryContains(ItemID.NATURE_RUNE) &&
+				utils.inventoryContains(Set.of(config.alchItemID(), (config.alchItemID() + 1)))))
+			{
+				timeout = tickDelay();
+				return HIGH_ALCH;
+			}
+			timeout = tickDelay();
+			return MOVING;
+		}
+		RooftopAgilityObstacles currentObstacle = RooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
+		if (currentObstacle == null)
 		{
 			timeout = tickDelay();
 			return MOVING;
 		}
-		if (markOfGrace != null && markOfGraceTile != null && config.mogPickup())
+		if(currentObstacle.getBankID() > 0 && shouldRestock())
 		{
-			RooftopAgilityObstacles currentObstacle = RooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
-			if (currentObstacle == null)
-			{
-				timeout = tickDelay();
-				return MOVING;
-			}
+			if (utils.findNearestGameObject(currentObstacle.getBankID()) != null)
+				return RESTOCK_ITEMS;
+			else
+				log.debug("should restock but couldn't find bank");
+		}
+		if (markOfGrace != null && markOfGraceTile != null && config.mogPickup() && (!utils.inventoryFull() || utils.inventoryContains(ItemID.MARK_OF_GRACE)))
+		{
 			if (currentObstacle.getLocation().distanceTo(markOfGraceTile.getWorldLocation()) == 0)
 			{
 				return MARK_OF_GRACE;
@@ -259,7 +466,10 @@ public class RooftopAgilityPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
-		if (client != null && client.getLocalPlayer() != null && client.getGameState() == GameState.LOGGED_IN && startAgility)
+		player = client.getLocalPlayer();
+		if (alchTimeout > 0)
+			alchTimeout--;
+		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN && startAgility && client.getBoostedSkillLevel(Skill.HITPOINTS) > config.lowHP())
 		{
 			if (!REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
 			{
@@ -269,7 +479,6 @@ public class RooftopAgilityPlugin extends Plugin
 			marksPerHour = (int) getMarksPH();
 			utils.handleRun(40, 20);
 			state = getState();
-			//this seems shit
 			beforeLoc = client.getLocalPlayer().getLocalLocation();
 			switch (state)
 			{
@@ -279,11 +488,16 @@ public class RooftopAgilityPlugin extends Plugin
 				case MARK_OF_GRACE:
 					log.debug("Picking up mark of grace");
 					targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
-					sleepDelay();
-					utils.clickRandomPointCenter(-100, 100);
+					handleMouseClick();
 					return;
 				case FIND_OBSTACLE:
 					findObstacle();
+					return;
+				case HIGH_ALCH:
+					highAlchItem();
+					return;
+				case RESTOCK_ITEMS:
+					restockItems();
 					return;
 				case MOVING:
 					break;
@@ -307,8 +521,10 @@ public class RooftopAgilityPlugin extends Plugin
 		}
 		log.debug("MenuEntry string event: " + targetMenu.toString());
 		event.setMenuEntry(targetMenu);
+		alchClick = (targetMenu.getOption().equals("Cast"));
 		timeout = tickDelay();
 		targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
+
 	}
 
 	@Subscribe

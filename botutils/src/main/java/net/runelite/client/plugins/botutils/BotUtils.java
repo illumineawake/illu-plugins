@@ -621,7 +621,7 @@ public class BotUtils extends Plugin
 	 * PLAYER FUNCTIONS
 	 */
 
-	//Not very accurate, recommend using isMovingTick()
+	//Not very accurate, recommend using isMoving(LocalPoint lastTickLocalPoint)
 	public boolean isMoving()
 	{
 		int camX = client.getCameraX2();
@@ -722,18 +722,6 @@ public class BotUtils extends Plugin
 		}
 	}
 
-	//Requires inventory visible
-	/*public List<WidgetItem> getItems(int... itemIDs)
-	{
-		assert client.isClientThread();
-
-		return new InventoryWidgetItemQuery()
-			.idEquals(itemIDs)
-			.result(client)
-			.list;
-	}*/
-
-	//Doesn't require a visible inventory
 	public List<WidgetItem> getItems(Set<Integer> ids)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -774,17 +762,6 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
-	/*//Requires inventory visible
-	public List<WidgetItem> getItems(Set<Integer> itemIDs)
-	{
-		assert client.isClientThread();
-
-		return new InventoryWidgetItemQuery()
-			.idEquals(itemIDs)
-			.result(client)
-			.list;
-	}*/
-
 	public Collection<WidgetItem> getAllInventoryItems()
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -795,18 +772,6 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
-	//Requires inventory visible and returns null if not
-	/*public WidgetItem getInventoryWidgetItem(int itemID)
-	{
-		assert client.isClientThread();
-
-		return new InventoryWidgetItemQuery()
-			.idEquals(itemID)
-			.result(client)
-			.first();
-	}*/
-
-	//Inventory doesn't need to be visible, will return null if not wrapped
 	public WidgetItem getInventoryWidgetItem(int id)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -824,7 +789,6 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
-	//Inventory doesn't need to be visible, will return null if not wrapped - use List.of(Ids) in parameter
 	public WidgetItem getInventoryWidgetItem(List<Integer> ids)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -842,18 +806,6 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
-	//Requires inventory visible and returns null if not
-	/*public WidgetItem getInventoryWidgetItem(int... ids)
-	{
-		assert client.isClientThread();
-
-		return new InventoryWidgetItemQuery()
-			.idEquals(ids)
-			.result(client)
-			.first();
-	}*/
-
-	//Works without inventory being visible and doesn't NPE
 	public MenuEntry getInventoryItemMenu(ItemManager itemManager, String menuOption, int opcode)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -876,7 +828,27 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
-	//Works without inventory being visible and doesn't NPE
+	public WidgetItem getInventoryWidgetItemMenu(ItemManager itemManager, String menuOption, int opcode)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				String[] menuActions = itemManager.getItemDefinition(item.getId()).getInventoryActions();
+				for (String action : menuActions)
+				{
+					if (action != null && action.equals(menuOption))
+					{
+						return item;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	public boolean inventoryContains(int itemID)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
@@ -890,17 +862,6 @@ public class BotUtils extends Plugin
 			.size() >= 1;
 	}
 
-	//UNTESTED
-	public boolean inventoryContains(Set<Integer> itemIds)
-	{
-		if (client.getItemContainer(InventoryID.INVENTORY) == null)
-		{
-			return false;
-		}
-		return getItems(itemIds).size() > 0;
-	}
-
-	//Works without inventory being visible and doesn't NPE
 	public boolean inventoryContains(int itemID, int minStackAmount)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
@@ -913,6 +874,29 @@ public class BotUtils extends Plugin
 			.first();
 
 		return item != null && item.getQuantity() >= minStackAmount;
+	}
+
+	public boolean inventoryContains(Set<Integer> itemIds)
+	{
+		if (client.getItemContainer(InventoryID.INVENTORY) == null)
+		{
+			return false;
+		}
+		return getItems(itemIds).size() > 0;
+	}
+
+	public boolean inventoryContainsAllOf(Set<Integer> itemIds)
+	{
+		if (client.getItemContainer(InventoryID.INVENTORY) == null)
+		{
+			return false;
+		}
+		for (int item : itemIds)
+		{
+			if (!inventoryContains(item))
+				return false;
+		}
+		return true;
 	}
 
 	public boolean inventoryContainsExcept(Set<Integer> itemIds)
@@ -1141,6 +1125,40 @@ public class BotUtils extends Plugin
 		});
 	}
 
+	public void depositAllExcept(Set<Integer> ids)
+	{
+		if (!isBankOpen())
+		{
+			return;
+		}
+		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
+		List<Integer> depositedItems = new ArrayList<>();
+		executorService.submit(() ->
+		{
+			try
+			{
+				iterating = true;
+				for (WidgetItem item : inventoryItems)
+				{
+					if (!ids.contains(item.getId()) && item.getId() != 6512 && !depositedItems.contains(item.getId())) //6512 is empty widget slot
+					{
+						log.info("depositing item: " + item.getId());
+						depositAllOfItem(item);
+						sleep(80, 170);
+						depositedItems.add(item.getId());
+					}
+				}
+				iterating = false;
+				depositedItems.clear();
+			}
+			catch (Exception e)
+			{
+				iterating = false;
+				e.printStackTrace();
+			}
+		});
+	}
+
 	public void depositAllOfItem(WidgetItem itemWidget)
 	{
 		if (!isBankOpen())
@@ -1157,40 +1175,37 @@ public class BotUtils extends Plugin
 		clickRandomPointCenter(-100, 100);
 	}
 
+	public void withdrawAllItem(int bankItemID)
+	{
+		Widget item = getBankItemWidget(bankItemID);
+		if (item != null)
+		{
+			targetMenu = new MenuEntry("Withdraw-All", "", 1, MenuOpcode.CC_OP.getId(), item.getIndex(), 786444, false);
+			clickRandomPointCenter(-100, 100);
+		} else
+			log.debug("Withdraw all item not found.");
+	}
+
 	public void withdrawItem(Widget bankItemWidget)
 	{
 		targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
 		clickRandomPointCenter(-100, 100);
-		sleep(50, 250);
+	}
+
+	public void withdrawItem(int bankItemID)
+	{
+		Widget item = getBankItemWidget(bankItemID);
+		if (item != null)
+		{
+			targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), item.getIndex(), 786444, false);
+			clickRandomPointCenter(-100, 100);
+		}
 	}
 
 	/**
 	 * GRAND EXCHANGE FUNCTIONS
 	 */
-	/*public OSBGrandExchangeResult getOSBItem(int itemId){
-		log.debug("Looking up OSB item price {}", itemId);
-		executorService.submit(() ->
-		{
-			OSBCLIENT.lookupItem(itemId)
-				.subscribeOn(Schedulers.io())
-				.observeOn(Schedulers.single())
-				.subscribe(
-					(osbresult) ->
-					{
-						if (osbresult != null && osbresult.getOverall_average() > 0)
-						{
-							osbGrandExchangeResult = osbresult;
-						}
-					},
-					(e) -> log.debug("Error getting price of item {}", itemId, e)
-				);
-		});
-		sleep(100);
-		if (osbGrandExchangeResult != null)
-			return osbGrandExchangeResult;
-		else
-			return null;
-	}*/
+
 	public OSBGrandExchangeResult getOSBItem(int itemId)
 	{
 		log.debug("Looking up OSB item price {}", itemId);
