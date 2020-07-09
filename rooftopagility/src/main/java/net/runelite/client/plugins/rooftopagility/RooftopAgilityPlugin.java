@@ -148,7 +148,9 @@ public class RooftopAgilityPlugin extends Plugin
 		restockBank = config.bankRestock();
 		inventoryItems.addAll(Set.of(ItemID.NATURE_RUNE, ItemID.MARK_OF_GRACE));
 		if (config.alchItemID() != 0)
-			inventoryItems.addAll(Set.of(config.alchItemID(),(config.alchItemID() + 1)));
+		{
+			inventoryItems.addAll(Set.of(config.alchItemID(), (config.alchItemID() + 1)));
+		}
 		log.debug("Inventory items: {}", inventoryItems.toString());
 		/*panel = injector.getInstance(RooftopAgilityPanel.class);
 		panel.init();
@@ -192,7 +194,7 @@ public class RooftopAgilityPlugin extends Plugin
 	{
 		if (event.getGroup() == "RooftopAgility")
 		{
-			switch(event.getKey())
+			switch (event.getKey())
 			{
 				case "bankRestock":
 					restockBank = config.bankRestock();
@@ -255,7 +257,7 @@ public class RooftopAgilityPlugin extends Plugin
 
 	private void highAlchItem()
 	{
-		if(!setHighAlch)
+		if (!setHighAlch)
 		{
 			targetMenu = new MenuEntry("Cast", "<col=00ff00>High Level Alchemy</col>", 0,
 				MenuOpcode.WIDGET_TYPE_2.getId(), -1, 14286887, false);
@@ -308,7 +310,9 @@ public class RooftopAgilityPlugin extends Plugin
 			{
 				WidgetItem food = utils.getInventoryWidgetItemMenu(itemManager, "Eat", 33);
 				if (food != null)
+				{
 					inventoryItems.add(food.getId());
+				}
 				if (utils.inventoryContainsExcept(inventoryItems))
 				{
 					log.debug("depositing items");
@@ -330,8 +334,11 @@ public class RooftopAgilityPlugin extends Plugin
 						utils.withdrawAllItem(config.alchItemID());
 						return;
 					}
-				} else
+				}
+				else
+				{
 					log.debug("inventory is full but trying to withdraw items");
+				}
 			}
 		}
 		else
@@ -398,13 +405,13 @@ public class RooftopAgilityPlugin extends Plugin
 	{
 		if (timeout > 0)
 		{
-			if (alchTimeout <= 0 && shouldAlch() &&	utils.inventoryContains(ItemID.NATURE_RUNE) &&
+			if (alchTimeout <= 0 && shouldAlch() && utils.inventoryContains(ItemID.NATURE_RUNE) &&
 				utils.inventoryContains(Set.of(config.alchItemID(), (config.alchItemID() + 1))))
 			{
 				timeout--;
 				return HIGH_ALCH;
 			}
-			if(alchClick)
+			if (alchClick)
 			{
 				RooftopAgilityObstacles currentObstacle = getCurrentObstacle();
 				if (currentObstacle != null)
@@ -427,7 +434,7 @@ public class RooftopAgilityPlugin extends Plugin
 		}
 		if (utils.isMoving(beforeLoc))
 		{
-			if (alchTimeout <= 0 && shouldAlch() &&	(utils.inventoryContains(ItemID.NATURE_RUNE) &&
+			if (alchTimeout <= 0 && shouldAlch() && (utils.inventoryContains(ItemID.NATURE_RUNE) &&
 				utils.inventoryContains(Set.of(config.alchItemID(), (config.alchItemID() + 1)))))
 			{
 				timeout = tickDelay();
@@ -442,12 +449,16 @@ public class RooftopAgilityPlugin extends Plugin
 			timeout = tickDelay();
 			return MOVING;
 		}
-		if(currentObstacle.getBankID() > 0 && shouldRestock())
+		if (currentObstacle.getBankID() > 0 && shouldRestock())
 		{
 			if (utils.findNearestGameObject(currentObstacle.getBankID()) != null)
+			{
 				return RESTOCK_ITEMS;
+			}
 			else
+			{
 				log.debug("should restock but couldn't find bank");
+			}
 		}
 		if (markOfGrace != null && markOfGraceTile != null && config.mogPickup() && (!utils.inventoryFull() || utils.inventoryContains(ItemID.MARK_OF_GRACE)))
 		{
@@ -468,7 +479,9 @@ public class RooftopAgilityPlugin extends Plugin
 	{
 		player = client.getLocalPlayer();
 		if (alchTimeout > 0)
+		{
 			alchTimeout--;
+		}
 		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN && startAgility && client.getBoostedSkillLevel(Skill.HITPOINTS) > config.lowHP())
 		{
 			if (!REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))

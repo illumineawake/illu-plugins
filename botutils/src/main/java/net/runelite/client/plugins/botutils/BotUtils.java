@@ -894,7 +894,9 @@ public class BotUtils extends Plugin
 		for (int item : itemIds)
 		{
 			if (!inventoryContains(item))
+			{
 				return false;
+			}
 		}
 		return true;
 	}
@@ -911,7 +913,9 @@ public class BotUtils extends Plugin
 		for (WidgetItem item : inventoryItems)
 		{
 			if (!itemIds.contains(item.getId()))
+			{
 				return true;
+			}
 		}
 		return false;
 	}
@@ -1182,8 +1186,11 @@ public class BotUtils extends Plugin
 		{
 			targetMenu = new MenuEntry("Withdraw-All", "", 1, MenuOpcode.CC_OP.getId(), item.getIndex(), 786444, false);
 			clickRandomPointCenter(-100, 100);
-		} else
+		}
+		else
+		{
 			log.debug("Withdraw all item not found.");
+		}
 	}
 
 	public void withdrawItem(Widget bankItemWidget)
