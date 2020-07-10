@@ -14,10 +14,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -72,26 +70,23 @@ public class BotUtils extends Plugin
 
 	MenuEntry targetMenu;
 	protected static final java.util.Random random = new java.util.Random();
-
-
-	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
-	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-		new ThreadPoolExecutor.DiscardPolicy());
+	ExecutorService executorService;
 	private OSBGrandExchangeResult osbGrandExchangeResult;
 	private static final OSBGrandExchangeClient OSBCLIENT = new OSBGrandExchangeClient();
+
 	public boolean randomEvent;
 	public boolean iterating;
 
 	@Override
 	protected void startUp()
 	{
-
+		executorService = Executors.newSingleThreadExecutor();
 	}
 
 	@Override
 	protected void shutDown()
 	{
-
+		executorService.shutdown();
 	}
 
 	public void sendGameMessage(String message)
@@ -175,6 +170,23 @@ public class BotUtils extends Plugin
 
 		return new NPCQuery()
 			.idEquals(ids)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
+	public NPC findNearestNpcWithin(WorldPoint worldPoint, int dist, Set<Integer> ids)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new NPCQuery()
+			.idEquals(ids)
+			.isWithinDistance(worldPoint, dist)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}
@@ -920,7 +932,7 @@ public class BotUtils extends Plugin
 		return false;
 	}
 
-	public void dropAll(List<Integer> ids)
+	public void dropItems(Set<Integer> ids, int minDelayBetween, int maxDelayBetween)
 	{
 		if (isBankOpen() || isDepositBoxOpen())
 		{
@@ -938,11 +950,74 @@ public class BotUtils extends Plugin
 					if (ids.contains(item.getId())) //6512 is empty widget slot
 					{
 						log.info("dropping item: " + item.getId());
-						depositAllOfItem(item);
-						sleep(80, 170);
+						sleep(minDelayBetween, maxDelayBetween);
 						targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(), item.getIndex(), 9764864, false);
 						clickRandomPointCenter(-100, 100);
 					}
+				}
+				iterating = false;
+			}
+			catch (Exception e)
+			{
+				iterating = false;
+				e.printStackTrace();
+			}
+		});
+	}
+
+	public void dropAllExcept(Set<Integer> ids, int minDelayBetween, int maxDelayBetween)
+	{
+		if (isBankOpen() || isDepositBoxOpen())
+		{
+			log.info("can't drop item, bank is open");
+			return;
+		}
+		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
+		executorService.submit(() ->
+		{
+			try
+			{
+				iterating = true;
+				for (WidgetItem item : inventoryItems)
+				{
+					if (ids.contains(item.getId())) //6512 is empty widget slot
+					{
+						log.info("not dropping item: " + item.getId());
+						continue;
+					}
+					sleep(minDelayBetween, maxDelayBetween);
+					targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(), item.getIndex(), 9764864, false);
+					clickRandomPointCenter(-100, 100);
+				}
+				iterating = false;
+			}
+			catch (Exception e)
+			{
+				iterating = false;
+				e.printStackTrace();
+			}
+		});
+	}
+
+	public void dropInventory(int minDelayBetween, int maxDelayBetween)
+	{
+		if (isBankOpen() || isDepositBoxOpen())
+		{
+			log.info("can't drop item, bank is open");
+			return;
+		}
+		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
+		executorService.submit(() ->
+		{
+			try
+			{
+				iterating = true;
+				for (WidgetItem item : inventoryItems)
+				{
+					log.info("dropping item: " + item.getId());
+					sleep(minDelayBetween, maxDelayBetween);
+					targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(), item.getIndex(), 9764864, false);
+					clickRandomPointCenter(-100, 100);
 				}
 				iterating = false;
 			}
@@ -1170,6 +1245,17 @@ public class BotUtils extends Plugin
 			return;
 		}
 		targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), itemWidget.getIndex(), 983043, false);
+		clickRandomPointCenter(-100, 100);
+	}
+
+	public void depositAllOfItem(int itemID)
+	{
+		WidgetItem item = getInventoryWidgetItem(itemID);
+		if (!isBankOpen())
+		{
+			return;
+		}
+		targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), item.getIndex(), 983043, false);
 		clickRandomPointCenter(-100, 100);
 	}
 

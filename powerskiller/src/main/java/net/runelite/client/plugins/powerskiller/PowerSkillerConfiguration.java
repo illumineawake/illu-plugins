@@ -23,10 +23,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.rooftopagility;
+package net.runelite.client.plugins.powerskiller;
 
 import java.time.Instant;
 import java.util.function.Consumer;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -34,32 +36,11 @@ import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.ConfigTitleSection;
 import net.runelite.client.config.Range;
 import net.runelite.client.config.Title;
+import net.runelite.client.config.Units;
 
-@ConfigGroup("RooftopAgility")
-public interface RooftopAgilityConfig extends Config
+@ConfigGroup("PowerSkiller")
+public interface PowerSkillerConfiguration extends Config
 {
-	@ConfigTitleSection(
-		keyName = "courseTitle",
-		name = "Supported Courses",
-		description = "",
-		position = 0
-	)
-	default Title courseTitle()
-	{
-		return new Title();
-	}
-
-	@ConfigItem(
-		keyName = "Courses",
-		name = "",
-		description = "Supported agility courses (don't enter anything into this field)",
-		position = 1,
-		titleSection = "courseTitle"
-	)
-	default String Courses()
-	{
-		return "Gnome, Draynor (banking), Varrock (banking), Canifis (banking), Falador (banking), Seers (banking), Pollnivneach, Rellekka, Ardougne (banking)";
-	}
 
 	@ConfigSection(
 		keyName = "delayConfig",
@@ -236,86 +217,130 @@ public interface RooftopAgilityConfig extends Config
 	}
 
 	@ConfigTitleSection(
-		keyName = "agilityTitle",
-		name = "Agility Configuration",
+		keyName = "instructionsTitle",
+		name = "Instructions",
 		description = "",
-		position = 14
+		position = 16
 	)
-	default Title agilityTitle()
+	default Title instructionsTitle()
 	{
 		return new Title();
 	}
 
 	@ConfigItem(
-		keyName = "mogPickup",
-		name = "Pick up Mark of Grace",
-		description = "Enable to pick up Marks of Grace",
-		position = 15,
-		titleSection = "agilityTitle"
+		keyName = "instructions",
+		name = "",
+		description = "Instructions. Don't enter anything into this field",
+		position = 20,
+		titleSection = "instructionsTitle"
 	)
-	default boolean mogPickup()
+	default String instructions()
+	{
+		return "Use Developer Tools to determine the Type and ID of the object you want to power-skill on." +
+			"Typically in-game objects that have blue hover text are Game Objects (trees, rocks etc.) and objects that have yellow text are NPCs (fishing spots etc.)";
+	}
+
+	@ConfigTitleSection(
+		keyName = "skillerTitle",
+		name = "Power Skiller Configuration",
+		description = "",
+		position = 60
+	)
+	default Title skillerTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "type",
+		name = "Object Type",
+		description = "Type of Object. Typically in-game objects that have blue hover text are Game Objects (trees, rocks etc.) " +
+			"and objects that have yellow text are NPCs (e.g. fishing spots). Use Developer Tools to determine Object Type and ID.",
+		position = 70
+	)
+	default PowerSkillerType type()
+	{
+		return PowerSkillerType.GAME_OBJECT;
+	}
+
+	@ConfigItem(
+		keyName = "objectIds",
+		name = "IDs to power-skill",
+		description = "Separate with comma",
+		position = 80
+	)
+	default String objectIds()
+	{
+		return "0";
+	}
+
+	@ConfigItem(
+		keyName = "dropInventory",
+		name = "Drop entire inventory",
+		description = "Enable to drop your entire inventory",
+		position = 90
+	)
+	default boolean dropInventory()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "requiredItems",
+		name = "Required inventory items IDs",
+		description = "Separate with comma. Bot will stop if required items are not in inventory, e.g. fishing bait. Leave at 0 if there are none.",
+		position = 100,
+		hide = "dropInventory"
+	)
+	default String requiredItems()
+	{
+		return "0";
+	}
+
+	@ConfigItem(
+		keyName = "items",
+		name = "Items to Drop/not drop",
+		description = "Separate with comma, enable below option to not drop these IDs.",
+		position = 110,
+		hide = "dropInventory"
+	)
+	default String items()
+	{
+		return "0";
+	}
+
+	@ConfigItem(
+		keyName = "dropExcept",
+		name = "Drop all except above IDs",
+		description = "Enable to drop all items except the given IDs",
+		position = 120,
+		hide = "dropInventory"
+	)
+	default boolean dropExcept()
 	{
 		return true;
 	}
 
-	@ConfigItem(
-		keyName = "lowHP",
-		name = "Stop at HP",
-		description = "Stop if HP goes below given threshold",
-		position = 16,
-		titleSection = "agilityTitle"
+	@Range(
+		min = 1,
+		max = 60
 	)
-	default int lowHP()
-	{
-		return 9;
-	}
-
 	@ConfigItem(
-		keyName = "highAlch",
-		name = "High Alch",
-		description = "Enable to High Alch while running",
-		position = 17,
-		titleSection = "agilityTitle"
+		keyName = "locationRadius",
+		name = "Location Radius",
+		description = "Radius to search for GameObjects.",
+		position = 130
 	)
-	default boolean highAlch()
+	default int locationRadius()
 	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "alchItemID",
-		name = "Alch Item ID (un-noted)",
-		description = "Item ID (un-noted) of item you wish to high alch.",
-		position = 18,
-		titleSection = "agilityTitle",
-		hidden = true,
-		unhide = "highAlch"
-	)
-	default int alchItemID()
-	{
-		return 0;
-	}
-
-	@ConfigItem(
-		keyName = "bankRestock",
-		name = "Bank to restock items",
-		description = "Go to bank to restock items for high alch. Auto-disables at unsupported locations or bank doesn't contain item.",
-		position = 19,
-		titleSection = "agilityTitle",
-		hidden = true,
-		unhide = "highAlch"
-	)
-	default boolean bankRestock()
-	{
-		return false;
+		return 10;
 	}
 
 	@ConfigItem(
 		keyName = "enableUI",
 		name = "Enable UI",
 		description = "Enable to turn on in game UI",
-		position = 25,
-		titleSection = "agilityTitle"
+		position = 140
 	)
 	default boolean enableUI()
 	{
@@ -326,21 +351,21 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "startButton",
 		name = "Start/Stop",
 		description = "Test button that changes variable value",
-		position = 30,
-		titleSection = "agilityTitle"
+		position = 150
 	)
-	default Consumer<RooftopAgilityPlugin> startButton()
+	default Consumer<PowerSkillerPlugin> startButton()
 	{
 		return (plugin) ->
 		{
 			if (plugin.pluginManager.isPluginEnabled(plugin))
 			{
-				plugin.startAgility = !plugin.startAgility;
-				plugin.botTimer = plugin.startAgility ? Instant.now() : null;
+				plugin.startPowerSkiller = !plugin.startPowerSkiller;
+				plugin.botTimer = (plugin.startPowerSkiller) ? Instant.now() : null;
+				plugin.setLocation();
 			}
 			else
 			{
-				plugin.startAgility = false;
+				plugin.startPowerSkiller = false;
 			}
 		};
 	}
