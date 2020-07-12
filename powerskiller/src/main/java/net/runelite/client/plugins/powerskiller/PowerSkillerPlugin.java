@@ -171,7 +171,10 @@ public class PowerSkillerPlugin extends Plugin
 		requiredIds.clear();
 		itemIds.clear();
 		objectIds.addAll(utils.stringToIntList(config.objectIds()));
-		requiredIds.addAll(utils.stringToIntList(config.requiredItems()));
+		if (!config.requiredItems().equals("0") && !config.requiredItems().equals(""))
+		{
+			requiredIds.addAll(utils.stringToIntList(config.requiredItems()));
+		}
 		itemIds.addAll(utils.stringToIntList(config.items()));
 	}
 
