@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -103,9 +104,17 @@ public class BotUtils extends Plugin
 				.build());
 	}
 
+	//Ganom's
 	public int[] stringToIntArray(String string)
 	{
 		return Arrays.stream(string.split(",")).map(String::trim).mapToInt(Integer::parseInt).toArray();
+	}
+
+	//fred4106
+	public List<Integer> stringToIntList(String string)
+	{
+		return (string == null || string.trim().equals("")) ? List.of(0) :
+			Arrays.stream(string.split(",")).map(String::trim).map(Integer::parseInt).collect(Collectors.toList());
 	}
 
 	@Nullable

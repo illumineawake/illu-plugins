@@ -144,70 +144,32 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			return;
 		}
-
-
 		switch (event.getKey())
 		{
 			case "objectIds":
-				config.objectIds().replaceAll("\\s", "");
 				objectIds.clear();
-				if (config.objectIds().replaceAll("\\s", "") != null && !config.objectIds().replaceAll("\\s", "").equals(""))
-				{
-					for (int i : utils.stringToIntArray(config.objectIds().replaceAll("\\s", "")))
-					{
-						objectIds.add(i);
-					}
-				}
+				objectIds.addAll(utils.stringToIntList(config.objectIds()));
 				break;
 			case "requiredItems":
 				requiredIds.clear();
-				if (!config.requiredItems().replaceAll("\\s", "").equals("0") && !config.requiredItems().replaceAll("\\s", "").equals("") && config.requiredItems().replaceAll("\\s", "") != null)
-				{
-					for (int i : utils.stringToIntArray(config.requiredItems().replaceAll("\\s", "")))
-					{
-						requiredIds.add(i);
-					}
-				}
+				requiredIds.addAll(utils.stringToIntList(config.requiredItems()));
 				break;
 			case "dropInventory":
 			case "items":
 				itemIds.clear();
-				if (!config.dropInventory())
-				{
-					for (int i : utils.stringToIntArray(config.items().replaceAll("\\s", "")))
-					{
-						itemIds.add(i);
-					}
-				}
+				itemIds.addAll(utils.stringToIntList(config.items()));
 				break;
 		}
 	}
 
 	private void getConfigValues()
 	{
-		if (config.objectIds().replaceAll("\\s", "") != null && !config.objectIds().replaceAll("\\s", "").equals(""))
-		{
-			for (int i : utils.stringToIntArray(config.objectIds().replaceAll("\\s", "")))
-			{
-				objectIds.add(i);
-			}
-		}
-
-		if (!config.requiredItems().replaceAll("\\s", "").equals("0") && !config.requiredItems().replaceAll("\\s", "").equals("") && config.requiredItems().replaceAll("\\s", "") != null)
-		{
-			for (int i : utils.stringToIntArray(config.requiredItems().replaceAll("\\s", "")))
-			{
-				requiredIds.add(i);
-			}
-		}
-
-		if (!config.dropInventory())
-		{
-			for (int i : utils.stringToIntArray(config.items().replaceAll("\\s", "")))
-			{
-				itemIds.add(i);
-			}
-		}
+		objectIds.clear();
+		requiredIds.clear();
+		itemIds.clear();
+		objectIds.addAll(utils.stringToIntList(config.objectIds()));
+		requiredIds.addAll(utils.stringToIntList(config.requiredItems()));
+		itemIds.addAll(utils.stringToIntList(config.items()));
 	}
 
 	public void setLocation()
@@ -301,6 +263,10 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			if (config.dropExcept())
 			{
+				if (!itemIds.containsAll(requiredIds))
+				{
+					itemIds.addAll(requiredIds);
+				}
 				return DROP_EXCEPT;
 			}
 			if (config.dropInventory())

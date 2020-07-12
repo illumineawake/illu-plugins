@@ -203,12 +203,15 @@ public class MagicSplasherPlugin extends Plugin
 			case "Single cast":
 				targetMenu = new MenuEntry(selectedSpell.getMenuOption(), "", splashNPC.getIndex(), MenuOpcode.SPELL_CAST_ON_NPC.getId(), 0, 0, false);
 				timeout = 4 + tickDelay();
+				break;
 			case "Auto-cast":
 				targetMenu = new MenuEntry(selectedSpell.getMenuOption(), "", splashNPC.getIndex(), MenuOpcode.NPC_SECOND_OPTION.getId(), 0, 0, false);
 				timeout = 10 + tickDelay();
+				break;
 			case "High Alchemy":
 				targetMenu = new MenuEntry("Cast", "", targetItem.getId(), MenuOpcode.ITEM_USE_ON_WIDGET.getId(), targetItem.getIndex(), 9764864, true);
 				timeout = 3 + tickDelay();
+				break;
 		}
 		sleepDelay();
 		utils.clickRandomPointCenter(-100, 100);
