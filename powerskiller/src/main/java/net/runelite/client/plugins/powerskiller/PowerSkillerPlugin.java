@@ -152,7 +152,10 @@ public class PowerSkillerPlugin extends Plugin
 				break;
 			case "requiredItems":
 				requiredIds.clear();
-				requiredIds.addAll(utils.stringToIntList(config.requiredItems()));
+				if (!config.requiredItems().equals("0") && !config.requiredItems().equals(""))
+				{
+					requiredIds.addAll(utils.stringToIntList(config.requiredItems()));
+				}
 				break;
 			case "dropInventory":
 			case "items":
@@ -323,7 +326,7 @@ public class PowerSkillerPlugin extends Plugin
 					return;
 				case MISSING_ITEMS:
 					startPowerSkiller = false;
-					utils.sendGameMessage("Missing required items IDs: " + requiredIds + " from inventory. Stopping.");
+					utils.sendGameMessage("Missing required items IDs: " + requiredIds.toString() + " from inventory. Stopping.");
 					return;
 				case MOVING:
 					timeout = 2 + tickDelay();
