@@ -271,7 +271,7 @@ public interface PowerSkillerConfiguration extends Config
 	)
 	default String objectIds()
 	{
-		return "0";
+		return "";
 	}
 
 	@ConfigItem(
@@ -287,26 +287,26 @@ public interface PowerSkillerConfiguration extends Config
 
 	@ConfigItem(
 		keyName = "requiredItems",
-		name = "Required inventory items IDs",
+		name = "Required inventory item IDs",
 		description = "Separate with comma. Bot will stop if required items are not in inventory, e.g. fishing bait. Leave at 0 if there are none.",
 		position = 100,
 		hide = "dropInventory"
 	)
 	default String requiredItems()
 	{
-		return "0";
+		return "";
 	}
 
 	@ConfigItem(
 		keyName = "items",
-		name = "Items to Drop/not drop",
+		name = "Item IDs to drop/not drop",
 		description = "Separate with comma, enable below option to not drop these IDs.",
 		position = 110,
 		hide = "dropInventory"
 	)
 	default String items()
 	{
-		return "0";
+		return "";
 	}
 
 	@ConfigItem(

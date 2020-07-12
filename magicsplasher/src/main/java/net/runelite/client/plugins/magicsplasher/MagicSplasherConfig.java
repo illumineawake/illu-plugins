@@ -55,7 +55,7 @@ public interface MagicSplasherConfig extends Config
 	default int itemID()	{ return 0;	}
 
 	@ConfigItem(
-		keyName = "spell",
+		keyName = "getSpells",
 		name = "Splash Spell",
 		description = "Choose a spell",
 		position = 3
@@ -270,12 +270,20 @@ public interface MagicSplasherConfig extends Config
 		{
 			if (plugin.pluginManager.isPluginEnabled(plugin))
 			{
-				plugin.startSplasher = !plugin.startSplasher;
-				plugin.botTimer = plugin.startSplasher ? Instant.now() : null;
+				if (!plugin.startSplasher)
+				{
+					plugin.startSplasher = true;
+					plugin.botTimer = Instant.now();
+					plugin.initVals();
+				} else
+				{
+					plugin.resetVals();
+				}
 			}
 			else
 			{
 				plugin.startSplasher = false;
+				plugin.resetVals();
 			}
 		};
 	}

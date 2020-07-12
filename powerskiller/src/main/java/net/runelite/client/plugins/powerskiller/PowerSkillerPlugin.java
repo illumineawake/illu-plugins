@@ -323,7 +323,7 @@ public class PowerSkillerPlugin extends Plugin
 					return;
 				case MISSING_ITEMS:
 					startPowerSkiller = false;
-					utils.sendGameMessage("Missing required items from inventory. Stopping.");
+					utils.sendGameMessage("Missing required items IDs: " + requiredIds + " from inventory. Stopping.");
 					return;
 				case MOVING:
 					timeout = 2 + tickDelay();

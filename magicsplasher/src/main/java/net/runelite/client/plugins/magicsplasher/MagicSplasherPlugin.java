@@ -104,18 +104,28 @@ public class MagicSplasherPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		botTimer = Instant.now();
+		initVals();
+	}
+
+	@Override
+	protected void shutDown()
+	{
+		resetVals();
+	}
+
+	public void initVals()
+	{
 		overlayManager.add(overlay);
 		selectedSpell = config.getSpells();
 		npcID = config.npcID();
 		itemID = config.itemID();
 	}
 
-	@Override
-	protected void shutDown()
+	public void resetVals()
 	{
 		overlayManager.remove(overlay);
 		startSplasher = false;
+		selectedSpell = null;
 		botTimer = null;
 		failureCount = 0;
 		npcID = -1;
@@ -146,7 +156,7 @@ public class MagicSplasherPlugin extends Plugin
 				itemID = config.itemID();
 				log.debug("Item ID set to {}", itemID);
 				break;
-			case "spell":
+			case "getSpells":
 				selectedSpell = config.getSpells();
 				log.debug("Splashing spell set to {}", selectedSpell.getName());
 				break;
