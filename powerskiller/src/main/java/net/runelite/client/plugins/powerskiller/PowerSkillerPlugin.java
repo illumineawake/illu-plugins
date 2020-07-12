@@ -261,7 +261,11 @@ public class PowerSkillerPlugin extends Plugin
 		}
 		if (utils.inventoryFull())
 		{
-			if (config.dropExcept())
+			if (config.dropInventory())
+			{
+				return DROP_ALL;
+			}
+			if (config.dropExcept() && !config.dropInventory())
 			{
 				if (!itemIds.containsAll(requiredIds))
 				{
@@ -269,11 +273,6 @@ public class PowerSkillerPlugin extends Plugin
 				}
 				return DROP_EXCEPT;
 			}
-			if (config.dropInventory())
-			{
-				return DROP_ALL;
-			}
-
 			return (!utils.inventoryContains(itemIds)) ? INVALID_DROP_IDS : DROP_ITEMS;
 		}
 		if (utils.isMoving(beforeLoc))
