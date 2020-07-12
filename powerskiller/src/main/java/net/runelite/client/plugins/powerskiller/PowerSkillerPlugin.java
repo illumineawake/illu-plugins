@@ -255,7 +255,7 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			return ITERATING;
 		}
-		if (!requiredIds.isEmpty() && !utils.inventoryContainsAllOf(requiredIds))
+		if (!config.dropInventory() && !requiredIds.isEmpty() && !utils.inventoryContainsAllOf(requiredIds))
 		{
 			return MISSING_ITEMS;
 		}
