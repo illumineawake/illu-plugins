@@ -27,6 +27,8 @@ package net.runelite.client.plugins.magicsplasher;
 
 import com.google.inject.Provides;
 import java.time.Instant;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
@@ -90,6 +92,7 @@ public class MagicSplasherPlugin extends Plugin
 	Player player;
 	NPC splashNPC;
 	WidgetItem targetItem;
+	ExecutorService executorService;
 
 	int npcID = -1;
 	int itemID = -1;
@@ -115,6 +118,7 @@ public class MagicSplasherPlugin extends Plugin
 
 	public void initVals()
 	{
+		executorService = Executors.newSingleThreadExecutor();
 		overlayManager.add(overlay);
 		selectedSpell = config.getSpells();
 		npcID = config.npcID();
@@ -123,6 +127,7 @@ public class MagicSplasherPlugin extends Plugin
 
 	public void resetVals()
 	{
+		executorService.shutdown();
 		overlayManager.remove(overlay);
 		startSplasher = false;
 		selectedSpell = null;
@@ -177,16 +182,26 @@ public class MagicSplasherPlugin extends Plugin
 		return tickLength;
 	}
 
+	private void handleMouseClick()
+	{
+		executorService.submit(() ->
+		{
+			try
+			{
+				sleepDelay();
+				utils.clickRandomPointCenter(-100, 100);
+			}
+			catch (RuntimeException e)
+			{
+				e.printStackTrace();
+			}
+		});
+	}
+
 	private void openSpellBook()
 	{
 		targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 10551356, false); //open spellbook
-		sleepDelay();
-		utils.clickRandomPointCenter(-100, 100);
-	}
-
-	private boolean canCastSpell()
-	{
-		return client.getVar(VarPlayer.ATTACK_STYLE) == 3 || client.getVar(VarPlayer.ATTACK_STYLE) == 4;
+		handleMouseClick();
 	}
 
 	private NPC findNPC()
@@ -223,8 +238,7 @@ public class MagicSplasherPlugin extends Plugin
 				timeout = 3 + tickDelay();
 				break;
 		}
-		sleepDelay();
-		utils.clickRandomPointCenter(-100, 100);
+		handleMouseClick();
 	}
 
 	public MagicSplasherState getState()
@@ -348,7 +362,10 @@ public class MagicSplasherPlugin extends Plugin
 				startSplasher = false;
 				if (config.logout())
 				{
-					utils.logout();
+					executorService.submit(() ->
+					{
+						utils.logout();
+					});
 				}
 				return;
 			}
