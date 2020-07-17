@@ -25,10 +25,10 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "2.5.0"
+version = "2.6.0"
 
-project.extra["PluginName"] = "BotUtils" // This is the name that is used in the external plugin manager panel
-project.extra["PluginDescription"] = "Illumine - Utils required for plugins to function with added automation" // This is the description that is used in the external plugin manager panel
+project.extra["PluginName"] = "BotUtils"
+project.extra["PluginDescription"] = "Illumine - Utils required for plugins to function with added automation"
 
 tasks {
     jar {
