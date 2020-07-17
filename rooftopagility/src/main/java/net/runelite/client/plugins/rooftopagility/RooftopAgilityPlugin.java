@@ -65,8 +65,6 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
-import net.runelite.client.ui.ClientToolbar;
-import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 import static net.runelite.client.plugins.rooftopagility.RooftopAgilityState.*;

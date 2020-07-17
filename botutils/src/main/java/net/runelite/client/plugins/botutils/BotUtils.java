@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -62,6 +64,7 @@ import net.runelite.client.plugins.PluginType;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
+import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 import org.pf4j.Extension;
 
@@ -89,14 +92,28 @@ public class BotUtils extends Plugin
 	@Inject
 	private GrandExchangeClient grandExchangeClient;
 
+	@Inject
+	private OSBGrandExchangeClient osbGrandExchangeClient;
+
 	MenuEntry targetMenu;
 	protected static final java.util.Random random = new java.util.Random();
 	ExecutorService executorService;
 	private OSBGrandExchangeResult osbGrandExchangeResult;
-	private static final OSBGrandExchangeClient OSBCLIENT = new OSBGrandExchangeClient();
 
 	public boolean randomEvent;
 	public boolean iterating;
+
+	@Provides
+	OSBGrandExchangeClient provideOsbGrandExchangeClient(OkHttpClient okHttpClient)
+	{
+		return new OSBGrandExchangeClient(okHttpClient);
+	}
+
+	@Provides
+	GrandExchangeClient provideGrandExchangeClient(OkHttpClient okHttpClient)
+	{
+		return new GrandExchangeClient(okHttpClient);
+	}
 
 	@Override
 	protected void startUp()
@@ -1378,7 +1395,7 @@ public class BotUtils extends Plugin
 	public OSBGrandExchangeResult getOSBItem(int itemId)
 	{
 		log.debug("Looking up OSB item price {}", itemId);
-		OSBCLIENT.lookupItem(itemId)
+		osbGrandExchangeClient.lookupItem(itemId)
 				.subscribe(
 						(osbresult) ->
 						{

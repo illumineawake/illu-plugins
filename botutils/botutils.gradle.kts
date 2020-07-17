@@ -25,7 +25,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "2.6.0"
+version = "2.7.0"
 
 project.extra["PluginName"] = "BotUtils"
 project.extra["PluginDescription"] = "Illumine - Utils required for plugins to function with added automation"
