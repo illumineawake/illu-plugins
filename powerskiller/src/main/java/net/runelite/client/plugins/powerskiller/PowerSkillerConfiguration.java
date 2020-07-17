@@ -27,8 +27,6 @@ package net.runelite.client.plugins.powerskiller;
 
 import java.time.Instant;
 import java.util.function.Consumer;
-import javax.swing.JButton;
-import javax.swing.JPanel;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -36,7 +34,6 @@ import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.ConfigTitleSection;
 import net.runelite.client.config.Range;
 import net.runelite.client.config.Title;
-import net.runelite.client.config.Units;
 
 @ConfigGroup("PowerSkiller")
 public interface PowerSkillerConfiguration extends Config

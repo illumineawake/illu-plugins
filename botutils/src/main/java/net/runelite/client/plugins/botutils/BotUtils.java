@@ -20,13 +20,33 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
+import net.runelite.api.ChatMessageType;
+import net.runelite.api.Client;
+import net.runelite.api.DecorativeObject;
+import net.runelite.api.GameObject;
+import net.runelite.api.GroundObject;
+import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.ItemID;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.MenuOpcode;
+import net.runelite.api.NPC;
+import net.runelite.api.Point;
+import net.runelite.api.TileObject;
+import net.runelite.api.Varbits;
+import net.runelite.api.WallObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.queries.*;
+import net.runelite.api.queries.BankItemQuery;
+import net.runelite.api.queries.DecorativeObjectQuery;
+import net.runelite.api.queries.GameObjectQuery;
+import net.runelite.api.queries.GroundObjectQuery;
+import net.runelite.api.queries.InventoryItemQuery;
+import net.runelite.api.queries.NPCQuery;
+import net.runelite.api.queries.WallObjectQuery;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -47,10 +67,10 @@ import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-	name = "BotUtils",
-	type = PluginType.UTILITY,
-	description = "Illumine bot utilities",
-	hidden = false
+		name = "BotUtils",
+		type = PluginType.UTILITY,
+		description = "Illumine bot utilities",
+		hidden = false
 )
 @Slf4j
 @SuppressWarnings("unused")
@@ -93,15 +113,15 @@ public class BotUtils extends Plugin
 	public void sendGameMessage(String message)
 	{
 		String chatMessage = new ChatMessageBuilder()
-			.append(ChatColorType.HIGHLIGHT)
-			.append(message)
-			.build();
+				.append(ChatColorType.HIGHLIGHT)
+				.append(message)
+				.build();
 
 		chatMessageManager
-			.queue(QueuedMessage.builder()
-				.type(ChatMessageType.CONSOLE)
-				.runeLiteFormattedMessage(chatMessage)
-				.build());
+				.queue(QueuedMessage.builder()
+						.type(ChatMessageType.CONSOLE)
+						.runeLiteFormattedMessage(chatMessage)
+						.build());
 	}
 
 	//Ganom's
@@ -114,7 +134,7 @@ public class BotUtils extends Plugin
 	public List<Integer> stringToIntList(String string)
 	{
 		return (string == null || string.trim().equals("")) ? List.of(0) :
-			Arrays.stream(string.split(",")).map(String::trim).map(Integer::parseInt).collect(Collectors.toList());
+				Arrays.stream(string.split(",")).map(String::trim).map(Integer::parseInt).collect(Collectors.toList());
 	}
 
 	@Nullable
@@ -128,9 +148,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new GameObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
+				.idEquals(ids)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -144,10 +164,10 @@ public class BotUtils extends Plugin
 		}
 
 		return new GameObjectQuery()
-			.idEquals(ids)
-			.isWithinDistance(worldPoint, dist)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
+				.idEquals(ids)
+				.isWithinDistance(worldPoint, dist)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -161,10 +181,10 @@ public class BotUtils extends Plugin
 		}
 
 		return new GameObjectQuery()
-			.idEquals(ids)
-			.isWithinDistance(worldPoint, dist)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
+				.idEquals(ids)
+				.isWithinDistance(worldPoint, dist)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -178,9 +198,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new NPCQuery()
-			.idEquals(ids)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
+				.idEquals(ids)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -194,10 +214,10 @@ public class BotUtils extends Plugin
 		}
 
 		return new NPCQuery()
-			.idEquals(ids)
-			.isWithinDistance(worldPoint, dist)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
+				.idEquals(ids)
+				.isWithinDistance(worldPoint, dist)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -211,9 +231,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new WallObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
+				.idEquals(ids)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -227,9 +247,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new DecorativeObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
+				.idEquals(ids)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -243,9 +263,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new GroundObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
+				.idEquals(ids)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
 	}
 
 	public List<GameObject> getGameObjects(int... ids)
@@ -258,9 +278,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new GameObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.list;
+				.idEquals(ids)
+				.result(client)
+				.list;
 	}
 
 	public List<NPC> getNPCs(int... ids)
@@ -273,9 +293,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new NPCQuery()
-			.idEquals(ids)
-			.result(client)
-			.list;
+				.idEquals(ids)
+				.result(client)
+				.list;
 	}
 
 	public List<WallObject> getWallObjects(int... ids)
@@ -288,9 +308,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new WallObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.list;
+				.idEquals(ids)
+				.result(client)
+				.list;
 	}
 
 	public List<DecorativeObject> getDecorObjects(int... ids)
@@ -303,9 +323,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new DecorativeObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.list;
+				.idEquals(ids)
+				.result(client)
+				.list;
 	}
 
 	public List<GroundObject> getGroundObjects(int... ids)
@@ -318,9 +338,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new GroundObjectQuery()
-			.idEquals(ids)
-			.result(client)
-			.list;
+				.idEquals(ids)
+				.result(client)
+				.list;
 	}
 
 	@Nullable
@@ -349,40 +369,46 @@ public class BotUtils extends Plugin
 		return findNearestGroundObject(ids);
 	}
 
-	public List<Widget> getEquippedItems(int[] itemIds)
+	/*
+	 *
+	 * Returns a list of equipped items
+	 *
+	 * */
+	public List<Item> getEquippedItems()
 	{
 		assert client.isClientThread();
 
-		Widget equipmentWidget = client.getWidget(WidgetInfo.EQUIPMENT);
-
-		List<Integer> equippedIds = new ArrayList<>();
-
-		for (int i : itemIds)
+		List<Item> equipped = new ArrayList<>();
+		Item[] items = client.getItemContainer(InventoryID.EQUIPMENT).getItems();
+		for (Item item : items)
 		{
-			equippedIds.add(i);
-		}
-
-		List<Widget> equipped = new ArrayList<>();
-
-		if (equipmentWidget.getStaticChildren() != null)
-		{
-			for (Widget widgets : equipmentWidget.getStaticChildren())
+			if (item.getId() == -1 || item.getId() == 0)
 			{
-				for (Widget items : widgets.getDynamicChildren())
-				{
-					if (equippedIds.contains(items.getItemId()))
-					{
-						equipped.add(items);
-					}
-				}
+				continue;
+			}
+			equipped.add(item);
+		}
+		return equipped;
+	}
+
+	/*
+	 *
+	 * Returns if a specific item is equipped
+	 *
+	 * */
+	public boolean isItemEquipped(Set<Integer> itemIds)
+	{
+		assert client.isClientThread();
+
+		Item[] items = client.getItemContainer(InventoryID.EQUIPMENT).getItems();
+		for (Item item : items)
+		{
+			if (itemIds.contains(item.getId()))
+			{
+				return true;
 			}
 		}
-		else
-		{
-			log.error("Children is Null!");
-		}
-
-		return equipped;
+		return false;
 	}
 
 	public int getTabHotkey(Tab tab)
@@ -442,7 +468,7 @@ public class BotUtils extends Plugin
 	{
 		int x = check.getX(), y = check.getY();
 		return x > client.getViewportXOffset() && x < client.getViewportWidth()
-			&& y > client.getViewportYOffset() && y < client.getViewportHeight();
+				&& y > client.getViewportYOffset() && y < client.getViewportHeight();
 	}
 
 	/**
@@ -478,8 +504,8 @@ public class BotUtils extends Plugin
 	private void keyEvent(int id, char key)
 	{
 		KeyEvent e = new KeyEvent(
-			client.getCanvas(), id, System.currentTimeMillis(),
-			0, KeyEvent.VK_UNDEFINED, key
+				client.getCanvas(), id, System.currentTimeMillis(),
+				0, KeyEvent.VK_UNDEFINED, key
 		);
 
 		client.getCanvas().dispatchEvent(e);
@@ -488,8 +514,8 @@ public class BotUtils extends Plugin
 	private void keyEvent(int id, int key)
 	{
 		KeyEvent e = new KeyEvent(
-			client.getCanvas(), id, System.currentTimeMillis(),
-			0, key, KeyEvent.CHAR_UNDEFINED
+				client.getCanvas(), id, System.currentTimeMillis(),
+				0, key, KeyEvent.CHAR_UNDEFINED
 		);
 		client.getCanvas().dispatchEvent(e);
 	}
@@ -617,10 +643,10 @@ public class BotUtils extends Plugin
 	private void mouseEvent(int id, @NotNull Point point)
 	{
 		MouseEvent e = new MouseEvent(
-			client.getCanvas(), id,
-			System.currentTimeMillis(),
-			0, point.getX(), point.getY(),
-			1, false, 1
+				client.getCanvas(), id,
+				System.currentTimeMillis(),
+				0, point.getX(), point.getY(),
+				1, false, 1
 		);
 
 		client.getCanvas().dispatchEvent(e);
@@ -700,7 +726,7 @@ public class BotUtils extends Plugin
 	public WidgetItem shouldStamPot()
 	{
 		if (!getItems(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4)).isEmpty()
-			&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < 15 + getRandomIntBetweenRange(0, 30) && !isBankOpen())
+				&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < 15 + getRandomIntBetweenRange(0, 30) && !isBankOpen())
 		{
 			return getInventoryWidgetItem(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4));
 		}
@@ -810,7 +836,7 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
-	public WidgetItem getInventoryWidgetItem(List<Integer> ids)
+	public WidgetItem getInventoryWidgetItem(Collection<Integer> ids)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		if (inventoryWidget != null)
@@ -870,6 +896,46 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
+	public int getInventoryItemCount(int id, boolean stackable)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		int total = 0;
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				if (item.getId() == id)
+				{
+					if (stackable)
+					{
+						return item.getQuantity();
+					}
+					total++;
+				}
+			}
+		}
+		return total;
+	}
+
+	public int getInventoryItemStackableQuantity(int id)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		int total = 0;
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				if (item.getId() == id)
+				{
+					total++;
+				}
+			}
+		}
+		return total;
+	}
+
 	public boolean inventoryContains(int itemID)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
@@ -878,9 +944,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new InventoryItemQuery(InventoryID.INVENTORY)
-			.idEquals(itemID)
-			.result(client)
-			.size() >= 1;
+				.idEquals(itemID)
+				.result(client)
+				.size() >= 1;
 	}
 
 	public boolean inventoryContains(int itemID, int minStackAmount)
@@ -890,9 +956,9 @@ public class BotUtils extends Plugin
 			return false;
 		}
 		Item item = new InventoryItemQuery(InventoryID.INVENTORY)
-			.idEquals(itemID)
-			.result(client)
-			.first();
+				.idEquals(itemID)
+				.result(client)
+				.first();
 
 		return item != null && item.getQuantity() >= minStackAmount;
 	}
@@ -1092,6 +1158,23 @@ public class BotUtils extends Plugin
 		return false;
 	}
 
+	public boolean bankContainsAnyOf(Set<Integer> ids)
+	{
+		if (isBankOpen())
+		{
+			ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
+			for (int id : ids)
+			{
+				if (new BankItemQuery().idEquals(ids).result(client).size() > 0)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		return false;
+	}
+
 	//Placeholders count as being found
 	public boolean bankContains(String itemName, int minStackAmount)
 	{
@@ -1160,6 +1243,24 @@ public class BotUtils extends Plugin
 		}
 	}
 
+	public Widget getBankItemWidgetAnyOf(Set<Integer> ids)
+	{
+		if (!isBankOpen())
+		{
+			return null;
+		}
+
+		WidgetItem bankItem = new BankItemQuery().idEquals(ids).result(client).first();
+		if (bankItem != null)
+		{
+			return bankItem.getWidget();
+		}
+		else
+		{
+			return null;
+		}
+	}
+
 	public void depositAll()
 	{
 		if (!isBankOpen() && !isDepositBoxOpen())
@@ -1179,41 +1280,7 @@ public class BotUtils extends Plugin
 		}
 	}
 
-	public void depositAllExcept(List<Integer> ids)
-	{
-		if (!isBankOpen())
-		{
-			return;
-		}
-		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
-		List<Integer> depositedItems = new ArrayList<>();
-		executorService.submit(() ->
-		{
-			try
-			{
-				iterating = true;
-				for (WidgetItem item : inventoryItems)
-				{
-					if (!ids.contains(item.getId()) && item.getId() != 6512 && !depositedItems.contains(item.getId())) //6512 is empty widget slot
-					{
-						log.info("depositing item: " + item.getId());
-						depositAllOfItem(item);
-						sleep(80, 170);
-						depositedItems.add(item.getId());
-					}
-				}
-				iterating = false;
-				depositedItems.clear();
-			}
-			catch (Exception e)
-			{
-				iterating = false;
-				e.printStackTrace();
-			}
-		});
-	}
-
-	public void depositAllExcept(Set<Integer> ids)
+	public void depositAllExcept(Collection<Integer> ids)
 	{
 		if (!isBankOpen())
 		{
@@ -1312,16 +1379,16 @@ public class BotUtils extends Plugin
 	{
 		log.debug("Looking up OSB item price {}", itemId);
 		OSBCLIENT.lookupItem(itemId)
-			.subscribe(
-				(osbresult) ->
-				{
-					if (osbresult != null && osbresult.getOverall_average() > 0)
-					{
-						osbGrandExchangeResult = osbresult;
-					}
-				},
-				(e) -> log.debug("Error getting price of item {}", itemId, e)
-			);
+				.subscribe(
+						(osbresult) ->
+						{
+							if (osbresult != null && osbresult.getOverall_average() > 0)
+							{
+								osbGrandExchangeResult = osbresult;
+							}
+						},
+						(e) -> log.debug("Error getting price of item {}", itemId, e)
+				);
 		if (osbGrandExchangeResult != null)
 		{
 			return osbGrandExchangeResult;

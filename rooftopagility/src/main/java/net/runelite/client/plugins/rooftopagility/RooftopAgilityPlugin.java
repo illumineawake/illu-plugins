@@ -26,33 +26,35 @@
 package net.runelite.client.plugins.rooftopagility;
 
 import com.google.inject.Provides;
-import java.awt.image.BufferedImage;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
+import net.runelite.api.Player;
+import net.runelite.api.TileItem;
+import net.runelite.api.Tile;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.Client;
+import net.runelite.api.ItemID;
+import net.runelite.api.Skill;
+import net.runelite.api.MenuOpcode;
+import net.runelite.api.Varbits;
+import net.runelite.api.GameObject;
+import net.runelite.api.DecorativeObject;
+import net.runelite.api.GroundObject;
+import net.runelite.api.GameState;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.Menu;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.ItemDespawned;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
-import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -63,12 +65,9 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
-import static net.runelite.client.plugins.rooftopagility.RooftopAgilityState.HIGH_ALCH;
-import static net.runelite.client.plugins.rooftopagility.RooftopAgilityState.RESTOCK_ITEMS;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.client.util.ImageUtil;
 import org.pf4j.Extension;
 import static net.runelite.client.plugins.rooftopagility.RooftopAgilityState.*;
 
@@ -98,9 +97,6 @@ public class RooftopAgilityPlugin extends Plugin
 	PluginManager pluginManager;
 
 	@Inject
-	ClientToolbar clientToolbar;
-
-	@Inject
 	private OverlayManager overlayManager;
 
 	@Inject
@@ -108,9 +104,6 @@ public class RooftopAgilityPlugin extends Plugin
 
 	@Inject
 	ItemManager itemManager;
-
-	RooftopAgilityPanel panel;
-	private NavigationButton navButton;
 
 	Player player;
 	RooftopAgilityState state;
@@ -134,9 +127,6 @@ public class RooftopAgilityPlugin extends Plugin
 	boolean setHighAlch;
 	boolean alchClick;
 	private final Set<Integer> REGION_IDS = Set.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878, 10547);
-	/*private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
-	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-		new ThreadPoolExecutor.DiscardPolicy());*/
 	private ExecutorService executorService;
 
 	@Override
@@ -152,17 +142,6 @@ public class RooftopAgilityPlugin extends Plugin
 			inventoryItems.addAll(Set.of(config.alchItemID(), (config.alchItemID() + 1)));
 		}
 		log.debug("Inventory items: {}", inventoryItems.toString());
-		/*panel = injector.getInstance(RooftopAgilityPanel.class);
-		panel.init();
-		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "panel_icon.png");
-
-		navButton = NavigationButton.builder()
-			.tooltip("Rooftop Agility")
-			.priority(5)
-			.panel(panel)
-			.icon(icon)
-			.build();
-		clientToolbar.addNavigation(navButton);*/
 	}
 
 	@Override
@@ -180,7 +159,6 @@ public class RooftopAgilityPlugin extends Plugin
 		marksPerHour = 0;
 		alchTimeout = 0;
 		inventoryItems.clear();
-		//clientToolbar.removeNavigation(navButton);
 	}
 
 	@Provides
@@ -212,7 +190,6 @@ public class RooftopAgilityPlugin extends Plugin
 		sleepLength = utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
 		log.debug("Sleeping for {}ms", sleepLength);
 		utils.sleep(sleepLength);
-		//sleepLength = 0;
 	}
 
 	private int tickDelay()
@@ -471,7 +448,7 @@ public class RooftopAgilityPlugin extends Plugin
 		{
 			return FIND_OBSTACLE;
 		}
-		return ANIMATING; //need to determine an appropriate default
+		return ANIMATING;
 	}
 
 	@Subscribe
