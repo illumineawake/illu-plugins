@@ -237,6 +237,30 @@ public interface SmokeRuneCrafterConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "bindingNecklace",
+		name = "Use Binding Necklaces",
+		description = "",
+		position = 30
+	)
+	default boolean bindingNecklace()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "stopNecklace",
+		name = "Stop when out of necklaces",
+		description = "",
+		position = 31,
+		hidden = true,
+		unhide = "bindingNecklace"
+	)
+	default boolean stopNecklace()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "logout",
 		name = "Log out when out of items",
 		description = "",
