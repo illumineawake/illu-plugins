@@ -63,11 +63,11 @@ import org.pf4j.Extension;
 @Extension
 @PluginDependency(BotUtils.class)
 @PluginDescriptor(
-	name = "SmokeRuneCrafter Plugin",
+	name = "Smoke Runecrafter Plugin",
 	enabledByDefault = false,
 	description = "Illumine - Smoke Runecrafting plugin",
-	tags = {"illumine", "runecrafting", "bot"},
-	type = PluginType.UTILITY
+	tags = {"illumine", "runecrafting", "bot", "smoke"},
+	type = PluginType.SKILLING
 )
 @Slf4j
 public class SmokeRuneCrafterPlugin extends Plugin
