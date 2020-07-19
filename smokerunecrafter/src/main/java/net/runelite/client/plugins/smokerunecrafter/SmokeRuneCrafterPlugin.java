@@ -41,8 +41,10 @@ import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.ObjectID;
 import net.runelite.api.Player;
+import net.runelite.api.Varbits;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.ConfigButtonClicked;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
@@ -56,7 +58,6 @@ import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
 import net.runelite.client.plugins.smokerunecrafter.SmokeRuneCrafterConfig;
 import static net.runelite.client.plugins.smokerunecrafter.SmokeRuneCrafterState.*;
-import static net.runelite.client.plugins.smokerunecrafter.SmokeRuneCrafterState.EQUIP_ITEM;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
@@ -96,21 +97,24 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	Player player;
 	SmokeRuneCrafterState state;
 	SmokeRuneCrafterState necklaceState;
+	SmokeRuneCrafterState staminaState;
 	ExecutorService executorService;
 	LocalPoint beforeLoc = new LocalPoint(0, 0);
 	GameObject bankChest;
 	GameObject mysteriousRuins;
 	GameObject fireAltar;
 	Widget bankItem;
-	WidgetItem equippableItem;
+	WidgetItem useableItem;
 
 	Set<Integer> DUEL_RINGS = Set.of(ItemID.RING_OF_DUELING2, ItemID.RING_OF_DUELING3, ItemID.RING_OF_DUELING4, ItemID.RING_OF_DUELING5, ItemID.RING_OF_DUELING6, ItemID.RING_OF_DUELING7, ItemID.RING_OF_DUELING8);
 	Set<Integer> BINDING_NECKLACE = Set.of(ItemID.BINDING_NECKLACE);
+	Set<Integer> STAMINA_POTIONS = Set.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
 	Set<Integer> REQUIRED_ITEMS = Set.of(ItemID.AIR_TALISMAN, ItemID.AIR_RUNE, ItemID.PURE_ESSENCE);
 
 	boolean startBot;
 	boolean setTalisman;
 	boolean outOfNecklaces;
+	boolean outOfStaminaPots;
 	long sleepLength;
 	int tickLength;
 	int timeout;
@@ -124,6 +128,7 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	int totalSmokeRunes;
 	int totalDuelRings;
 	int totalNecklaces;
+	int totalStaminaPots;
 	int runesPH;
 	int profitPH;
 	int totalProfit;
@@ -132,6 +137,7 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	int airTalismanCost;
 	int duelRingCost;
 	int necklaceCost;
+	int staminaPotCost;
 	int airRuneCost;
 	int beforeSmokeRunes;
 	int currentSmokeRunes;
@@ -183,6 +189,7 @@ public class SmokeRuneCrafterPlugin extends Plugin
 					duelRingCost = utils.getOSBItem(ItemID.RING_OF_DUELING8).getOverall_average();
 					airRuneCost = utils.getOSBItem(ItemID.AIR_RUNE).getOverall_average();
 					necklaceCost = utils.getOSBItem(ItemID.BINDING_NECKLACE).getOverall_average();
+					staminaPotCost = utils.getOSBItem(ItemID.STAMINA_POTION4).getOverall_average();
 					log.info("Item prices set to at - Smoke Runes: {}gp, Pure Essence: {}gp, Air Talisman: {}gp, " +
 							"Ring of Dueling {}gp, Air Runes: {}gp, Binding Necklace: {}gp",
 						smokeRunesCost, pureEssenceCost, airTalismanCost, duelRingCost, airRuneCost, necklaceCost);
@@ -213,6 +220,7 @@ public class SmokeRuneCrafterPlugin extends Plugin
 		totalSmokeRunes = 0;
 		totalDuelRings = 0;
 		totalNecklaces = 0;
+		totalStaminaPots = 0;
 		runesPH = 0;
 		profitPH = 0;
 		totalProfit = 0;
@@ -258,8 +266,9 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	{
 		updateTotals();
 		runesPH = (int) getPerHour(totalSmokeRunes);
-		totalProfit = (totalSmokeRunes * smokeRunesCost) - ((totalEssence * pureEssenceCost) + (totalAirRunes * airRuneCost) +
-			(totalTalisman * airTalismanCost) + (totalDuelRings * duelRingCost) + (totalNecklaces * necklaceCost));
+		totalProfit = (int) ((totalSmokeRunes * smokeRunesCost) - ((totalEssence * pureEssenceCost) + (totalAirRunes * airRuneCost) +
+			(totalTalisman * airTalismanCost) + (totalDuelRings * duelRingCost) + (totalNecklaces * necklaceCost) +
+			((totalStaminaPots * 0.25) * staminaPotCost)));
 		profitPH = (int) getPerHour(totalProfit);
 	}
 
@@ -317,12 +326,12 @@ public class SmokeRuneCrafterPlugin extends Plugin
 		}
 	}
 
-	private SmokeRuneCrafterState getEquippableState(Set<Integer> itemIDs)
+	private SmokeRuneCrafterState getItemState(Set<Integer> itemIDs)
 	{
 		if (utils.inventoryContains(itemIDs))
 		{
-			equippableItem = utils.getInventoryWidgetItem(itemIDs);
-			return EQUIP_ITEM;
+			useableItem = utils.getInventoryWidgetItem(itemIDs);
+			return ACTION_ITEM;
 		}
 		if (utils.bankContainsAnyOf(itemIDs))
 		{
@@ -330,6 +339,13 @@ public class SmokeRuneCrafterPlugin extends Plugin
 			return WITHDRAW_ITEM;
 		}
 		return OUT_OF_ITEM;
+	}
+
+	private boolean shouldSipStamina()
+	{
+		return (config.staminaPotion() && client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0) &&
+			(client.getEnergy() <= (75 - utils.getRandomIntBetweenRange(0, 40)) ||
+				(utils.inventoryContains(STAMINA_POTIONS) && client.getEnergy() < 75));
 	}
 
 	private SmokeRuneCrafterState getRequiredItemState()
@@ -356,7 +372,6 @@ public class SmokeRuneCrafterPlugin extends Plugin
 			bankItem = utils.getBankItemWidget(ItemID.PURE_ESSENCE);
 			return WITHDRAW_ALL_ITEM;
 		}
-
 		return OUT_OF_ITEM;
 	}
 
@@ -373,6 +388,7 @@ public class SmokeRuneCrafterPlugin extends Plugin
 		}
 		if (utils.isMoving(beforeLoc) || player.getAnimation() == 714) //teleport animation
 		{
+			utils.handleRun(20, 30);
 			return MOVING;
 		}
 
@@ -424,14 +440,30 @@ public class SmokeRuneCrafterPlugin extends Plugin
 				}
 				if (!utils.isItemEquipped(DUEL_RINGS))
 				{
-					return getEquippableState(DUEL_RINGS);
+					return getItemState(DUEL_RINGS);
 				}
 				if (config.bindingNecklace() && !utils.isItemEquipped(BINDING_NECKLACE))
 				{
-					necklaceState = getEquippableState(BINDING_NECKLACE);
-					if (!(necklaceState == OUT_OF_ITEM && !config.stopNecklace())) //Need to confirm this logic works
+					necklaceState = getItemState(BINDING_NECKLACE);
+					if (!(necklaceState == OUT_OF_ITEM && !config.stopNecklace()))
 					{
-						return getEquippableState(BINDING_NECKLACE);
+						return necklaceState;
+					}
+					else
+					{
+						outOfNecklaces = true;
+					}
+				}
+				if (shouldSipStamina())
+				{
+					staminaState = getItemState(STAMINA_POTIONS);
+					if (!(staminaState == OUT_OF_ITEM && !config.stopStamina()))
+					{
+						return staminaState;
+					}
+					else
+					{
+						outOfStaminaPots = true;
 					}
 				}
 				if (utils.inventoryContainsExcept(REQUIRED_ITEMS))
@@ -508,11 +540,15 @@ public class SmokeRuneCrafterPlugin extends Plugin
 				case DEPOSIT_ALL_EXCEPT:
 					utils.depositAllExcept(REQUIRED_ITEMS);
 					break;
-				case EQUIP_ITEM:
-					if (equippableItem != null)
+				case ACTION_ITEM:
+					if (useableItem != null)
 					{
+						if (STAMINA_POTIONS.contains(useableItem.getId()))
+						{
+							totalStaminaPots++;
+						}
 						targetMenu = new MenuEntry("", "", 9, MenuOpcode.CC_OP_LOW_PRIORITY.getId(),
-							equippableItem.getIndex(), 983043, false);
+							useableItem.getIndex(), 983043, false);
 						handleMouseClick();
 					}
 					break;
@@ -536,7 +572,7 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event)
+	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		if (!startBot || targetMenu == null)
 		{
@@ -551,6 +587,19 @@ public class SmokeRuneCrafterPlugin extends Plugin
 		{
 			event.setMenuEntry(targetMenu);
 			targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
+		}
+	}
+
+	@Subscribe
+	private void onGameStateChanged(GameStateChanged event)
+	{
+		if (!startBot)
+		{
+			return;
+		}
+		if (event.getGameState() == GameState.LOGIN_SCREEN)
+		{
+			setTalisman = false;
 		}
 	}
 }

@@ -2,10 +2,10 @@ package net.runelite.client.plugins.smokerunecrafter;
 
 public enum SmokeRuneCrafterState
 {
+	ACTION_ITEM,
 	DEPOSIT_ALL,
 	DEPOSIT_ALL_EXCEPT,
 	ENTER_MYSTERIOUS_RUINS,
-	EQUIP_ITEM,
 	ITERATING,
 	MOVING,
 	OPEN_BANK,

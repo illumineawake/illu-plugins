@@ -70,10 +70,10 @@ import org.pf4j.Extension;
 
 @Extension
 @PluginDescriptor(
-		name = "BotUtils",
-		type = PluginType.UTILITY,
-		description = "Illumine bot utilities",
-		hidden = false
+	name = "BotUtils",
+	type = PluginType.UTILITY,
+	description = "Illumine bot utilities",
+	hidden = false
 )
 @Slf4j
 @SuppressWarnings("unused")
@@ -130,15 +130,15 @@ public class BotUtils extends Plugin
 	public void sendGameMessage(String message)
 	{
 		String chatMessage = new ChatMessageBuilder()
-				.append(ChatColorType.HIGHLIGHT)
-				.append(message)
-				.build();
+			.append(ChatColorType.HIGHLIGHT)
+			.append(message)
+			.build();
 
 		chatMessageManager
-				.queue(QueuedMessage.builder()
-						.type(ChatMessageType.CONSOLE)
-						.runeLiteFormattedMessage(chatMessage)
-						.build());
+			.queue(QueuedMessage.builder()
+				.type(ChatMessageType.CONSOLE)
+				.runeLiteFormattedMessage(chatMessage)
+				.build());
 	}
 
 	//Ganom's
@@ -151,7 +151,7 @@ public class BotUtils extends Plugin
 	public List<Integer> stringToIntList(String string)
 	{
 		return (string == null || string.trim().equals("")) ? List.of(0) :
-				Arrays.stream(string.split(",")).map(String::trim).map(Integer::parseInt).collect(Collectors.toList());
+			Arrays.stream(string.split(",")).map(String::trim).map(Integer::parseInt).collect(Collectors.toList());
 	}
 
 	@Nullable
@@ -165,9 +165,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new GameObjectQuery()
-				.idEquals(ids)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -181,10 +181,10 @@ public class BotUtils extends Plugin
 		}
 
 		return new GameObjectQuery()
-				.idEquals(ids)
-				.isWithinDistance(worldPoint, dist)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
+			.idEquals(ids)
+			.isWithinDistance(worldPoint, dist)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -198,10 +198,10 @@ public class BotUtils extends Plugin
 		}
 
 		return new GameObjectQuery()
-				.idEquals(ids)
-				.isWithinDistance(worldPoint, dist)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
+			.idEquals(ids)
+			.isWithinDistance(worldPoint, dist)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -215,9 +215,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new NPCQuery()
-				.idEquals(ids)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -231,10 +231,10 @@ public class BotUtils extends Plugin
 		}
 
 		return new NPCQuery()
-				.idEquals(ids)
-				.isWithinDistance(worldPoint, dist)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
+			.idEquals(ids)
+			.isWithinDistance(worldPoint, dist)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -248,9 +248,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new WallObjectQuery()
-				.idEquals(ids)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -264,9 +264,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new DecorativeObjectQuery()
-				.idEquals(ids)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -280,9 +280,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new GroundObjectQuery()
-				.idEquals(ids)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
 	}
 
 	public List<GameObject> getGameObjects(int... ids)
@@ -295,9 +295,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new GameObjectQuery()
-				.idEquals(ids)
-				.result(client)
-				.list;
+			.idEquals(ids)
+			.result(client)
+			.list;
 	}
 
 	public List<NPC> getNPCs(int... ids)
@@ -310,9 +310,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new NPCQuery()
-				.idEquals(ids)
-				.result(client)
-				.list;
+			.idEquals(ids)
+			.result(client)
+			.list;
 	}
 
 	public List<WallObject> getWallObjects(int... ids)
@@ -325,9 +325,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new WallObjectQuery()
-				.idEquals(ids)
-				.result(client)
-				.list;
+			.idEquals(ids)
+			.result(client)
+			.list;
 	}
 
 	public List<DecorativeObject> getDecorObjects(int... ids)
@@ -340,9 +340,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new DecorativeObjectQuery()
-				.idEquals(ids)
-				.result(client)
-				.list;
+			.idEquals(ids)
+			.result(client)
+			.list;
 	}
 
 	public List<GroundObject> getGroundObjects(int... ids)
@@ -355,9 +355,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new GroundObjectQuery()
-				.idEquals(ids)
-				.result(client)
-				.list;
+			.idEquals(ids)
+			.result(client)
+			.list;
 	}
 
 	@Nullable
@@ -485,7 +485,7 @@ public class BotUtils extends Plugin
 	{
 		int x = check.getX(), y = check.getY();
 		return x > client.getViewportXOffset() && x < client.getViewportWidth()
-				&& y > client.getViewportYOffset() && y < client.getViewportHeight();
+			&& y > client.getViewportYOffset() && y < client.getViewportHeight();
 	}
 
 	/**
@@ -521,8 +521,8 @@ public class BotUtils extends Plugin
 	private void keyEvent(int id, char key)
 	{
 		KeyEvent e = new KeyEvent(
-				client.getCanvas(), id, System.currentTimeMillis(),
-				0, KeyEvent.VK_UNDEFINED, key
+			client.getCanvas(), id, System.currentTimeMillis(),
+			0, KeyEvent.VK_UNDEFINED, key
 		);
 
 		client.getCanvas().dispatchEvent(e);
@@ -531,8 +531,8 @@ public class BotUtils extends Plugin
 	private void keyEvent(int id, int key)
 	{
 		KeyEvent e = new KeyEvent(
-				client.getCanvas(), id, System.currentTimeMillis(),
-				0, key, KeyEvent.CHAR_UNDEFINED
+			client.getCanvas(), id, System.currentTimeMillis(),
+			0, key, KeyEvent.CHAR_UNDEFINED
 		);
 		client.getCanvas().dispatchEvent(e);
 	}
@@ -660,10 +660,10 @@ public class BotUtils extends Plugin
 	private void mouseEvent(int id, @NotNull Point point)
 	{
 		MouseEvent e = new MouseEvent(
-				client.getCanvas(), id,
-				System.currentTimeMillis(),
-				0, point.getX(), point.getY(),
-				1, false, 1
+			client.getCanvas(), id,
+			System.currentTimeMillis(),
+			0, point.getX(), point.getY(),
+			1, false, 1
 		);
 
 		client.getCanvas().dispatchEvent(e);
@@ -718,7 +718,8 @@ public class BotUtils extends Plugin
 	//enables run if below given minimum energy with random positive variation
 	public void handleRun(int minEnergy, int randMax)
 	{
-		if (client.getEnergy() > (minEnergy + getRandomIntBetweenRange(0, randMax)))
+		if (client.getEnergy() > (minEnergy + getRandomIntBetweenRange(0, randMax)) ||
+			client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) != 0)
 		{
 
 			WidgetItem staminaPotion = shouldStamPot();
@@ -732,18 +733,23 @@ public class BotUtils extends Plugin
 			}
 			if (!isRunEnabled())
 			{
-				log.info("enabling run");
-				targetMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
-				clickRandomPointCenter(-100, 100);
+				enableRun();
 			}
 		}
+	}
+
+	public void enableRun()
+	{
+		log.info("enabling run");
+		targetMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
+		clickRandomPointCenter(-100, 100);
 	}
 
 	//Checks if Stamina enhancement is active and if stamina potion is in inventory
 	public WidgetItem shouldStamPot()
 	{
 		if (!getItems(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4)).isEmpty()
-				&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < 15 + getRandomIntBetweenRange(0, 30) && !isBankOpen())
+			&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < 15 + getRandomIntBetweenRange(0, 30) && !isBankOpen())
 		{
 			return getInventoryWidgetItem(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4));
 		}
@@ -961,9 +967,9 @@ public class BotUtils extends Plugin
 		}
 
 		return new InventoryItemQuery(InventoryID.INVENTORY)
-				.idEquals(itemID)
-				.result(client)
-				.size() >= 1;
+			.idEquals(itemID)
+			.result(client)
+			.size() >= 1;
 	}
 
 	public boolean inventoryContains(int itemID, int minStackAmount)
@@ -973,9 +979,9 @@ public class BotUtils extends Plugin
 			return false;
 		}
 		Item item = new InventoryItemQuery(InventoryID.INVENTORY)
-				.idEquals(itemID)
-				.result(client)
-				.first();
+			.idEquals(itemID)
+			.result(client)
+			.first();
 
 		return item != null && item.getQuantity() >= minStackAmount;
 	}
@@ -1396,16 +1402,16 @@ public class BotUtils extends Plugin
 	{
 		log.debug("Looking up OSB item price {}", itemId);
 		osbGrandExchangeClient.lookupItem(itemId)
-				.subscribe(
-						(osbresult) ->
-						{
-							if (osbresult != null && osbresult.getOverall_average() > 0)
-							{
-								osbGrandExchangeResult = osbresult;
-							}
-						},
-						(e) -> log.debug("Error getting price of item {}", itemId, e)
-				);
+			.subscribe(
+				(osbresult) ->
+				{
+					if (osbresult != null && osbresult.getOverall_average() > 0)
+					{
+						osbGrandExchangeResult = osbresult;
+					}
+				},
+				(e) -> log.debug("Error getting price of item {}", itemId, e)
+			);
 		if (osbGrandExchangeResult != null)
 		{
 			return osbGrandExchangeResult;

@@ -3,8 +3,10 @@ package net.runelite.client.plugins.smokerunecrafter;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.text.NumberFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Locale;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -65,8 +67,10 @@ class SmokeRuneCrafterOverlay extends OverlayPanel
 
 		TableComponent tableMarksComponent = new TableComponent();
 		tableMarksComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
-		tableMarksComponent.addRow("Runes:", plugin.totalSmokeRunes + " / " + plugin.runesPH);
-		tableMarksComponent.addRow("Profit:", plugin.totalProfit + " / " + plugin.profitPH);
+		tableMarksComponent.addRow("Runes:", NumberFormat.getNumberInstance(Locale.US).format(plugin.totalSmokeRunes)
+			+ " / " + NumberFormat.getNumberInstance(Locale.US).format(plugin.runesPH));
+		tableMarksComponent.addRow("Profit:", NumberFormat.getNumberInstance(Locale.US).format(plugin.totalProfit)
+			+ "gp / " + NumberFormat.getNumberInstance(Locale.US).format(plugin.profitPH) + "gp");
 
 		TableComponent tableDelayComponent = new TableComponent();
 		tableDelayComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);

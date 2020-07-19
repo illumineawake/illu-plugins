@@ -237,6 +237,30 @@ public interface SmokeRuneCrafterConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "staminaPotion",
+		name = "Use Stamina Potions",
+		description = "",
+		position = 25
+	)
+	default boolean staminaPotion()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "stopStamina",
+		name = "Stop when out of Stamina Potions",
+		description = "",
+		position = 26,
+		hidden = true,
+		unhide = "staminaPotion"
+	)
+	default boolean stopStamina()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "bindingNecklace",
 		name = "Use Binding Necklaces",
 		description = "",
