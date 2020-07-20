@@ -43,6 +43,7 @@ import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
 import net.runelite.api.MenuOpcode;
+import net.runelite.api.TileItemPile;
 import net.runelite.api.Varbits;
 import net.runelite.api.GameObject;
 import net.runelite.api.DecorativeObject;
@@ -54,6 +55,8 @@ import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.ItemDespawned;
+import net.runelite.api.queries.TileObjectQuery;
+import net.runelite.api.queries.TileQuery;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -439,7 +442,15 @@ public class RooftopAgilityPlugin extends Plugin
 		{
 			if (currentObstacle.getLocation().distanceTo(markOfGraceTile.getWorldLocation()) == 0)
 			{
-				return MARK_OF_GRACE;
+				if (markOfGraceTile.getGroundItems().contains(markOfGrace)) //failsafe sometimes onItemDespawned doesn't capture mog despawn
+				{
+					return MARK_OF_GRACE;
+				}
+				else
+				{
+					log.info("Mark of grace not found and markOfGrace was not null");
+					markOfGrace = null;
+				}
 			}
 		}
 		if (!utils.isMoving(beforeLoc))

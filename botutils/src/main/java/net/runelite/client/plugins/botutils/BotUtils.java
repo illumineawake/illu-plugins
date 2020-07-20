@@ -36,6 +36,8 @@ import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.NPC;
 import net.runelite.api.Point;
+import net.runelite.api.Tile;
+import net.runelite.api.TileItem;
 import net.runelite.api.TileObject;
 import net.runelite.api.Varbits;
 import net.runelite.api.WallObject;
@@ -48,6 +50,7 @@ import net.runelite.api.queries.GameObjectQuery;
 import net.runelite.api.queries.GroundObjectQuery;
 import net.runelite.api.queries.InventoryItemQuery;
 import net.runelite.api.queries.NPCQuery;
+import net.runelite.api.queries.TileQuery;
 import net.runelite.api.queries.WallObjectQuery;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -384,6 +387,22 @@ public class BotUtils extends Plugin
 		}
 
 		return findNearestGroundObject(ids);
+	}
+
+	@Nullable
+	public List<TileItem> getTileItemsAtTile(Tile tile)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return new ArrayList<>();
+		}
+		return new TileQuery()
+			.atWorldLocation(tile.getWorldLocation())
+			.result(client)
+			.first()
+			.getGroundItems();
 	}
 
 	/*
