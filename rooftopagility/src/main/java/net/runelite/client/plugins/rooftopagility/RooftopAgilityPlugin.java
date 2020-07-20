@@ -417,7 +417,7 @@ public class RooftopAgilityPlugin extends Plugin
 					if (currentObstacle.getBankID() == 0 || !shouldRestock())
 					{
 						timeout--;
-						return FIND_OBSTACLE;
+						return (shouldCastTeleport()) ? CAST_CAMELOT_TELEPORT : FIND_OBSTACLE;
 					}
 				}
 			}
