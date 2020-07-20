@@ -120,6 +120,17 @@ public class RooftopAgilityPlugin extends Plugin
 
 	private final Set<Integer> REGION_IDS = Set.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878, 10547);
 	WorldPoint CAMELOT_TELE_LOC = new WorldPoint(2705, 3463, 0);
+	List AirStaffs = new ArrayList();
+	AirStaffs.add(ItemId.STAFF_OF_AIR)
+	AirStaffs.add(ItemId.AIR_BATTLESTAFF)
+	AirStaffs.add(ItemId.DUST_BATTLESTAFF)
+	AirStaffs.add(ItemId.MIST_BATTLESTAFF)
+	AirStaffs.add(ItemId.SMOKE_BATTLESTAFF)
+	AirStaffs.add(ItemId.MYSTIC_AIR_STAFF)
+	AirStaffs.add(ItemId.MYSTIC_AIR_STAFF)
+	AirStaffs.add(ItemId.MYSTIC_DUSTSTAFF)
+	AirStaffs.add(ItemId.MYSTIC_SMOKE_STAFF)
+	AirStaffs.add(ItemId.MYSTIC_MIST_STAFF)
 
 	int timeout;
 	int alchTimeout;
@@ -234,7 +245,7 @@ public class RooftopAgilityPlugin extends Plugin
 		return config.camelotTeleport() && client.getBoostedSkillLevel(Skill.MAGIC) >= 45 &&
 			CAMELOT_TELE_LOC.distanceTo(client.getLocalPlayer().getWorldLocation()) <= 3 &&
 			(utils.inventoryContains(ItemID.LAW_RUNE) && utils.inventoryContains(ItemID.AIR_RUNE, 5) ||
-				utils.inventoryContains(ItemID.LAW_RUNE) && utils.isItemEquipped(Set.of(ItemID.STAFF_OF_AIR)));
+				utils.inventoryContains(ItemID.LAW_RUNE) && utils.isItemEquipped(Set.of(AirStaffs)));
 	}
 
 	private boolean shouldAlch()
