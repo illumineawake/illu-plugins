@@ -63,8 +63,8 @@ public interface RooftopAgilityConfig extends Config
 
 	@ConfigSection(
 		keyName = "delayConfig",
-		name = "Sleep Delay Configuration",
-		description = "Configure how the bot handles sleep delays",
+		name = "Sleep Delay(ms) Configuration",
+		description = "Configure how the bot handles sleep delays in milliseconds",
 		position = 2
 	)
 	default boolean delayConfig()
@@ -306,6 +306,18 @@ public interface RooftopAgilityConfig extends Config
 		unhide = "highAlch"
 	)
 	default boolean bankRestock()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "camelotTeleport",
+		name = "Use Camelot Teleport",
+		description = "Use Camelot Teleport if you have hard diaries completed. Requires Air Runes or (Air Staff equipped) and Law Runes in inventory",
+		position = 24,
+		titleSection = "agilityTitle"
+	)
+	default boolean camelotTeleport()
 	{
 		return false;
 	}

@@ -50,6 +50,7 @@ import net.runelite.api.DecorativeObject;
 import net.runelite.api.GroundObject;
 import net.runelite.api.GameState;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
@@ -115,6 +116,10 @@ public class RooftopAgilityPlugin extends Plugin
 	LocalPoint beforeLoc = new LocalPoint(0, 0); //initiate to mitigate npe
 	WidgetItem alchItem;
 	Set<Integer> inventoryItems = new HashSet<>();
+	private ExecutorService executorService;
+
+	private final Set<Integer> REGION_IDS = Set.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878, 10547);
+	WorldPoint CAMELOT_TELE_LOC = new WorldPoint(2705, 3463, 0);
 
 	int timeout;
 	int alchTimeout;
@@ -127,8 +132,6 @@ public class RooftopAgilityPlugin extends Plugin
 	boolean restockBank;
 	boolean setHighAlch;
 	boolean alchClick;
-	private final Set<Integer> REGION_IDS = Set.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878, 10547);
-	private ExecutorService executorService;
 
 	@Override
 	protected void startUp()
@@ -224,6 +227,14 @@ public class RooftopAgilityPlugin extends Plugin
 			return (int) ((double) mogCollectCount * (double) Duration.ofHours(1).toMillis() / (double) timeSinceStart.toMillis());
 		}
 		return 0;
+	}
+
+	private boolean shouldCastTeleport()
+	{
+		return config.camelotTeleport() && client.getBoostedSkillLevel(Skill.MAGIC) >= 45 &&
+			CAMELOT_TELE_LOC.distanceTo(client.getLocalPlayer().getWorldLocation()) <= 3 &&
+			(utils.inventoryContains(ItemID.LAW_RUNE) && utils.inventoryContains(ItemID.AIR_RUNE, 5) ||
+				utils.inventoryContains(ItemID.LAW_RUNE) && utils.isItemEquipped(Set.of(ItemID.STAFF_OF_AIR)));
 	}
 
 	private boolean shouldAlch()
@@ -410,6 +421,10 @@ public class RooftopAgilityPlugin extends Plugin
 			}
 			return TIMEOUT;
 		}
+		if (shouldCastTeleport())
+		{
+			return CAST_CAMELOT_TELEPORT;
+		}
 		if (utils.isMoving(beforeLoc))
 		{
 			if (alchTimeout <= 0 && shouldAlch() && (utils.inventoryContains(ItemID.NATURE_RUNE) &&
@@ -483,25 +498,28 @@ public class RooftopAgilityPlugin extends Plugin
 			{
 				case TIMEOUT:
 					timeout--;
-					return;
+					break;
 				case MARK_OF_GRACE:
 					log.debug("Picking up mark of grace");
 					targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
 					handleMouseClick();
-					return;
+					break;
 				case FIND_OBSTACLE:
 					findObstacle();
-					return;
+					break;
 				case HIGH_ALCH:
 					highAlchItem();
-					return;
+					break;
 				case RESTOCK_ITEMS:
 					restockItems();
-					return;
+					break;
 				case MOVING:
 					break;
-				default:
-					return;
+				case CAST_CAMELOT_TELEPORT:
+					targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 14286879, false);
+					handleMouseClick();
+					timeout = 2 + tickDelay();
+					break;
 			}
 		}
 		else
@@ -523,7 +541,6 @@ public class RooftopAgilityPlugin extends Plugin
 		alchClick = (targetMenu.getOption().equals("Cast"));
 		timeout = tickDelay();
 		targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
-
 	}
 
 	@Subscribe
