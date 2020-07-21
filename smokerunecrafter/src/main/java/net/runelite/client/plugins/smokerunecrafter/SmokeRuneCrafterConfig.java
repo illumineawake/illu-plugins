@@ -294,6 +294,18 @@ public interface SmokeRuneCrafterConfig extends Config
 	{
 		return false;
 	}
+	
+	@ConfigItem(
+		keyName = "getEssence",
+		name = "Essence Type",
+		description = "Choose your essence type",
+		position = 32
+	)
+	
+	default EssenceTypes getEssence()
+	{
+		return EssenceTypes.PURE_ESSENCE;
+	}
 
 	@ConfigItem(
 		keyName = "startButton",
