@@ -120,17 +120,8 @@ public class RooftopAgilityPlugin extends Plugin
 
 	private final Set<Integer> REGION_IDS = Set.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878, 10547);
 	WorldPoint CAMELOT_TELE_LOC = new WorldPoint(2705, 3463, 0);
-	List AirStaffs = new ArrayList();
-	AirStaffs.add(ItemId.STAFF_OF_AIR)
-	AirStaffs.add(ItemId.AIR_BATTLESTAFF)
-	AirStaffs.add(ItemId.DUST_BATTLESTAFF)
-	AirStaffs.add(ItemId.MIST_BATTLESTAFF)
-	AirStaffs.add(ItemId.SMOKE_BATTLESTAFF)
-	AirStaffs.add(ItemId.MYSTIC_AIR_STAFF)
-	AirStaffs.add(ItemId.MYSTIC_AIR_STAFF)
-	AirStaffs.add(ItemId.MYSTIC_DUSTSTAFF)
-	AirStaffs.add(ItemId.MYSTIC_SMOKE_STAFF)
-	AirStaffs.add(ItemId.MYSTIC_MIST_STAFF)
+	Set<Integer> AIR_STAFFS = Set.of(ItemID.STAFF_OF_AIR, ItemID.AIR_BATTLESTAFF, ItemID.DUST_BATTLESTAFF, ItemID.MIST_BATTLESTAFF,
+		ItemID.SMOKE_BATTLESTAFF, ItemID.MYSTIC_AIR_STAFF, ItemID.MYSTIC_DUST_STAFF, ItemID.MYSTIC_SMOKE_STAFF, ItemID.MYSTIC_MIST_STAFF);
 
 	int timeout;
 	int alchTimeout;
@@ -245,7 +236,7 @@ public class RooftopAgilityPlugin extends Plugin
 		return config.camelotTeleport() && client.getBoostedSkillLevel(Skill.MAGIC) >= 45 &&
 			CAMELOT_TELE_LOC.distanceTo(client.getLocalPlayer().getWorldLocation()) <= 3 &&
 			(utils.inventoryContains(ItemID.LAW_RUNE) && utils.inventoryContains(ItemID.AIR_RUNE, 5) ||
-				utils.inventoryContains(ItemID.LAW_RUNE) && utils.isItemEquipped(Set.of(AirStaffs)));
+				utils.inventoryContains(ItemID.LAW_RUNE) && utils.isItemEquipped(AIR_STAFFS));
 	}
 
 	private boolean shouldAlch()
@@ -426,7 +417,7 @@ public class RooftopAgilityPlugin extends Plugin
 					if (currentObstacle.getBankID() == 0 || !shouldRestock())
 					{
 						timeout--;
-						return FIND_OBSTACLE;
+						return (shouldCastTeleport()) ? CAST_CAMELOT_TELEPORT : FIND_OBSTACLE;
 					}
 				}
 			}
@@ -527,7 +518,8 @@ public class RooftopAgilityPlugin extends Plugin
 				case MOVING:
 					break;
 				case CAST_CAMELOT_TELEPORT:
-					targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 14286879, false);
+					targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), -1,
+						14286879, false);
 					handleMouseClick();
 					timeout = 2 + tickDelay();
 					break;
