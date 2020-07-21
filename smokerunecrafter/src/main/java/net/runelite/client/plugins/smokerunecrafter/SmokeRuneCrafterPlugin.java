@@ -109,7 +109,21 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	Set<Integer> DUEL_RINGS = Set.of(ItemID.RING_OF_DUELING2, ItemID.RING_OF_DUELING3, ItemID.RING_OF_DUELING4, ItemID.RING_OF_DUELING5, ItemID.RING_OF_DUELING6, ItemID.RING_OF_DUELING7, ItemID.RING_OF_DUELING8);
 	Set<Integer> BINDING_NECKLACE = Set.of(ItemID.BINDING_NECKLACE);
 	Set<Integer> STAMINA_POTIONS = Set.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
-	Set<Integer> REQUIRED_ITEMS = Set.of(ItemID.AIR_TALISMAN, ItemID.AIR_RUNE, ItemID.PURE_ESSENCE);
+	Set<Integer> REQUIRED_ITEMS = Set.of(ItemID.AIR_TALISMAN, ItemID.AIR_RUNE, USED_ESSENCE);
+	private int USED_ESSENCE = 0
+	
+	switch(config.getEssence()) 
+	{
+	case PURE_ESSENCE:
+		USED_ESSENCE = ItemID.PURE_ESSENCE;
+		break;
+	case RUNE_ESSENCE:
+		USED_ESSENCE = ItemID.RUNE_ESSENCE;
+		break;
+	case DEYALT_ESSENCE
+		USED_ESSENCE = ItemID.DAEYALT_ESSENCE
+		break;
+	}
 
 	boolean startBot;
 	boolean setTalisman;
@@ -235,8 +249,8 @@ public class SmokeRuneCrafterPlugin extends Plugin
 
 	private void updateTotals()
 	{
-		totalEssence += itemTotals(ItemID.PURE_ESSENCE, beforeEssence, false);
-		beforeEssence = utils.getInventoryItemCount(ItemID.PURE_ESSENCE, false);
+		totalEssence += itemTotals(USED_ESSENCE, beforeEssence, false);
+		beforeEssence = utils.getInventoryItemCount(USED_ESSENCE, false);
 
 		totalAirRunes += itemTotals(ItemID.AIR_RUNE, beforeAirRunes, true);
 		beforeAirRunes = utils.getInventoryItemCount(ItemID.AIR_RUNE, true);
@@ -352,7 +366,7 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	{
 		if ((!utils.inventoryContains(ItemID.AIR_TALISMAN) && !utils.bankContains(ItemID.AIR_TALISMAN, 1)) ||
 			(!utils.inventoryContains(ItemID.AIR_RUNE) && !utils.bankContains(ItemID.AIR_RUNE, 26)) ||
-			(!utils.inventoryContains(ItemID.PURE_ESSENCE) && !utils.bankContains(ItemID.PURE_ESSENCE, 10)))
+			(!utils.inventoryContains(USED_ESSENCE) && !utils.bankContains(USED_ESSENCE, 10)))
 		{
 			bankItem = null;
 			return OUT_OF_ITEM;
@@ -367,9 +381,9 @@ public class SmokeRuneCrafterPlugin extends Plugin
 			bankItem = utils.getBankItemWidget(ItemID.AIR_RUNE);
 			return WITHDRAW_ALL_ITEM;
 		}
-		if (!utils.inventoryContains(ItemID.PURE_ESSENCE))
+		if (!utils.inventoryContains(USED_ESSENCE))
 		{
-			bankItem = utils.getBankItemWidget(ItemID.PURE_ESSENCE);
+			bankItem = utils.getBankItemWidget(USED_ESSENCE);
 			return WITHDRAW_ALL_ITEM;
 		}
 		return OUT_OF_ITEM;
