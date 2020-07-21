@@ -7,7 +7,7 @@ public enum EssenceTypes
 {
   PURE_ESSENCE("Pure Essence"),
    RUNE_ESSENCE("Rune Essence"),
-   DEYALT_ESSENCE("Deyalt Essence");
+   DAEYALT_ESSENCE("Daeyalt Essence");
    
    private final String name;
    private String menuOption = "";
