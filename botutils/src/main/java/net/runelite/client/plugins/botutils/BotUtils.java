@@ -62,6 +62,7 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import static net.runelite.client.plugins.botutils.Banks.BANK_SET;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
@@ -401,6 +402,22 @@ public class BotUtils extends Plugin
 			.result(client)
 			.first()
 			.getGroundItems();
+	}
+
+	@Nullable
+	public GameObject findNearestBank(Collection<Integer> bankIDs)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new GameObjectQuery()
+			.idEquals(BANK_SET)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
 	}
 
 	/*
