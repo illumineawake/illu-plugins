@@ -22,7 +22,7 @@ subprojects {
     group = "com.openosrs.externals"
 
     project.extra["PluginProvider"] = "illumine"
-    project.extra["ProjectSupportUrl"] = ""
+    project.extra["ProjectSupportUrl"] = "https://discord.gg/YUHHsE"
     project.extra["PluginLicense"] = "3-Clause BSD License"
 
     repositories {

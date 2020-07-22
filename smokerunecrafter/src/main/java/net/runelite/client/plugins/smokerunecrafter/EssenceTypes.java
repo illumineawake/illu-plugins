@@ -1,25 +1,20 @@
-package net.runelite.cliet.plugins.smokerunecrafter;
+package net.runelite.client.plugins.smokerunecrafter;
 
 import lombok.Getter;
+import net.runelite.api.ItemID;
 
 @Getter
 public enum EssenceTypes
 {
-  PURE_ESSENCE("Pure Essence"),
-   RUNE_ESSENCE("Rune Essence"),
-   DAEYALT_ESSENCE("Daeyalt Essence");
-   
-   private final String name;
-   private String menuOption = "";
-   
-   EssenceTypes(String name)
-   {
-      this.name = name;
-    }
-    
-    EssenceTypes(String name, String menuOption)
-    {
-      this.name = name;
-      this.menuOption = menuOption;
-     }
-  }
+	PURE_ESSENCE("Pure Essence", ItemID.PURE_ESSENCE),
+	DAEYALT_ESSENCE("Daeyalt Essence", ItemID.DAEYALT_ESSENCE);
+
+	private final String name;
+	private final int id;
+
+	EssenceTypes(String name, int id)
+	{
+		this.name = name;
+		this.id = id;
+	}
+}

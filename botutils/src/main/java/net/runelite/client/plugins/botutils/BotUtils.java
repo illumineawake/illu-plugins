@@ -1014,7 +1014,7 @@ public class BotUtils extends Plugin
 		return getItems(itemIds).size() > 0;
 	}
 
-	public boolean inventoryContainsAllOf(Set<Integer> itemIds)
+	public boolean inventoryContainsAllOf(Collection<Integer> itemIds)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
 		{
@@ -1030,7 +1030,7 @@ public class BotUtils extends Plugin
 		return true;
 	}
 
-	public boolean inventoryContainsExcept(Set<Integer> itemIds)
+	public boolean inventoryContainsExcept(Collection<Integer> itemIds)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
 		{

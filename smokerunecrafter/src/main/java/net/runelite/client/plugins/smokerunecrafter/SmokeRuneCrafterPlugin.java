@@ -28,6 +28,8 @@ package net.runelite.client.plugins.smokerunecrafter;
 import com.google.inject.Provides;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,11 +53,13 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
+import static net.runelite.client.plugins.smokerunecrafter.EssenceTypes.*;
 import net.runelite.client.plugins.smokerunecrafter.SmokeRuneCrafterConfig;
 import static net.runelite.client.plugins.smokerunecrafter.SmokeRuneCrafterState.*;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -109,21 +113,7 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	Set<Integer> DUEL_RINGS = Set.of(ItemID.RING_OF_DUELING2, ItemID.RING_OF_DUELING3, ItemID.RING_OF_DUELING4, ItemID.RING_OF_DUELING5, ItemID.RING_OF_DUELING6, ItemID.RING_OF_DUELING7, ItemID.RING_OF_DUELING8);
 	Set<Integer> BINDING_NECKLACE = Set.of(ItemID.BINDING_NECKLACE);
 	Set<Integer> STAMINA_POTIONS = Set.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
-	Set<Integer> REQUIRED_ITEMS = Set.of(ItemID.AIR_TALISMAN, ItemID.AIR_RUNE, USED_ESSENCE);
-	private int USED_ESSENCE = 0
-	
-	switch(config.getEssence()) 
-	{
-	case PURE_ESSENCE:
-		USED_ESSENCE = ItemID.PURE_ESSENCE;
-		break;
-	case RUNE_ESSENCE:
-		USED_ESSENCE = ItemID.RUNE_ESSENCE;
-		break;
-	case DEYALT_ESSENCE
-		USED_ESSENCE = ItemID.DAEYALT_ESSENCE
-		break;
-	}
+	List<Integer> REQUIRED_ITEMS = new ArrayList<>();
 
 	boolean startBot;
 	boolean setTalisman;
@@ -147,7 +137,7 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	int profitPH;
 	int totalProfit;
 	int smokeRunesCost;
-	int pureEssenceCost;
+	int essenceCost;
 	int airTalismanCost;
 	int duelRingCost;
 	int necklaceCost;
@@ -155,6 +145,7 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	int airRuneCost;
 	int beforeSmokeRunes;
 	int currentSmokeRunes;
+	int essenceTypeId;
 
 	@Provides
 	SmokeRuneCrafterConfig provideConfig(ConfigManager configManager)
@@ -194,19 +185,22 @@ public class SmokeRuneCrafterPlugin extends Plugin
 					necklaceState = null;
 					targetMenu = null;
 					setTalisman = false;
+					essenceTypeId = config.getEssence().getId();
+					REQUIRED_ITEMS = List.of(ItemID.AIR_TALISMAN, ItemID.AIR_RUNE, essenceTypeId);
 					botTimer = Instant.now();
 					executorService = Executors.newSingleThreadExecutor();
 					overlayManager.add(overlay);
 					smokeRunesCost = utils.getOSBItem(ItemID.SMOKE_RUNE).getOverall_average();
-					pureEssenceCost = utils.getOSBItem(ItemID.PURE_ESSENCE).getOverall_average();
+					essenceCost = (essenceTypeId != ItemID.DAEYALT_ESSENCE) ?
+						utils.getOSBItem(essenceTypeId).getOverall_average() : 0;
 					airTalismanCost = utils.getOSBItem(ItemID.AIR_TALISMAN).getOverall_average();
 					duelRingCost = utils.getOSBItem(ItemID.RING_OF_DUELING8).getOverall_average();
 					airRuneCost = utils.getOSBItem(ItemID.AIR_RUNE).getOverall_average();
 					necklaceCost = utils.getOSBItem(ItemID.BINDING_NECKLACE).getOverall_average();
 					staminaPotCost = utils.getOSBItem(ItemID.STAMINA_POTION4).getOverall_average();
-					log.info("Item prices set to at - Smoke Runes: {}gp, Pure Essence: {}gp, Air Talisman: {}gp, " +
+					log.info("Item prices set to at - Smoke Runes: {}gp, Essence: {}gp, Air Talisman: {}gp, " +
 							"Ring of Dueling {}gp, Air Runes: {}gp, Binding Necklace: {}gp",
-						smokeRunesCost, pureEssenceCost, airTalismanCost, duelRingCost, airRuneCost, necklaceCost);
+						smokeRunesCost, essenceCost, airTalismanCost, duelRingCost, airRuneCost, necklaceCost);
 				}
 				else
 				{
@@ -217,6 +211,24 @@ public class SmokeRuneCrafterPlugin extends Plugin
 					overlayManager.remove(overlay);
 				}
 				break;
+		}
+	}
+
+	@Subscribe
+	private void onConfigChange(ConfigChanged event)
+	{
+		if (!event.getGroup().equals("SmokeRuneCrafter"))
+		{
+			return;
+		}
+		switch (event.getKey())
+		{
+			case "getEssence":
+				essenceTypeId = config.getEssence().getId();
+				//REQUIRED_ITEMS.clear();
+				REQUIRED_ITEMS = List.of(ItemID.AIR_TALISMAN, ItemID.AIR_RUNE, essenceTypeId);
+				essenceCost = (essenceTypeId != ItemID.DAEYALT_ESSENCE) ?
+					utils.getOSBItem(essenceTypeId).getOverall_average() : 0;
 		}
 	}
 
@@ -249,8 +261,8 @@ public class SmokeRuneCrafterPlugin extends Plugin
 
 	private void updateTotals()
 	{
-		totalEssence += itemTotals(USED_ESSENCE, beforeEssence, false);
-		beforeEssence = utils.getInventoryItemCount(USED_ESSENCE, false);
+		totalEssence += itemTotals(essenceTypeId, beforeEssence, false);
+		beforeEssence = utils.getInventoryItemCount(essenceTypeId, false);
 
 		totalAirRunes += itemTotals(ItemID.AIR_RUNE, beforeAirRunes, true);
 		beforeAirRunes = utils.getInventoryItemCount(ItemID.AIR_RUNE, true);
@@ -280,7 +292,7 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	{
 		updateTotals();
 		runesPH = (int) getPerHour(totalSmokeRunes);
-		totalProfit = (int) ((totalSmokeRunes * smokeRunesCost) - ((totalEssence * pureEssenceCost) + (totalAirRunes * airRuneCost) +
+		totalProfit = (int) ((totalSmokeRunes * smokeRunesCost) - ((totalEssence * essenceCost) + (totalAirRunes * airRuneCost) +
 			(totalTalisman * airTalismanCost) + (totalDuelRings * duelRingCost) + (totalNecklaces * necklaceCost) +
 			((totalStaminaPots * 0.25) * staminaPotCost)));
 		profitPH = (int) getPerHour(totalProfit);
@@ -366,25 +378,18 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	{
 		if ((!utils.inventoryContains(ItemID.AIR_TALISMAN) && !utils.bankContains(ItemID.AIR_TALISMAN, 1)) ||
 			(!utils.inventoryContains(ItemID.AIR_RUNE) && !utils.bankContains(ItemID.AIR_RUNE, 26)) ||
-			(!utils.inventoryContains(USED_ESSENCE) && !utils.bankContains(USED_ESSENCE, 10)))
+			(!utils.inventoryContains(essenceTypeId) && !utils.bankContains(essenceTypeId, 10)))
 		{
 			bankItem = null;
 			return OUT_OF_ITEM;
 		}
-		if (!utils.inventoryContains(ItemID.AIR_TALISMAN))
+		for (int itemID : REQUIRED_ITEMS)
 		{
-			bankItem = utils.getBankItemWidget(ItemID.AIR_TALISMAN);
-			return WITHDRAW_ITEM;
-		}
-		if (!utils.inventoryContains(ItemID.AIR_RUNE))
-		{
-			bankItem = utils.getBankItemWidget(ItemID.AIR_RUNE);
-			return WITHDRAW_ALL_ITEM;
-		}
-		if (!utils.inventoryContains(USED_ESSENCE))
-		{
-			bankItem = utils.getBankItemWidget(USED_ESSENCE);
-			return WITHDRAW_ALL_ITEM;
+			if (!utils.inventoryContains(itemID))
+			{
+				bankItem = utils.getBankItemWidget(itemID);
+				return (itemID == ItemID.AIR_TALISMAN) ? WITHDRAW_ITEM : WITHDRAW_ALL_ITEM;
+			}
 		}
 		return OUT_OF_ITEM;
 	}

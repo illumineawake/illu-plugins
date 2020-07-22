@@ -237,6 +237,18 @@ public interface SmokeRuneCrafterConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "getEssence",
+		name = "Essence Type",
+		description = "Choose your essence type",
+		position = 24
+	)
+
+	default EssenceTypes getEssence()
+	{
+		return EssenceTypes.PURE_ESSENCE;
+	}
+
+	@ConfigItem(
 		keyName = "staminaPotion",
 		name = "Use Stamina Potions",
 		description = "",
@@ -293,18 +305,6 @@ public interface SmokeRuneCrafterConfig extends Config
 	default boolean logout()
 	{
 		return false;
-	}
-	
-	@ConfigItem(
-		keyName = "getEssence",
-		name = "Essence Type",
-		description = "Choose your essence type",
-		position = 32
-	)
-	
-	default EssenceTypes getEssence()
-	{
-		return EssenceTypes.PURE_ESSENCE;
 	}
 
 	@ConfigItem(
