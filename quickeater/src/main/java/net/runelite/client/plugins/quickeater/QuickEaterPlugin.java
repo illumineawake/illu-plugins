@@ -109,7 +109,8 @@ public class QuickEaterPlugin extends Plugin
 		{
 			return;
 		}
-		if (utils.getInventoryItemMenu(itemManager, "Eat", 33, Set.of(ItemID.ROCK_CAKE)) != null)
+		if (utils.getInventoryItemMenu(itemManager, "Eat", 33,
+			Set.of(ItemID.DWARVEN_ROCK_CAKE, ItemID.DWARVEN_ROCK_CAKE_7510)) != null)
 		{
 			targetMenu = utils.getInventoryItemMenu(itemManager, "Eat", 33);
 			utils.clickRandomPointCenter(-100, 100);
