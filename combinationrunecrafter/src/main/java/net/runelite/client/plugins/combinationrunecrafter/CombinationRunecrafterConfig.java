@@ -239,7 +239,7 @@ public interface CombinationRunecrafterConfig extends Config
 	@ConfigItem(
 		keyName = "getRunecraftingType",
 		name = "Rune Type",
-		description = "Choose your essence type",
+		description = "Choose what combination rune to craft",
 		position = 24
 	)
 
