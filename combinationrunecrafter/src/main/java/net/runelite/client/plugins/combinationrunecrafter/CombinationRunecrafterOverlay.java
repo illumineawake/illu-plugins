@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.smokerunecrafter;
+package net.runelite.client.plugins.combinationrunecrafter;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -24,24 +24,24 @@ import static org.apache.commons.lang3.time.DurationFormatUtils.formatDuration;
 
 @Slf4j
 @Singleton
-class SmokeRuneCrafterOverlay extends OverlayPanel
+class CombinationRunecrafterOverlay extends OverlayPanel
 {
 	private final Client client;
-	private final SmokeRuneCrafterPlugin plugin;
-	private final SmokeRuneCrafterConfig config;
+	private final CombinationRunecrafterPlugin plugin;
+	private final CombinationRunecrafterConfig config;
 
 	String timeFormat;
 	private String infoStatus = "Starting...";
 
 	@Inject
-	private SmokeRuneCrafterOverlay(final Client client, final SmokeRuneCrafterPlugin plugin, final SmokeRuneCrafterConfig config)
+	private CombinationRunecrafterOverlay(final Client client, final CombinationRunecrafterPlugin plugin, final CombinationRunecrafterConfig config)
 	{
 		super(plugin);
 		setPosition(OverlayPosition.BOTTOM_LEFT);
 		this.client = client;
 		this.plugin = plugin;
 		this.config = config;
-		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Smoke Rune Crafter overlay"));
+		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Combination Rune Crafter overlay"));
 	}
 
 	@Override
@@ -67,10 +67,10 @@ class SmokeRuneCrafterOverlay extends OverlayPanel
 
 		TableComponent tableMarksComponent = new TableComponent();
 		tableMarksComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
-		tableMarksComponent.addRow("Runes:", NumberFormat.getNumberInstance(Locale.US).format(plugin.totalSmokeRunes)
+		tableMarksComponent.addRow("Runes:", NumberFormat.getNumberInstance(Locale.US).format(plugin.totalCraftedRunes)
 			+ " / " + NumberFormat.getNumberInstance(Locale.US).format(plugin.runesPH));
-		tableMarksComponent.addRow("Profit:", NumberFormat.getNumberInstance(Locale.US).format(plugin.totalProfit)
-			+ "gp / " + NumberFormat.getNumberInstance(Locale.US).format(plugin.profitPH) + "gp");
+		tableMarksComponent.addRow("Profit (gp):", NumberFormat.getNumberInstance(Locale.US).format(plugin.totalProfit)
+			+ " / " + NumberFormat.getNumberInstance(Locale.US).format(plugin.profitPH));
 
 		TableComponent tableDelayComponent = new TableComponent();
 		tableDelayComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
@@ -84,7 +84,7 @@ class SmokeRuneCrafterOverlay extends OverlayPanel
 			panelComponent.setPreferredSize(new Dimension(250,250));
 			panelComponent.setBorder(new Rectangle(5,5,5,5));
 			panelComponent.getChildren().add(TitleComponent.builder()
-				.text("Illumine Smoke Runecrafting")
+				.text("Illumine Combination Runecrafting")
 				.color(ColorUtil.fromHex("#40C4FF"))
 				.build());
 			panelComponent.getChildren().add(tableComponent);

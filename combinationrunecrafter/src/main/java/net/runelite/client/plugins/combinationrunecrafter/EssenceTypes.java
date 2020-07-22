@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.smokerunecrafter;
+package net.runelite.client.plugins.combinationrunecrafter;
 
 import lombok.Getter;
 import net.runelite.api.ItemID;

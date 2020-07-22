@@ -23,7 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.smokerunecrafter;
+package net.runelite.client.plugins.combinationrunecrafter;
 
 import com.google.inject.Provides;
 import java.time.Duration;
@@ -59,9 +59,7 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
-import static net.runelite.client.plugins.smokerunecrafter.EssenceTypes.*;
-import net.runelite.client.plugins.smokerunecrafter.SmokeRuneCrafterConfig;
-import static net.runelite.client.plugins.smokerunecrafter.SmokeRuneCrafterState.*;
+import static net.runelite.client.plugins.combinationrunecrafter.CombinationRunecrafterState.*;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
@@ -69,20 +67,20 @@ import org.pf4j.Extension;
 @Extension
 @PluginDependency(BotUtils.class)
 @PluginDescriptor(
-	name = "Smoke Runecrafter Plugin",
+	name = "Combination Runecrafter Plugin",
 	enabledByDefault = false,
-	description = "Illumine - Smoke Runecrafting plugin",
-	tags = {"illumine", "runecrafting", "bot", "smoke"},
+	description = "Illumine - Combination Runecrafting plugin",
+	tags = {"illumine", "runecrafting", "bot", "smoke", "steam", "lava", "combination"},
 	type = PluginType.SKILLING
 )
 @Slf4j
-public class SmokeRuneCrafterPlugin extends Plugin
+public class CombinationRunecrafterPlugin extends Plugin
 {
 	@Inject
 	private Client client;
 
 	@Inject
-	private SmokeRuneCrafterConfig config;
+	private CombinationRunecrafterConfig config;
 
 	@Inject
 	private BotUtils utils;
@@ -94,14 +92,14 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	private OverlayManager overlayManager;
 
 	@Inject
-	private SmokeRuneCrafterOverlay overlay;
+	private CombinationRunecrafterOverlay overlay;
 
 	MenuEntry targetMenu;
 	Instant botTimer;
 	Player player;
-	SmokeRuneCrafterState state;
-	SmokeRuneCrafterState necklaceState;
-	SmokeRuneCrafterState staminaState;
+	CombinationRunecrafterState state;
+	CombinationRunecrafterState necklaceState;
+	CombinationRunecrafterState staminaState;
 	ExecutorService executorService;
 	LocalPoint beforeLoc = new LocalPoint(0, 0);
 	GameObject bankChest;
@@ -125,32 +123,35 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	int coinsPH;
 	int beforeEssence;
 	int totalEssence;
-	int beforeAirRunes;
-	int totalAirRunes;
+	int beforeMaterialRunes;
+	int totalMaterialRunes;
 	int beforeTalisman;
 	int totalTalisman;
-	int totalSmokeRunes;
+	int totalCraftedRunes;
+	int beforeCraftedRunes;
+	int currentCraftedRunes;
 	int totalDuelRings;
 	int totalNecklaces;
 	int totalStaminaPots;
 	int runesPH;
 	int profitPH;
 	int totalProfit;
-	int smokeRunesCost;
+	int runesCost;
 	int essenceCost;
-	int airTalismanCost;
+	int talismanCost;
 	int duelRingCost;
 	int necklaceCost;
 	int staminaPotCost;
-	int airRuneCost;
-	int beforeSmokeRunes;
-	int currentSmokeRunes;
-	int essenceTypeId;
+	int materialRuneCost;
+	int essenceTypeID;
+	int talismanID;
+	int materialRuneID;
+	int createdRuneTypeID;
 
 	@Provides
-	SmokeRuneCrafterConfig provideConfig(ConfigManager configManager)
+	CombinationRunecrafterConfig provideConfig(ConfigManager configManager)
 	{
-		return configManager.getConfig(SmokeRuneCrafterConfig.class);
+		return configManager.getConfig(CombinationRunecrafterConfig.class);
 	}
 
 	@Override
@@ -168,7 +169,7 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	@Subscribe
 	private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked)
 	{
-		if (!configButtonClicked.getGroup().equalsIgnoreCase("SmokeRuneCrafter"))
+		if (!configButtonClicked.getGroup().equalsIgnoreCase("CombinationRunecrafter"))
 		{
 			return;
 		}
@@ -178,33 +179,26 @@ public class SmokeRuneCrafterPlugin extends Plugin
 			case "startButton":
 				if (!startBot)
 				{
-					log.info("starting Smoke Runecrafting plugin");
+					log.info("starting Combination Runecrafting plugin");
 					startBot = true;
 					initCounters();
 					state = null;
 					necklaceState = null;
 					targetMenu = null;
 					setTalisman = false;
-					essenceTypeId = config.getEssence().getId();
-					REQUIRED_ITEMS = List.of(ItemID.AIR_TALISMAN, ItemID.AIR_RUNE, essenceTypeId);
+					createdRuneTypeID = config.getRunecraftingType().getCreatedRuneID();
+					talismanID = config.getRunecraftingType().getTalismanID();
+					materialRuneID = config.getRunecraftingType().getMaterialRuneID();
+					essenceTypeID = config.getEssence().getId();
+					REQUIRED_ITEMS = List.of(talismanID, materialRuneID, essenceTypeID);
+					updatePrices();
 					botTimer = Instant.now();
 					executorService = Executors.newSingleThreadExecutor();
 					overlayManager.add(overlay);
-					smokeRunesCost = utils.getOSBItem(ItemID.SMOKE_RUNE).getOverall_average();
-					essenceCost = (essenceTypeId != ItemID.DAEYALT_ESSENCE) ?
-						utils.getOSBItem(essenceTypeId).getOverall_average() : 0;
-					airTalismanCost = utils.getOSBItem(ItemID.AIR_TALISMAN).getOverall_average();
-					duelRingCost = utils.getOSBItem(ItemID.RING_OF_DUELING8).getOverall_average();
-					airRuneCost = utils.getOSBItem(ItemID.AIR_RUNE).getOverall_average();
-					necklaceCost = utils.getOSBItem(ItemID.BINDING_NECKLACE).getOverall_average();
-					staminaPotCost = utils.getOSBItem(ItemID.STAMINA_POTION4).getOverall_average();
-					log.info("Item prices set to at - Smoke Runes: {}gp, Essence: {}gp, Air Talisman: {}gp, " +
-							"Ring of Dueling {}gp, Air Runes: {}gp, Binding Necklace: {}gp",
-						smokeRunesCost, essenceCost, airTalismanCost, duelRingCost, airRuneCost, necklaceCost);
 				}
 				else
 				{
-					log.info("stopping Smoke Runecrafting plugin");
+					log.info("stopping Combination Runecrafting plugin");
 					startBot = false;
 					botTimer = null;
 					executorService.shutdown();
@@ -217,19 +211,26 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	@Subscribe
 	private void onConfigChange(ConfigChanged event)
 	{
-		if (!event.getGroup().equals("SmokeRuneCrafter"))
+		if (!event.getGroup().equals("CombinationRunecrafter"))
 		{
 			return;
 		}
 		switch (event.getKey())
 		{
 			case "getEssence":
-				essenceTypeId = config.getEssence().getId();
-				//REQUIRED_ITEMS.clear();
-				REQUIRED_ITEMS = List.of(ItemID.AIR_TALISMAN, ItemID.AIR_RUNE, essenceTypeId);
-				essenceCost = (essenceTypeId != ItemID.DAEYALT_ESSENCE) ?
-					utils.getOSBItem(essenceTypeId).getOverall_average() : 0;
+				essenceTypeID = config.getEssence().getId();
+				essenceCost = (essenceTypeID != ItemID.DAEYALT_ESSENCE) ?
+					utils.getOSBItem(essenceTypeID).getOverall_average() : 0;
+				break;
+			case "getRunecraftingType":
+				createdRuneTypeID = config.getRunecraftingType().getCreatedRuneID();
+				talismanID = config.getRunecraftingType().getTalismanID();
+				materialRuneID = config.getRunecraftingType().getMaterialRuneID();
+				break;
 		}
+		setTalisman = false;
+		REQUIRED_ITEMS = List.of(talismanID, materialRuneID, essenceTypeID);
+		updatePrices();
 	}
 
 	private void initCounters()
@@ -238,19 +239,34 @@ public class SmokeRuneCrafterPlugin extends Plugin
 		coinsPH = 0;
 		beforeEssence = 0;
 		totalEssence = 0;
-		beforeAirRunes = 0;
-		totalAirRunes = 0;
+		beforeMaterialRunes = 0;
+		totalMaterialRunes = 0;
 		beforeTalisman = 0;
 		totalTalisman = 0;
-		beforeSmokeRunes = 0;
-		totalSmokeRunes = 0;
+		beforeCraftedRunes = 0;
+		totalCraftedRunes = 0;
 		totalDuelRings = 0;
 		totalNecklaces = 0;
 		totalStaminaPots = 0;
 		runesPH = 0;
 		profitPH = 0;
 		totalProfit = 0;
-		currentSmokeRunes = 0;
+		currentCraftedRunes = 0;
+	}
+
+	private void updatePrices()
+	{
+		runesCost = utils.getOSBItem(createdRuneTypeID).getOverall_average();
+		essenceCost = (essenceTypeID != ItemID.DAEYALT_ESSENCE) ?
+			utils.getOSBItem(essenceTypeID).getOverall_average() : 0;
+		talismanCost = utils.getOSBItem(talismanID).getOverall_average();
+		duelRingCost = utils.getOSBItem(ItemID.RING_OF_DUELING8).getOverall_average();
+		materialRuneCost = utils.getOSBItem(materialRuneID).getOverall_average();
+		necklaceCost = utils.getOSBItem(ItemID.BINDING_NECKLACE).getOverall_average();
+		staminaPotCost = utils.getOSBItem(ItemID.STAMINA_POTION4).getOverall_average();
+		log.info("Item prices set to at - Crafted Runes: {}gp, Essence: {}gp, Talisman: {}gp, " +
+				"Ring of Dueling {}gp, Material Runes: {}gp, Binding Necklace: {}gp, Stamina Potion (4): {}gp",
+			runesCost, essenceCost, talismanCost, duelRingCost, materialRuneCost, necklaceCost, staminaPotCost);
 	}
 
 	private int itemTotals(int itemID, int beforeAmount, boolean stackableItem)
@@ -261,21 +277,21 @@ public class SmokeRuneCrafterPlugin extends Plugin
 
 	private void updateTotals()
 	{
-		totalEssence += itemTotals(essenceTypeId, beforeEssence, false);
-		beforeEssence = utils.getInventoryItemCount(essenceTypeId, false);
+		totalEssence += itemTotals(essenceTypeID, beforeEssence, false);
+		beforeEssence = utils.getInventoryItemCount(essenceTypeID, false);
 
-		totalAirRunes += itemTotals(ItemID.AIR_RUNE, beforeAirRunes, true);
-		beforeAirRunes = utils.getInventoryItemCount(ItemID.AIR_RUNE, true);
+		totalMaterialRunes += itemTotals(materialRuneID, beforeMaterialRunes, true);
+		beforeMaterialRunes = utils.getInventoryItemCount(materialRuneID, true);
 
-		totalTalisman += itemTotals(ItemID.AIR_TALISMAN, beforeTalisman, true);
-		beforeTalisman = utils.getInventoryItemCount(ItemID.AIR_TALISMAN, true);
+		totalTalisman += itemTotals(talismanID, beforeTalisman, true);
+		beforeTalisman = utils.getInventoryItemCount(talismanID, true);
 
-		currentSmokeRunes = utils.getInventoryItemCount(ItemID.SMOKE_RUNE, true);
-		if (beforeSmokeRunes < currentSmokeRunes)
+		currentCraftedRunes = utils.getInventoryItemCount(createdRuneTypeID, true);
+		if (beforeCraftedRunes < currentCraftedRunes)
 		{
-			totalSmokeRunes += currentSmokeRunes;
+			totalCraftedRunes += currentCraftedRunes;
 		}
-		beforeSmokeRunes = currentSmokeRunes;
+		beforeCraftedRunes = currentCraftedRunes;
 
 		if (!utils.isItemEquipped(DUEL_RINGS) || utils.isItemEquipped(Set.of(ItemID.RING_OF_DUELING1)))
 		{
@@ -291,9 +307,9 @@ public class SmokeRuneCrafterPlugin extends Plugin
 	public void updateStats()
 	{
 		updateTotals();
-		runesPH = (int) getPerHour(totalSmokeRunes);
-		totalProfit = (int) ((totalSmokeRunes * smokeRunesCost) - ((totalEssence * essenceCost) + (totalAirRunes * airRuneCost) +
-			(totalTalisman * airTalismanCost) + (totalDuelRings * duelRingCost) + (totalNecklaces * necklaceCost) +
+		runesPH = (int) getPerHour(totalCraftedRunes);
+		totalProfit = (int) ((totalCraftedRunes * runesCost) - ((totalEssence * essenceCost) + (totalMaterialRunes * materialRuneCost) +
+			(totalTalisman * talismanCost) + (totalDuelRings * duelRingCost) + (totalNecklaces * necklaceCost) +
 			((totalStaminaPots * 0.25) * staminaPotCost)));
 		profitPH = (int) getPerHour(totalProfit);
 	}
@@ -352,7 +368,7 @@ public class SmokeRuneCrafterPlugin extends Plugin
 		}
 	}
 
-	private SmokeRuneCrafterState getItemState(Set<Integer> itemIDs)
+	private CombinationRunecrafterState getItemState(Set<Integer> itemIDs)
 	{
 		if (utils.inventoryContains(itemIDs))
 		{
@@ -374,11 +390,11 @@ public class SmokeRuneCrafterPlugin extends Plugin
 				(utils.inventoryContains(STAMINA_POTIONS) && client.getEnergy() < 75));
 	}
 
-	private SmokeRuneCrafterState getRequiredItemState()
+	private CombinationRunecrafterState getRequiredItemState()
 	{
-		if ((!utils.inventoryContains(ItemID.AIR_TALISMAN) && !utils.bankContains(ItemID.AIR_TALISMAN, 1)) ||
-			(!utils.inventoryContains(ItemID.AIR_RUNE) && !utils.bankContains(ItemID.AIR_RUNE, 26)) ||
-			(!utils.inventoryContains(essenceTypeId) && !utils.bankContains(essenceTypeId, 10)))
+		if ((!utils.inventoryContains(talismanID) && !utils.bankContains(talismanID, 1)) ||
+			(!utils.inventoryContains(materialRuneID) && !utils.bankContains(materialRuneID, 26)) ||
+			(!utils.inventoryContains(essenceTypeID) && !utils.bankContains(essenceTypeID, 10)))
 		{
 			bankItem = null;
 			return OUT_OF_ITEM;
@@ -388,13 +404,13 @@ public class SmokeRuneCrafterPlugin extends Plugin
 			if (!utils.inventoryContains(itemID))
 			{
 				bankItem = utils.getBankItemWidget(itemID);
-				return (itemID == ItemID.AIR_TALISMAN) ? WITHDRAW_ITEM : WITHDRAW_ALL_ITEM;
+				return (itemID == talismanID) ? WITHDRAW_ITEM : WITHDRAW_ALL_ITEM;
 			}
 		}
 		return OUT_OF_ITEM;
 	}
 
-	private SmokeRuneCrafterState getState()
+	private CombinationRunecrafterState getState()
 	{
 		if (timeout > 0)
 		{
@@ -528,8 +544,8 @@ public class SmokeRuneCrafterPlugin extends Plugin
 					timeout = tickDelay();
 					break;
 				case SET_TALISMAN:
-					WidgetItem airTalisman = utils.getInventoryWidgetItem(ItemID.AIR_TALISMAN);
-					targetMenu = new MenuEntry("Use", "Use", ItemID.AIR_TALISMAN, MenuOpcode.ITEM_USE.getId(),
+					WidgetItem airTalisman = utils.getInventoryWidgetItem(talismanID);
+					targetMenu = new MenuEntry("Use", "Use", talismanID, MenuOpcode.ITEM_USE.getId(),
 						airTalisman.getIndex(), 9764864, false);
 					handleMouseClick();
 					setTalisman = true;
@@ -599,7 +615,7 @@ public class SmokeRuneCrafterPlugin extends Plugin
 		}
 		if (utils.getRandomEvent()) //for random events
 		{
-			log.info("SmokeRuneCrafter plugin not overriding due to random event");
+			log.info("Combination Runecrafter plugin not overriding due to random event");
 			return;
 		}
 		else

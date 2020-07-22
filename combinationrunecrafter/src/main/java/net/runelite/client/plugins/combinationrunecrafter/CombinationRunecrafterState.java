@@ -1,6 +1,6 @@
-package net.runelite.client.plugins.smokerunecrafter;
+package net.runelite.client.plugins.combinationrunecrafter;
 
-public enum SmokeRuneCrafterState
+public enum CombinationRunecrafterState
 {
 	ACTION_ITEM,
 	DEPOSIT_ALL,

@@ -13,14 +13,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
@@ -191,7 +189,7 @@ public class BotUtils extends Plugin
 	}
 
 	@Nullable
-	public GameObject findNearestGameObjectWithin(WorldPoint worldPoint, int dist, Set<Integer> ids)
+	public GameObject findNearestGameObjectWithin(WorldPoint worldPoint, int dist, Collection<Integer> ids)
 	{
 		assert client.isClientThread();
 
@@ -224,7 +222,7 @@ public class BotUtils extends Plugin
 	}
 
 	@Nullable
-	public NPC findNearestNpcWithin(WorldPoint worldPoint, int dist, Set<Integer> ids)
+	public NPC findNearestNpcWithin(WorldPoint worldPoint, int dist, Collection<Integer> ids)
 	{
 		assert client.isClientThread();
 
@@ -432,7 +430,7 @@ public class BotUtils extends Plugin
 	 * Returns if a specific item is equipped
 	 *
 	 * */
-	public boolean isItemEquipped(Set<Integer> itemIds)
+	public boolean isItemEquipped(Collection<Integer> itemIds)
 	{
 		assert client.isClientThread();
 
@@ -811,7 +809,7 @@ public class BotUtils extends Plugin
 		}
 	}
 
-	public List<WidgetItem> getItems(Set<Integer> ids)
+	public List<WidgetItem> getItems(Collection<Integer> ids)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		List<WidgetItem> matchedItems = new ArrayList<>();
@@ -1005,7 +1003,7 @@ public class BotUtils extends Plugin
 		return item != null && item.getQuantity() >= minStackAmount;
 	}
 
-	public boolean inventoryContains(Set<Integer> itemIds)
+	public boolean inventoryContains(Collection<Integer> itemIds)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
 		{
@@ -1049,7 +1047,7 @@ public class BotUtils extends Plugin
 		return false;
 	}
 
-	public void dropItems(Set<Integer> ids, int minDelayBetween, int maxDelayBetween)
+	public void dropItems(Collection<Integer> ids, int minDelayBetween, int maxDelayBetween)
 	{
 		if (isBankOpen() || isDepositBoxOpen())
 		{
@@ -1082,7 +1080,7 @@ public class BotUtils extends Plugin
 		});
 	}
 
-	public void dropAllExcept(Set<Integer> ids, int minDelayBetween, int maxDelayBetween)
+	public void dropAllExcept(Collection<Integer> ids, int minDelayBetween, int maxDelayBetween)
 	{
 		if (isBankOpen() || isDepositBoxOpen())
 		{
@@ -1200,7 +1198,7 @@ public class BotUtils extends Plugin
 		return false;
 	}
 
-	public boolean bankContainsAnyOf(Set<Integer> ids)
+	public boolean bankContainsAnyOf(Collection<Integer> ids)
 	{
 		if (isBankOpen())
 		{
@@ -1285,7 +1283,7 @@ public class BotUtils extends Plugin
 		}
 	}
 
-	public Widget getBankItemWidgetAnyOf(Set<Integer> ids)
+	public Widget getBankItemWidgetAnyOf(Collection<Integer> ids)
 	{
 		if (!isBankOpen())
 		{

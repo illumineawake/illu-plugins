@@ -23,10 +23,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.3.0"
+version = "1.0.0"
 
-project.extra["PluginName"] = "Smoke Runecrafter Plugin"
-project.extra["PluginDescription"] = "Illumine - Smoke Runecrafting plugin"
+project.extra["PluginName"] = "Combination Runecrafter Plugin"
+project.extra["PluginDescription"] = "Illumine - Combination Runecrafting plugin"
 
 dependencies {
     compileOnly(project(":botutils"))

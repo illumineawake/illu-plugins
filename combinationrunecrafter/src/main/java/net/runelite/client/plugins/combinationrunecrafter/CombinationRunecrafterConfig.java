@@ -23,7 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.smokerunecrafter;
+package net.runelite.client.plugins.combinationrunecrafter;
 
 import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
@@ -34,8 +34,8 @@ import net.runelite.client.config.ConfigTitleSection;
 import net.runelite.client.config.Range;
 import net.runelite.client.config.Title;
 
-@ConfigGroup("SmokeRuneCrafter")
-public interface SmokeRuneCrafterConfig extends Config
+@ConfigGroup("CombinationRunecrafter")
+public interface CombinationRunecrafterConfig extends Config
 {
 
 	@ConfigSection(
@@ -224,16 +224,28 @@ public interface SmokeRuneCrafterConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "instructions",
+		keyName = "instruction",
 		name = "",
 		description = "Instructions. Don't enter anything into this field",
 		position = 20,
 		titleSection = "instructionsTitle"
 	)
-	default String instructions()
+	default String instruction()
 	{
-		return "Must have a Fire Tiara equipped. Requires Ring of Dueling, Air Talisman, Air Runes, Pure Essence. " +
+		return "Creates Lava, Steam or Smoke runes at Castle Wars/Fire Altar. Must have a Fire Tiara equipped. Requires Ring of Dueling, Talismans, Runes, Pure or Daeyalt Essence. " +
 			"Stops and logs out (if enabled) when out of these materials. Does NOT support pouches or Magic Imbue currently.";
+	}
+
+	@ConfigItem(
+		keyName = "getRunecraftingType",
+		name = "Rune Type",
+		description = "Choose your essence type",
+		position = 24
+	)
+
+	default RunecraftingTypes getRunecraftingType()
+	{
+		return RunecraftingTypes.SMOKE_RUNES;
 	}
 
 	@ConfigItem(
