@@ -3,9 +3,14 @@ package net.runelite.client.plugins.powerskiller;
 public enum PowerSkillerState
 {
 	ANIMATING,
+	BANK_NOT_FOUND,
+	DEPOSIT_ALL,
+	DEPOSIT_EXCEPT,
+	DEPOSIT_ITEMS,
 	DROP_ALL,
 	DROP_EXCEPT,
 	DROP_ITEMS,
+	FIND_BANK,
 	FIND_GAME_OBJECT,
 	FIND_NPC,
 	INVALID_DROP_IDS,

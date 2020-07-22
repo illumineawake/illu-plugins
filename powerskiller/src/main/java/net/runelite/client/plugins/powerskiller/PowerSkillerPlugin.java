@@ -257,6 +257,44 @@ public class PowerSkillerPlugin extends Plugin
 		}
 	}
 
+	private PowerSkillerState getBankState()
+	{
+		if (!utils.isBankOpen())
+		{
+			return FIND_BANK;
+		}
+		if(config.dropInventory() && !utils.inventoryEmpty())
+		{
+			return DEPOSIT_ALL;
+		}
+		if(config.dropExcept())
+		{
+			return DEPOSIT_EXCEPT;
+		}
+		if(utils.inventoryContains(itemIds))
+		{
+			return DEPOSIT_ITEMS;
+		}
+		return BANK_NOT_FOUND;
+	}
+
+	private void openBank()
+	{
+		GameObject bank = utils.findNearestBank();
+		if (bank != null)
+		{
+			targetMenu = new MenuEntry("", "", bank.getId(),
+				MenuOpcode.GAME_OBJECT_SECOND_OPTION.getId(), bank.getSceneMinLocation().getX(),
+				bank.getSceneMinLocation().getY(), false);
+			handleMouseClick();
+		}
+		else
+		{
+			utils.sendGameMessage("Bank not found, stopping");
+			startPowerSkiller = false;
+		}
+	}
+
 	public PowerSkillerState getState()
 	{
 		if (timeout > 0)
@@ -271,8 +309,17 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			return MISSING_ITEMS;
 		}
+		if (utils.isMoving(beforeLoc))
+		{
+			timeout = 2 + tickDelay();
+			return MOVING;
+		}
 		if (utils.inventoryFull())
 		{
+			if(config.bankItems())
+			{
+				return getBankState();
+			}
 			if (config.dropInventory())
 			{
 				return DROP_ALL;
@@ -286,11 +333,6 @@ public class PowerSkillerPlugin extends Plugin
 				return DROP_EXCEPT;
 			}
 			return (!utils.inventoryContains(itemIds)) ? INVALID_DROP_IDS : DROP_ITEMS;
-		}
-		if (utils.isMoving(beforeLoc))
-		{
-			timeout = 2 + tickDelay();
-			return MOVING;
 		}
 		if (client.getLocalPlayer().getAnimation() == -1 || npcMoved)
 		{
@@ -330,6 +372,18 @@ public class PowerSkillerPlugin extends Plugin
 					interactNPC();
 					npcMoved = false;
 					return;
+				case FIND_BANK:
+					openBank();
+					break;
+				case DEPOSIT_ALL:
+					utils.depositAll();
+					break;
+				case DEPOSIT_EXCEPT:
+					utils.depositAllExcept(requiredIds);
+					break;
+				case DEPOSIT_ITEMS:
+					utils.depositAllOfItems(itemIds);
+					break;
 				case ANIMATING:
 					timeout = tickDelay();
 					return;

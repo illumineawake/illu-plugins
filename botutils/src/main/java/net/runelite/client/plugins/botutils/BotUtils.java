@@ -405,7 +405,7 @@ public class BotUtils extends Plugin
 	}
 
 	@Nullable
-	public GameObject findNearestBank(Collection<Integer> bankIDs)
+	public GameObject findNearestBank()
 	{
 		assert client.isClientThread();
 
@@ -932,6 +932,30 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
+	public MenuEntry getInventoryItemMenu(ItemManager itemManager, String menuOption, int opcode, Collection<Integer> ignoreIDs)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				if (ignoreIDs.contains(item.getId()))
+					continue;
+				String[] menuActions = itemManager.getItemDefinition(item.getId()).getInventoryActions();
+				for (String action : menuActions)
+				{
+					if (action != null && action.equals(menuOption))
+					{
+						MenuEntry menuEntry = new MenuEntry("", "", item.getId(), opcode, item.getIndex(), 9764864, false);
+						return menuEntry;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	public WidgetItem getInventoryWidgetItemMenu(ItemManager itemManager, String menuOption, int opcode)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -1390,6 +1414,40 @@ public class BotUtils extends Plugin
 		}
 		targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), item.getIndex(), 983043, false);
 		clickRandomPointCenter(-100, 100);
+	}
+
+	public void depositAllOfItems(Collection<Integer> itemIDs)
+	{
+		if (!isBankOpen())
+		{
+			return;
+		}
+		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
+		List<Integer> depositedItems = new ArrayList<>();
+		executorService.submit(() ->
+		{
+			try
+			{
+				iterating = true;
+				for (WidgetItem item : inventoryItems)
+				{
+					if (itemIDs.contains(item.getId()) && !depositedItems.contains(item.getId())) //6512 is empty widget slot
+					{
+						log.info("depositing item: " + item.getId());
+						depositAllOfItem(item);
+						sleep(80, 170);
+						depositedItems.add(item.getId());
+					}
+				}
+				iterating = false;
+				depositedItems.clear();
+			}
+			catch (Exception e)
+			{
+				iterating = false;
+				e.printStackTrace();
+			}
+		});
 	}
 
 	public void withdrawAllItem(Widget bankItemWidget)

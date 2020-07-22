@@ -272,8 +272,19 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
+		keyName = "bankItems",
+		name = "Bank gathered items (Beta)",
+		description = "Enable to bank your items instead of drop",
+		position = 89
+	)
+	default boolean bankItems()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "dropInventory",
-		name = "Drop entire inventory",
+		name = "Drop/Bank entire inventory",
 		description = "Enable to drop your entire inventory",
 		position = 90
 	)
@@ -296,8 +307,8 @@ public interface PowerSkillerConfiguration extends Config
 
 	@ConfigItem(
 		keyName = "items",
-		name = "Item IDs to drop/not drop",
-		description = "Separate with comma, enable below option to not drop these IDs.",
+		name = "Item IDs to drop/not drop or Bank",
+		description = "Separate with comma, enable below option to not drop/bank these IDs.",
 		position = 110,
 		hide = "dropInventory"
 	)
@@ -308,8 +319,8 @@ public interface PowerSkillerConfiguration extends Config
 
 	@ConfigItem(
 		keyName = "dropExcept",
-		name = "Drop all except above IDs",
-		description = "Enable to drop all items except the given IDs",
+		name = "Drop/Bank all except above IDs",
+		description = "Enable to drop/Bank all items except the given IDs",
 		position = 120,
 		hide = "dropInventory"
 	)
