@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.8.1"
+version = "1.9.0"
 
 project.extra["PluginName"] = "Quick Eater"
 project.extra["PluginDescription"] = "Illumine - auto eat food below configured HP"

@@ -31,11 +31,14 @@ import java.util.Set;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
+import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.TileObject;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.queries.GameObjectQuery;
@@ -79,9 +82,13 @@ public class QuickEaterPlugin extends Plugin
 	private ItemManager itemManager;
 
 	MenuEntry targetMenu;
+	Player player;
 
 	private Set<Integer> DRINK_SET = Set.of(ItemID.JUG_OF_WINE, ItemID.SARADOMIN_BREW1, ItemID.SARADOMIN_BREW2,
 		ItemID.SARADOMIN_BREW3, ItemID.SARADOMIN_BREW4);
+
+	private int timeout;
+	private int drinkEnergy;
 
 	@Provides
 	QuickEaterConfiguration provideConfig(ConfigManager configManager)
@@ -99,6 +106,32 @@ public class QuickEaterPlugin extends Plugin
 	protected void shutDown()
 	{
 
+	}
+
+	@Subscribe
+	private void onGameTick(GameTick event)
+	{
+		if (!config.drinkStamina())
+		{
+			return;
+		}
+		player = client.getLocalPlayer();
+		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
+		{
+			if (timeout > 0)
+			{
+				timeout--;
+				return;
+			}
+			if (drinkEnergy == 0)
+			{
+				drinkEnergy = utils.getRandomIntBetweenRange(config.maxDrinkEnergy() - config.randEnergy(), config.maxDrinkEnergy());
+			}
+			if (client.getEnergy() < drinkEnergy)
+			{
+				utils.drinkStamPot();
+			}
+		}
 	}
 
 

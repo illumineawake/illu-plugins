@@ -755,14 +755,8 @@ public class BotUtils extends Plugin
 		if (client.getEnergy() > (minEnergy + getRandomIntBetweenRange(0, randMax)) ||
 			client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) != 0)
 		{
-
-			WidgetItem staminaPotion = shouldStamPot();
-			if (staminaPotion != null)
+			if (drinkStamPot())
 			{
-				log.info("using stamina potion");
-				targetMenu = new MenuEntry("", "", staminaPotion.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), staminaPotion.getIndex(), 9764864, false);
-				clickRandomPointCenter(-100, 100);
-				sleep(10, 50);
 				return;
 			}
 			if (!isRunEnabled())
@@ -791,6 +785,19 @@ public class BotUtils extends Plugin
 		{
 			return null;
 		}
+	}
+
+	public boolean drinkStamPot()
+	{
+		WidgetItem staminaPotion = shouldStamPot();
+		if (staminaPotion != null)
+		{
+			log.info("using stamina potion");
+			targetMenu = new MenuEntry("", "", staminaPotion.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), staminaPotion.getIndex(), 9764864, false);
+			clickRandomPointCenter(-100, 100);
+			return true;
+		}
+		return false;
 	}
 
 	public void logout()

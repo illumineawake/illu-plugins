@@ -40,4 +40,33 @@ public interface QuickEaterConfiguration extends Config
 		position = 0
 	)
 	default int eatHP()	{ return 10; }
+
+	@ConfigItem(
+		keyName = "drinkStamina",
+		name = "Drink Stamina Potions",
+		description = "Enable to drink Stamina Potions below given energy level",
+		position = 1
+	)
+	default boolean drinkStamina() { return false; }
+
+	@ConfigItem(
+		keyName = "maxDrinkEnergy",
+		name = "Drink stamina below energy",
+		description = "This is the maximum energy amount",
+		position = 2,
+		hidden = true,
+		unhide = "drinkStamina"
+	)
+	default int maxDrinkEnergy() { return 60; }
+
+	@ConfigItem(
+		keyName = "randEnergy",
+		name = "random variation for drink energy (subtracted from max)",
+		description = "A random value that is subtracted from max drink energy. E.g. a random value of '20' with a max drink energy of 60 would " +
+			"cause stamina pot to be drunk at a random value between 40 and 60",
+		position = 3,
+		hidden = true,
+		unhide = "drinkStamina"
+	)
+	default int randEnergy() { return 20; }
 }
