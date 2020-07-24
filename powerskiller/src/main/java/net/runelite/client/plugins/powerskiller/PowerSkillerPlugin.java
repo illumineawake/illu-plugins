@@ -37,10 +37,12 @@ import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
+import net.runelite.api.NullObjectID;
 import net.runelite.api.Player;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.GameObjectDespawned;
@@ -101,15 +103,16 @@ public class PowerSkillerPlugin extends Plugin
 	Instant botTimer;
 	LocalPoint beforeLoc;
 	Player player;
+	WorldArea DENSE_ESSENCE_AREA = new WorldArea(new WorldPoint(1754, 3845, 0), new WorldPoint(1770, 3862, 0));
 	private ExecutorService executorService;
 
 	int timeout = 0;
 	long sleepLength;
 	boolean startPowerSkiller;
 	boolean npcMoved;
-	private Set<Integer> itemIds = new HashSet<>();
-	private Set<Integer> objectIds = new HashSet<>();
-	private Set<Integer> requiredIds = new HashSet<>();
+	private final Set<Integer> itemIds = new HashSet<>();
+	private final Set<Integer> objectIds = new HashSet<>();
+	private final Set<Integer> requiredIds = new HashSet<>();
 
 
 	@Provides
@@ -157,9 +160,11 @@ public class PowerSkillerPlugin extends Plugin
 				objectIds.addAll(utils.stringToIntList(config.objectIds()));
 				break;
 			case "requiredItems":
+				log.info("config changed");
 				requiredIds.clear();
 				if (!config.requiredItems().equals("0") && !config.requiredItems().equals(""))
 				{
+					log.info("adding required Ids: {}", config.requiredItems());
 					requiredIds.addAll(utils.stringToIntList(config.requiredItems()));
 				}
 				break;
@@ -242,9 +247,25 @@ public class PowerSkillerPlugin extends Plugin
 		}
 	}
 
+	private GameObject getDenseEssence()
+	{
+		assert client.isClientThread();
+
+		if (client.getVarbitValue(4927) == 0)
+		{
+			return utils.findNearestGameObject(NullObjectID.NULL_8981);
+		}
+		if (client.getVarbitValue(4928) == 0)
+		{
+			return utils.findNearestGameObject(NullObjectID.NULL_10796);
+		}
+		return null;
+	}
+
 	private void interactObject()
 	{
-		targetObject = utils.findNearestGameObjectWithin(skillLocation, config.locationRadius(), objectIds);
+		targetObject = (config.type() == PowerSkillerType.DENSE_ESSENCE) ? getDenseEssence() :
+			utils.findNearestGameObjectWithin(skillLocation, config.locationRadius(), objectIds);
 		if (targetObject != null)
 		{
 			targetMenu = new MenuEntry("", "", targetObject.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
@@ -259,19 +280,23 @@ public class PowerSkillerPlugin extends Plugin
 
 	private PowerSkillerState getBankState()
 	{
-		if (!utils.isBankOpen())
+		if (!utils.isBankOpen() && !utils.isDepositBoxOpen())
 		{
 			return FIND_BANK;
 		}
-		if(config.dropInventory() && !utils.inventoryEmpty())
+		if (config.dropInventory() && !utils.inventoryEmpty())
 		{
 			return DEPOSIT_ALL;
 		}
-		if(config.dropExcept())
+		if (config.dropExcept())
 		{
+			if (!requiredIds.containsAll(itemIds) && !itemIds.contains(0))
+			{
+				requiredIds.addAll(itemIds);
+			}
 			return DEPOSIT_EXCEPT;
 		}
-		if(utils.inventoryContains(itemIds))
+		if (utils.inventoryContains(itemIds))
 		{
 			return DEPOSIT_ITEMS;
 		}
@@ -284,7 +309,7 @@ public class PowerSkillerPlugin extends Plugin
 		if (bank != null)
 		{
 			targetMenu = new MenuEntry("", "", bank.getId(),
-				MenuOpcode.GAME_OBJECT_SECOND_OPTION.getId(), bank.getSceneMinLocation().getX(),
+				utils.getBankMenuOpcode(bank.getId()), bank.getSceneMinLocation().getX(),
 				bank.getSceneMinLocation().getY(), false);
 			handleMouseClick();
 		}
@@ -305,7 +330,8 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			return ITERATING;
 		}
-		if (!config.dropInventory() && !requiredIds.isEmpty() && !utils.inventoryContainsAllOf(requiredIds))
+		if (!config.dropInventory() && !requiredIds.isEmpty() && !utils.inventoryContainsAllOf(requiredIds) &&
+			config.type() != PowerSkillerType.DENSE_ESSENCE)
 		{
 			return MISSING_ITEMS;
 		}
@@ -316,7 +342,11 @@ public class PowerSkillerPlugin extends Plugin
 		}
 		if (utils.inventoryFull())
 		{
-			if(config.bankItems())
+			if (config.type() == PowerSkillerType.DENSE_ESSENCE)
+			{
+				return WAIT_DENSE_ESSENCE;
+			}
+			if (config.bankItems())
 			{
 				return getBankState();
 			}
@@ -336,6 +366,11 @@ public class PowerSkillerPlugin extends Plugin
 		}
 		if (client.getLocalPlayer().getAnimation() == -1 || npcMoved)
 		{
+			if (config.type() == PowerSkillerType.DENSE_ESSENCE)
+			{
+				return (DENSE_ESSENCE_AREA.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) ?
+					FIND_GAME_OBJECT: WAIT_DENSE_ESSENCE;
+			}
 			return (config.type() == PowerSkillerType.GAME_OBJECT) ?
 				FIND_GAME_OBJECT : FIND_NPC;
 		}

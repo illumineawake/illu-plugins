@@ -62,7 +62,7 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import static net.runelite.client.plugins.botutils.Banks.BANK_SET;
+import static net.runelite.client.plugins.botutils.Banks.ALL_BANKS;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
@@ -415,7 +415,7 @@ public class BotUtils extends Plugin
 		}
 
 		return new GameObjectQuery()
-			.idEquals(BANK_SET)
+			.idEquals(ALL_BANKS)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}
@@ -1216,6 +1216,12 @@ public class BotUtils extends Plugin
 		clickRandomPointCenter(-100, 100);
 	}
 
+	public int getBankMenuOpcode(int bankID)
+	{
+		return Banks.BANK_CHECK_BOX.contains(bankID) ? MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId() :
+			MenuOpcode.GAME_OBJECT_SECOND_OPTION.getId();
+	}
+
 	//doesn't NPE
 	public boolean bankContains(String itemName)
 	{
@@ -1333,7 +1339,7 @@ public class BotUtils extends Plugin
 
 	public Widget getBankItemWidgetAnyOf(Collection<Integer> ids)
 	{
-		if (!isBankOpen())
+		if (!isBankOpen() && !isDepositBoxOpen())
 		{
 			return null;
 		}
@@ -1370,7 +1376,7 @@ public class BotUtils extends Plugin
 
 	public void depositAllExcept(Collection<Integer> ids)
 	{
-		if (!isBankOpen())
+		if (!isBankOpen() && !isDepositBoxOpen())
 		{
 			return;
 		}
@@ -1386,7 +1392,7 @@ public class BotUtils extends Plugin
 					if (!ids.contains(item.getId()) && item.getId() != 6512 && !depositedItems.contains(item.getId())) //6512 is empty widget slot
 					{
 						log.info("depositing item: " + item.getId());
-						depositAllOfItem(item);
+						depositAllOfItem(item.getId());
 						sleep(80, 170);
 						depositedItems.add(item.getId());
 					}
@@ -1402,30 +1408,34 @@ public class BotUtils extends Plugin
 		});
 	}
 
-	public void depositAllOfItem(WidgetItem itemWidget)
+	/*public void depositAllOfItem(WidgetItem itemWidget)
 	{
-		if (!isBankOpen())
+		if (!isBankOpen() && !isDepositBoxOpen())
 		{
 			return;
 		}
-		targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), itemWidget.getIndex(), 983043, false);
+		boolean depositBox = isDepositBoxOpen();
+		targetMenu = new MenuEntry("", "", (depositBox) ? 1 : 2, MenuOpcode.CC_OP.getId(), itemWidget.getIndex(),
+			(depositBox) ? 12582914 : 983043, false);
 		clickRandomPointCenter(-100, 100);
-	}
+	}*/
 
 	public void depositAllOfItem(int itemID)
 	{
 		WidgetItem item = getInventoryWidgetItem(itemID);
-		if (!isBankOpen())
+		if (!isBankOpen() && !isDepositBoxOpen())
 		{
 			return;
 		}
-		targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), item.getIndex(), 983043, false);
+		boolean depositBox = isDepositBoxOpen();
+		targetMenu = new MenuEntry("", "", (depositBox) ? 1 : 2, MenuOpcode.CC_OP.getId(), item.getIndex(),
+			(depositBox) ? 12582914 : 983043, false);
 		clickRandomPointCenter(-100, 100);
 	}
 
 	public void depositAllOfItems(Collection<Integer> itemIDs)
 	{
-		if (!isBankOpen())
+		if (!isBankOpen() && !isDepositBoxOpen())
 		{
 			return;
 		}
@@ -1441,7 +1451,7 @@ public class BotUtils extends Plugin
 					if (itemIDs.contains(item.getId()) && !depositedItems.contains(item.getId())) //6512 is empty widget slot
 					{
 						log.info("depositing item: " + item.getId());
-						depositAllOfItem(item);
+						depositAllOfItem(item.getId());
 						sleep(80, 170);
 						depositedItems.add(item.getId());
 					}

@@ -241,7 +241,7 @@ public class MagicSplasherPlugin extends Plugin
 				break;
 			case "High Alchemy":
 				targetMenu = new MenuEntry("Cast", "", targetItem.getId(), MenuOpcode.ITEM_USE_ON_WIDGET.getId(), targetItem.getIndex(), 9764864, true);
-				timeout = 3 + tickDelay();
+				timeout = 5 + tickDelay();
 				break;
 		}
 		handleMouseClick();
