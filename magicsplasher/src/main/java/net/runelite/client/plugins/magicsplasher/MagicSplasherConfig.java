@@ -27,6 +27,7 @@ package net.runelite.client.plugins.magicsplasher;
 
 import java.time.Instant;
 import java.util.function.Consumer;
+import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -262,27 +263,8 @@ public interface MagicSplasherConfig extends Config
 		description = "Start or stop the bot",
 		position = 18
 	)
-	default Consumer<MagicSplasherPlugin> testButton()
+	default Button startButton()
 	{
-		return (plugin) ->
-		{
-			if (plugin.pluginManager.isPluginEnabled(plugin))
-			{
-				if (!plugin.startSplasher)
-				{
-					plugin.startSplasher = true;
-					plugin.botTimer = Instant.now();
-					plugin.initVals();
-				} else
-				{
-					plugin.resetVals();
-				}
-			}
-			else
-			{
-				plugin.startSplasher = false;
-				plugin.resetVals();
-			}
-		};
+		return null;
 	}
 }

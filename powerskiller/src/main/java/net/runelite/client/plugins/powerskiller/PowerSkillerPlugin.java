@@ -28,6 +28,7 @@ package net.runelite.client.plugins.powerskiller;
 import com.google.inject.Provides;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,6 +45,7 @@ import net.runelite.api.MenuOpcode;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.MenuOptionClicked;
@@ -125,16 +127,15 @@ public class PowerSkillerPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		executorService = Executors.newSingleThreadExecutor();
-		getConfigValues();
-		overlayManager.add(overlay);
+
 	}
 
 	@Override
 	protected void shutDown()
 	{
 		overlayManager.remove(overlay);
-		executorService.shutdown();
+		if (executorService != null)
+			executorService.shutdown();
 		state = null;
 		timeout = 0;
 		botTimer = null;
@@ -144,6 +145,36 @@ public class PowerSkillerPlugin extends Plugin
 		objectIds.clear();
 		requiredIds.clear();
 		itemIds.clear();
+	}
+
+	@Subscribe
+	private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked)
+	{
+		if (!configButtonClicked.getGroup().equalsIgnoreCase("PowerSkiller"))
+		{
+			return;
+		}
+		log.info("button {} pressed!", configButtonClicked.getKey());
+		switch (configButtonClicked.getKey())
+		{
+			case "startButton":
+				if (!startPowerSkiller)
+				{
+					startPowerSkiller = true;
+					state = null;
+					targetMenu = null;
+					botTimer = Instant.now();
+					executorService = Executors.newSingleThreadExecutor();
+					setLocation();
+					getConfigValues();
+					overlayManager.add(overlay);
+				}
+				else
+				{
+					shutDown();
+				}
+				break;
+		}
 	}
 
 	@Subscribe

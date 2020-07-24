@@ -27,6 +27,7 @@ package net.runelite.client.plugins.magicsplasher;
 
 import com.google.inject.Provides;
 import java.time.Instant;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
@@ -42,6 +43,7 @@ import net.runelite.api.Player;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.queries.NPCQuery;
@@ -113,27 +115,14 @@ public class MagicSplasherPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		initVals();
+
 	}
 
 	@Override
 	protected void shutDown()
 	{
-		resetVals();
-	}
-
-	public void initVals()
-	{
-		executorService = Executors.newSingleThreadExecutor();
-		overlayManager.add(overlay);
-		selectedSpell = config.getSpells();
-		npcID = config.npcID();
-		itemID = config.itemID();
-	}
-
-	public void resetVals()
-	{
-		executorService.shutdown();
+		if (executorService != null)
+			executorService.shutdown();
 		overlayManager.remove(overlay);
 		startSplasher = false;
 		selectedSpell = null;
@@ -148,6 +137,48 @@ public class MagicSplasherPlugin extends Plugin
 	MagicSplasherConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(MagicSplasherConfig.class);
+	}
+
+	@Subscribe
+	private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked)
+	{
+		if (!configButtonClicked.getGroup().equalsIgnoreCase("MagicSplasher"))
+		{
+			return;
+		}
+		log.info("button {} pressed!", configButtonClicked.getKey());
+		switch (configButtonClicked.getKey())
+		{
+			case "startButton":
+				if (!startSplasher)
+				{
+					startSplasher = true;
+					botTimer = Instant.now();
+					state = null;
+					targetMenu = null;
+					executorService = Executors.newSingleThreadExecutor();
+					botTimer = Instant.now();
+					initVals();
+					overlayManager.add(overlay);
+				}
+				else
+				{
+					shutDown();
+				}
+				break;
+		}
+	}
+
+	public void initVals()
+	{
+		selectedSpell = config.getSpells();
+		npcID = config.npcID();
+		itemID = config.itemID();
+	}
+
+	public void resetVals()
+	{
+
 	}
 
 	@Subscribe

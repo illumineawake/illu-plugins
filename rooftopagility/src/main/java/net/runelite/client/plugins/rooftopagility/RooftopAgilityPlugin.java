@@ -51,6 +51,7 @@ import net.runelite.api.GroundObject;
 import net.runelite.api.GameState;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
@@ -138,22 +139,14 @@ public class RooftopAgilityPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		executorService = Executors.newSingleThreadExecutor();
-		botTimer = Instant.now();
-		overlayManager.add(overlay);
-		restockBank = config.bankRestock();
-		inventoryItems.addAll(Set.of(ItemID.NATURE_RUNE, ItemID.MARK_OF_GRACE));
-		if (config.alchItemID() != 0)
-		{
-			inventoryItems.addAll(Set.of(config.alchItemID(), (config.alchItemID() + 1)));
-		}
-		log.debug("Inventory items: {}", inventoryItems.toString());
+
 	}
 
 	@Override
 	protected void shutDown()
 	{
-		executorService.shutdown();
+		if (executorService != null)
+			executorService.shutdown();
 		overlayManager.remove(overlay);
 		markOfGraceTile = null;
 		markOfGrace = null;
@@ -174,9 +167,43 @@ public class RooftopAgilityPlugin extends Plugin
 	}
 
 	@Subscribe
+	private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked)
+	{
+		if (!configButtonClicked.getGroup().equalsIgnoreCase("RooftopAgility"))
+		{
+			return;
+		}
+		log.info("button {} pressed!", configButtonClicked.getKey());
+		switch (configButtonClicked.getKey())
+		{
+			case "startButton":
+				if (!startAgility)
+				{
+					startAgility = true;
+					state = null;
+					targetMenu = null;
+					executorService = Executors.newSingleThreadExecutor();
+					botTimer = Instant.now();
+					restockBank = config.bankRestock();
+					inventoryItems.addAll(Set.of(ItemID.NATURE_RUNE, ItemID.MARK_OF_GRACE));
+					if (config.alchItemID() != 0)
+					{
+						inventoryItems.addAll(Set.of(config.alchItemID(), (config.alchItemID() + 1)));
+					}
+					overlayManager.add(overlay);
+				}
+				else
+				{
+					shutDown();
+				}
+				break;
+		}
+	}
+
+	@Subscribe
 	private void onConfigChanged(ConfigChanged event)
 	{
-		if (event.getGroup() == "RooftopAgility")
+		if (event.getGroup().equals("RooftopAgility"))
 		{
 			switch (event.getKey())
 			{

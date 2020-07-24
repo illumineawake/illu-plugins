@@ -27,6 +27,7 @@ package net.runelite.client.plugins.rooftopagility;
 
 import java.time.Instant;
 import java.util.function.Consumer;
+import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -341,19 +342,8 @@ public interface RooftopAgilityConfig extends Config
 		position = 30,
 		titleSection = "agilityTitle"
 	)
-	default Consumer<RooftopAgilityPlugin> startButton()
+	default Button startButton()
 	{
-		return (plugin) ->
-		{
-			if (plugin.pluginManager.isPluginEnabled(plugin))
-			{
-				plugin.startAgility = !plugin.startAgility;
-				plugin.botTimer = plugin.startAgility ? Instant.now() : null;
-			}
-			else
-			{
-				plugin.startAgility = false;
-			}
-		};
+		return null;
 	}
 }

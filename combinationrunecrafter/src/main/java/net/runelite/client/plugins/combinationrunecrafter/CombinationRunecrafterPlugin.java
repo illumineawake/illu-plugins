@@ -163,7 +163,12 @@ public class CombinationRunecrafterPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
+		log.info("stopping Combination Runecrafting plugin");
 		startBot = false;
+		botTimer = null;
+		if (executorService != null)
+			executorService.shutdown();
+		overlayManager.remove(overlay);
 	}
 
 	@Subscribe
@@ -179,8 +184,8 @@ public class CombinationRunecrafterPlugin extends Plugin
 			case "startButton":
 				if (!startBot)
 				{
-					log.info("starting Combination Runecrafting plugin");
 					startBot = true;
+					botTimer = Instant.now();
 					initCounters();
 					state = null;
 					necklaceState = null;
@@ -198,11 +203,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 				}
 				else
 				{
-					log.info("stopping Combination Runecrafting plugin");
-					startBot = false;
-					botTimer = null;
-					executorService.shutdown();
-					overlayManager.remove(overlay);
+					shutDown();
 				}
 				break;
 		}

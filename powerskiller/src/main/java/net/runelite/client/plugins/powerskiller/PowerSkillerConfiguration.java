@@ -27,6 +27,7 @@ package net.runelite.client.plugins.powerskiller;
 
 import java.time.Instant;
 import java.util.function.Consumer;
+import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -361,20 +362,8 @@ public interface PowerSkillerConfiguration extends Config
 		description = "Test button that changes variable value",
 		position = 150
 	)
-	default Consumer<PowerSkillerPlugin> startButton()
+	default Button startButton()
 	{
-		return (plugin) ->
-		{
-			if (plugin.pluginManager.isPluginEnabled(plugin))
-			{
-				plugin.startPowerSkiller = !plugin.startPowerSkiller;
-				plugin.botTimer = (plugin.startPowerSkiller) ? Instant.now() : null;
-				plugin.setLocation();
-			}
-			else
-			{
-				plugin.startPowerSkiller = false;
-			}
-		};
+		return null;
 	}
 }
