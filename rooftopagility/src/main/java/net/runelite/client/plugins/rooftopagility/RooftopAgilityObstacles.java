@@ -25,6 +25,15 @@ public enum RooftopAgilityObstacles
 	DRAY_WALL_TWO(new WorldPoint(3082, 3256, 3), new WorldPoint(3089, 3262, 3), WALL_11630), //COULD CONFLICT WITH NEXT LINE
 	DRAY_GAP(new WorldPoint(3087, 3254, 3), new WorldPoint(3095, 3256, 3), GAP_11631),
 	DRAY_CRATE(new WorldPoint(3095, 3255, 3), new WorldPoint(3102, 3262, 3), CRATE_11632),
+	//ALKHARID
+	ALK_ROUGHWALL(new WorldPoint(3270, 3196, 0), new WorldPoint(3323, 3149, 0), ROUGH_WALL_11633, RooftopAgilityObstacleType.DECORATION),
+	ALK_TIGHTROPE(new WorldPoint(3270, 3192, 3), new WorldPoint(3278, 3178, 3), TIGHTROPE_14398, RooftopAgilityObstacleType.GROUND_OBJECT),
+	ALK_CABLE(new WorldPoint(3264, 3173, 3), new WorldPoint(3273, 3160, 3), CABLE),
+	ALK_ZIPLINE(new WorldPoint(3282, 3176, 3), new WorldPoint(3303, 3159, 3), ZIP_LINE_14403),
+	ALK_TROPICAL_TREE(new WorldPoint(3312, 3165, 1), new WorldPoint(3319, 3159, 1), TROPICAL_TREE_14404),
+	ALK_ROOF_TOP_BEAMS(new WorldPoint(3318, 3173, 2), new WorldPoint(3311, 3180, 2), ROOF_TOP_BEAMS, RooftopAgilityObstacleType.DECORATION),
+	ALK_TIGHTROPE_TWO(new WorldPoint(3318, 3180, 3), new WorldPoint(3310, 3186, 3), TIGHTROPE_14409, RooftopAgilityObstacleType.GROUND_OBJECT),
+	ALK_GAP(new WorldPoint(3306, 3185, 3), new WorldPoint(3297, 3194, 3), 39628, RooftopAgilityObstacleType.GROUND_OBJECT),// GAP_39628
 	//VARROCK
 	COURSE_GROUND(new WorldPoint(3184, 3386, 0), new WorldPoint(3258, 3428, 0), ROUGH_WALL_14412, RooftopAgilityObstacleType.DECORATION, ObjectID.BANK_BOOTH_10583),
 	ROOFTOP_ONE(new WorldPoint(3213, 3409, 3), new WorldPoint(3220, 3420, 3), CLOTHES_LINE),
@@ -75,6 +84,19 @@ public enum RooftopAgilityObstacles
 	POLL_ROOF_SIX(new WorldPoint(3355, 2980, 2), new WorldPoint(3366, 2986, 2), MONKEYBARS),
 	POLL_ROOF_SEVEN(new WorldPoint(3357, 2991, 2), new WorldPoint(3367, 2996, 2), TREE_14944),
 	POLL_ROOF_EIGHT(new WorldPoint(3356, 3000, 2), new WorldPoint(3363, 3005, 2), DRYING_LINE),
+	//Prifddinas
+	PRIF_LADDER(new WorldPoint(3238, 6111, 0), new WorldPoint(3275, 6100, 0), LADDER_36221),
+	PRIF_TIGHTROPE(new WorldPoint(3254, 6112, 2), new WorldPoint(3254, 6112, 2), TIGHTROPE_36225),//TIGHTROPE_36255
+	PRIF_CHIMNEY(new WorldPoint(3271, 6104, 2), new WorldPoint(3275, 6107, 2), CHIMNEY_36227),
+	PRIF_ROOFEDGE(new WorldPoint(3268, 6111, 2), new WorldPoint(3269, 6115, 2), ROOF_EDGE),
+	PRIF_DARK_HOLE(new WorldPoint(3268, 6116, 0), new WorldPoint(3270, 6119, 0), DARK_HOLE_36229),
+	PRIF_LADDER_TWO(new WorldPoint (2270, 3386, 0), new WorldPoint(2238, 3409, 0), LADDER_36231),
+	PRIF_ROPE_BRIDGE(new WorldPoint(2264, 3388, 2), new WorldPoint(2269, 3393, 2), ROPE_BRIDGE_36233),
+	PRIF_TIGHTROPE_TWO(new WorldPoint(2258, 3386, 2), new WorldPoint(2253, 3390, 2), TIGHTROPE_36234),
+	PRIF_ROPE_BRIDGE_TWO(new WorldPoint(2243, 3394, 2), new WorldPoint(2248, 3399, 2), ROPE_BRIDGE_36235),
+	PRIF_TIGHTROPE_THREE(new WorldPoint(2248, 3405, 2), new WorldPoint(2243, 3410, 2), TIGHTROPE_36236),
+	PRIF_TIGHTROPE_FOUR(new WorldPoint(2249, 3414, 2), new WorldPoint(2253, 3419, 2), TIGHTROPE_36237),
+	PRIF_DARKHOLE_TWO(new WorldPoint(2260, 3425, 0), new WorldPoint(2257, 3433, 0), DARK_HOLE_36238),
 	//Rellekka
 	RELL_GROUND(new WorldPoint(2612, 3654, 0), new WorldPoint(2672, 3687, 0), ROUGH_WALL_14946, RooftopAgilityObstacleType.DECORATION),
 	RELL_ROOF_ONE(new WorldPoint(2621, 3671, 3), new WorldPoint(2627, 3677, 3), GAP_14947),
