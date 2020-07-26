@@ -94,13 +94,16 @@ public class CombinationRunecrafterPlugin extends Plugin
 	@Inject
 	private CombinationRunecrafterOverlay overlay;
 
+	@Inject
+	ExecutorService executorService;
+
 	MenuEntry targetMenu;
 	Instant botTimer;
 	Player player;
 	CombinationRunecrafterState state;
 	CombinationRunecrafterState necklaceState;
 	CombinationRunecrafterState staminaState;
-	ExecutorService executorService;
+
 	LocalPoint beforeLoc = new LocalPoint(0, 0);
 	GameObject bankChest;
 	GameObject mysteriousRuins;
@@ -166,8 +169,6 @@ public class CombinationRunecrafterPlugin extends Plugin
 		log.info("stopping Combination Runecrafting plugin");
 		startBot = false;
 		botTimer = null;
-		if (executorService != null)
-			executorService.shutdown();
 		overlayManager.remove(overlay);
 	}
 
@@ -198,7 +199,6 @@ public class CombinationRunecrafterPlugin extends Plugin
 					REQUIRED_ITEMS = List.of(talismanID, materialRuneID, essenceTypeID);
 					updatePrices();
 					botTimer = Instant.now();
-					executorService = Executors.newSingleThreadExecutor();
 					overlayManager.add(overlay);
 				}
 				else
