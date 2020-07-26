@@ -51,15 +51,15 @@ public interface RooftopAgilityConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "Courses",
+		keyName = "Course",
 		name = "",
 		description = "Supported agility courses (don't enter anything into this field)",
 		position = 1,
 		titleSection = "courseTitle"
 	)
-	default String Courses()
+	default String Course()
 	{
-		return "Gnome, Draynor (banking), Varrock (banking), Canifis (banking), Falador (banking), Seers (banking), Pollnivneach, Rellekka, Ardougne (banking)";
+		return "Gnome, Draynor (banking), Al kharid, Varrock (banking), Canifis (banking), Falador (banking), Seers (banking), Pollnivneach, Prifddinas, Rellekka, Ardougne (banking)";
 	}
 
 	@ConfigSection(
