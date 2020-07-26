@@ -33,7 +33,7 @@ public enum RooftopAgilityObstacles
 	ALK_TROPICAL_TREE(new WorldPoint(3312, 3159, 1), new WorldPoint(3319, 3166, 1), TROPICAL_TREE_14404),
 	ALK_ROOF_TOP_BEAMS(new WorldPoint(3311, 3172, 2), new WorldPoint(3319, 3180, 2), ROOF_TOP_BEAMS, RooftopAgilityObstacleType.DECORATION),
 	ALK_TIGHTROPE_TWO(new WorldPoint(3311, 3180, 3), new WorldPoint(3319, 3187, 3), TIGHTROPE_14409, RooftopAgilityObstacleType.GROUND_OBJECT),
-	ALK_GAP(new WorldPoint(3296, 3184, 3), new WorldPoint(3306, 3194, 3), 39628, RooftopAgilityObstacleType.GROUND_OBJECT),// GAP_39628
+	ALK_GAP(new WorldPoint(3296, 3184, 3), new WorldPoint(3306, 3194, 3), GAP_14399),
 	//VARROCK
 	COURSE_GROUND(new WorldPoint(3184, 3386, 0), new WorldPoint(3258, 3428, 0), ROUGH_WALL_14412, RooftopAgilityObstacleType.DECORATION, ObjectID.BANK_BOOTH_10583),
 	ROOFTOP_ONE(new WorldPoint(3213, 3409, 3), new WorldPoint(3220, 3420, 3), CLOTHES_LINE),
@@ -91,7 +91,7 @@ public enum RooftopAgilityObstacles
 	PRIF_ROOFEDGE(new WorldPoint(3268, 6111, 2), new WorldPoint(3270, 6116, 2), ROOF_EDGE),
 	PRIF_DARK_HOLE(new WorldPoint(3267, 6115, 0), new WorldPoint(3271, 6119, 0), DARK_HOLE_36229),
 	PRIF_LADDER_TWO(new WorldPoint (2239, 3386, 0), new WorldPoint(2271, 3410, 0), LADDER_36231),
-	PRIF_ROPE_BRIDGE(new WorldPoint(2264, 3388, 2), new WorldPoint(2269, 3393, 2), ROPE_BRIDGE_36233),
+	PRIF_ROPE_BRIDGE(new WorldPoint(2264, 3388, 2), new WorldPoint(2270, 3394, 2), ROPE_BRIDGE_36233),
 	PRIF_TIGHTROPE_TWO(new WorldPoint(2252, 3386, 2), new WorldPoint(2258, 3391, 2), TIGHTROPE_36234),
 	PRIF_ROPE_BRIDGE_TWO(new WorldPoint(2242, 3393, 2), new WorldPoint(2248, 3399, 2), ROPE_BRIDGE_36235),
 	PRIF_TIGHTROPE_THREE(new WorldPoint(2243, 3405, 2), new WorldPoint(2249, 3411, 2), TIGHTROPE_36236),
