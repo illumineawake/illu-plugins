@@ -101,7 +101,6 @@ public class Banks
 		ObjectID.BANK_BOOTH_10357,
 		ObjectID.BANK_BOOTH_10517,
 		ObjectID.BANK_CHEST_10562,
-		ObjectID.BANK_BOOTH_10583,
 		ObjectID.BANK_BOOTH_10584,
 		ObjectID.BANK,
 		ObjectID.BANK_BOOTH_11338,
