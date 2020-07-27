@@ -330,6 +330,17 @@ public interface PowerSkillerConfiguration extends Config
 		return true;
 	}
 
+	@ConfigItem(
+			keyName = "dropOne",
+			name = "Get 1 Drop 1",
+			description = "Tick manipulation",
+			position = 121
+	)
+	default boolean dropOne()
+	{
+		return false;
+	}
+
 	@Range(
 		min = 1,
 		max = 60

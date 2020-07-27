@@ -853,26 +853,6 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
-	public List<WidgetItem> getItems(List<Integer> ids)
-	{
-		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
-		List<WidgetItem> matchedItems = new ArrayList<>();
-
-		if (inventoryWidget != null)
-		{
-			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
-			for (WidgetItem item : items)
-			{
-				if (ids.contains(item.getId()))
-				{
-					matchedItems.add(item);
-				}
-			}
-			return matchedItems;
-		}
-		return null;
-	}
-
 	public Collection<WidgetItem> getAllInventoryItems()
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -1095,7 +1075,7 @@ public class BotUtils extends Plugin
 		return false;
 	}
 
-	public void dropItems(Collection<Integer> ids, int minDelayBetween, int maxDelayBetween)
+	public void dropItems(Collection<Integer> ids, boolean dropAll, int minDelayBetween, int maxDelayBetween)
 	{
 		if (isBankOpen() || isDepositBoxOpen())
 		{
@@ -1116,6 +1096,8 @@ public class BotUtils extends Plugin
 						sleep(minDelayBetween, maxDelayBetween);
 						targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(), item.getIndex(), 9764864, false);
 						clickRandomPointCenter(-100, 100);
+						if (!dropAll)
+							break;
 					}
 				}
 				iterating = false;
@@ -1128,7 +1110,7 @@ public class BotUtils extends Plugin
 		});
 	}
 
-	public void dropAllExcept(Collection<Integer> ids, int minDelayBetween, int maxDelayBetween)
+	public void dropAllExcept(Collection<Integer> ids, boolean dropAll, int minDelayBetween, int maxDelayBetween)
 	{
 		if (isBankOpen() || isDepositBoxOpen())
 		{
@@ -1151,6 +1133,8 @@ public class BotUtils extends Plugin
 					sleep(minDelayBetween, maxDelayBetween);
 					targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(), item.getIndex(), 9764864, false);
 					clickRandomPointCenter(-100, 100);
+					if (!dropAll)
+					    break;
 				}
 				iterating = false;
 			}
@@ -1162,7 +1146,7 @@ public class BotUtils extends Plugin
 		});
 	}
 
-	public void dropInventory(int minDelayBetween, int maxDelayBetween)
+	public void dropInventory(boolean dropAll, int minDelayBetween, int maxDelayBetween)
 	{
 		if (isBankOpen() || isDepositBoxOpen())
 		{
@@ -1181,6 +1165,8 @@ public class BotUtils extends Plugin
 					sleep(minDelayBetween, maxDelayBetween);
 					targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(), item.getIndex(), 9764864, false);
 					clickRandomPointCenter(-100, 100);
+					if (!dropAll)
+					    break;
 				}
 				iterating = false;
 			}

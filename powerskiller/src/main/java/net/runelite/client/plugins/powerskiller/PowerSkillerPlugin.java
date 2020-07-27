@@ -45,11 +45,8 @@ import net.runelite.api.MenuOpcode;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.ConfigButtonClicked;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.GameObjectDespawned;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.NpcDefinitionChanged;
+import net.runelite.api.events.*;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -423,13 +420,13 @@ public class PowerSkillerPlugin extends Plugin
 					timeout--;
 					return;
 				case DROP_ALL:
-					utils.dropInventory(config.sleepMin(), config.sleepMax());
+					utils.dropInventory(true,config.sleepMin(), config.sleepMax());
 					return;
 				case DROP_EXCEPT:
-					utils.dropAllExcept(itemIds, config.sleepMin(), config.sleepMax());
+					utils.dropAllExcept(itemIds, true, config.sleepMin(), config.sleepMax());
 					return;
 				case DROP_ITEMS:
-					utils.dropItems(itemIds, config.sleepMin(), config.sleepMax());
+					utils.dropItems(itemIds, true, config.sleepMin(), config.sleepMax());
 					return;
 				case FIND_GAME_OBJECT:
 					interactObject();
@@ -522,6 +519,35 @@ public class PowerSkillerPlugin extends Plugin
 		else
 		{
 			npcMoved = true;
+		}
+	}
+
+	@Subscribe
+	private void onItemContainerChanged(ItemContainerChanged event)
+	{
+		if (event.getContainerId() != 93 || !startPowerSkiller || !config.dropOne())
+		{
+			return;
+		}
+		if (config.dropInventory())
+		{
+			utils.dropInventory(false, config.sleepMin(), config.sleepMax());
+			return;
+		}
+		if (config.dropExcept() && !config.dropInventory())
+		{
+			if (!itemIds.containsAll(requiredIds))
+			{
+				itemIds.addAll(requiredIds);
+			}
+			if (utils.inventoryContainsExcept(itemIds)) {
+				utils.dropAllExcept(itemIds, false, config.sleepMin(), config.sleepMax());
+			}
+			return;
+		}
+		if (utils.inventoryContains(itemIds))
+		{
+			utils.dropItems(itemIds, false, config.sleepMin(), config.sleepMax());
 		}
 	}
 }
