@@ -35,30 +35,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Player;
-import net.runelite.api.TileItem;
-import net.runelite.api.Tile;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.Client;
-import net.runelite.api.ItemID;
-import net.runelite.api.Skill;
-import net.runelite.api.MenuOpcode;
-import net.runelite.api.TileItemPile;
-import net.runelite.api.Varbits;
-import net.runelite.api.GameObject;
-import net.runelite.api.DecorativeObject;
-import net.runelite.api.GroundObject;
-import net.runelite.api.GameState;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.ConfigButtonClicked;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.ItemSpawned;
-import net.runelite.api.events.ItemDespawned;
-import net.runelite.api.queries.TileObjectQuery;
-import net.runelite.api.queries.TileQuery;
+import net.runelite.api.events.*;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -116,10 +96,12 @@ public class RooftopAgilityPlugin extends Plugin
 	MenuEntry targetMenu;
 	LocalPoint beforeLoc = new LocalPoint(0, 0); //initiate to mitigate npe
 	WidgetItem alchItem;
+	GameObject priffPortal;
 	Set<Integer> inventoryItems = new HashSet<>();
 	private ExecutorService executorService;
 
 	private final Set<Integer> REGION_IDS = Set.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878, 10547, 13105, 9012, 9013, 12895, 13151);
+	private final Set<Integer> PORTAL_IDS = Set.of(36241, 36242, 36243, 36244, 36245, 36246);
 	WorldPoint CAMELOT_TELE_LOC = new WorldPoint(2705, 3463, 0);
 	Set<Integer> AIR_STAFFS = Set.of(ItemID.STAFF_OF_AIR, ItemID.AIR_BATTLESTAFF, ItemID.DUST_BATTLESTAFF, ItemID.MIST_BATTLESTAFF,
 		ItemID.SMOKE_BATTLESTAFF, ItemID.MYSTIC_AIR_STAFF, ItemID.MYSTIC_DUST_STAFF, ItemID.MYSTIC_SMOKE_STAFF, ItemID.MYSTIC_MIST_STAFF);
@@ -390,7 +372,7 @@ public class RooftopAgilityPlugin extends Plugin
 				DecorativeObject decObstacle = utils.findNearestDecorObject(obstacle.getObstacleId());
 				if (decObstacle != null)
 				{
-					targetMenu = new MenuEntry("", "", decObstacle.getId(), 3, decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
+					targetMenu = new MenuEntry("", "", decObstacle.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
 					handleMouseClick();
 					return;
 				}
@@ -400,7 +382,7 @@ public class RooftopAgilityPlugin extends Plugin
 				GroundObject groundObstacle = utils.findNearestGroundObject(obstacle.getObstacleId());
 				if (groundObstacle != null)
 				{
-					targetMenu = new MenuEntry("", "", groundObstacle.getId(), 3, groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
+					targetMenu = new MenuEntry("", "", groundObstacle.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
 					handleMouseClick();
 					return;
 				}
@@ -408,7 +390,7 @@ public class RooftopAgilityPlugin extends Plugin
 			GameObject objObstacle = utils.findNearestGameObject(obstacle.getObstacleId());
 			if (objObstacle != null)
 			{
-				targetMenu = new MenuEntry("", "", objObstacle.getId(), 3, objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
+				targetMenu = new MenuEntry("", "", objObstacle.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
 				handleMouseClick();
 				return;
 			}
@@ -497,6 +479,13 @@ public class RooftopAgilityPlugin extends Plugin
 				}
 			}
 		}
+		if (priffPortal != null)
+		{
+			if (currentObstacle.getLocation().distanceTo(priffPortal.getWorldLocation()) == 0)
+			{
+				return PRIFF_PORTAL;
+			}
+		}
 		if (!utils.isMoving(beforeLoc))
 		{
 			return FIND_OBSTACLE;
@@ -550,6 +539,12 @@ public class RooftopAgilityPlugin extends Plugin
 					handleMouseClick();
 					timeout = 2 + tickDelay();
 					break;
+				case PRIFF_PORTAL:
+					log.info("Using Priff portal");
+					targetMenu = new MenuEntry("", "", priffPortal.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
+							priffPortal.getSceneMinLocation().getX(), priffPortal.getSceneMinLocation().getY(), false);
+					handleMouseClick();
+					break;
 			}
 		}
 		else
@@ -560,7 +555,7 @@ public class RooftopAgilityPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event)
+	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		if (!startAgility || targetMenu == null)
 		{
@@ -574,9 +569,40 @@ public class RooftopAgilityPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onItemSpawned(ItemSpawned event)
+	private void onGameObjectSpawned(GameObjectSpawned event)
 	{
-		if (!startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !config.mogPickup())
+		if (!startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
+		{
+			return;
+		}
+
+		if (PORTAL_IDS.contains(event.getGameObject().getId()))
+		{
+			log.info("Portal spawned");
+			priffPortal = event.getGameObject();
+		}
+	}
+
+	@Subscribe
+	private void onGameObjectDespawned(GameObjectDespawned event)
+	{
+		if (!startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
+		{
+			return;
+		}
+
+		if (PORTAL_IDS.contains(event.getGameObject().getId()))
+		{
+			log.info("Portal spawned");
+			priffPortal = null;
+		}
+	}
+
+	@Subscribe
+	private void onItemSpawned(ItemSpawned event)
+	{
+		if (!startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) ||
+				!config.mogPickup())
 		{
 			return;
 		}
@@ -596,7 +622,7 @@ public class RooftopAgilityPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onItemDespawned(ItemDespawned event)
+	private void onItemDespawned(ItemDespawned event)
 	{
 		if (!startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !config.mogPickup())
 		{

@@ -8,6 +8,7 @@ public enum RooftopAgilityState
 	HIGH_ALCH,
 	MARK_OF_GRACE,
 	MOVING,
+	PRIFF_PORTAL,
 	RESTOCK_ITEMS,
 	TIMEOUT;
 }
