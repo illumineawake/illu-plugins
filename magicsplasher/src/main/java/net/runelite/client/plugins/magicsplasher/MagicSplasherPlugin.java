@@ -27,7 +27,6 @@ package net.runelite.client.plugins.magicsplasher;
 
 import com.google.inject.Provides;
 import java.time.Instant;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
@@ -47,6 +46,8 @@ import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.queries.NPCQuery;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -100,7 +101,6 @@ public class MagicSplasherPlugin extends Plugin
 	Player player;
 	NPC splashNPC;
 	WidgetItem targetItem;
-	ExecutorService executorService;
 
 	int npcID = -1;
 	int itemID = -1;
@@ -121,8 +121,6 @@ public class MagicSplasherPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
-		if (executorService != null)
-			executorService.shutdown();
 		overlayManager.remove(overlay);
 		startSplasher = false;
 		selectedSpell = null;
@@ -156,7 +154,6 @@ public class MagicSplasherPlugin extends Plugin
 					botTimer = Instant.now();
 					state = null;
 					targetMenu = null;
-					executorService = Executors.newSingleThreadExecutor();
 					botTimer = Instant.now();
 					initVals();
 					overlayManager.add(overlay);
@@ -205,11 +202,9 @@ public class MagicSplasherPlugin extends Plugin
 		}
 	}
 
-	private void sleepDelay()
+	private long sleepDelay()
 	{
-		sleepLength = utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
-		log.debug("Sleeping for {}ms", sleepLength);
-		utils.sleep(sleepLength);
+		return utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
 	}
 
 	private int tickDelay()
@@ -219,26 +214,18 @@ public class MagicSplasherPlugin extends Plugin
 		return tickLength;
 	}
 
-	private void handleMouseClick()
-	{
-		executorService.submit(() ->
-		{
-			try
-			{
-				sleepDelay();
-				utils.clickRandomPointCenter(-100, 100);
-			}
-			catch (RuntimeException e)
-			{
-				e.printStackTrace();
-			}
-		});
-	}
-
 	private void openSpellBook()
 	{
 		targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 10551356, false); //open spellbook
-		handleMouseClick();
+		Widget spellBookWidget = client.getWidget(WidgetInfo.SPELLBOOK);
+		if (spellBookWidget != null)
+		{
+			utils.delayMouseClick(spellBookWidget.getBounds(), sleepDelay());
+		}
+		else
+		{
+			utils.delayClickRandomPointCenter(-200, 200, sleepDelay());
+		}
 	}
 
 	private NPC findNPC()
@@ -275,7 +262,7 @@ public class MagicSplasherPlugin extends Plugin
 				timeout = 5 + tickDelay();
 				break;
 		}
-		handleMouseClick();
+		utils.delayMouseClick(splashNPC.getConvexHull().getBounds(), sleepDelay());
 	}
 
 	public MagicSplasherState getState()
@@ -399,10 +386,7 @@ public class MagicSplasherPlugin extends Plugin
 				startSplasher = false;
 				if (config.logout())
 				{
-					executorService.submit(() ->
-					{
 						utils.logout();
-					});
 				}
 				return;
 			}

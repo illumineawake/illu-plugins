@@ -31,14 +31,33 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
+import net.runelite.api.Client;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.*;
+import net.runelite.api.DecorativeObject;
+import net.runelite.api.events.ConfigButtonClicked;
+import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.ItemDespawned;
+import net.runelite.api.events.ItemSpawned;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.events.GameObjectSpawned;
+import net.runelite.api.events.GameObjectDespawned;
+import net.runelite.api.GameState;
+import net.runelite.api.GameObject;
+import net.runelite.api.GroundObject;
+import net.runelite.api.ItemID;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.MenuOpcode;
+import net.runelite.api.Player;
+import net.runelite.api.Skill;
+import net.runelite.api.Tile;
+import net.runelite.api.TileItem;
+import net.runelite.api.Varbits;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -98,7 +117,7 @@ public class RooftopAgilityPlugin extends Plugin
 	WidgetItem alchItem;
 	GameObject priffPortal;
 	Set<Integer> inventoryItems = new HashSet<>();
-	private ExecutorService executorService;
+
 
 	private final Set<Integer> REGION_IDS = Set.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878, 10547, 13105, 9012, 9013, 12895, 13151);
 	private final Set<Integer> PORTAL_IDS = Set.of(36241, 36242, 36243, 36244, 36245, 36246);
@@ -127,8 +146,6 @@ public class RooftopAgilityPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
-		if (executorService != null)
-			executorService.shutdown();
 		overlayManager.remove(overlay);
 		markOfGraceTile = null;
 		markOfGrace = null;
@@ -164,7 +181,6 @@ public class RooftopAgilityPlugin extends Plugin
 					startAgility = true;
 					state = null;
 					targetMenu = null;
-					executorService = Executors.newSingleThreadExecutor();
 					botTimer = Instant.now();
 					restockBank = config.bankRestock();
 					inventoryItems.addAll(Set.of(ItemID.NATURE_RUNE, ItemID.MARK_OF_GRACE));
@@ -200,11 +216,9 @@ public class RooftopAgilityPlugin extends Plugin
 		}
 	}
 
-	private void sleepDelay()
+	private long sleepDelay()
 	{
-		sleepLength = utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
-		log.debug("Sleeping for {}ms", sleepLength);
-		utils.sleep(sleepLength);
+		return utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
 	}
 
 	private int tickDelay()
@@ -212,22 +226,6 @@ public class RooftopAgilityPlugin extends Plugin
 		int tickLength = (int) utils.randomDelay(config.tickDelayWeightedDistribution(), config.tickDelayMin(), config.tickDelayMax(), config.tickDelayDeviation(), config.tickDelayTarget());
 		log.debug("tick delay for {} ticks", tickLength);
 		return tickLength;
-	}
-
-	private void handleMouseClick()
-	{
-		executorService.submit(() ->
-		{
-			try
-			{
-				sleepDelay();
-				utils.clickRandomPointCenter(-100, 100);
-			}
-			catch (RuntimeException e)
-			{
-				e.printStackTrace();
-			}
-		});
 	}
 
 	public long getMarksPH()
@@ -261,7 +259,15 @@ public class RooftopAgilityPlugin extends Plugin
 		{
 			targetMenu = new MenuEntry("Cast", "<col=00ff00>High Level Alchemy</col>", 0,
 				MenuOpcode.WIDGET_TYPE_2.getId(), -1, 14286887, false);
-			handleMouseClick();
+			Widget spellWidget = client.getWidget(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY);
+			if (spellWidget != null)
+			{
+				utils.delayMouseClick(spellWidget.getBounds(), sleepDelay());
+			}
+			else
+			{
+				utils.delayClickRandomPointCenter(-200, 200, sleepDelay());
+			}
 			setHighAlch = true;
 		}
 		else
@@ -272,7 +278,7 @@ public class RooftopAgilityPlugin extends Plugin
 				MenuOpcode.ITEM_USE_ON_WIDGET.getId(),
 				alchItem.getIndex(), 9764864,
 				false);
-			handleMouseClick();
+			utils.delayMouseClick(alchItem.getCanvasBounds(), sleepDelay());
 			alchTimeout = 4 + tickDelay();
 		}
 	}
@@ -296,7 +302,7 @@ public class RooftopAgilityPlugin extends Plugin
 			if (client.getVarbitValue(Varbits.BANK_NOTE_FLAG.getId()) != 1)
 			{
 				targetMenu = new MenuEntry("Note", "", 1, MenuOpcode.CC_OP.getId(), -1, 786455, false);
-				handleMouseClick();
+				utils.delayClickRandomPointCenter(-200, 200, sleepDelay());
 				return;
 			}
 			if ((!utils.bankContains(ItemID.NATURE_RUNE, 1) && !utils.inventoryContains(ItemID.NATURE_RUNE)) ||
@@ -349,7 +355,7 @@ public class RooftopAgilityPlugin extends Plugin
 				targetMenu = new MenuEntry("", "", bankBooth.getId(),
 					MenuOpcode.GAME_OBJECT_SECOND_OPTION.getId(), bankBooth.getSceneMinLocation().getX(),
 					bankBooth.getSceneMinLocation().getY(), false);
-				handleMouseClick();
+				utils.delayMouseClick(bankBooth.getConvexHull().getBounds(), sleepDelay());
 				timeout = tickDelay();
 			}
 		}
@@ -373,7 +379,7 @@ public class RooftopAgilityPlugin extends Plugin
 				if (decObstacle != null)
 				{
 					targetMenu = new MenuEntry("", "", decObstacle.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
-					handleMouseClick();
+					utils.delayMouseClick(decObstacle.getConvexHull().getBounds(), sleepDelay());
 					return;
 				}
 			}
@@ -383,7 +389,7 @@ public class RooftopAgilityPlugin extends Plugin
 				if (groundObstacle != null)
 				{
 					targetMenu = new MenuEntry("", "", groundObstacle.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
-					handleMouseClick();
+					utils.delayMouseClick(groundObstacle.getConvexHull().getBounds(), sleepDelay());
 					return;
 				}
 			}
@@ -391,7 +397,7 @@ public class RooftopAgilityPlugin extends Plugin
 			if (objObstacle != null)
 			{
 				targetMenu = new MenuEntry("", "", objObstacle.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
-				handleMouseClick();
+				utils.delayMouseClick(objObstacle.getConvexHull().getBounds(), sleepDelay());
 				return;
 			}
 		}
@@ -520,7 +526,7 @@ public class RooftopAgilityPlugin extends Plugin
 				case MARK_OF_GRACE:
 					log.debug("Picking up mark of grace");
 					targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
-					handleMouseClick();
+					utils.delayClickRandomPointCenter(-200, 200, sleepDelay());
 					break;
 				case FIND_OBSTACLE:
 					findObstacle();
@@ -536,14 +542,22 @@ public class RooftopAgilityPlugin extends Plugin
 				case CAST_CAMELOT_TELEPORT:
 					targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), -1,
 						14286879, false);
-					handleMouseClick();
+					Widget spellWidget = client.getWidget(WidgetInfo.SPELL_CAMELOT_TELEPORT);
+					if (spellWidget != null)
+					{
+						utils.delayMouseClick(spellWidget.getBounds(), sleepDelay());
+					}
+					else
+					{
+						utils.delayClickRandomPointCenter(-200, 200, sleepDelay());
+					}
 					timeout = 2 + tickDelay();
 					break;
 				case PRIFF_PORTAL:
 					log.info("Using Priff portal");
 					targetMenu = new MenuEntry("", "", priffPortal.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
 							priffPortal.getSceneMinLocation().getX(), priffPortal.getSceneMinLocation().getY(), false);
-					handleMouseClick();
+					utils.delayMouseClick(priffPortal.getConvexHull().getBounds(), sleepDelay());
 					break;
 			}
 		}

@@ -12,7 +12,9 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -97,9 +99,11 @@ public class BotUtils extends Plugin
 	@Inject
 	private OSBGrandExchangeClient osbGrandExchangeClient;
 
+	@Inject
+	ExecutorService executorService;
+
 	MenuEntry targetMenu;
 	protected static final java.util.Random random = new java.util.Random();
-	ExecutorService executorService;
 	private OSBGrandExchangeResult osbGrandExchangeResult;
 
 	public boolean randomEvent;
@@ -590,14 +594,15 @@ public class BotUtils extends Plugin
 	 */
 	public void click(Rectangle rectangle)
 	{
-		//assert !client.isClientThread();
+		assert !client.isClientThread();
+
 		Point point = getClickPoint(rectangle);
 		click(point);
 	}
 
 	public void click(Point p)
 	{
-		//assert !client.isClientThread();
+		assert !client.isClientThread();
 
 		if (client.isStretchedEnabled())
 		{
@@ -618,14 +623,15 @@ public class BotUtils extends Plugin
 
 	public void moveClick(Rectangle rectangle)
 	{
-		//assert !client.isClientThread();
+		assert !client.isClientThread();
+
 		Point point = getClickPoint(rectangle);
 		moveClick(point);
 	}
 
 	public void moveClick(Point p)
 	{
-		//assert !client.isClientThread();
+		assert !client.isClientThread();
 
 		if (client.isStretchedEnabled())
 		{
@@ -660,14 +666,15 @@ public class BotUtils extends Plugin
 
 	public void moveMouseEvent(Rectangle rectangle)
 	{
-		//assert !client.isClientThread();
+		assert !client.isClientThread();
+
 		Point point = getClickPoint(rectangle);
 		moveClick(point);
 	}
 
 	public void moveMouseEvent(Point p)
 	{
-		//assert !client.isClientThread();
+		assert !client.isClientThread();
 
 		if (client.isStretchedEnabled())
 		{
@@ -705,14 +712,84 @@ public class BotUtils extends Plugin
 
 	public void clickRandomPoint(int min, int max)
 	{
+		assert !client.isClientThread();
+
 		Point point = new Point(getRandomIntBetweenRange(min, max), getRandomIntBetweenRange(min, max));
 		click(point);
 	}
 
 	public void clickRandomPointCenter(int min, int max)
 	{
+		assert !client.isClientThread();
+
 		Point point = new Point(client.getCenterX() + getRandomIntBetweenRange(min, max), client.getCenterY() + getRandomIntBetweenRange(min, max));
-		click(point);
+		moveClick(point);
+	}
+
+	public void delayClickRandomPointCenter(int min, int max, long delay)
+	{
+		executorService.submit(() ->
+		{
+			try
+			{
+				sleep(delay);
+				clickRandomPointCenter(min, max);
+			}
+			catch (RuntimeException e)
+			{
+				e.printStackTrace();
+			}
+		});
+	}
+
+	/*
+	 *
+	 * if given Point is in the viewport, click on the Point otherwise click a random point in the centre of the screen
+	 *
+	 * */
+	public void handleMouseClick(Point point)
+	{
+		assert !client.isClientThread();
+
+		final int viewportHeight = client.getViewportHeight();
+		final int viewportWidth = client.getViewportWidth();
+
+		if (point.getX() > viewportWidth || point.getY() > viewportHeight || point.getX() < 0 || point.getY() < 0)
+		{
+			clickRandomPointCenter(-200, 200);
+			return;
+		}
+		moveClick(point);
+	}
+
+	public void handleMouseClick(Rectangle rectangle)
+	{
+		assert !client.isClientThread();
+
+		Point point = getClickPoint(rectangle);
+		handleMouseClick(point);
+	}
+
+	public void delayMouseClick(Point point, long delay)
+	{
+		executorService.submit(() ->
+		{
+			try
+			{
+				sleep(delay);
+				handleMouseClick(point);
+			}
+			catch (RuntimeException e)
+			{
+				e.printStackTrace();
+			}
+		});
+	}
+
+	public void delayMouseClick(Rectangle rectangle, long delay)
+	{
+		Point point = getClickPoint(rectangle);
+		delayMouseClick(point, delay);
 	}
 
 	/**
@@ -752,6 +829,8 @@ public class BotUtils extends Plugin
 	//enables run if below given minimum energy with random positive variation
 	public void handleRun(int minEnergy, int randMax)
 	{
+		assert client.isClientThread();
+
 		if (client.getEnergy() > (minEnergy + getRandomIntBetweenRange(0, randMax)) ||
 			client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) != 0)
 		{
@@ -761,16 +840,23 @@ public class BotUtils extends Plugin
 			}
 			if (!isRunEnabled())
 			{
-				enableRun();
+				Widget runOrb = client.getWidget(WidgetInfo.MINIMAP_RUN_ORB);
+				if (runOrb != null)
+				{
+					enableRun(runOrb.getBounds());
+				}
 			}
 		}
 	}
 
-	public void enableRun()
+	public void enableRun(Rectangle runOrbBounds)
 	{
 		log.info("enabling run");
-		targetMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
-		clickRandomPointCenter(-100, 100);
+		executorService.submit(() ->
+		{
+			targetMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
+			delayMouseClick(runOrbBounds, getRandomIntBetweenRange(10, 250));
+		});
 	}
 
 	//Checks if Stamina enhancement is active and if stamina potion is in inventory
@@ -794,7 +880,7 @@ public class BotUtils extends Plugin
 		{
 			log.info("using stamina potion");
 			targetMenu = new MenuEntry("", "", staminaPotion.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), staminaPotion.getIndex(), 9764864, false);
-			clickRandomPointCenter(-100, 100);
+			delayMouseClick(staminaPotion.getCanvasBounds(), getRandomIntBetweenRange(5, 200));
 			return true;
 		}
 		return false;
@@ -803,7 +889,15 @@ public class BotUtils extends Plugin
 	public void logout()
 	{
 		targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 11927560, false);
-		clickRandomPointCenter(-100, 100);
+		Widget logoutWidget = client.getWidget(WidgetInfo.LOGOUT_BUTTON);
+		if (logoutWidget != null)
+		{
+			delayMouseClick(logoutWidget.getBounds(), getRandomIntBetweenRange(5, 200));
+		}
+		else
+		{
+			executorService.submit(() -> clickRandomPointCenter(-200, 200));
+		}
 	}
 
 	/**
@@ -863,6 +957,25 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
+	public Collection<Integer> getAllInventoryItemIDs()
+	{
+		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
+		if (inventoryItems != null)
+		{
+			Set<Integer> inventoryIDs = new HashSet<>();
+			for (WidgetItem item : inventoryItems)
+			{
+				if (inventoryIDs.contains(item.getId()))
+				{
+					continue;
+				}
+				inventoryIDs.add(item.getId());
+			}
+			return inventoryIDs;
+		}
+		return null;
+	}
+
 	public WidgetItem getInventoryWidgetItem(int id)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -897,29 +1010,7 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
-	public MenuEntry getInventoryItemMenu(ItemManager itemManager, String menuOption, int opcode)
-	{
-		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
-		if (inventoryWidget != null)
-		{
-			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
-			for (WidgetItem item : items)
-			{
-				String[] menuActions = itemManager.getItemDefinition(item.getId()).getInventoryActions();
-				for (String action : menuActions)
-				{
-					if (action != null && action.equals(menuOption))
-					{
-						MenuEntry menuEntry = new MenuEntry("", "", item.getId(), opcode, item.getIndex(), 9764864, false);
-						return menuEntry;
-					}
-				}
-			}
-		}
-		return null;
-	}
-
-	public MenuEntry getInventoryItemMenu(ItemManager itemManager, String menuOption, int opcode, Collection<Integer> ignoreIDs)
+	public WidgetItem getInventoryItemMenu(ItemManager itemManager, String menuOption, int opcode, Collection<Integer> ignoreIDs)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		if (inventoryWidget != null)
@@ -928,14 +1019,15 @@ public class BotUtils extends Plugin
 			for (WidgetItem item : items)
 			{
 				if (ignoreIDs.contains(item.getId()))
+				{
 					continue;
+				}
 				String[] menuActions = itemManager.getItemDefinition(item.getId()).getInventoryActions();
 				for (String action : menuActions)
 				{
 					if (action != null && action.equals(menuOption))
 					{
-						MenuEntry menuEntry = new MenuEntry("", "", item.getId(), opcode, item.getIndex(), 9764864, false);
-						return menuEntry;
+						return item;
 					}
 				}
 			}
@@ -1075,6 +1167,14 @@ public class BotUtils extends Plugin
 		return false;
 	}
 
+	public void dropItem(WidgetItem item)
+	{
+		assert !client.isClientThread();
+
+		targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(), item.getIndex(), 9764864, false);
+		moveClick(item.getCanvasBounds());
+	}
+
 	public void dropItems(Collection<Integer> ids, boolean dropAll, int minDelayBetween, int maxDelayBetween)
 	{
 		if (isBankOpen() || isDepositBoxOpen())
@@ -1094,10 +1194,11 @@ public class BotUtils extends Plugin
 					{
 						log.info("dropping item: " + item.getId());
 						sleep(minDelayBetween, maxDelayBetween);
-						targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(), item.getIndex(), 9764864, false);
-						clickRandomPointCenter(-100, 100);
+						dropItem(item);
 						if (!dropAll)
+						{
 							break;
+						}
 					}
 				}
 				iterating = false;
@@ -1125,16 +1226,17 @@ public class BotUtils extends Plugin
 				iterating = true;
 				for (WidgetItem item : inventoryItems)
 				{
-					if (ids.contains(item.getId())) //6512 is empty widget slot
+					if (ids.contains(item.getId()))
 					{
 						log.info("not dropping item: " + item.getId());
 						continue;
 					}
 					sleep(minDelayBetween, maxDelayBetween);
-					targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(), item.getIndex(), 9764864, false);
-					clickRandomPointCenter(-100, 100);
+					dropItem(item);
 					if (!dropAll)
-					    break;
+					{
+						break;
+					}
 				}
 				iterating = false;
 			}
@@ -1153,29 +1255,8 @@ public class BotUtils extends Plugin
 			log.info("can't drop item, bank is open");
 			return;
 		}
-		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
-		executorService.submit(() ->
-		{
-			try
-			{
-				iterating = true;
-				for (WidgetItem item : inventoryItems)
-				{
-					log.info("dropping item: " + item.getId());
-					sleep(minDelayBetween, maxDelayBetween);
-					targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(), item.getIndex(), 9764864, false);
-					clickRandomPointCenter(-100, 100);
-					if (!dropAll)
-					    break;
-				}
-				iterating = false;
-			}
-			catch (Exception e)
-			{
-				iterating = false;
-				e.printStackTrace();
-			}
-		});
+		Collection<Integer> inventoryItems = getAllInventoryItemIDs();
+		dropItems(inventoryItems, dropAll, minDelayBetween, maxDelayBetween);
 	}
 
 	/**
@@ -1199,7 +1280,13 @@ public class BotUtils extends Plugin
 			return;
 		}
 		targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), 11, 786434, false); //close bank
-		clickRandomPointCenter(-100, 100);
+		Widget bankCloseWidget = client.getWidget(WidgetInfo.BANK_PIN_EXIT_BUTTON);
+		if (bankCloseWidget != null)
+		{
+			executorService.submit(() -> handleMouseClick(bankCloseWidget.getBounds()));
+			return;
+		}
+		clickRandomPointCenter(-200, 200);
 	}
 
 	public int getBankMenuOpcode(int bankID)
@@ -1347,17 +1434,26 @@ public class BotUtils extends Plugin
 		{
 			return;
 		}
-		if (isDepositBoxOpen())
+		executorService.submit(() ->
 		{
-			targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 12582916, false); //deposit all in bank interface
-			clickRandomPointCenter(-100, 100);
-			return;
-		}
-		else
-		{
-			targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 786473, false); //deposit all in bank interface
-			clickRandomPointCenter(-100, 100);
-		}
+			Widget depositInventoryWidget = client.getWidget(WidgetInfo.BANK_DEPOSIT_INVENTORY);
+			if (isDepositBoxOpen())
+			{
+				targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 12582916, false); //deposit all in bank interface
+			}
+			else
+			{
+				targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 786473, false); //deposit all in bank interface
+			}
+			if ((depositInventoryWidget != null))
+			{
+				handleMouseClick(depositInventoryWidget.getBounds());
+			}
+			else
+			{
+				clickRandomPointCenter(-200, 200);
+			}
+		});
 	}
 
 	public void depositAllExcept(Collection<Integer> ids)
@@ -1378,8 +1474,8 @@ public class BotUtils extends Plugin
 					if (!ids.contains(item.getId()) && item.getId() != 6512 && !depositedItems.contains(item.getId())) //6512 is empty widget slot
 					{
 						log.info("depositing item: " + item.getId());
-						depositAllOfItem(item.getId());
-						sleep(80, 170);
+						depositAllOfItem(item);
+						sleep(80, 200);
 						depositedItems.add(item.getId());
 					}
 				}
@@ -1394,21 +1490,10 @@ public class BotUtils extends Plugin
 		});
 	}
 
-	/*public void depositAllOfItem(WidgetItem itemWidget)
+	public void depositAllOfItem(WidgetItem item)
 	{
-		if (!isBankOpen() && !isDepositBoxOpen())
-		{
-			return;
-		}
-		boolean depositBox = isDepositBoxOpen();
-		targetMenu = new MenuEntry("", "", (depositBox) ? 1 : 2, MenuOpcode.CC_OP.getId(), itemWidget.getIndex(),
-			(depositBox) ? 12582914 : 983043, false);
-		clickRandomPointCenter(-100, 100);
-	}*/
+		assert !client.isClientThread();
 
-	public void depositAllOfItem(int itemID)
-	{
-		WidgetItem item = getInventoryWidgetItem(itemID);
 		if (!isBankOpen() && !isDepositBoxOpen())
 		{
 			return;
@@ -1416,7 +1501,7 @@ public class BotUtils extends Plugin
 		boolean depositBox = isDepositBoxOpen();
 		targetMenu = new MenuEntry("", "", (depositBox) ? 1 : 2, MenuOpcode.CC_OP.getId(), item.getIndex(),
 			(depositBox) ? 12582914 : 983043, false);
-		clickRandomPointCenter(-100, 100);
+		moveClick(item.getCanvasBounds());
 	}
 
 	public void depositAllOfItems(Collection<Integer> itemIDs)
@@ -1437,7 +1522,7 @@ public class BotUtils extends Plugin
 					if (itemIDs.contains(item.getId()) && !depositedItems.contains(item.getId())) //6512 is empty widget slot
 					{
 						log.info("depositing item: " + item.getId());
-						depositAllOfItem(item.getId());
+						depositAllOfItem(item);
 						sleep(80, 170);
 						depositedItems.add(item.getId());
 					}
@@ -1455,8 +1540,11 @@ public class BotUtils extends Plugin
 
 	public void withdrawAllItem(Widget bankItemWidget)
 	{
-		targetMenu = new MenuEntry("Withdraw-All", "", 1, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
-		clickRandomPointCenter(-100, 100);
+		executorService.submit(() ->
+		{
+			targetMenu = new MenuEntry("Withdraw-All", "", 1, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
+			clickRandomPointCenter(-200, 200);
+		});
 	}
 
 	public void withdrawAllItem(int bankItemID)
@@ -1464,8 +1552,7 @@ public class BotUtils extends Plugin
 		Widget item = getBankItemWidget(bankItemID);
 		if (item != null)
 		{
-			targetMenu = new MenuEntry("Withdraw-All", "", 1, MenuOpcode.CC_OP.getId(), item.getIndex(), 786444, false);
-			clickRandomPointCenter(-100, 100);
+			withdrawAllItem(item);
 		}
 		else
 		{
@@ -1475,8 +1562,11 @@ public class BotUtils extends Plugin
 
 	public void withdrawItem(Widget bankItemWidget)
 	{
-		targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
-		clickRandomPointCenter(-100, 100);
+		executorService.submit(() ->
+		{
+			targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
+			clickRandomPointCenter(-200, 200);
+		});
 	}
 
 	public void withdrawItem(int bankItemID)
@@ -1484,8 +1574,7 @@ public class BotUtils extends Plugin
 		Widget item = getBankItemWidget(bankItemID);
 		if (item != null)
 		{
-			targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), item.getIndex(), 786444, false);
-			clickRandomPointCenter(-100, 100);
+			withdrawItem(item);
 		}
 	}
 
@@ -1668,5 +1757,4 @@ public class BotUtils extends Plugin
 		}
 		targetMenu = null;
 	}
-
 }

@@ -31,8 +31,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -50,6 +48,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -94,9 +93,6 @@ public class CombinationRunecrafterPlugin extends Plugin
 	@Inject
 	private CombinationRunecrafterOverlay overlay;
 
-	@Inject
-	ExecutorService executorService;
-
 	MenuEntry targetMenu;
 	Instant botTimer;
 	Player player;
@@ -114,6 +110,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 	Set<Integer> DUEL_RINGS = Set.of(ItemID.RING_OF_DUELING2, ItemID.RING_OF_DUELING3, ItemID.RING_OF_DUELING4, ItemID.RING_OF_DUELING5, ItemID.RING_OF_DUELING6, ItemID.RING_OF_DUELING7, ItemID.RING_OF_DUELING8);
 	Set<Integer> BINDING_NECKLACE = Set.of(ItemID.BINDING_NECKLACE);
 	Set<Integer> STAMINA_POTIONS = Set.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
+	Set<Integer> TIARAS = Set.of(ItemID.FIRE_TIARA);
 	List<Integer> REQUIRED_ITEMS = new ArrayList<>();
 
 	boolean startBot;
@@ -180,32 +177,30 @@ public class CombinationRunecrafterPlugin extends Plugin
 			return;
 		}
 		log.info("button {} pressed!", configButtonClicked.getKey());
-		switch (configButtonClicked.getKey())
+		if (configButtonClicked.getKey().equals("startButton"))
 		{
-			case "startButton":
-				if (!startBot)
-				{
-					startBot = true;
-					botTimer = Instant.now();
-					initCounters();
-					state = null;
-					necklaceState = null;
-					targetMenu = null;
-					setTalisman = false;
-					createdRuneTypeID = config.getRunecraftingType().getCreatedRuneID();
-					talismanID = config.getRunecraftingType().getTalismanID();
-					materialRuneID = config.getRunecraftingType().getMaterialRuneID();
-					essenceTypeID = config.getEssence().getId();
-					REQUIRED_ITEMS = List.of(talismanID, materialRuneID, essenceTypeID);
-					updatePrices();
-					botTimer = Instant.now();
-					overlayManager.add(overlay);
-				}
-				else
-				{
-					shutDown();
-				}
-				break;
+			if (!startBot)
+			{
+				startBot = true;
+				botTimer = Instant.now();
+				initCounters();
+				state = null;
+				necklaceState = null;
+				targetMenu = null;
+				setTalisman = false;
+				createdRuneTypeID = config.getRunecraftingType().getCreatedRuneID();
+				talismanID = config.getRunecraftingType().getTalismanID();
+				materialRuneID = config.getRunecraftingType().getMaterialRuneID();
+				essenceTypeID = config.getEssence().getId();
+				REQUIRED_ITEMS = List.of(talismanID, materialRuneID, essenceTypeID);
+				updatePrices();
+				botTimer = Instant.now();
+				overlayManager.add(overlay);
+			}
+			else
+			{
+				shutDown();
+			}
 		}
 	}
 
@@ -325,11 +320,9 @@ public class CombinationRunecrafterPlugin extends Plugin
 		return 0;
 	}
 
-	private void sleepDelay()
+	private long sleepDelay()
 	{
-		sleepLength = utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
-		log.info("Sleeping for {}ms", sleepLength);
-		utils.sleep(sleepLength);
+		return utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
 	}
 
 	private int tickDelay()
@@ -339,33 +332,18 @@ public class CombinationRunecrafterPlugin extends Plugin
 		return tickLength;
 	}
 
-	private void handleMouseClick()
+	private void teleportRingOfDueling(int menuIdentifier)
 	{
-		executorService.submit(() ->
+		targetMenu = new MenuEntry("", "", menuIdentifier, MenuOpcode.CC_OP.getId(), -1,
+			25362455, false);
+		Widget ringWidget = client.getWidget(WidgetInfo.EQUIPMENT_RING);
+		if (ringWidget != null)
 		{
-			try
-			{
-				sleepDelay();
-				utils.clickRandomPointCenter(-100, 100);
-			}
-			catch (RuntimeException e)
-			{
-				e.printStackTrace();
-			}
-		});
-	}
-
-	private void teleportCastleWars()
-	{
-		if (utils.isItemEquipped(DUEL_RINGS) || utils.isItemEquipped(Set.of(ItemID.RING_OF_DUELING1)))
-		{
-			targetMenu = new MenuEntry("", "", 3, MenuOpcode.CC_OP.getId(), -1,
-				25362455, false);
-			handleMouseClick();
+			utils.delayMouseClick(ringWidget.getBounds(), sleepDelay());
 		}
 		else
 		{
-			log.info("Need to teleport but don't have a ring of dueling");
+			utils.delayClickRandomPointCenter(-200, 200, sleepDelay());
 		}
 	}
 
@@ -427,7 +405,11 @@ public class CombinationRunecrafterPlugin extends Plugin
 			utils.handleRun(20, 30);
 			return MOVING;
 		}
-
+		if (!utils.isItemEquipped(TIARAS))
+		{
+			utils.sendGameMessage("Fire Tiara not equipped. Stopping.");
+			return OUT_OF_ITEM;
+		}
 		mysteriousRuins = utils.findNearestGameObject(34817); //Mysterious Ruins
 		fireAltar = utils.findNearestGameObject(ObjectID.ALTAR_34764);
 		bankChest = utils.findNearestGameObject(ObjectID.BANK_CHEST_4483);
@@ -537,37 +519,35 @@ public class CombinationRunecrafterPlugin extends Plugin
 				case ENTER_MYSTERIOUS_RUINS:
 					targetMenu = new MenuEntry("", "", 34817, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
 						mysteriousRuins.getSceneMinLocation().getX(), mysteriousRuins.getSceneMinLocation().getY(), false);
-					handleMouseClick();
+					utils.delayMouseClick(mysteriousRuins.getConvexHull().getBounds(), sleepDelay());
 					timeout = tickDelay();
 					break;
 				case TELEPORT_CASTLE_WARS:
-					teleportCastleWars();
+					teleportRingOfDueling(3);
 					timeout = tickDelay();
 					break;
 				case SET_TALISMAN:
 					WidgetItem airTalisman = utils.getInventoryWidgetItem(talismanID);
 					targetMenu = new MenuEntry("Use", "Use", talismanID, MenuOpcode.ITEM_USE.getId(),
 						airTalisman.getIndex(), 9764864, false);
-					handleMouseClick();
+					utils.delayMouseClick(airTalisman.getCanvasBounds(), sleepDelay());
 					setTalisman = true;
 					break;
 				case USE_FIRE_ALTAR:
 					targetMenu = new MenuEntry("Use", "<col=ff9040>Air talisman<col=ffffff> -> <col=ffff>Altar",
 						fireAltar.getId(), MenuOpcode.ITEM_USE_ON_GAME_OBJECT.getId(), fireAltar.getSceneMinLocation().getX(),
 						fireAltar.getSceneMinLocation().getY(), false);
-					handleMouseClick();
+					utils.delayMouseClick(fireAltar.getConvexHull().getBounds(), sleepDelay());
 					timeout = tickDelay();
 					break;
 				case OPEN_BANK:
 					targetMenu = new MenuEntry("", "", bankChest.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
 						bankChest.getSceneMinLocation().getX(), bankChest.getSceneMinLocation().getY(), false);
-					handleMouseClick();
+					utils.delayMouseClick(bankChest.getConvexHull().getBounds(), sleepDelay());
 					timeout = tickDelay();
 					break;
 				case TELEPORT_DUEL_ARENA:
-					targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), -1,
-						25362455, false);
-					handleMouseClick();
+					teleportRingOfDueling(2);
 					timeout = tickDelay();
 					break;
 				case DEPOSIT_ALL:
@@ -585,7 +565,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 						}
 						targetMenu = new MenuEntry("", "", 9, MenuOpcode.CC_OP_LOW_PRIORITY.getId(),
 							useableItem.getIndex(), 983043, false);
-						handleMouseClick();
+						utils.delayMouseClick(useableItem.getCanvasBounds(), sleepDelay());
 					}
 					break;
 				case WITHDRAW_ITEM:
@@ -601,6 +581,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 						utils.logout();
 					}
 					startBot = false;
+					shutDown();
 					break;
 			}
 			beforeLoc = player.getLocalLocation();

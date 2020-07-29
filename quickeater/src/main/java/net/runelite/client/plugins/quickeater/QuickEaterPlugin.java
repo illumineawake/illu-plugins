@@ -26,7 +26,6 @@
 package net.runelite.client.plugins.quickeater;
 
 import com.google.inject.Provides;
-import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -37,11 +36,9 @@ import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
-import net.runelite.api.TileObject;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.queries.GameObjectQuery;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -84,8 +81,7 @@ public class QuickEaterPlugin extends Plugin
 	MenuEntry targetMenu;
 	Player player;
 
-	private Set<Integer> DRINK_SET = Set.of(ItemID.JUG_OF_WINE, ItemID.SARADOMIN_BREW1, ItemID.SARADOMIN_BREW2,
-		ItemID.SARADOMIN_BREW3, ItemID.SARADOMIN_BREW4);
+	private Set<Integer> DRINK_SET = Set.of(ItemID.JUG_OF_WINE, ItemID.SARADOMIN_BREW1, ItemID.SARADOMIN_BREW2, ItemID.SARADOMIN_BREW3, ItemID.SARADOMIN_BREW4);
 
 	private int timeout;
 	private int drinkEnergy;
@@ -142,21 +138,24 @@ public class QuickEaterPlugin extends Plugin
 		{
 			return;
 		}
-		if (utils.getInventoryItemMenu(itemManager, "Eat", 33,
-			Set.of(ItemID.DWARVEN_ROCK_CAKE, ItemID.DWARVEN_ROCK_CAKE_7510)) != null)
+		WidgetItem eatItem = utils.getInventoryItemMenu(itemManager, "Eat", 33,
+			Set.of(ItemID.DWARVEN_ROCK_CAKE, ItemID.DWARVEN_ROCK_CAKE_7510));
+		if (eatItem != null)
 		{
-			targetMenu = utils.getInventoryItemMenu(itemManager, "Eat", 33);
-			utils.clickRandomPointCenter(-100, 100);
+			targetMenu = new MenuEntry("", "", eatItem.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), eatItem.getIndex(),
+				9764864, false);
+			utils.delayMouseClick(eatItem.getCanvasBounds(),utils.getRandomIntBetweenRange(5, 300));
 			return;
 		}
 		if (utils.inventoryContains(DRINK_SET))
 		{
-			WidgetItem item = utils.getInventoryWidgetItem(DRINK_SET);
-			targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), item.getIndex(), 9764864, false);
-			utils.clickRandomPointCenter(-100, 100);
+			WidgetItem drinkItem = utils.getInventoryWidgetItem(DRINK_SET);
+			targetMenu = new MenuEntry("", "", drinkItem.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), drinkItem.getIndex(),
+				9764864, false);
+			utils.delayMouseClick(drinkItem.getCanvasBounds(),utils.getRandomIntBetweenRange(5, 300));
 			return;
 		}
-		utils.sendGameMessage("Health is below theshold but we're out of food");
+		utils.sendGameMessage("Health is below threshold but we're out of food");
 	}
 
 	@Subscribe

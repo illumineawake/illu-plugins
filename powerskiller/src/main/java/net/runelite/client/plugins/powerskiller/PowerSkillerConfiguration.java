@@ -307,6 +307,18 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
+		keyName = "logout",
+		name = "Logout when out of required IDs",
+		description = "Bot will logout if required items are not in inventory, e.g. fishing bait.",
+		position = 101,
+		hide = "dropInventory"
+	)
+	default boolean logout()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "items",
 		name = "Item IDs to drop/not drop or Bank",
 		description = "Separate with comma, enable below option to not drop/bank these IDs.",

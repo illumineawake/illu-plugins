@@ -28,10 +28,7 @@ package net.runelite.client.plugins.powerskiller;
 import com.google.inject.Provides;
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -45,8 +42,12 @@ import net.runelite.api.MenuOpcode;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.*;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.GameObjectDespawned;
+import net.runelite.api.events.ConfigButtonClicked;
+import net.runelite.api.events.NpcDefinitionChanged;
+import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -103,7 +104,6 @@ public class PowerSkillerPlugin extends Plugin
 	LocalPoint beforeLoc;
 	Player player;
 	WorldArea DENSE_ESSENCE_AREA = new WorldArea(new WorldPoint(1754, 3845, 0), new WorldPoint(1770, 3862, 0));
-	private ExecutorService executorService;
 
 	int timeout = 0;
 	long sleepLength;
@@ -131,8 +131,6 @@ public class PowerSkillerPlugin extends Plugin
 	protected void shutDown()
 	{
 		overlayManager.remove(overlay);
-		if (executorService != null)
-			executorService.shutdown();
 		state = null;
 		timeout = 0;
 		botTimer = null;
@@ -161,7 +159,6 @@ public class PowerSkillerPlugin extends Plugin
 					state = null;
 					targetMenu = null;
 					botTimer = Instant.now();
-					executorService = Executors.newSingleThreadExecutor();
 					setLocation();
 					getConfigValues();
 					overlayManager.add(overlay);
@@ -231,11 +228,9 @@ public class PowerSkillerPlugin extends Plugin
 		}
 	}
 
-	private void sleepDelay()
+	private long sleepDelay()
 	{
-		sleepLength = utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
-		log.debug("Sleeping for {}ms", sleepLength);
-		utils.sleep(sleepLength);
+		return utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
 	}
 
 	private int tickDelay()
@@ -245,29 +240,13 @@ public class PowerSkillerPlugin extends Plugin
 		return tickLength;
 	}
 
-	private void handleMouseClick()
-	{
-		executorService.submit(() ->
-		{
-			try
-			{
-				sleepDelay();
-				utils.clickRandomPointCenter(-100, 100);
-			}
-			catch (RuntimeException e)
-			{
-				e.printStackTrace();
-			}
-		});
-	}
-
 	private void interactNPC()
 	{
 		targetNPC = utils.findNearestNpcWithin(skillLocation, config.locationRadius(), objectIds);
 		if (targetNPC != null)
 		{
 			targetMenu = new MenuEntry("", "", targetNPC.getIndex(), MenuOpcode.NPC_FIRST_OPTION.getId(), 0, 0, false);
-			handleMouseClick();
+			utils.delayMouseClick(targetNPC.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
 		{
@@ -298,7 +277,7 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			targetMenu = new MenuEntry("", "", targetObject.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
 				targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
-			handleMouseClick();
+			utils.delayMouseClick(targetObject.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
 		{
@@ -339,7 +318,7 @@ public class PowerSkillerPlugin extends Plugin
 			targetMenu = new MenuEntry("", "", bank.getId(),
 				utils.getBankMenuOpcode(bank.getId()), bank.getSceneMinLocation().getX(),
 				bank.getSceneMinLocation().getY(), false);
-			handleMouseClick();
+			utils.delayMouseClick(bank.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
 		{
@@ -397,7 +376,7 @@ public class PowerSkillerPlugin extends Plugin
 			if (config.type() == PowerSkillerType.DENSE_ESSENCE)
 			{
 				return (DENSE_ESSENCE_AREA.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) ?
-					FIND_GAME_OBJECT: WAIT_DENSE_ESSENCE;
+					FIND_GAME_OBJECT : WAIT_DENSE_ESSENCE;
 			}
 			return (config.type() == PowerSkillerType.GAME_OBJECT) ?
 				FIND_GAME_OBJECT : FIND_NPC;
@@ -411,30 +390,30 @@ public class PowerSkillerPlugin extends Plugin
 		player = client.getLocalPlayer();
 		if (client != null && player != null && startPowerSkiller && skillLocation != null)
 		{
-			utils.handleRun(30, 20);
 			state = getState();
 			beforeLoc = player.getLocalLocation();
 			switch (state)
 			{
 				case TIMEOUT:
+					utils.handleRun(30, 20);
 					timeout--;
-					return;
+					break;
 				case DROP_ALL:
-					utils.dropInventory(true,config.sleepMin(), config.sleepMax());
-					return;
+					utils.dropInventory(true, config.sleepMin(), config.sleepMax());
+					break;
 				case DROP_EXCEPT:
 					utils.dropAllExcept(itemIds, true, config.sleepMin(), config.sleepMax());
-					return;
+					break;
 				case DROP_ITEMS:
 					utils.dropItems(itemIds, true, config.sleepMin(), config.sleepMax());
-					return;
+					break;
 				case FIND_GAME_OBJECT:
 					interactObject();
-					return;
+					break;
 				case FIND_NPC:
 					interactNPC();
 					npcMoved = false;
-					return;
+					break;
 				case FIND_BANK:
 					openBank();
 					break;
@@ -447,21 +426,20 @@ public class PowerSkillerPlugin extends Plugin
 				case DEPOSIT_ITEMS:
 					utils.depositAllOfItems(itemIds);
 					break;
-				case ANIMATING:
-					timeout = tickDelay();
-					return;
 				case MISSING_ITEMS:
 					startPowerSkiller = false;
 					utils.sendGameMessage("Missing required items IDs: " + requiredIds.toString() + " from inventory. Stopping.");
-					return;
+					if (config.logout())
+					{
+						utils.logout();
+					}
+					break;
+				case ANIMATING:
 				case MOVING:
-					timeout = 2 + tickDelay();
-					return;
+					utils.handleRun(30, 20);
+					timeout = tickDelay();
+					break;
 			}
-		}
-		else
-		{
-			return;
 		}
 	}
 
@@ -483,7 +461,7 @@ public class PowerSkillerPlugin extends Plugin
 			{
 				log.debug("MenuEntry string event: " + targetMenu.toString());
 				event.setMenuEntry(targetMenu);
-				timeout = 2 + tickDelay();
+				timeout = tickDelay();
 				targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
 			}
 		}
@@ -540,7 +518,8 @@ public class PowerSkillerPlugin extends Plugin
 			{
 				itemIds.addAll(requiredIds);
 			}
-			if (utils.inventoryContainsExcept(itemIds)) {
+			if (utils.inventoryContainsExcept(itemIds))
+			{
 				utils.dropAllExcept(itemIds, false, config.sleepMin(), config.sleepMax());
 			}
 			return;

@@ -2,6 +2,7 @@ package net.runelite.client.plugins.botutils;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
+import static net.runelite.api.NullObjectID.NULL_34810;
 import net.runelite.api.ObjectID;
 
 public class Banks
@@ -12,7 +13,6 @@ public class Banks
 		ObjectID.BANK_BOOTH_10357,
 		ObjectID.BANK_BOOTH_10517,
 		ObjectID.BANK_CHEST_10562,
-		ObjectID.BANK_BOOTH_10583,
 		ObjectID.BANK_BOOTH_10584,
 		ObjectID.BANK,
 		ObjectID.BANK_BOOTH_11338,
@@ -31,6 +31,7 @@ public class Banks
 		ObjectID.BANK_BOOTH_20328,
 		ObjectID.BANK_CHEST_21301,
 		ObjectID.BANK_BOOTH_22819,
+		NULL_34810,
 		ObjectID.BANK_BOOTH_24101,
 		ObjectID.BANK_BOOTH_24347,
 		ObjectID.BANK_BOOTH_25808,
@@ -78,7 +79,7 @@ public class Banks
 		ObjectID.BANK_BOX,
 		ObjectID.BANK_BOX_31949,
 		ObjectID.BANK_CHEST_34343,
-		ObjectID.BANK_DEPOSIT_BOX,
+		ObjectID.BANK_DEPOSIT_BOX, //Varrock West Bank Deposit Box
 		ObjectID.BANK_DEPOSIT_CHEST,
 		ObjectID.BANK_DEPOSIT_BOX_25937,
 		ObjectID.BANK_DEPOSIT_BOX_26254,
@@ -102,7 +103,6 @@ public class Banks
 		ObjectID.BANK_BOOTH_10357,
 		ObjectID.BANK_BOOTH_10517,
 		ObjectID.BANK_CHEST_10562,
-		ObjectID.BANK_BOOTH_10583,
 		ObjectID.BANK_BOOTH_10584,
 		ObjectID.BANK,
 		ObjectID.BANK_BOOTH_11338,
@@ -121,6 +121,7 @@ public class Banks
 		ObjectID.BANK_BOOTH_20328,
 		ObjectID.BANK_CHEST_21301,
 		ObjectID.BANK_BOOTH_22819,
+		NULL_34810,
 		ObjectID.BANK_BOOTH_24101,
 		ObjectID.BANK_BOOTH_24347,
 		ObjectID.BANK_BOOTH_25808,
@@ -171,7 +172,7 @@ public class Banks
 		ObjectID.BANK_BOX,
 		ObjectID.BANK_BOX_31949,
 		ObjectID.BANK_CHEST_34343,
-		ObjectID.BANK_DEPOSIT_BOX,
+		ObjectID.BANK_DEPOSIT_BOX, //Varrock West Bank Deposit Box
 		ObjectID.BANK_DEPOSIT_CHEST,
 		ObjectID.BANK_DEPOSIT_BOX_25937,
 		ObjectID.BANK_DEPOSIT_BOX_26254,
