@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,6 +50,7 @@ import net.runelite.api.queries.DecorativeObjectQuery;
 import net.runelite.api.queries.GameObjectQuery;
 import net.runelite.api.queries.GroundObjectQuery;
 import net.runelite.api.queries.InventoryItemQuery;
+import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.queries.NPCQuery;
 import net.runelite.api.queries.TileQuery;
 import net.runelite.api.queries.WallObjectQuery;
@@ -227,6 +229,22 @@ public class BotUtils extends Plugin
 	}
 
 	@Nullable
+	public NPC findNearestNpc(String... names)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new NPCQuery()
+			.nameContains(names)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
 	public NPC findNearestNpcWithin(WorldPoint worldPoint, int dist, Collection<Integer> ids)
 	{
 		assert client.isClientThread();
@@ -239,6 +257,41 @@ public class BotUtils extends Plugin
 		return new NPCQuery()
 			.idEquals(ids)
 			.isWithinDistance(worldPoint, dist)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
+	public NPC findNearestAttackableNpcWithin(WorldPoint worldPoint, int dist, String... names)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new NPCQuery()
+			.nameContains(names)
+			.isWithinDistance(worldPoint, dist)
+			.filter(npc -> npc.getInteracting() == null && npc.getHealthRatio() != 0)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
+	public NPC findNearestNpcTargetingLocal(String... names)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new NPCQuery()
+			.nameContains(names)
+			.filter(npc -> npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}
@@ -321,6 +374,36 @@ public class BotUtils extends Plugin
 			.list;
 	}
 
+	public List<NPC> getNPCs(String... names)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return new ArrayList<>();
+		}
+
+		return new NPCQuery()
+			.nameContains(names)
+			.result(client)
+			.list;
+	}
+
+	public NPC getFirstNPCWithLocalTarget()
+	{
+		assert client.isClientThread();
+
+		List<NPC> npcs = client.getNpcs();
+		for (NPC npc : npcs)
+		{
+			if (npc.getInteracting() == client.getLocalPlayer())
+			{
+				return npc;
+			}
+		}
+		return null;
+	}
+
 	public List<WallObject> getWallObjects(int... ids)
 	{
 		assert client.isClientThread();
@@ -390,6 +473,22 @@ public class BotUtils extends Plugin
 		}
 
 		return findNearestGroundObject(ids);
+	}
+
+	@Nullable
+	public List<TileItem> getTileItemsWithin(int distance)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return new ArrayList<>();
+		}
+		return new TileQuery()
+			.isWithinDistance(client.getLocalPlayer().getWorldLocation(), distance)
+			.result(client)
+			.first()
+			.getGroundItems();
 	}
 
 	@Nullable
@@ -862,7 +961,7 @@ public class BotUtils extends Plugin
 	//Checks if Stamina enhancement is active and if stamina potion is in inventory
 	public WidgetItem shouldStamPot()
 	{
-		if (!getItems(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4)).isEmpty()
+		if (!getInventoryItems(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4)).isEmpty()
 			&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < 15 + getRandomIntBetweenRange(0, 30) && !isBankOpen())
 		{
 			return getInventoryWidgetItem(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4));
@@ -927,7 +1026,7 @@ public class BotUtils extends Plugin
 		}
 	}
 
-	public List<WidgetItem> getItems(Collection<Integer> ids)
+	public List<WidgetItem> getInventoryItems(Collection<Integer> ids)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		List<WidgetItem> matchedItems = new ArrayList<>();
@@ -945,6 +1044,17 @@ public class BotUtils extends Plugin
 			return matchedItems;
 		}
 		return null;
+	}
+
+	public List<WidgetItem> getInventoryItems(String itemName)
+	{
+		return new InventoryWidgetItemQuery()
+			.filter(i -> client.getItemDefinition(i.getId())
+				.getName()
+				.toLowerCase()
+				.contains(itemName))
+			.result(client)
+			.list;
 	}
 
 	public Collection<WidgetItem> getAllInventoryItems()
@@ -1109,6 +1219,24 @@ public class BotUtils extends Plugin
 			.size() >= 1;
 	}
 
+	public boolean inventoryContains(String itemName)
+	{
+		if (client.getItemContainer(InventoryID.INVENTORY) == null)
+		{
+			return false;
+		}
+
+		WidgetItem inventoryItem = new InventoryWidgetItemQuery()
+			.filter(i -> client.getItemDefinition(i.getId())
+				.getName()
+				.toLowerCase()
+				.contains(itemName))
+			.result(client)
+			.first();
+
+		return inventoryItem != null;
+	}
+
 	public boolean inventoryContains(int itemID, int minStackAmount)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
@@ -1129,7 +1257,7 @@ public class BotUtils extends Plugin
 		{
 			return false;
 		}
-		return getItems(itemIds).size() > 0;
+		return getInventoryItems(itemIds).size() > 0;
 	}
 
 	public boolean inventoryContainsAllOf(Collection<Integer> itemIds)
@@ -1502,6 +1630,15 @@ public class BotUtils extends Plugin
 		targetMenu = new MenuEntry("", "", (depositBox) ? 1 : 2, MenuOpcode.CC_OP.getId(), item.getIndex(),
 			(depositBox) ? 12582914 : 983043, false);
 		moveClick(item.getCanvasBounds());
+	}
+
+	public void depositAllOfItem(int itemID)
+	{
+		if (!isBankOpen() && !isDepositBoxOpen())
+		{
+			return;
+		}
+		depositAllOfItem(getInventoryWidgetItem(itemID));
 	}
 
 	public void depositAllOfItems(Collection<Integer> itemIDs)
