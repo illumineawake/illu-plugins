@@ -14,6 +14,7 @@ public enum PowerFighterState
 	MISSING_ITEMS,
 	MOVING,
 	NPC_NOT_FOUND,
+	SLAYER_COMPLETED,
 	TIMEOUT,
 	WAIT_COMBAT;
 }

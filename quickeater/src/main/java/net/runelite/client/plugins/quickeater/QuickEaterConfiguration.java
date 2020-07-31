@@ -34,18 +34,26 @@ public interface QuickEaterConfiguration extends Config
 {
 
 	@ConfigItem(
-		keyName = "eatHP",
-		name = "Eat at HP",
-		description = "HP to eat at",
+		keyName = "minEatHP",
+		name = "Minimum Eat HP",
+		description = "Minimum HP to eat at. i.e. will always eat",
 		position = 0
 	)
-	default int eatHP()	{ return 10; }
+	default int minEatHP()	{ return 10; }
+
+	@ConfigItem(
+		keyName = "maxEatHP",
+		name = "Maximum Eat HP",
+		description = "Highest HP to consider eating. Value MUST be higher than minimum HP config. If HP drops below this value bot may randomly decide to eat.",
+		position = 1
+	)
+	default int maxEatHP()	{ return 20; }
 
 	@ConfigItem(
 		keyName = "drinkStamina",
 		name = "Drink Stamina Potions",
 		description = "Enable to drink Stamina Potions below given energy level",
-		position = 1
+		position = 10
 	)
 	default boolean drinkStamina() { return false; }
 
@@ -53,7 +61,7 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "maxDrinkEnergy",
 		name = "Drink stamina below energy",
 		description = "This is the maximum energy amount",
-		position = 2,
+		position = 20,
 		hidden = true,
 		unhide = "drinkStamina"
 	)
@@ -64,7 +72,7 @@ public interface QuickEaterConfiguration extends Config
 		name = "random variation for drink energy (subtracted from max)",
 		description = "A random value that is subtracted from max drink energy. E.g. a random value of '20' with a max drink energy of 60 would " +
 			"cause stamina pot to be drunk at a random value between 40 and 60",
-		position = 3,
+		position = 30,
 		hidden = true,
 		unhide = "drinkStamina"
 	)

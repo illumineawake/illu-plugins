@@ -147,7 +147,7 @@ public interface PowerFighterConfig extends Config
 
 	@Range(
 		min = 0,
-		max = 10
+		max = 30
 	)
 	@ConfigItem(
 		keyName = "tickDelayMax",
@@ -163,7 +163,7 @@ public interface PowerFighterConfig extends Config
 
 	@Range(
 		min = 0,
-		max = 10
+		max = 30
 	)
 	@ConfigItem(
 		keyName = "tickDelayTarget",
@@ -179,7 +179,7 @@ public interface PowerFighterConfig extends Config
 
 	@Range(
 		min = 0,
-		max = 10
+		max = 30
 	)
 	@ConfigItem(
 		keyName = "tickDelayDeviation",
@@ -437,6 +437,18 @@ public interface PowerFighterConfig extends Config
 	default boolean lootNPCOnly()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+		keyName = "stopSlayer",
+		name = "Stop on Slayer task completion",
+		description = "Enable to stop when Slayer task completes",
+		position = 57,
+		titleSection = "generalTitle"
+	)
+	default boolean stopSlayer()
+	{
+		return false;
 	}
 
 	@ConfigItem(

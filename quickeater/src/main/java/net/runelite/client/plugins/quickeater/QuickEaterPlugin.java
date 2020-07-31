@@ -85,6 +85,7 @@ public class QuickEaterPlugin extends Plugin
 
 	private int timeout;
 	private int drinkEnergy;
+	private int nextEatHP;
 
 	@Provides
 	QuickEaterConfiguration provideConfig(ConfigManager configManager)
@@ -95,7 +96,7 @@ public class QuickEaterPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
+		nextEatHP = utils.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
 	}
 
 	@Override
@@ -134,7 +135,7 @@ public class QuickEaterPlugin extends Plugin
 	@Subscribe
 	private void onHitsplatApplied(HitsplatApplied event)
 	{
-		if (event.getActor() != client.getLocalPlayer() || client.getBoostedSkillLevel(Skill.HITPOINTS) > config.eatHP())
+		if (event.getActor() != client.getLocalPlayer() || client.getBoostedSkillLevel(Skill.HITPOINTS) > nextEatHP)
 		{
 			return;
 		}
@@ -145,6 +146,7 @@ public class QuickEaterPlugin extends Plugin
 			targetMenu = new MenuEntry("", "", eatItem.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), eatItem.getIndex(),
 				9764864, false);
 			utils.delayMouseClick(eatItem.getCanvasBounds(),utils.getRandomIntBetweenRange(5, 300));
+			nextEatHP = utils.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
 			return;
 		}
 		if (utils.inventoryContains(DRINK_SET))

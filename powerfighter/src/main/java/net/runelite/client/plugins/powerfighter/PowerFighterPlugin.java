@@ -45,6 +45,8 @@ import net.runelite.api.NPC;
 import net.runelite.api.NPCDefinition;
 import net.runelite.api.Player;
 import net.runelite.api.TileItem;
+import net.runelite.api.VarPlayer;
+import net.runelite.api.Varbits;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ActorDeath;
@@ -121,12 +123,14 @@ public class PowerFighterPlugin extends Plugin
 	LocalPoint beforeLoc = new LocalPoint(0, 0);
 
 	boolean startBot;
+	boolean slayerCompleted;
 	long sleepLength;
 	int tickLength;
 	int timeout;
 	int coinsPH;
 	int nextAmmoLootTime;
 	int killcount;
+	String SLAYER_MESSAGE = "return to a Slayer master";
 
 	@Provides
 	PowerFighterConfig provideConfig(ConfigManager configManager)
@@ -169,6 +173,7 @@ public class PowerFighterPlugin extends Plugin
 				startBot = true;
 				timeout = 0;
 				killcount = 0;
+				slayerCompleted = false;
 				state = null;
 				targetMenu = null;
 				botTimer = Instant.now();
@@ -252,7 +257,7 @@ public class PowerFighterPlugin extends Plugin
 		return config.lootItems() &&
 			((config.lootNPCOnly() && item.getTile().getWorldLocation().equals(deathLocation)) || !config.lootNPCOnly()) &&
 			((config.lootGEValue() && utils.getOSBItem(item.getId()).getOverall_average() > config.minGEValue()) ||
-				(!config.lootGEValue() && lootableItems.contains(itemName)) ||
+				(!config.lootGEValue() && lootableItems.stream().anyMatch(itemName.toLowerCase()::contains)) ||
 				(config.buryBones() && itemName.contains("bones")) ||
 				(config.lootClueScrolls() && itemName.contains("clue")));
 	}
@@ -280,6 +285,13 @@ public class PowerFighterPlugin extends Plugin
 			0, 0, false);
 		utils.delayMouseClick(currentNPC.getConvexHull().getBounds(), sleepDelay());
 		timeout = 2 + tickDelay();
+	}
+
+	private NPC findSuitableNPC()
+	{
+		NPC npc = utils.findNearestNpcTargetingLocal(config.npcName());
+		return (npc != null) ? npc :
+		utils.findNearestAttackableNpcWithin(player.getWorldLocation(), config.searchRadius(), config.npcName());
 	}
 
 	private PowerFighterState getState()
@@ -311,12 +323,18 @@ public class PowerFighterPlugin extends Plugin
 		{
 			return (config.logout()) ? LOG_OUT : MISSING_ITEMS;
 		}
+		if (config.stopSlayer() && slayerCompleted)
+		{
+			return (config.logout()) ? LOG_OUT : SLAYER_COMPLETED;
+		}
 		if (player.getInteracting() != null)
 		{
-			currentNPC = utils.findNearestNpcTargetingLocal(config.npcName());
+			currentNPC = (NPC) player.getInteracting();
 			if (currentNPC != null && currentNPC.getHealthRatio() == -1) //NPC has noHealthBar, NPC ran away and we are stuck with a target we can't attack
 			{
-				currentNPC = utils.findNearestAttackableNpcWithin(player.getWorldLocation(), config.searchRadius(), config.npcName());
+				log.info("interacting and npc has not health bar. Finding new NPC");
+//				currentNPC = utils.findNearestAttackableNpcWithin(player.getWorldLocation(), config.searchRadius(), config.npcName());
+				currentNPC = findSuitableNPC();
 				if (currentNPC != null)
 				{
 					return ATTACK_NPC;
@@ -329,12 +347,15 @@ public class PowerFighterPlugin extends Plugin
 					return TIMEOUT;
 				}
 			}
+			//currentNPC = utils.findNearestNpcTargetingLocal(config.npcName());
 			return IN_COMBAT;
 		}
 		currentNPC = utils.findNearestNpcTargetingLocal(config.npcName());
 		if (currentNPC != null)
 		{
-			return (utils.getRandomIntBetweenRange(0,1) == 0) ? ATTACK_NPC : WAIT_COMBAT;
+			int chance = utils.getRandomIntBetweenRange(0, 1);
+			log.info("Chance result: {}", chance);
+			return (chance == 0) ? ATTACK_NPC : WAIT_COMBAT;
 		}
 		if (config.buryBones() && utils.inventoryContains("bones") && utils.inventoryFull())
 		{
@@ -367,7 +388,8 @@ public class PowerFighterPlugin extends Plugin
 				}
 			}
 		}
-		currentNPC = utils.findNearestAttackableNpcWithin(player.getWorldLocation(), config.searchRadius(), config.npcName());
+//		currentNPC = utils.findNearestNpcTargetingLocal(config.npcName());
+		currentNPC = findSuitableNPC();
 		if (currentNPC != null)
 		{
 			return ATTACK_NPC;
@@ -495,21 +517,19 @@ public class PowerFighterPlugin extends Plugin
 	@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
-		if (!startBot || event.getType() != ChatMessageType.SPAM)
+		if (startBot && (event.getType() == ChatMessageType.SPAM || event.getType() == ChatMessageType.GAMEMESSAGE))
 		{
-			return;
-		}
-		if (event.getMessage().contains("I'm already under attack"))
-		{
-			log.info("We already have a target, switching to this target. Waiting to auto-retaliate new target");
-			timeout = 10;
-			/*NPC targetingLocal = utils.getFirstNPCWithLocalTarget();
-			if (targetingLocal != null)
+			log.info("Chat message: {}, Chat Type: {}", event.getMessage(), event.getType());
+			if (event.getMessage().contains("I'm already under attack") && event.getType() == ChatMessageType.SPAM)
 			{
-				log.info("found npc targeting me.");
-				currentNPC = targetingLocal;
-				attackNPC(currentNPC);
-			}*/
+				log.info("We already have a target. Waiting to auto-retaliate new target");
+				timeout = 10;
+			}
+			if (event.getMessage().contains(SLAYER_MESSAGE) && event.getType() == ChatMessageType.GAMEMESSAGE)
+			{
+				log.info("Slayer task completed");
+				slayerCompleted = true;
+			}
 		}
 	}
 
