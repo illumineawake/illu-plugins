@@ -50,6 +50,14 @@ public interface QuickEaterConfiguration extends Config
 	default int maxEatHP()	{ return 20; }
 
 	@ConfigItem(
+		keyName = "drinkAntiPoison",
+		name = "Drink Anti-Poison/Dote Potions",
+		description = "Enable to drink Anti-Poisons or Antidotes when poisoned",
+		position = 5
+	)
+	default boolean drinkAntiPoison() { return true; }
+
+	@ConfigItem(
 		keyName = "drinkPrayer",
 		name = "Drink Prayer restoration Potions",
 		description = "Enable to drink Prayer/Super Restore pots below given Prayer levels",

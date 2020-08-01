@@ -257,7 +257,7 @@ public class PowerFighterPlugin extends Plugin
 		return config.lootItems() &&
 			((config.lootNPCOnly() && item.getTile().getWorldLocation().equals(deathLocation)) || !config.lootNPCOnly()) &&
 			((config.lootGEValue() && utils.getOSBItem(item.getId()).getOverall_average() > config.minGEValue()) ||
-				(!config.lootGEValue() && lootableItems.stream().anyMatch(itemName.toLowerCase()::contains)) ||
+				(lootableItems.stream().anyMatch(itemName.toLowerCase()::contains)) ||
 				(config.buryBones() && itemName.contains("bones")) ||
 				(config.lootClueScrolls() && itemName.contains("clue")));
 	}

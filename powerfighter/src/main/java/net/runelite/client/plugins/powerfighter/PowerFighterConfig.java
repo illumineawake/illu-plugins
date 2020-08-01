@@ -387,7 +387,8 @@ public interface PowerFighterConfig extends Config
 		name = "Item Names to loot (separate with comma)",
 		description = "Provide part or all of the item name to loot. Separate each item with a comma. Not case sensitive.",
 		position = 42,
-		hide = "lootGEValue",
+		hidden = true,
+		unhide = "lootItems",
 		titleSection = "lootTitle"
 
 	)
