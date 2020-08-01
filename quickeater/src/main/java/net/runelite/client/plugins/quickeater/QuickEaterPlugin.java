@@ -39,6 +39,7 @@ import net.runelite.api.Skill;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.events.StatChanged;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -82,10 +83,13 @@ public class QuickEaterPlugin extends Plugin
 	Player player;
 
 	private Set<Integer> DRINK_SET = Set.of(ItemID.JUG_OF_WINE, ItemID.SARADOMIN_BREW1, ItemID.SARADOMIN_BREW2, ItemID.SARADOMIN_BREW3, ItemID.SARADOMIN_BREW4);
+	private Set<Integer> PRAYER_SET = Set.of(ItemID.PRAYER_POTION1, ItemID.PRAYER_POTION2, ItemID.PRAYER_POTION3, ItemID.PRAYER_POTION4, ItemID.SUPER_RESTORE1, ItemID.SUPER_RESTORE2, ItemID.SUPER_RESTORE3, ItemID.SUPER_RESTORE4);
 
 	private int timeout;
+	private int prayerDrinkTimeout = 0;
 	private int drinkEnergy;
 	private int nextEatHP;
+	private int drinkPrayer;
 
 	@Provides
 	QuickEaterConfiguration provideConfig(ConfigManager configManager)
@@ -97,6 +101,7 @@ public class QuickEaterPlugin extends Plugin
 	protected void startUp()
 	{
 		nextEatHP = utils.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
+		drinkPrayer = utils.getRandomIntBetweenRange(config.minPrayerPoints(), config.maxPrayerPoints());
 	}
 
 	@Override
@@ -108,6 +113,10 @@ public class QuickEaterPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick event)
 	{
+		if(prayerDrinkTimeout > 0)
+		{
+			prayerDrinkTimeout--;
+		}
 		if (!config.drinkStamina())
 		{
 			return;
@@ -158,6 +167,33 @@ public class QuickEaterPlugin extends Plugin
 			return;
 		}
 		utils.sendGameMessage("Health is below threshold but we're out of food");
+	}
+
+	@Subscribe
+	public void onStatChanged(StatChanged event)
+	{
+		if (event.getSkill().equals(Skill.PRAYER) && event.getBoostedLevel() == 0)
+		{
+			return;
+		}
+		if (event.getSkill().equals(Skill.PRAYER) && event.getBoostedLevel() > drinkPrayer)
+		{
+			return;
+		}
+		if (event.getSkill().equals(Skill.PRAYER) && utils.inventoryContains(PRAYER_SET) && prayerDrinkTimeout == 0)
+		{
+			WidgetItem prayerItem = utils.getInventoryWidgetItem(PRAYER_SET);
+			targetMenu = new MenuEntry("", "", prayerItem.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), prayerItem.getIndex(),
+					9764864, false);
+			utils.delayMouseClick(prayerItem.getCanvasBounds(),utils.getRandomIntBetweenRange(5, 300));
+			drinkPrayer = utils.getRandomIntBetweenRange(config.minPrayerPoints(), config.maxPrayerPoints());
+			prayerDrinkTimeout = 3;
+			return;
+		}
+		if (event.getSkill() == Skill.PRAYER && prayerDrinkTimeout == 0) {
+			utils.sendGameMessage("Prayer is below threshold but we have nothing to regain prayer");
+		}
+
 	}
 
 	@Subscribe
