@@ -2,7 +2,6 @@ package net.runelite.client.plugins.powerfighter;
 
 public enum PowerFighterState
 {
-	ANIMATING,
 	ATTACK_NPC,
 	BURY_BONES,
 	EQUIP_AMMO,

@@ -291,13 +291,14 @@ public class PowerFighterPlugin extends Plugin
 	{
 		NPC npc = utils.findNearestNpcTargetingLocal(config.npcName());
 		return (npc != null) ? npc :
-		utils.findNearestAttackableNpcWithin(player.getWorldLocation(), config.searchRadius(), config.npcName());
+			utils.findNearestAttackableNpcWithin(player.getWorldLocation(), config.searchRadius(), config.npcName());
 	}
 
 	private PowerFighterState getState()
 	{
 		if (timeout > 0)
 		{
+			utils.handleRun(20, 20);
 			return TIMEOUT;
 		}
 		if (utils.iterating)
@@ -312,7 +313,7 @@ public class PowerFighterPlugin extends Plugin
 		{
 			if (utils.inventoryContains(config.ammoID()))
 			{
-				return EQUIP_AMMO;//Equip ammo
+				return EQUIP_AMMO;
 			}
 			else if (config.stopAmmo())
 			{
@@ -333,7 +334,6 @@ public class PowerFighterPlugin extends Plugin
 			if (currentNPC != null && currentNPC.getHealthRatio() == -1) //NPC has noHealthBar, NPC ran away and we are stuck with a target we can't attack
 			{
 				log.info("interacting and npc has not health bar. Finding new NPC");
-//				currentNPC = utils.findNearestAttackableNpcWithin(player.getWorldLocation(), config.searchRadius(), config.npcName());
 				currentNPC = findSuitableNPC();
 				if (currentNPC != null)
 				{
@@ -347,7 +347,6 @@ public class PowerFighterPlugin extends Plugin
 					return TIMEOUT;
 				}
 			}
-			//currentNPC = utils.findNearestNpcTargetingLocal(config.npcName());
 			return IN_COMBAT;
 		}
 		currentNPC = utils.findNearestNpcTargetingLocal(config.npcName());
@@ -388,7 +387,6 @@ public class PowerFighterPlugin extends Plugin
 				}
 			}
 		}
-//		currentNPC = utils.findNearestNpcTargetingLocal(config.npcName());
 		currentNPC = findSuitableNPC();
 		if (currentNPC != null)
 		{

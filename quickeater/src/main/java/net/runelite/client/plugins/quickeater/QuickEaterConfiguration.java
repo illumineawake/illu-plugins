@@ -50,18 +50,30 @@ public interface QuickEaterConfiguration extends Config
 	default int maxEatHP()	{ return 20; }
 
 	@ConfigItem(
+		keyName = "drinkPrayer",
+		name = "Drink Prayer restoration Potions",
+		description = "Enable to drink Prayer/Super Restore pots below given Prayer levels",
+		position = 6
+	)
+	default boolean drinkPrayer() { return false; }
+
+	@ConfigItem(
 		keyName = "minPrayerPoints",
 		name = "Minimum Prayer Points",
 		description = "Minimum Prayer points to drink at. i.e. will always drink",
-		position = 2
+		position = 7,
+		hidden = true,
+		unhide = "drinkPrayer"
 	)
 	default int minPrayerPoints()	{ return 10; }
 
 	@ConfigItem(
 		keyName = "maxPrayerPoints",
 		name = "Maximum Prayer Points",
-		description = "Highest Prayer points to consider drinking. Value MUST be higher than minimum HP config. If HP drops below this value bot may randomly decide to eat.",
-		position = 3
+		description = "Highest Prayer points to consider drinking. Value MUST be higher than minimum HP config. If Prayer drops below this value bot may randomly decide to drink.",
+		position = 8,
+		hidden = true,
+		unhide = "drinkPrayer"
 	)
 	default int maxPrayerPoints()	{ return 20; }
 

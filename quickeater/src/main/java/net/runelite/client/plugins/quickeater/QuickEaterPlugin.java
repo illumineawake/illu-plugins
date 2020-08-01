@@ -57,8 +57,8 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Quick Eater",
 	enabledByDefault = false,
-	description = "Illumine - auto eat food below configured HP",
-	tags = {"illumine", "auto", "bot", "eat", "food"},
+	description = "Illumine - auto eat food and drink some potions below configured values",
+	tags = {"illumine", "auto", "bot", "eat", "food", "potions", "stamina", "prayer"},
 	type = PluginType.UTILITY
 )
 @Slf4j
@@ -86,7 +86,7 @@ public class QuickEaterPlugin extends Plugin
 	private Set<Integer> PRAYER_SET = Set.of(ItemID.PRAYER_POTION1, ItemID.PRAYER_POTION2, ItemID.PRAYER_POTION3, ItemID.PRAYER_POTION4, ItemID.SUPER_RESTORE1, ItemID.SUPER_RESTORE2, ItemID.SUPER_RESTORE3, ItemID.SUPER_RESTORE4);
 
 	private int timeout;
-	private int prayerDrinkTimeout = 0;
+	private int prayerDrinkTimeout;
 	private int drinkEnergy;
 	private int nextEatHP;
 	private int drinkPrayer;
@@ -172,28 +172,25 @@ public class QuickEaterPlugin extends Plugin
 	@Subscribe
 	public void onStatChanged(StatChanged event)
 	{
-		if (event.getSkill().equals(Skill.PRAYER) && event.getBoostedLevel() == 0)
+		log.info("Boosted level: {}", event.getBoostedLevel());
+		if (!event.getSkill().equals(Skill.PRAYER) || !config.drinkPrayer() ||
+			event.getBoostedLevel() > drinkPrayer ||
+			prayerDrinkTimeout > 0)
 		{
 			return;
 		}
-		if (event.getSkill().equals(Skill.PRAYER) && event.getBoostedLevel() > drinkPrayer)
-		{
-			return;
-		}
-		if (event.getSkill().equals(Skill.PRAYER) && utils.inventoryContains(PRAYER_SET) && prayerDrinkTimeout == 0)
+		if (utils.inventoryContains(PRAYER_SET))
 		{
 			WidgetItem prayerItem = utils.getInventoryWidgetItem(PRAYER_SET);
 			targetMenu = new MenuEntry("", "", prayerItem.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), prayerItem.getIndex(),
 					9764864, false);
-			utils.delayMouseClick(prayerItem.getCanvasBounds(),utils.getRandomIntBetweenRange(5, 300));
+			utils.delayMouseClick(prayerItem.getCanvasBounds(), utils.getRandomIntBetweenRange(5, 300));
 			drinkPrayer = utils.getRandomIntBetweenRange(config.minPrayerPoints(), config.maxPrayerPoints());
 			prayerDrinkTimeout = 3;
-			return;
-		}
-		if (event.getSkill() == Skill.PRAYER && prayerDrinkTimeout == 0) {
+		} else
+		{
 			utils.sendGameMessage("Prayer is below threshold but we have nothing to regain prayer");
 		}
-
 	}
 
 	@Subscribe
