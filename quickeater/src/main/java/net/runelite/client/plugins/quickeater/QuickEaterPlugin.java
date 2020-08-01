@@ -36,6 +36,7 @@ import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.MenuOptionClicked;
@@ -113,7 +114,7 @@ public class QuickEaterPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick event)
 	{
-		if(prayerDrinkTimeout > 0)
+		if (prayerDrinkTimeout > 0)
 		{
 			prayerDrinkTimeout--;
 		}
@@ -154,7 +155,7 @@ public class QuickEaterPlugin extends Plugin
 		{
 			targetMenu = new MenuEntry("", "", eatItem.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), eatItem.getIndex(),
 				9764864, false);
-			utils.delayMouseClick(eatItem.getCanvasBounds(),utils.getRandomIntBetweenRange(5, 300));
+			utils.delayMouseClick(eatItem.getCanvasBounds(), utils.getRandomIntBetweenRange(5, 300));
 			nextEatHP = utils.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
 			return;
 		}
@@ -163,7 +164,7 @@ public class QuickEaterPlugin extends Plugin
 			WidgetItem drinkItem = utils.getInventoryWidgetItem(DRINK_SET);
 			targetMenu = new MenuEntry("", "", drinkItem.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), drinkItem.getIndex(),
 				9764864, false);
-			utils.delayMouseClick(drinkItem.getCanvasBounds(),utils.getRandomIntBetweenRange(5, 300));
+			utils.delayMouseClick(drinkItem.getCanvasBounds(), utils.getRandomIntBetweenRange(5, 300));
 			return;
 		}
 		utils.sendGameMessage("Health is below threshold but we're out of food");
@@ -172,7 +173,6 @@ public class QuickEaterPlugin extends Plugin
 	@Subscribe
 	public void onStatChanged(StatChanged event)
 	{
-		log.info("Boosted level: {}", event.getBoostedLevel());
 		if (!event.getSkill().equals(Skill.PRAYER) || !config.drinkPrayer() ||
 			event.getBoostedLevel() > drinkPrayer ||
 			prayerDrinkTimeout > 0)
@@ -183,13 +183,25 @@ public class QuickEaterPlugin extends Plugin
 		{
 			WidgetItem prayerItem = utils.getInventoryWidgetItem(PRAYER_SET);
 			targetMenu = new MenuEntry("", "", prayerItem.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), prayerItem.getIndex(),
-					9764864, false);
+				9764864, false);
 			utils.delayMouseClick(prayerItem.getCanvasBounds(), utils.getRandomIntBetweenRange(5, 300));
 			drinkPrayer = utils.getRandomIntBetweenRange(config.minPrayerPoints(), config.maxPrayerPoints());
 			prayerDrinkTimeout = 3;
-		} else
+		}
+		else
 		{
 			utils.sendGameMessage("Prayer is below threshold but we have nothing to regain prayer");
+		}
+	}
+
+	@Subscribe
+	protected void onGameStateChanged(GameStateChanged event)
+	{
+		/* When logging in thr stat changed event is triggered for all skills and can send a false value of 0 even if the stat is full,
+		causing a prayer pot to be incorrectly consumed if enabled. Setting a timeout on login ensures this doesn't occur */
+		if (event.getGameState() == GameState.LOGGED_IN)
+		{
+			prayerDrinkTimeout = 2;
 		}
 	}
 
