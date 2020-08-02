@@ -69,7 +69,6 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "minPrayerPoints",
 		name = "Minimum Prayer Points",
 		description = "Minimum Prayer points to drink at. i.e. will always drink",
-		titleSection = "Prayer",
 		hidden = true,
 		unhide = "drinkPrayer",
 		position = 4
@@ -80,7 +79,6 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "maxPrayerPoints",
 		name = "Maximum Prayer Points",
 		description = "Highest Prayer points to consider drinking. Value MUST be higher than minimum Prayer config. If Prayer drops below this value bot may randomly decide to eat.",
-		titleSection = "Prayer",
 		hidden = true,
 		unhide = "drinkPrayer",
 		position = 5
