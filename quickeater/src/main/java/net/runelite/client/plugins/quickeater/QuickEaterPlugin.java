@@ -36,11 +36,14 @@ import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
+import net.runelite.api.VarPlayer;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.StatChanged;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -58,8 +61,8 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Quick Eater",
 	enabledByDefault = false,
-	description = "Illumine - auto eat food below configured HP",
-	tags = {"illumine", "auto", "bot", "eat", "food"},
+	description = "Illumine - auto eat food and drink some potions below configured values",
+	tags = {"illumine", "auto", "bot", "eat", "food", "potions", "stamina", "prayer"},
 	type = PluginType.UTILITY
 )
 @Slf4j
@@ -84,6 +87,8 @@ public class QuickEaterPlugin extends Plugin
 	Player player;
 
 	private Set<Integer> DRINK_SET = Set.of(ItemID.JUG_OF_WINE, ItemID.SARADOMIN_BREW1, ItemID.SARADOMIN_BREW2, ItemID.SARADOMIN_BREW3, ItemID.SARADOMIN_BREW4);
+	private Set<Integer> POISON_SET = Set.of(ItemID.ANTIPOISON1, ItemID.ANTIPOISON2, ItemID.ANTIPOISON3, ItemID.ANTIPOISON4, ItemID.SUPERANTIPOISON1, ItemID.SUPERANTIPOISON2, ItemID.SUPERANTIPOISON3, ItemID.SUPERANTIPOISON4,
+		ItemID.ANTIDOTE1, ItemID.ANTIDOTE2, ItemID.ANTIDOTE3, ItemID.ANTIDOTE4, ItemID.ANTIDOTE1_5958, ItemID.ANTIDOTE2_5956, ItemID.ANTIDOTE3_5954, ItemID.ANTIDOTE4_5952);
 	private Set<Integer> PRAYER_SET = Set.of(ItemID.PRAYER_POTION1, ItemID.PRAYER_POTION2, ItemID.PRAYER_POTION3,
 			ItemID.PRAYER_POTION4, ItemID.SUPER_RESTORE1, ItemID.SUPER_RESTORE2, ItemID.SUPER_RESTORE3, ItemID.SUPER_RESTORE4);
 	private Set<Integer> STRENGTH_SET = Set.of(ItemID.STRENGTH_POTION1, ItemID.STRENGTH_POTION2, ItemID.STRENGTH_POTION3, ItemID.STRENGTH_POTION4,
@@ -132,10 +137,38 @@ public class QuickEaterPlugin extends Plugin
 
 	}
 
+	private void useItem(WidgetItem item)
+	{
+		if (item != null)
+		{
+			targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), item.getIndex(),
+				9764864, false);
+			utils.delayMouseClick(item.getCanvasBounds(), utils.getRandomIntBetweenRange(5, 300));
+		}
+	}
+
+	@Subscribe
+	private void onVarbitChanged(VarbitChanged event)
+	{
+		if (config.drinkAntiPoison() && event.getIndex() == VarPlayer.POISON.getId() && client.getVarpValue(VarPlayer.POISON.getId()) > 0)
+		{
+			if (utils.inventoryContains(POISON_SET))
+			{
+				log.info("Drinking anti-poison");
+				WidgetItem poisonItem = utils.getInventoryWidgetItem(POISON_SET);
+				useItem(poisonItem);
+			}
+			else
+			{
+				utils.sendGameMessage("You are Poisoned but missing anti-poison");
+			}
+		}
+	}
+
 	@Subscribe
 	private void onGameTick(GameTick event)
 	{
-		if(drinkTimeout > 0)
+		if (drinkTimeout > 0)
 		{
 			drinkTimeout--;
 		}
@@ -162,7 +195,6 @@ public class QuickEaterPlugin extends Plugin
 		}
 	}
 
-
 	@Subscribe
 	private void onHitsplatApplied(HitsplatApplied event)
 	{
@@ -174,18 +206,17 @@ public class QuickEaterPlugin extends Plugin
 			Set.of(ItemID.DWARVEN_ROCK_CAKE, ItemID.DWARVEN_ROCK_CAKE_7510));
 		if (eatItem != null)
 		{
-			targetMenu = new MenuEntry("", "", eatItem.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), eatItem.getIndex(),
-				9764864, false);
-			utils.delayMouseClick(eatItem.getCanvasBounds(),utils.getRandomIntBetweenRange(5, 300));
+			useItem(eatItem);
 			nextEatHP = utils.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
+			log.info("Next Eat HP: {}", nextEatHP);
 			return;
 		}
 		if (utils.inventoryContains(DRINK_SET))
 		{
 			WidgetItem drinkItem = utils.getInventoryWidgetItem(DRINK_SET);
-			targetMenu = new MenuEntry("", "", drinkItem.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), drinkItem.getIndex(),
-				9764864, false);
-			utils.delayMouseClick(drinkItem.getCanvasBounds(),utils.getRandomIntBetweenRange(5, 300));
+			useItem(drinkItem);
+			nextEatHP = utils.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
+			log.info("Next Eat HP: {}", nextEatHP);
 			return;
 		}
 		utils.sendGameMessage("Health is below threshold but we're out of food");
@@ -194,6 +225,8 @@ public class QuickEaterPlugin extends Plugin
 	@Subscribe
 	protected void onGameStateChanged(GameStateChanged event)
 	{
+		/* When logging in thr stat changed event is triggered for all skills and can send a false value of 0 even if the stat is full,
+		causing a prayer pot to be incorrectly consumed if enabled. Setting a timeout on login ensures this doesn't occur */
 		if (event.getGameState() == GameState.LOGGED_IN)
 			drinkTimeout = 4;
 	}

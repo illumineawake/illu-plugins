@@ -106,6 +106,7 @@ public class PowerSkillerPlugin extends Plugin
 	WorldArea DENSE_ESSENCE_AREA = new WorldArea(new WorldPoint(1754, 3845, 0), new WorldPoint(1770, 3862, 0));
 
 	int timeout = 0;
+	int opcode;
 	long sleepLength;
 	boolean startPowerSkiller;
 	boolean npcMoved;
@@ -243,9 +244,10 @@ public class PowerSkillerPlugin extends Plugin
 	private void interactNPC()
 	{
 		targetNPC = utils.findNearestNpcWithin(skillLocation, config.locationRadius(), objectIds);
+		opcode = (config.customOpcode() ? config.opcodeValue() : MenuOpcode.NPC_FIRST_OPTION.getId());
 		if (targetNPC != null)
 		{
-			targetMenu = new MenuEntry("", "", targetNPC.getIndex(), MenuOpcode.NPC_FIRST_OPTION.getId(), 0, 0, false);
+			targetMenu = new MenuEntry("", "", targetNPC.getIndex(), opcode, 0, 0, false);
 			utils.delayMouseClick(targetNPC.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
@@ -273,9 +275,10 @@ public class PowerSkillerPlugin extends Plugin
 	{
 		targetObject = (config.type() == PowerSkillerType.DENSE_ESSENCE) ? getDenseEssence() :
 			utils.findNearestGameObjectWithin(skillLocation, config.locationRadius(), objectIds);
+		opcode = (config.customOpcode() ? config.opcodeValue() : MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId());
 		if (targetObject != null)
 		{
-			targetMenu = new MenuEntry("", "", targetObject.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
+			targetMenu = new MenuEntry("", "", targetObject.getId(), opcode,
 				targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
 			utils.delayMouseClick(targetObject.getConvexHull().getBounds(), sleepDelay());
 		}
@@ -446,6 +449,10 @@ public class PowerSkillerPlugin extends Plugin
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
+		if (config.customOpcode() && config.printOpcode())
+		{
+			utils.sendGameMessage("Opcode value: " + event.getOpcode());
+		}
 		if (startPowerSkiller)
 		{
 			if (targetMenu == null)

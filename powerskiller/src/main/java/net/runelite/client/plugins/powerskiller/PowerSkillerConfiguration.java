@@ -273,6 +273,46 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
+		keyName = "customOpcode",
+		name = "Use custom Menu Opcode",
+		description = "Enable to use a custom Menu Opcode. Use this in scenarios where the default Menu Opcode isn't working." +
+			"Example default NPC Opcode works for fishing with lobster pots but not harpooning. To harpoon set an opcode of 10.",
+		position = 86
+	)
+	default boolean customOpcode()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "printOpcode",
+		name = "Print Opcode in Game Chat",
+		description = "Enable to Print the Opcode of the action you want in Game Chat when you click it. " +
+			"Use this if you're unsure what Opcode to use",
+		position = 87,
+		hidden = true,
+		unhide = "customOpcode"
+	)
+	default boolean printOpcode()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "opcodeValue",
+		name = "Custom Opcode Value",
+		description = "Input custom Opcode value" +
+			"Example default NPC Opcode works for fishing with lobster pots but not harpooning. To harpoon set an opcode of 10.",
+		position = 88,
+		hidden = true,
+		unhide = "customOpcode"
+	)
+	default int opcodeValue()
+	{
+		return 10;
+	}
+
+	@ConfigItem(
 		keyName = "bankItems",
 		name = "Bank gathered items (Beta)",
 		description = "Enable to bank your items instead of drop",
