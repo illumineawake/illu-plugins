@@ -254,7 +254,8 @@ public interface PowerSkillerConfiguration extends Config
 		name = "Object Type",
 		description = "Type of Object. Typically in-game objects that have blue hover text are Game Objects (trees, rocks etc.) " +
 			"and objects that have yellow text are NPCs (e.g. fishing spots). Use Developer Tools to determine Object Type and ID.",
-		position = 70
+		position = 70,
+		titleSection = "skillerTitle"
 	)
 	default PowerSkillerType type()
 	{
@@ -265,11 +266,23 @@ public interface PowerSkillerConfiguration extends Config
 		keyName = "objectIds",
 		name = "IDs to power-skill",
 		description = "Separate with comma",
-		position = 80
+		position = 80,
+		titleSection = "skillerTitle"
 	)
 	default String objectIds()
 	{
 		return "";
+	}
+
+	@ConfigTitleSection(
+			keyName = "opcodeTitle",
+			name = "Menu Opcodes",
+			description = "",
+			position = 85
+	)
+	default Title opcodeTitle()
+	{
+		return new Title();
 	}
 
 	@ConfigItem(
@@ -277,7 +290,8 @@ public interface PowerSkillerConfiguration extends Config
 		name = "Use custom Menu Opcode",
 		description = "Enable to use a custom Menu Opcode. Use this in scenarios where the default Menu Opcode isn't working." +
 			"Example default NPC Opcode works for fishing with lobster pots but not harpooning. To harpoon set an opcode of 10.",
-		position = 86
+		position = 86,
+		titleSection = "opcodeTitle"
 	)
 	default boolean customOpcode()
 	{
@@ -291,7 +305,8 @@ public interface PowerSkillerConfiguration extends Config
 			"Use this if you're unsure what Opcode to use",
 		position = 87,
 		hidden = true,
-		unhide = "customOpcode"
+		unhide = "customOpcode",
+		titleSection = "opcodeTitle"
 	)
 	default boolean printOpcode()
 	{
@@ -305,18 +320,31 @@ public interface PowerSkillerConfiguration extends Config
 			"Example default NPC Opcode works for fishing with lobster pots but not harpooning. To harpoon set an opcode of 10.",
 		position = 88,
 		hidden = true,
-		unhide = "customOpcode"
+		unhide = "customOpcode",
+		titleSection = "opcodeTitle"
 	)
 	default int opcodeValue()
 	{
 		return 10;
 	}
 
+	@ConfigTitleSection(
+			keyName = "dropTitle",
+			name = "Dropping & Banking",
+			description = "",
+			position = 89
+	)
+	default Title dropTitle()
+	{
+		return new Title();
+	}
+
 	@ConfigItem(
 		keyName = "bankItems",
 		name = "Bank gathered items (Beta)",
 		description = "Enable to bank your items instead of drop",
-		position = 89
+		position = 90,
+		titleSection = "dropTitle"
 	)
 	default boolean bankItems()
 	{
@@ -327,7 +355,8 @@ public interface PowerSkillerConfiguration extends Config
 		keyName = "dropInventory",
 		name = "Drop/Bank entire inventory",
 		description = "Enable to drop your entire inventory",
-		position = 90
+		position = 91,
+		titleSection = "dropTitle"
 	)
 	default boolean dropInventory()
 	{
@@ -339,7 +368,8 @@ public interface PowerSkillerConfiguration extends Config
 		name = "Required inventory item IDs",
 		description = "Separate with comma. Bot will stop if required items are not in inventory, e.g. fishing bait. Leave at 0 if there are none.",
 		position = 100,
-		hide = "dropInventory"
+		hide = "dropInventory",
+		titleSection = "dropTitle"
 	)
 	default String requiredItems()
 	{
@@ -351,7 +381,8 @@ public interface PowerSkillerConfiguration extends Config
 		name = "Logout when out of required IDs",
 		description = "Bot will logout if required items are not in inventory, e.g. fishing bait.",
 		position = 101,
-		hide = "dropInventory"
+		hide = "dropInventory",
+		titleSection = "dropTitle"
 	)
 	default boolean logout()
 	{
@@ -363,7 +394,8 @@ public interface PowerSkillerConfiguration extends Config
 		name = "Item IDs to drop/not drop or Bank",
 		description = "Separate with comma, enable below option to not drop/bank these IDs.",
 		position = 110,
-		hide = "dropInventory"
+		hide = "dropInventory",
+		titleSection = "dropTitle"
 	)
 	default String items()
 	{
@@ -375,7 +407,8 @@ public interface PowerSkillerConfiguration extends Config
 		name = "Drop/Bank all except above IDs",
 		description = "Enable to drop/Bank all items except the given IDs",
 		position = 120,
-		hide = "dropInventory"
+		hide = "dropInventory",
+		titleSection = "dropTitle"
 	)
 	default boolean dropExcept()
 	{
@@ -386,7 +419,8 @@ public interface PowerSkillerConfiguration extends Config
 			keyName = "dropOne",
 			name = "Get 1 Drop 1",
 			description = "Tick manipulation",
-			position = 121
+			position = 121,
+			titleSection = "dropTitle"
 	)
 	default boolean dropOne()
 	{
@@ -401,7 +435,8 @@ public interface PowerSkillerConfiguration extends Config
 		keyName = "locationRadius",
 		name = "Location Radius",
 		description = "Radius to search for GameObjects.",
-		position = 130
+		position = 130,
+		titleSection = "skillerTitle"
 	)
 	default int locationRadius()
 	{
@@ -412,7 +447,8 @@ public interface PowerSkillerConfiguration extends Config
 		keyName = "enableUI",
 		name = "Enable UI",
 		description = "Enable to turn on in game UI",
-		position = 140
+		position = 140,
+		titleSection = "skillerTitle"
 	)
 	default boolean enableUI()
 	{
