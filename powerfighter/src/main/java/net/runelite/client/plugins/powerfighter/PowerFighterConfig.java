@@ -416,7 +416,7 @@ public interface PowerFighterConfig extends Config
 		keyName = "buryBones",
 		name = "Loot and Bury Bones",
 		description = "Enable to loot and bury Bones",
-		position = 43,
+		position = 44,
 		hidden = true,
 		unhide = "lootItems",
 		titleSection = "lootTitle"
@@ -427,10 +427,24 @@ public interface PowerFighterConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "buryOne",
+			name = "Get 1 Bury 1",
+			description = "Enable to bury bones as they are picked up. Disable to bury bones once inventory is full.",
+			position = 45,
+			hidden = true,
+			unhide = "buryBones",
+			titleSection = "lootTitle"
+	)
+	default boolean buryOne()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "lootNPCOnly",
 		name = "Loot your NPC Only",
 		description = "Enable to only loot NPC's you have killed",
-		position = 44,
+		position = 50,
 		hidden = true,
 		unhide = "lootItems",
 		titleSection = "lootTitle"

@@ -356,7 +356,7 @@ public class PowerFighterPlugin extends Plugin
 			log.info("Chance result: {}", chance);
 			return (chance == 0) ? ATTACK_NPC : WAIT_COMBAT;
 		}
-		if (config.buryBones() && utils.inventoryContains("bones") && utils.inventoryFull())
+		if (config.buryBones() && utils.inventoryContains("bones") && (utils.inventoryFull() || config.buryOne()))
 		{
 			return BURY_BONES;
 		}
