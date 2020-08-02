@@ -37,6 +37,7 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "minEatHP",
 		name = "Minimum Eat HP",
 		description = "Minimum HP to eat at. i.e. will always eat",
+		titleSection = "Health",
 		position = 0
 	)
 	default int minEatHP()	{ return 10; }
@@ -45,15 +46,31 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "maxEatHP",
 		name = "Maximum Eat HP",
 		description = "Highest HP to consider eating. Value MUST be higher than minimum HP config. If HP drops below this value bot may randomly decide to eat.",
+		titleSection = "Health",
 		position = 1
 	)
 	default int maxEatHP()	{ return 20; }
 
 	@ConfigItem(
+		keyName = "drinkPrayer",
+		name = "Enable Drink Prayer Pots",
+		description = "Enable to drink pots to restore prayer",
+		position = 2,
+		titleSection = "Prayer"
+	)
+	default boolean drinkPrayer()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "minPrayerPoints",
 		name = "Minimum Prayer Points",
 		description = "Minimum Prayer points to drink at. i.e. will always drink",
-		position = 2
+		titleSection = "Prayer",
+		hidden = true,
+		unhide = "drinkPrayer",
+		position = 3
 	)
 	default int minPrayerPoints()	{ return 10; }
 
@@ -61,15 +78,149 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "maxPrayerPoints",
 		name = "Maximum Prayer Points",
 		description = "Highest Prayer points to consider drinking. Value MUST be higher than minimum HP config. If HP drops below this value bot may randomly decide to eat.",
-		position = 3
+		titleSection = "Prayer",
+		hidden = true,
+		unhide = "drinkPrayer",
+		position = 4
 	)
 	default int maxPrayerPoints()	{ return 20; }
+
+	@ConfigItem(
+		keyName = "drinkStrength",
+		name = "Enable Drink Strength Pots",
+		description = "Enable to drink pots to restore strength",
+		position = 5,
+		titleSection = "Strength"
+	)
+	default boolean drinkStrength()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "strengthPoints",
+		name = "Strength Points",
+		description = "Drink strength boosting pot below this level",
+		position = 6,
+		hidden = true,
+		unhide = "drinkStrength",
+		titleSection = "Strength"
+
+	)
+	default int strengthPoints()
+	{
+		return 100;
+	}
+	
+	@ConfigItem(
+		keyName = "drinkAttack",
+		name = "Enable Drink Attack Pots",
+		description = "Enable to drink pots to restore attack",
+		position = 7,
+		titleSection = "Attack"
+	)
+	default boolean drinkAttack()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "attackPoints",
+		name = "Attack Points",
+		description = "Drink attack boosting pot below this level",
+		position = 8,
+		hidden = true,
+		unhide = "drinkAttack",
+		titleSection = "Attack"
+	)
+	default int attackPoints()
+	{
+		return 100;
+	}
+
+	@ConfigItem(
+		keyName = "drinkDefence",
+		name = "Enable Drink Defence Pots",
+		description = "Enable to drink pots to restore defence",
+		position = 9,
+		titleSection = "Defence"
+	)
+	default boolean drinkDefence()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "defencePoints",
+		name = "Defence Points",
+		description = "Drink defence boosting pot below this level",
+		position = 10,
+		hidden = true,
+		unhide = "drinkDefence",
+		titleSection = "Defence"
+	)
+	default int defencePoints()
+	{
+		return 100;
+	}
+
+	@ConfigItem(
+		keyName = "drinkRanged",
+		name = "Enable Drink Ranged Pots",
+		description = "Enable to drink pots to restore ranged",
+		position = 11,
+		titleSection = "Ranged"
+	)
+	default boolean drinkRanged()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "rangedPoints",
+		name = "Ranged Points",
+		description = "Drink ranged boosting pot below this level",
+		position = 12,
+		hidden = true,
+		unhide = "drinkRanged",
+		titleSection = "Ranged"
+	)
+	default int rangedPoints()
+	{
+		return 100;
+	}
+
+	@ConfigItem(
+		keyName = "drinkMagic",
+		name = "Enable Drink Magic Pots",
+		description = "Enable to drink pots to restore magic",
+		position = 13,
+		titleSection = "Magic"
+	)
+	default boolean drinkMagic()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "magicPoints",
+		name = "Magic Points",
+		description = "Drink magic boosting pot below this level",
+		position = 14,
+		hidden = true,
+		unhide = "drinkMagic",
+		titleSection = "Magic"
+	)
+	default int magicPoints()
+	{
+		return 100;
+	}
 
 	@ConfigItem(
 		keyName = "drinkStamina",
 		name = "Drink Stamina Potions",
 		description = "Enable to drink Stamina Potions below given energy level",
-		position = 10
+		position = 15
 	)
 	default boolean drinkStamina() { return false; }
 

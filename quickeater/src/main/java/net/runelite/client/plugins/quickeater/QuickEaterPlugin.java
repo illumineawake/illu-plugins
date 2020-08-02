@@ -36,6 +36,7 @@ import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.MenuOptionClicked;
@@ -83,10 +84,31 @@ public class QuickEaterPlugin extends Plugin
 	Player player;
 
 	private Set<Integer> DRINK_SET = Set.of(ItemID.JUG_OF_WINE, ItemID.SARADOMIN_BREW1, ItemID.SARADOMIN_BREW2, ItemID.SARADOMIN_BREW3, ItemID.SARADOMIN_BREW4);
-	private Set<Integer> PRAYER_SET = Set.of(ItemID.PRAYER_POTION1, ItemID.PRAYER_POTION2, ItemID.PRAYER_POTION3, ItemID.PRAYER_POTION4, ItemID.SUPER_RESTORE1, ItemID.SUPER_RESTORE2, ItemID.SUPER_RESTORE3, ItemID.SUPER_RESTORE4);
+	private Set<Integer> PRAYER_SET = Set.of(ItemID.PRAYER_POTION1, ItemID.PRAYER_POTION2, ItemID.PRAYER_POTION3,
+			ItemID.PRAYER_POTION4, ItemID.SUPER_RESTORE1, ItemID.SUPER_RESTORE2, ItemID.SUPER_RESTORE3, ItemID.SUPER_RESTORE4);
+	private Set<Integer> STRENGTH_SET = Set.of(ItemID.STRENGTH_POTION1, ItemID.STRENGTH_POTION2, ItemID.STRENGTH_POTION3, ItemID.STRENGTH_POTION4,
+			ItemID.SUPER_STRENGTH1, ItemID.SUPER_STRENGTH2, ItemID.SUPER_STRENGTH3, ItemID.SUPER_STRENGTH4,
+			ItemID.DIVINE_SUPER_STRENGTH_POTION1, ItemID.DIVINE_SUPER_STRENGTH_POTION2, ItemID.DIVINE_SUPER_STRENGTH_POTION3, ItemID.DIVINE_SUPER_STRENGTH_POTION4,
+			ItemID.DIVINE_SUPER_COMBAT_POTION1, ItemID.DIVINE_SUPER_COMBAT_POTION2, ItemID.DIVINE_SUPER_COMBAT_POTION3, ItemID.DIVINE_SUPER_COMBAT_POTION4);
+	private Set<Integer> ATTACK_SET = Set.of(ItemID.ATTACK_POTION1, ItemID.ATTACK_POTION2, ItemID.ATTACK_POTION3, ItemID.ATTACK_POTION4,
+			ItemID.SUPER_ATTACK1, ItemID.SUPER_ATTACK2, ItemID.SUPER_ATTACK3, ItemID.SUPER_ATTACK4,
+			ItemID.DIVINE_SUPER_ATTACK_POTION1, ItemID.DIVINE_SUPER_ATTACK_POTION2, ItemID.DIVINE_SUPER_ATTACK_POTION3, ItemID.DIVINE_SUPER_ATTACK_POTION4,
+			ItemID.DIVINE_SUPER_COMBAT_POTION1, ItemID.DIVINE_SUPER_COMBAT_POTION2, ItemID.DIVINE_SUPER_COMBAT_POTION3, ItemID.DIVINE_SUPER_COMBAT_POTION4);
+	private Set<Integer> DEFENCE_SET = Set.of(ItemID.DEFENCE_POTION1, ItemID.DEFENCE_POTION2, ItemID.DEFENCE_POTION3, ItemID.DEFENCE_POTION4,
+			ItemID.SUPER_DEFENCE1, ItemID.SUPER_DEFENCE2, ItemID.SUPER_DEFENCE3, ItemID.SUPER_DEFENCE4,
+			ItemID.DIVINE_SUPER_DEFENCE_POTION1, ItemID.DIVINE_SUPER_DEFENCE_POTION2, ItemID.DIVINE_SUPER_DEFENCE_POTION3, ItemID.DIVINE_SUPER_DEFENCE_POTION4,
+			ItemID.DIVINE_SUPER_COMBAT_POTION1, ItemID.DIVINE_SUPER_COMBAT_POTION2, ItemID.DIVINE_SUPER_COMBAT_POTION3, ItemID.DIVINE_SUPER_COMBAT_POTION4);
+	private Set<Integer> RANGED_SET = Set.of(ItemID.RANGING_POTION1, ItemID.RANGING_POTION2, ItemID.RANGING_POTION3, ItemID.RANGING_POTION4,
+			ItemID.BASTION_POTION1, ItemID.BASTION_POTION2, ItemID.BASTION_POTION3, ItemID.BASTION_POTION4,
+			ItemID.DIVINE_RANGING_POTION1, ItemID.DIVINE_RANGING_POTION2, ItemID.DIVINE_RANGING_POTION3, ItemID.DIVINE_RANGING_POTION4,
+			ItemID.DIVINE_BASTION_POTION1, ItemID.DIVINE_BASTION_POTION2, ItemID.DIVINE_BASTION_POTION3, ItemID.DIVINE_BASTION_POTION4);
+	private Set<Integer> MAGIC_SET = Set.of(ItemID.MAGIC_POTION1, ItemID.MAGIC_POTION2, ItemID.MAGIC_POTION3, ItemID.MAGIC_POTION4,
+			ItemID.BATTLEMAGE_POTION1, ItemID.BATTLEMAGE_POTION2, ItemID.BATTLEMAGE_POTION3, ItemID.BATTLEMAGE_POTION4,
+			ItemID.DIVINE_MAGIC_POTION1, ItemID.DIVINE_MAGIC_POTION2, ItemID.DIVINE_MAGIC_POTION3, ItemID.DIVINE_MAGIC_POTION4,
+			ItemID.DIVINE_BATTLEMAGE_POTION1, ItemID.DIVINE_BATTLEMAGE_POTION2, ItemID.DIVINE_BATTLEMAGE_POTION3, ItemID.DIVINE_BATTLEMAGE_POTION4);
 
 	private int timeout;
-	private int prayerDrinkTimeout = 0;
+	private int drinkTimeout;
 	private int drinkEnergy;
 	private int nextEatHP;
 	private int drinkPrayer;
@@ -113,9 +135,9 @@ public class QuickEaterPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick event)
 	{
-		if(prayerDrinkTimeout > 0)
+		if(drinkTimeout > 0)
 		{
-			prayerDrinkTimeout--;
+			drinkTimeout--;
 		}
 		if (!config.drinkStamina())
 		{
@@ -170,30 +192,70 @@ public class QuickEaterPlugin extends Plugin
 	}
 
 	@Subscribe
+	protected void onGameStateChanged(GameStateChanged event)
+	{
+		if (event.getGameState() == GameState.LOGGED_IN)
+			drinkTimeout = 4;
+	}
+
+	@Subscribe
 	public void onStatChanged(StatChanged event)
 	{
-		if (event.getSkill().equals(Skill.PRAYER) && event.getBoostedLevel() == 0)
-		{
-			return;
-		}
-		if (event.getSkill().equals(Skill.PRAYER) && event.getBoostedLevel() > drinkPrayer)
-		{
-			return;
-		}
-		if (event.getSkill().equals(Skill.PRAYER) && utils.inventoryContains(PRAYER_SET) && prayerDrinkTimeout == 0)
-		{
-			WidgetItem prayerItem = utils.getInventoryWidgetItem(PRAYER_SET);
-			targetMenu = new MenuEntry("", "", prayerItem.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), prayerItem.getIndex(),
-					9764864, false);
-			utils.delayMouseClick(prayerItem.getCanvasBounds(),utils.getRandomIntBetweenRange(5, 300));
-			drinkPrayer = utils.getRandomIntBetweenRange(config.minPrayerPoints(), config.maxPrayerPoints());
-			prayerDrinkTimeout = 3;
-			return;
-		}
-		if (event.getSkill() == Skill.PRAYER && prayerDrinkTimeout == 0) {
-			utils.sendGameMessage("Prayer is below threshold but we have nothing to regain prayer");
-		}
+		checkSkill(event.getSkill(), event.getBoostedLevel());
+	}
 
+	private void checkSkill(Skill skill, int boostedLevel) {
+		switch (skill)
+		{
+			case PRAYER:
+				if (config.drinkPrayer() && drinkPot(skill, boostedLevel, PRAYER_SET, drinkPrayer))
+					drinkPrayer = utils.getRandomIntBetweenRange(config.minPrayerPoints(), config.maxPrayerPoints());
+				break;
+			case STRENGTH:
+				if (config.drinkStrength())
+					drinkPot(skill, boostedLevel, STRENGTH_SET, config.strengthPoints());
+				break;
+			case ATTACK:
+				if (config.drinkAttack())
+					drinkPot(skill, boostedLevel, ATTACK_SET, config.attackPoints());
+				break;
+			case DEFENCE:
+				if (config.drinkDefence())
+					drinkPot(skill, boostedLevel, DEFENCE_SET, config.defencePoints());
+				break;
+			case RANGED:
+				if (config.drinkRanged())
+					drinkPot(skill, boostedLevel, RANGED_SET, config.rangedPoints());
+				break;
+			case MAGIC:
+				if (config.drinkMagic())
+					drinkPot(skill, boostedLevel, MAGIC_SET, config.magicPoints());
+				break;
+		}
+	}
+
+	private boolean drinkPot(Skill skill, int boostedLevel, Set<Integer> itemSet, int drinkPotLevel) {
+		if (boostedLevel == 0)
+		{
+			return false;
+		}
+		if (boostedLevel > drinkPotLevel)
+		{
+			return false;
+		}
+		if (utils.inventoryContains(itemSet) && drinkTimeout == 0)
+		{
+			WidgetItem itemToDrink = utils.getInventoryWidgetItem(itemSet);
+			targetMenu = new MenuEntry("", "", itemToDrink.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), itemToDrink.getIndex(),
+					9764864, false);
+			utils.delayMouseClick(itemToDrink.getCanvasBounds(),utils.getRandomIntBetweenRange(5, 300));
+			drinkTimeout = 4;
+			return true;
+		}
+		if (drinkTimeout == 0) {
+			utils.sendGameMessage(skill + " is below threshold but we have nothing to regain " + skill);
+		}
+		return false;
 	}
 
 	@Subscribe
