@@ -268,24 +268,19 @@ public class QuickEaterPlugin extends Plugin
 	}
 
 	private boolean drinkPot(Skill skill, int boostedLevel, Set<Integer> itemSet, int drinkPotLevel) {
-		if (boostedLevel == 0)
-		{
-			return false;
-		}
-		if (boostedLevel > drinkPotLevel)
+		if (boostedLevel == 0 || boostedLevel > drinkPotLevel)
 		{
 			return false;
 		}
 		if (utils.inventoryContains(itemSet) && drinkTimeout == 0)
 		{
 			WidgetItem itemToDrink = utils.getInventoryWidgetItem(itemSet);
-			targetMenu = new MenuEntry("", "", itemToDrink.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), itemToDrink.getIndex(),
-					9764864, false);
-			utils.delayMouseClick(itemToDrink.getCanvasBounds(),utils.getRandomIntBetweenRange(5, 300));
+			useItem(itemToDrink);
 			drinkTimeout = 4;
 			return true;
 		}
-		if (drinkTimeout == 0) {
+		if (drinkTimeout == 0)
+		{
 			utils.sendGameMessage(skill + " is below threshold but we have nothing to regain " + skill);
 		}
 		return false;

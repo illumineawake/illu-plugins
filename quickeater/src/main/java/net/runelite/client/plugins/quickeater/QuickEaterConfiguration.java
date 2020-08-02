@@ -37,7 +37,6 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "minEatHP",
 		name = "Minimum Eat HP",
 		description = "Minimum HP to eat at. i.e. will always eat",
-		titleSection = "Health",
 		position = 0
 	)
 	default int minEatHP()	{ return 10; }
@@ -46,22 +45,25 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "maxEatHP",
 		name = "Maximum Eat HP",
 		description = "Highest HP to consider eating. Value MUST be higher than minimum HP config. If HP drops below this value bot may randomly decide to eat.",
-		titleSection = "Health",
 		position = 1
 	)
 	default int maxEatHP()	{ return 20; }
 
 	@ConfigItem(
-		keyName = "drinkPrayer",
-		name = "Enable Drink Prayer Pots",
-		description = "Enable to drink pots to restore prayer",
-		position = 2,
-		titleSection = "Prayer"
+		keyName = "drinkAntiPoison",
+		name = "Drink Anti-Poison/Dote Potions",
+		description = "Enable to drink Anti-Poisons or Antidotes when poisoned",
+		position = 2
 	)
-	default boolean drinkPrayer()
-	{
-		return false;
-	}
+	default boolean drinkAntiPoison() { return true; }
+
+	@ConfigItem(
+		keyName = "drinkPrayer",
+		name = "Drink Prayer restoration Potions",
+		description = "Enable to drink Prayer/Super Restore pots below given Prayer levels",
+		position = 3
+	)
+	default boolean drinkPrayer() { return false; }
 
 	@ConfigItem(
 		keyName = "minPrayerPoints",
@@ -70,18 +72,18 @@ public interface QuickEaterConfiguration extends Config
 		titleSection = "Prayer",
 		hidden = true,
 		unhide = "drinkPrayer",
-		position = 3
+		position = 4
 	)
 	default int minPrayerPoints()	{ return 10; }
 
 	@ConfigItem(
 		keyName = "maxPrayerPoints",
 		name = "Maximum Prayer Points",
-		description = "Highest Prayer points to consider drinking. Value MUST be higher than minimum HP config. If HP drops below this value bot may randomly decide to eat.",
+		description = "Highest Prayer points to consider drinking. Value MUST be higher than minimum Prayer config. If Prayer drops below this value bot may randomly decide to eat.",
 		titleSection = "Prayer",
 		hidden = true,
 		unhide = "drinkPrayer",
-		position = 4
+		position = 5
 	)
 	default int maxPrayerPoints()	{ return 20; }
 
@@ -89,8 +91,7 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "drinkStrength",
 		name = "Enable Drink Strength Pots",
 		description = "Enable to drink pots to restore strength",
-		position = 5,
-		titleSection = "Strength"
+		position = 6
 	)
 	default boolean drinkStrength()
 	{
@@ -101,11 +102,9 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "strengthPoints",
 		name = "Strength Points",
 		description = "Drink strength boosting pot below this level",
-		position = 6,
+		position = 7,
 		hidden = true,
-		unhide = "drinkStrength",
-		titleSection = "Strength"
-
+		unhide = "drinkStrength"
 	)
 	default int strengthPoints()
 	{
@@ -116,8 +115,7 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "drinkAttack",
 		name = "Enable Drink Attack Pots",
 		description = "Enable to drink pots to restore attack",
-		position = 7,
-		titleSection = "Attack"
+		position = 8
 	)
 	default boolean drinkAttack()
 	{
@@ -128,10 +126,9 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "attackPoints",
 		name = "Attack Points",
 		description = "Drink attack boosting pot below this level",
-		position = 8,
+		position = 9,
 		hidden = true,
-		unhide = "drinkAttack",
-		titleSection = "Attack"
+		unhide = "drinkAttack"
 	)
 	default int attackPoints()
 	{
@@ -142,8 +139,7 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "drinkDefence",
 		name = "Enable Drink Defence Pots",
 		description = "Enable to drink pots to restore defence",
-		position = 9,
-		titleSection = "Defence"
+		position = 10
 	)
 	default boolean drinkDefence()
 	{
@@ -154,10 +150,9 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "defencePoints",
 		name = "Defence Points",
 		description = "Drink defence boosting pot below this level",
-		position = 10,
+		position = 11,
 		hidden = true,
-		unhide = "drinkDefence",
-		titleSection = "Defence"
+		unhide = "drinkDefence"
 	)
 	default int defencePoints()
 	{
@@ -168,8 +163,7 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "drinkRanged",
 		name = "Enable Drink Ranged Pots",
 		description = "Enable to drink pots to restore ranged",
-		position = 11,
-		titleSection = "Ranged"
+		position = 12
 	)
 	default boolean drinkRanged()
 	{
@@ -180,10 +174,9 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "rangedPoints",
 		name = "Ranged Points",
 		description = "Drink ranged boosting pot below this level",
-		position = 12,
+		position = 13,
 		hidden = true,
-		unhide = "drinkRanged",
-		titleSection = "Ranged"
+		unhide = "drinkRanged"
 	)
 	default int rangedPoints()
 	{
@@ -194,8 +187,7 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "drinkMagic",
 		name = "Enable Drink Magic Pots",
 		description = "Enable to drink pots to restore magic",
-		position = 13,
-		titleSection = "Magic"
+		position = 14
 	)
 	default boolean drinkMagic()
 	{
@@ -206,10 +198,9 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "magicPoints",
 		name = "Magic Points",
 		description = "Drink magic boosting pot below this level",
-		position = 14,
+		position = 15,
 		hidden = true,
-		unhide = "drinkMagic",
-		titleSection = "Magic"
+		unhide = "drinkMagic"
 	)
 	default int magicPoints()
 	{
@@ -220,7 +211,7 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "drinkStamina",
 		name = "Drink Stamina Potions",
 		description = "Enable to drink Stamina Potions below given energy level",
-		position = 15
+		position = 16
 	)
 	default boolean drinkStamina() { return false; }
 
