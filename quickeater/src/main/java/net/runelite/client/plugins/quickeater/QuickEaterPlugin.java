@@ -246,23 +246,78 @@ public class QuickEaterPlugin extends Plugin
 				break;
 			case STRENGTH:
 				if (config.drinkStrength())
+				{
 					drinkPot(skill, boostedLevel, STRENGTH_SET, config.strengthPoints());
+					break;
+				}
+				if (config.drinkAttack())
+				{
+					drinkPot(Skill.ATTACK, client.getBoostedSkillLevel(Skill.ATTACK), ATTACK_SET, config.attackPoints());
+					break;
+				}
+				if (config.drinkDefence())
+				{
+					drinkPot(Skill.DEFENCE, client.getBoostedSkillLevel(Skill.DEFENCE), DEFENCE_SET, config.defencePoints());
+					break;
+				}
 				break;
 			case ATTACK:
 				if (config.drinkAttack())
+				{
 					drinkPot(skill, boostedLevel, ATTACK_SET, config.attackPoints());
+					break;
+				}
+				if (config.drinkStrength())
+				{
+					drinkPot(Skill.STRENGTH, client.getBoostedSkillLevel(Skill.STRENGTH), STRENGTH_SET, config.strengthPoints());
+					break;
+				}
+				if (config.drinkDefence())
+				{
+					drinkPot(Skill.DEFENCE, client.getBoostedSkillLevel(Skill.DEFENCE), DEFENCE_SET, config.defencePoints());
+					break;
+				}
 				break;
 			case DEFENCE:
 				if (config.drinkDefence())
+				{
 					drinkPot(skill, boostedLevel, DEFENCE_SET, config.defencePoints());
+					break;
+				}
+				if (config.drinkStrength())
+				{
+					drinkPot(Skill.STRENGTH, client.getBoostedSkillLevel(Skill.STRENGTH), STRENGTH_SET, config.strengthPoints());
+					break;
+				}
+				if (config.drinkAttack())
+				{
+					drinkPot(Skill.ATTACK, client.getBoostedSkillLevel(Skill.ATTACK), ATTACK_SET, config.attackPoints());
+					break;
+				}
 				break;
 			case RANGED:
 				if (config.drinkRanged())
+				{
 					drinkPot(skill, boostedLevel, RANGED_SET, config.rangedPoints());
+					break;
+				}
+				if (config.drinkDefence())
+				{
+					drinkPot(Skill.DEFENCE, client.getBoostedSkillLevel(Skill.DEFENCE), DEFENCE_SET, config.defencePoints());
+					break;
+				}
 				break;
 			case MAGIC:
 				if (config.drinkMagic())
+				{
 					drinkPot(skill, boostedLevel, MAGIC_SET, config.magicPoints());
+					break;
+				}
+				if (config.drinkDefence())
+				{
+					drinkPot(Skill.DEFENCE, client.getBoostedSkillLevel(Skill.DEFENCE), DEFENCE_SET, config.defencePoints());
+					break;
+				}
 				break;
 		}
 	}
