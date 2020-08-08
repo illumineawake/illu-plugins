@@ -41,7 +41,6 @@ import net.runelite.api.NullObjectID;
 import net.runelite.api.Player;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuOpcode;
-import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
@@ -165,25 +164,23 @@ public class PowerSkillerPlugin extends Plugin
 			return;
 		}
 		log.info("button {} pressed!", configButtonClicked.getKey());
-		switch (configButtonClicked.getKey())
+		if (configButtonClicked.getKey().equals("startButton"))
 		{
-			case "startButton":
-				if (!startPowerSkiller)
-				{
-					startPowerSkiller = true;
-					chinBreakHandler.startPlugin(this);
-					state = null;
-					targetMenu = null;
-					botTimer = Instant.now();
-					setLocation();
-					getConfigValues();
-					overlayManager.add(overlay);
-				}
-				else
-				{
-					resetVals();
-				}
-				break;
+			if (!startPowerSkiller)
+			{
+				startPowerSkiller = true;
+				chinBreakHandler.startPlugin(this);
+				state = null;
+				targetMenu = null;
+				botTimer = Instant.now();
+				setLocation();
+				getConfigValues();
+				overlayManager.add(overlay);
+			}
+			else
+			{
+				resetVals();
+			}
 		}
 	}
 

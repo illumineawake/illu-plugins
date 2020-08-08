@@ -31,7 +31,6 @@ include(":magicsplasher")
 include("powerskiller")
 include(":quickeater")
 include(":rooftopagility")
-include(":template")
 
 for (project in rootProject.children) {
     project.apply {

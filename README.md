@@ -10,11 +10,19 @@ My development skills are novice at best so please take all of this with a grain
 
 **Supported plugins:**
 
-Add this repo within OPRS, using:
+You will need to add **two** repositories. Mine and Owain's which is used for break handling.
+
+Mine:
 
 **Github Repository owner:** illumineawake
 
 **Github Repository name:** illu-plugins
+
+Owain's:
+
+**Github Repository owner:** Owain94
+
+**Github Repository name:** OpenOSRS-external-plugins-hosting
 
 **_Unsupported plugins:_**
 
