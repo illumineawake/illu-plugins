@@ -26,6 +26,7 @@
 package net.runelite.client.plugins.rooftopagility;
 
 import com.google.inject.Provides;
+import com.owain.chinbreakhandler.ChinBreakHandler;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
@@ -107,6 +108,9 @@ public class RooftopAgilityPlugin extends Plugin
 	@Inject
 	ItemManager itemManager;
 
+	@Inject
+	private ChinBreakHandler chinBreakHandler;
+
 	Player player;
 	RooftopAgilityState state;
 	Instant botTimer;
@@ -140,13 +144,26 @@ public class RooftopAgilityPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
+		chinBreakHandler.registerPlugin(this);
 	}
 
 	@Override
 	protected void shutDown()
 	{
+		resetVals();
+		chinBreakHandler.unregisterPlugin(this);
+	}
+
+	@Provides
+	RooftopAgilityConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(RooftopAgilityConfig.class);
+	}
+
+	private void resetVals()
+	{
 		overlayManager.remove(overlay);
+		chinBreakHandler.stopPlugin(this);
 		markOfGraceTile = null;
 		markOfGrace = null;
 		startAgility = false;
@@ -157,12 +174,6 @@ public class RooftopAgilityPlugin extends Plugin
 		marksPerHour = 0;
 		alchTimeout = 0;
 		inventoryItems.clear();
-	}
-
-	@Provides
-	RooftopAgilityConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(RooftopAgilityConfig.class);
 	}
 
 	@Subscribe
@@ -179,6 +190,7 @@ public class RooftopAgilityPlugin extends Plugin
 				if (!startAgility)
 				{
 					startAgility = true;
+					chinBreakHandler.startPlugin(this);
 					state = null;
 					targetMenu = null;
 					botTimer = Instant.now();
@@ -192,7 +204,7 @@ public class RooftopAgilityPlugin extends Plugin
 				}
 				else
 				{
-					shutDown();
+					resetVals();
 				}
 				break;
 		}
@@ -492,6 +504,10 @@ public class RooftopAgilityPlugin extends Plugin
 				return PRIFF_PORTAL;
 			}
 		}
+		if (chinBreakHandler.shouldBreak(this))
+		{
+			return HANDLE_BREAK;
+		}
 		if (!utils.isMoving(beforeLoc))
 		{
 			return FIND_OBSTACLE;
@@ -502,12 +518,16 @@ public class RooftopAgilityPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
+		if (!startAgility || chinBreakHandler.isBreakActive(this))
+		{
+			return;
+		}
 		player = client.getLocalPlayer();
 		if (alchTimeout > 0)
 		{
 			alchTimeout--;
 		}
-		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN && startAgility && client.getBoostedSkillLevel(Skill.HITPOINTS) > config.lowHP())
+		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN && client.getBoostedSkillLevel(Skill.HITPOINTS) > config.lowHP())
 		{
 			if (!REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
 			{
@@ -558,6 +578,10 @@ public class RooftopAgilityPlugin extends Plugin
 					targetMenu = new MenuEntry("", "", priffPortal.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
 							priffPortal.getSceneMinLocation().getX(), priffPortal.getSceneMinLocation().getY(), false);
 					utils.delayMouseClick(priffPortal.getConvexHull().getBounds(), sleepDelay());
+					break;
+				case HANDLE_BREAK:
+					chinBreakHandler.startBreak(this);
+					timeout = 10;
 					break;
 			}
 		}

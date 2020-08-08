@@ -26,6 +26,8 @@
 package net.runelite.client.plugins.powerskiller;
 
 import com.google.inject.Provides;
+import com.owain.chinbreakhandler.ChinBreakHandler;
+import java.awt.Rectangle;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,6 +41,7 @@ import net.runelite.api.NullObjectID;
 import net.runelite.api.Player;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuOpcode;
+import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
@@ -95,6 +98,9 @@ public class PowerSkillerPlugin extends Plugin
 	@Inject
 	private PowerSkillerOverlay overlay;
 
+	@Inject
+	private ChinBreakHandler chinBreakHandler;
+
 	PowerSkillerState state;
 	GameObject targetObject;
 	NPC targetNPC;
@@ -103,6 +109,7 @@ public class PowerSkillerPlugin extends Plugin
 	Instant botTimer;
 	LocalPoint beforeLoc;
 	Player player;
+	Rectangle altRect = new Rectangle(-100,-100, 10, 10);
 	WorldArea DENSE_ESSENCE_AREA = new WorldArea(new WorldPoint(1754, 3845, 0), new WorldPoint(1770, 3862, 0));
 
 	int timeout = 0;
@@ -125,13 +132,20 @@ public class PowerSkillerPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
+		chinBreakHandler.registerPlugin(this);
 	}
 
 	@Override
 	protected void shutDown()
 	{
+		resetVals();
+		chinBreakHandler.unregisterPlugin(this);
+	}
+
+	private void resetVals()
+	{
 		overlayManager.remove(overlay);
+		chinBreakHandler.stopPlugin(this);
 		state = null;
 		timeout = 0;
 		botTimer = null;
@@ -157,6 +171,7 @@ public class PowerSkillerPlugin extends Plugin
 				if (!startPowerSkiller)
 				{
 					startPowerSkiller = true;
+					chinBreakHandler.startPlugin(this);
 					state = null;
 					targetMenu = null;
 					botTimer = Instant.now();
@@ -166,7 +181,7 @@ public class PowerSkillerPlugin extends Plugin
 				}
 				else
 				{
-					shutDown();
+					resetVals();
 				}
 				break;
 		}
@@ -248,7 +263,7 @@ public class PowerSkillerPlugin extends Plugin
 		if (targetNPC != null)
 		{
 			targetMenu = new MenuEntry("", "", targetNPC.getIndex(), opcode, 0, 0, false);
-			utils.delayMouseClick(targetNPC.getConvexHull().getBounds(), sleepDelay());
+			utils.delayMouseClick(config.altMouse() ? altRect : targetNPC.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
 		{
@@ -280,7 +295,7 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			targetMenu = new MenuEntry("", "", targetObject.getId(), opcode,
 				targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
-			utils.delayMouseClick(targetObject.getConvexHull().getBounds(), sleepDelay());
+			utils.delayMouseClick(config.altMouse() ? altRect : targetObject.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
 		{
@@ -321,7 +336,7 @@ public class PowerSkillerPlugin extends Plugin
 			targetMenu = new MenuEntry("", "", bank.getId(),
 				utils.getBankMenuOpcode(bank.getId()), bank.getSceneMinLocation().getX(),
 				bank.getSceneMinLocation().getY(), false);
-			utils.delayMouseClick(bank.getConvexHull().getBounds(), sleepDelay());
+			utils.delayMouseClick(config.altMouse() ? altRect : bank.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
 		{
@@ -349,6 +364,10 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			timeout = 2 + tickDelay();
 			return MOVING;
+		}
+		if (chinBreakHandler.shouldBreak(this))
+		{
+			return HANDLE_BREAK;
 		}
 		if (utils.inventoryFull())
 		{
@@ -390,8 +409,12 @@ public class PowerSkillerPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
+		if (!startPowerSkiller || chinBreakHandler.isBreakActive(this))
+		{
+			return;
+		}
 		player = client.getLocalPlayer();
-		if (client != null && player != null && startPowerSkiller && skillLocation != null)
+		if (client != null && player != null && skillLocation != null)
 		{
 			state = getState();
 			beforeLoc = player.getLocalLocation();
@@ -436,6 +459,10 @@ public class PowerSkillerPlugin extends Plugin
 					{
 						utils.logout();
 					}
+					break;
+				case HANDLE_BREAK:
+					chinBreakHandler.startBreak(this);
+					timeout = 10;
 					break;
 				case ANIMATING:
 				case MOVING:

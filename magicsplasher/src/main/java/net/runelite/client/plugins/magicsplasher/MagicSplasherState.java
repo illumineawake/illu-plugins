@@ -4,6 +4,7 @@ public enum MagicSplasherState
 {
 	FIND_ITEM,
 	FIND_NPC,
+	HANDLE_BREAK,
 	IDLING,
 	ITEM_NOT_FOUND,
 	MOVING,

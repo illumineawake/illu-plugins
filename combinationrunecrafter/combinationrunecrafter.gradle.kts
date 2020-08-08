@@ -23,13 +23,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.1.0"
+version = "1.2.0"
 
 project.extra["PluginName"] = "Combination Runecrafter Plugin"
 project.extra["PluginDescription"] = "Illumine - Combination Runecrafting plugin"
 
 dependencies {
     compileOnly(project(":botutils"))
+    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.3+")
 }
 
 tasks {
@@ -39,7 +40,11 @@ tasks {
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Dependencies" to nameToId("BotUtils"),
+                    "Plugin-Dependencies" to
+                            arrayOf(
+                                    nameToId("BotUtils"),
+                                    "chinbreakhandler-plugin"
+                            ).joinToString(),
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))

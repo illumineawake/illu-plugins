@@ -26,6 +26,7 @@
 package net.runelite.client.plugins.magicsplasher;
 
 import com.google.inject.Provides;
+import com.owain.chinbreakhandler.ChinBreakHandler;
 import java.time.Instant;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -93,6 +94,9 @@ public class MagicSplasherPlugin extends Plugin
 	@Inject
 	MagicSplasherOverlay overlay;
 
+	@Inject
+	private ChinBreakHandler chinBreakHandler;
+
 	SplashSpells selectedSpell;
 	MagicSplasherState state;
 	Instant botTimer;
@@ -115,20 +119,14 @@ public class MagicSplasherPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
+		chinBreakHandler.registerPlugin(this);
 	}
 
 	@Override
 	protected void shutDown()
 	{
-		overlayManager.remove(overlay);
-		startSplasher = false;
-		selectedSpell = null;
-		botTimer = null;
-		failureCount = 0;
-		npcID = -1;
-		itemID = -1;
-		timeout = 0;
+		resetVals();
+		chinBreakHandler.unregisterPlugin(this);
 	}
 
 	@Provides
@@ -151,6 +149,7 @@ public class MagicSplasherPlugin extends Plugin
 				if (!startSplasher)
 				{
 					startSplasher = true;
+					chinBreakHandler.startPlugin(this);
 					botTimer = Instant.now();
 					state = null;
 					targetMenu = null;
@@ -160,7 +159,7 @@ public class MagicSplasherPlugin extends Plugin
 				}
 				else
 				{
-					shutDown();
+					resetVals();
 				}
 				break;
 		}
@@ -175,7 +174,15 @@ public class MagicSplasherPlugin extends Plugin
 
 	public void resetVals()
 	{
-
+		overlayManager.remove(overlay);
+		chinBreakHandler.stopPlugin(this);
+		startSplasher = false;
+		selectedSpell = null;
+		botTimer = null;
+		failureCount = 0;
+		npcID = -1;
+		itemID = -1;
+		timeout = 0;
 	}
 
 	@Subscribe
@@ -267,7 +274,6 @@ public class MagicSplasherPlugin extends Plugin
 
 	public MagicSplasherState getState()
 	{
-		log.info(selectedSpell.getName());
 		if (timeout > 0)
 		{
 			return IDLING;
@@ -275,6 +281,10 @@ public class MagicSplasherPlugin extends Plugin
 		if (utils.isMoving(beforeLoc)) //could also test with just isMoving
 		{
 			return MOVING;
+		}
+		if (chinBreakHandler.shouldBreak(this))
+		{
+			return HANDLE_BREAK;
 		}
 		if(selectedSpell.getName().equals("High Alchemy"))
 		{
@@ -288,8 +298,12 @@ public class MagicSplasherPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
+		if (!startSplasher || chinBreakHandler.isBreakActive(this))
+		{
+			return;
+		}
 		player = client.getLocalPlayer();
-		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN && startSplasher)
+		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
 		{
 			utils.handleRun(40, 20);
 			state = getState();
@@ -317,6 +331,10 @@ public class MagicSplasherPlugin extends Plugin
 						utils.logout();
 					else
 						timeout = tickDelay();
+					break;
+				case HANDLE_BREAK:
+					chinBreakHandler.startBreak(this);
+					timeout = 10;
 					break;
 				case FIND_NPC:
 				case FIND_ITEM:
@@ -361,7 +379,7 @@ public class MagicSplasherPlugin extends Plugin
 	@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
-		if (event.getType() != ChatMessageType.GAMEMESSAGE &&
+		if (!startSplasher || event.getType() != ChatMessageType.GAMEMESSAGE &&
 			event.getType() != ChatMessageType.ENGINE)
 		{
 			return;
