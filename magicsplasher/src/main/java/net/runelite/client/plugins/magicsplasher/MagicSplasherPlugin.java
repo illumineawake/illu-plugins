@@ -287,7 +287,7 @@ public class MagicSplasherPlugin extends Plugin
 		{
 			return HANDLE_BREAK;
 		}
-		if(selectedSpell.getName().equals("High Alchemy"))
+		if (selectedSpell.getName().equals("High Alchemy"))
 		{
 			targetItem = getItem();
 			return (targetItem != null && targetItem.getQuantity() > 0) ? FIND_ITEM : ITEM_NOT_FOUND;
@@ -329,9 +329,14 @@ public class MagicSplasherPlugin extends Plugin
 					log.info("Item not found, config: {}, ID: {}, quantity {}", config.itemID(), targetItem.getId(), targetItem.getQuantity());
 					utils.sendGameMessage("Item not found");
 					if (config.logout())
+					{
 						utils.logout();
+						resetVals();
+					}
 					else
+					{
 						timeout = tickDelay();
+					}
 					break;
 				case HANDLE_BREAK:
 					chinBreakHandler.startBreak(this);
@@ -405,7 +410,8 @@ public class MagicSplasherPlugin extends Plugin
 				startSplasher = false;
 				if (config.logout())
 				{
-						utils.logout();
+					utils.logout();
+					resetVals();
 				}
 				return;
 			}

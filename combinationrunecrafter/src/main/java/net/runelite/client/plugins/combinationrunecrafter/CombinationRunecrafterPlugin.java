@@ -603,7 +603,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 						utils.logout();
 					}
 					startBot = false;
-					shutDown();
+					resetVals();
 					break;
 			}
 			beforeLoc = player.getLocalLocation();

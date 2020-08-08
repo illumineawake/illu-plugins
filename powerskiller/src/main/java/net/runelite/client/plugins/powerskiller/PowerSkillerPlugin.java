@@ -457,6 +457,7 @@ public class PowerSkillerPlugin extends Plugin
 					{
 						utils.logout();
 					}
+					resetVals();
 					break;
 				case HANDLE_BREAK:
 					chinBreakHandler.startBreak(this);
