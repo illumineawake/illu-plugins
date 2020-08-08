@@ -334,7 +334,8 @@ public class CombinationRunecrafterPlugin extends Plugin
 
 	private long sleepDelay()
 	{
-		return utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
+		sleepLength = utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
+		return sleepLength;
 	}
 
 	private int tickDelay()
