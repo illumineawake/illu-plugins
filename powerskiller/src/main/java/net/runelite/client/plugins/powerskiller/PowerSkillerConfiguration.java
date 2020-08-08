@@ -444,6 +444,18 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
+		keyName = "altMouse",
+		name = "Alt Mouse (for running away issues)",
+		description = "Alternative mouse for users experiencing randomly walking away",
+		position = 131,
+		titleSection = "skillerTitle"
+	)
+	default boolean altMouse()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "enableUI",
 		name = "Enable UI",
 		description = "Enable to turn on in game UI",
