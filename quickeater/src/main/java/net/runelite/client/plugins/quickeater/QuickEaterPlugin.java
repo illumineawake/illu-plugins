@@ -245,38 +245,8 @@ public class QuickEaterPlugin extends Plugin
 					drinkPrayer = utils.getRandomIntBetweenRange(config.minPrayerPoints(), config.maxPrayerPoints());
 				break;
 			case STRENGTH:
-				if (config.drinkStrength())
-				{
-					drinkPot(skill, boostedLevel, STRENGTH_SET, config.strengthPoints());
-				}
-				if (config.drinkAttack())
-				{
-					drinkPot(Skill.ATTACK, client.getBoostedSkillLevel(Skill.ATTACK), ATTACK_SET, config.attackPoints());
-				}
-				if (config.drinkDefence())
-				{
-					drinkPot(Skill.DEFENCE, client.getBoostedSkillLevel(Skill.DEFENCE), DEFENCE_SET, config.defencePoints());
-				}
-				break;
 			case ATTACK:
-				if (config.drinkAttack())
-				{
-					drinkPot(skill, boostedLevel, ATTACK_SET, config.attackPoints());
-				}
-				if (config.drinkStrength())
-				{
-					drinkPot(Skill.STRENGTH, client.getBoostedSkillLevel(Skill.STRENGTH), STRENGTH_SET, config.strengthPoints());
-				}
-				if (config.drinkDefence())
-				{
-					drinkPot(Skill.DEFENCE, client.getBoostedSkillLevel(Skill.DEFENCE), DEFENCE_SET, config.defencePoints());
-				}
-				break;
 			case DEFENCE:
-				if (config.drinkDefence())
-				{
-					drinkPot(skill, boostedLevel, DEFENCE_SET, config.defencePoints());
-				}
 				if (config.drinkStrength())
 				{
 					drinkPot(Skill.STRENGTH, client.getBoostedSkillLevel(Skill.STRENGTH), STRENGTH_SET, config.strengthPoints());
@@ -284,6 +254,10 @@ public class QuickEaterPlugin extends Plugin
 				if (config.drinkAttack())
 				{
 					drinkPot(Skill.ATTACK, client.getBoostedSkillLevel(Skill.ATTACK), ATTACK_SET, config.attackPoints());
+				}
+				if (config.drinkDefence())
+				{
+					drinkPot(Skill.DEFENCE, client.getBoostedSkillLevel(Skill.DEFENCE), DEFENCE_SET, config.defencePoints());
 				}
 				break;
 			case RANGED:
