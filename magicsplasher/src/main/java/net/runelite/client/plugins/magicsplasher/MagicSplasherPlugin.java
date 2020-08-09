@@ -44,6 +44,7 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigButtonClicked;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.queries.NPCQuery;
@@ -417,6 +418,20 @@ public class MagicSplasherPlugin extends Plugin
 			}
 			failureCount++;
 			timeout = tickDelay();
+		}
+	}
+
+	@Subscribe
+	private void onGameStateChanged(GameStateChanged event)
+	{
+		if (!startSplasher)
+		{
+			return;
+		}
+		if (event.getGameState() == GameState.LOGGED_IN)
+		{
+			state = IDLING;
+			timeout = 2;
 		}
 	}
 }

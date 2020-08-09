@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "3.7.4"
+version = "3.7.5"
 
 project.extra["PluginName"] = "Power Skiller"
 project.extra["PluginDescription"] = "Illumine auto power skiller plugin"

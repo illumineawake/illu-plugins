@@ -39,6 +39,7 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.DecorativeObject;
 import net.runelite.api.events.ConfigButtonClicked;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.ItemSpawned;
@@ -439,7 +440,15 @@ public class RooftopAgilityPlugin extends Plugin
 					{
 						if (currentObstacle.getLocation().distanceTo(markOfGraceTile.getWorldLocation()) == 0)
 						{
-							return MARK_OF_GRACE;
+							if (markOfGraceTile.getGroundItems().contains(markOfGrace)) //failsafe sometimes onItemDespawned doesn't capture mog despawn
+							{
+								return MARK_OF_GRACE;
+							}
+							else
+							{
+								log.info("Mark of grace not found and markOfGrace was not null");
+								markOfGrace = null;
+							}
 						}
 					}
 					if (currentObstacle.getBankID() == 0 || !shouldRestock())
@@ -594,6 +603,18 @@ public class RooftopAgilityPlugin extends Plugin
 	}
 
 	@Subscribe
+	private void onGameStateChanged(GameStateChanged event)
+	{
+		if (event.getGameState() == GameState.LOGGED_IN && startAgility)
+		{
+			markOfGraceTile = null;
+			markOfGrace = null;
+			state = TIMEOUT;
+			timeout = 2;
+		}
+	}
+
+	@Subscribe
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		if (!startAgility || targetMenu == null)
@@ -674,6 +695,7 @@ public class RooftopAgilityPlugin extends Plugin
 		{
 			log.debug("Mark of grace despawned");
 			markOfGrace = null;
+			markOfGraceTile = null;
 		}
 	}
 

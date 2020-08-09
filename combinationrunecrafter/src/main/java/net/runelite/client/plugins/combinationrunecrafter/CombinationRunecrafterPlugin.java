@@ -636,9 +636,11 @@ public class CombinationRunecrafterPlugin extends Plugin
 		{
 			return;
 		}
-		if (event.getGameState() == GameState.LOGIN_SCREEN)
+		if (event.getGameState() == GameState.LOGGED_IN)
 		{
 			setTalisman = false;
+			state = TIMEOUT;
+			timeout = 2;
 		}
 	}
 }

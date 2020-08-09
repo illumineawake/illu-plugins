@@ -44,6 +44,7 @@ import net.runelite.api.MenuOpcode;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.GameObjectDespawned;
@@ -560,6 +561,16 @@ public class PowerSkillerPlugin extends Plugin
 		if (utils.inventoryContains(itemIds))
 		{
 			utils.dropItems(itemIds, false, config.sleepMin(), config.sleepMax());
+		}
+	}
+
+	@Subscribe
+	private void onGameStateChanged(GameStateChanged event)
+	{
+		if (event.getGameState() == GameState.LOGGED_IN && startPowerSkiller)
+		{
+			state = TIMEOUT;
+			timeout = 2;
 		}
 	}
 }

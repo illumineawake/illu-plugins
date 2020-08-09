@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "2.1.2"
+version = "2.1.3"
 
 project.extra["PluginName"] = "Magic Splasher"
 project.extra["PluginDescription"] = "Illumine automated magic splasher"
