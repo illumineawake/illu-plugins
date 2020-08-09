@@ -26,6 +26,7 @@
 package net.runelite.client.plugins.combinationrunecrafter;
 
 import com.google.inject.Provides;
+import com.owain.chinbreakhandler.ChinBreakHandler;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -93,6 +94,9 @@ public class CombinationRunecrafterPlugin extends Plugin
 	@Inject
 	private CombinationRunecrafterOverlay overlay;
 
+	@Inject
+	private ChinBreakHandler chinBreakHandler;
+
 	MenuEntry targetMenu;
 	Instant botTimer;
 	Player player;
@@ -157,13 +161,20 @@ public class CombinationRunecrafterPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
+		chinBreakHandler.registerPlugin(this);
 	}
 
 	@Override
 	protected void shutDown()
 	{
+		resetVals();
+		chinBreakHandler.unregisterPlugin(this);
+	}
+
+	private void resetVals()
+	{
 		log.info("stopping Combination Runecrafting plugin");
+		chinBreakHandler.stopPlugin(this);
 		startBot = false;
 		botTimer = null;
 		overlayManager.remove(overlay);
@@ -182,6 +193,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 			if (!startBot)
 			{
 				startBot = true;
+				chinBreakHandler.startPlugin(this);
 				botTimer = Instant.now();
 				initCounters();
 				state = null;
@@ -199,7 +211,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 			}
 			else
 			{
-				shutDown();
+				resetVals();
 			}
 		}
 	}
@@ -322,7 +334,8 @@ public class CombinationRunecrafterPlugin extends Plugin
 
 	private long sleepDelay()
 	{
-		return utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
+		sleepLength = utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
+		return sleepLength;
 	}
 
 	private int tickDelay()
@@ -409,6 +422,10 @@ public class CombinationRunecrafterPlugin extends Plugin
 		{
 			utils.sendGameMessage("Fire Tiara not equipped. Stopping.");
 			return OUT_OF_ITEM;
+		}
+		if (chinBreakHandler.shouldBreak(this))
+		{
+			return HANDLE_BREAK;
 		}
 		mysteriousRuins = utils.findNearestGameObject(34817); //Mysterious Ruins
 		fireAltar = utils.findNearestGameObject(ObjectID.ALTAR_34764);
@@ -497,7 +514,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick event)
 	{
-		if (!startBot)
+		if (!startBot || chinBreakHandler.isBreakActive(this))
 		{
 			return;
 		}
@@ -574,6 +591,11 @@ public class CombinationRunecrafterPlugin extends Plugin
 				case WITHDRAW_ALL_ITEM:
 					utils.withdrawAllItem(bankItem);
 					break;
+				case HANDLE_BREAK:
+					chinBreakHandler.startBreak(this);
+					setTalisman = false;
+					timeout = 10;
+					break;
 				case OUT_OF_ITEM:
 					utils.sendGameMessage("Out of required items. Stopping.");
 					if (config.logout())
@@ -581,7 +603,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 						utils.logout();
 					}
 					startBot = false;
-					shutDown();
+					resetVals();
 					break;
 			}
 			beforeLoc = player.getLocalLocation();
@@ -614,9 +636,11 @@ public class CombinationRunecrafterPlugin extends Plugin
 		{
 			return;
 		}
-		if (event.getGameState() == GameState.LOGIN_SCREEN)
+		if (event.getGameState() == GameState.LOGGED_IN)
 		{
 			setTalisman = false;
+			state = TIMEOUT;
+			timeout = 2;
 		}
 	}
 }

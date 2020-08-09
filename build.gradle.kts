@@ -22,7 +22,7 @@ subprojects {
     group = "com.openosrs.externals"
 
     project.extra["PluginProvider"] = "illumine"
-    project.extra["ProjectSupportUrl"] = "https://discord.gg/YUHHsE"
+    project.extra["ProjectSupportUrl"] = "https://discord.gg/9fGzEDR"
     project.extra["PluginLicense"] = "3-Clause BSD License"
 
     repositories {
@@ -38,6 +38,7 @@ subprojects {
             }
             filter {
                 includeGroupByRegex("com\\.openosrs.*")
+                includeGroupByRegex("com\\.owain.*")
             }
         }
     }

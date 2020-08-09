@@ -143,7 +143,7 @@ public class QuickEaterPlugin extends Plugin
 		{
 			targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), item.getIndex(),
 				9764864, false);
-			utils.delayMouseClick(item.getCanvasBounds(), utils.getRandomIntBetweenRange(5, 300));
+			utils.delayMouseClick(item.getCanvasBounds(), utils.getRandomIntBetweenRange(25, 200));
 		}
 	}
 
@@ -208,7 +208,7 @@ public class QuickEaterPlugin extends Plugin
 		{
 			useItem(eatItem);
 			nextEatHP = utils.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
-			log.info("Next Eat HP: {}", nextEatHP);
+			log.debug("Next Eat HP: {}", nextEatHP);
 			return;
 		}
 		if (utils.inventoryContains(DRINK_SET))
@@ -216,7 +216,7 @@ public class QuickEaterPlugin extends Plugin
 			WidgetItem drinkItem = utils.getInventoryWidgetItem(DRINK_SET);
 			useItem(drinkItem);
 			nextEatHP = utils.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
-			log.info("Next Eat HP: {}", nextEatHP);
+			log.debug("Next Eat HP: {}", nextEatHP);
 			return;
 		}
 		utils.sendGameMessage("Health is below threshold but we're out of food");

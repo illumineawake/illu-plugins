@@ -26,6 +26,7 @@
 package net.runelite.client.plugins.magicsplasher;
 
 import com.google.inject.Provides;
+import com.owain.chinbreakhandler.ChinBreakHandler;
 import java.time.Instant;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,6 +44,7 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigButtonClicked;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.queries.NPCQuery;
@@ -93,6 +95,9 @@ public class MagicSplasherPlugin extends Plugin
 	@Inject
 	MagicSplasherOverlay overlay;
 
+	@Inject
+	private ChinBreakHandler chinBreakHandler;
+
 	SplashSpells selectedSpell;
 	MagicSplasherState state;
 	Instant botTimer;
@@ -115,20 +120,14 @@ public class MagicSplasherPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
+		chinBreakHandler.registerPlugin(this);
 	}
 
 	@Override
 	protected void shutDown()
 	{
-		overlayManager.remove(overlay);
-		startSplasher = false;
-		selectedSpell = null;
-		botTimer = null;
-		failureCount = 0;
-		npcID = -1;
-		itemID = -1;
-		timeout = 0;
+		resetVals();
+		chinBreakHandler.unregisterPlugin(this);
 	}
 
 	@Provides
@@ -151,6 +150,7 @@ public class MagicSplasherPlugin extends Plugin
 				if (!startSplasher)
 				{
 					startSplasher = true;
+					chinBreakHandler.startPlugin(this);
 					botTimer = Instant.now();
 					state = null;
 					targetMenu = null;
@@ -160,7 +160,7 @@ public class MagicSplasherPlugin extends Plugin
 				}
 				else
 				{
-					shutDown();
+					resetVals();
 				}
 				break;
 		}
@@ -175,7 +175,15 @@ public class MagicSplasherPlugin extends Plugin
 
 	public void resetVals()
 	{
-
+		overlayManager.remove(overlay);
+		chinBreakHandler.stopPlugin(this);
+		startSplasher = false;
+		selectedSpell = null;
+		botTimer = null;
+		failureCount = 0;
+		npcID = -1;
+		itemID = -1;
+		timeout = 0;
 	}
 
 	@Subscribe
@@ -204,7 +212,8 @@ public class MagicSplasherPlugin extends Plugin
 
 	private long sleepDelay()
 	{
-		return utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
+		sleepLength = utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
+		return sleepLength;
 	}
 
 	private int tickDelay()
@@ -267,7 +276,6 @@ public class MagicSplasherPlugin extends Plugin
 
 	public MagicSplasherState getState()
 	{
-		log.info(selectedSpell.getName());
 		if (timeout > 0)
 		{
 			return IDLING;
@@ -276,7 +284,11 @@ public class MagicSplasherPlugin extends Plugin
 		{
 			return MOVING;
 		}
-		if(selectedSpell.getName().equals("High Alchemy"))
+		if (chinBreakHandler.shouldBreak(this))
+		{
+			return HANDLE_BREAK;
+		}
+		if (selectedSpell.getName().equals("High Alchemy"))
 		{
 			targetItem = getItem();
 			return (targetItem != null && targetItem.getQuantity() > 0) ? FIND_ITEM : ITEM_NOT_FOUND;
@@ -288,8 +300,12 @@ public class MagicSplasherPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
+		if (!startSplasher || chinBreakHandler.isBreakActive(this))
+		{
+			return;
+		}
 		player = client.getLocalPlayer();
-		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN && startSplasher)
+		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
 		{
 			utils.handleRun(40, 20);
 			state = getState();
@@ -314,9 +330,18 @@ public class MagicSplasherPlugin extends Plugin
 					log.info("Item not found, config: {}, ID: {}, quantity {}", config.itemID(), targetItem.getId(), targetItem.getQuantity());
 					utils.sendGameMessage("Item not found");
 					if (config.logout())
+					{
 						utils.logout();
+						resetVals();
+					}
 					else
+					{
 						timeout = tickDelay();
+					}
+					break;
+				case HANDLE_BREAK:
+					chinBreakHandler.startBreak(this);
+					timeout = 10;
 					break;
 				case FIND_NPC:
 				case FIND_ITEM:
@@ -361,7 +386,7 @@ public class MagicSplasherPlugin extends Plugin
 	@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
-		if (event.getType() != ChatMessageType.GAMEMESSAGE &&
+		if (!startSplasher || event.getType() != ChatMessageType.GAMEMESSAGE &&
 			event.getType() != ChatMessageType.ENGINE)
 		{
 			return;
@@ -386,12 +411,27 @@ public class MagicSplasherPlugin extends Plugin
 				startSplasher = false;
 				if (config.logout())
 				{
-						utils.logout();
+					utils.logout();
+					resetVals();
 				}
 				return;
 			}
 			failureCount++;
 			timeout = tickDelay();
+		}
+	}
+
+	@Subscribe
+	private void onGameStateChanged(GameStateChanged event)
+	{
+		if (!startSplasher)
+		{
+			return;
+		}
+		if (event.getGameState() == GameState.LOGGED_IN)
+		{
+			state = IDLING;
+			timeout = 2;
 		}
 	}
 }

@@ -26,6 +26,7 @@
 package net.runelite.client.plugins.rooftopagility;
 
 import com.google.inject.Provides;
+import com.owain.chinbreakhandler.ChinBreakHandler;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
@@ -38,6 +39,7 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.DecorativeObject;
 import net.runelite.api.events.ConfigButtonClicked;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.ItemSpawned;
@@ -107,6 +109,9 @@ public class RooftopAgilityPlugin extends Plugin
 	@Inject
 	ItemManager itemManager;
 
+	@Inject
+	private ChinBreakHandler chinBreakHandler;
+
 	Player player;
 	RooftopAgilityState state;
 	Instant botTimer;
@@ -140,13 +145,26 @@ public class RooftopAgilityPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
+		chinBreakHandler.registerPlugin(this);
 	}
 
 	@Override
 	protected void shutDown()
 	{
+		resetVals();
+		chinBreakHandler.unregisterPlugin(this);
+	}
+
+	@Provides
+	RooftopAgilityConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(RooftopAgilityConfig.class);
+	}
+
+	private void resetVals()
+	{
 		overlayManager.remove(overlay);
+		chinBreakHandler.stopPlugin(this);
 		markOfGraceTile = null;
 		markOfGrace = null;
 		startAgility = false;
@@ -157,12 +175,6 @@ public class RooftopAgilityPlugin extends Plugin
 		marksPerHour = 0;
 		alchTimeout = 0;
 		inventoryItems.clear();
-	}
-
-	@Provides
-	RooftopAgilityConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(RooftopAgilityConfig.class);
 	}
 
 	@Subscribe
@@ -179,6 +191,7 @@ public class RooftopAgilityPlugin extends Plugin
 				if (!startAgility)
 				{
 					startAgility = true;
+					chinBreakHandler.startPlugin(this);
 					state = null;
 					targetMenu = null;
 					botTimer = Instant.now();
@@ -192,7 +205,7 @@ public class RooftopAgilityPlugin extends Plugin
 				}
 				else
 				{
-					shutDown();
+					resetVals();
 				}
 				break;
 		}
@@ -218,7 +231,8 @@ public class RooftopAgilityPlugin extends Plugin
 
 	private long sleepDelay()
 	{
-		return utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
+		sleepLength = utils.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
+		return sleepLength;
 	}
 
 	private int tickDelay()
@@ -426,7 +440,15 @@ public class RooftopAgilityPlugin extends Plugin
 					{
 						if (currentObstacle.getLocation().distanceTo(markOfGraceTile.getWorldLocation()) == 0)
 						{
-							return MARK_OF_GRACE;
+							if (markOfGraceTile.getGroundItems().contains(markOfGrace)) //failsafe sometimes onItemDespawned doesn't capture mog despawn
+							{
+								return MARK_OF_GRACE;
+							}
+							else
+							{
+								log.info("Mark of grace not found and markOfGrace was not null");
+								markOfGrace = null;
+							}
 						}
 					}
 					if (currentObstacle.getBankID() == 0 || !shouldRestock())
@@ -492,6 +514,10 @@ public class RooftopAgilityPlugin extends Plugin
 				return PRIFF_PORTAL;
 			}
 		}
+		if (chinBreakHandler.shouldBreak(this))
+		{
+			return HANDLE_BREAK;
+		}
 		if (!utils.isMoving(beforeLoc))
 		{
 			return FIND_OBSTACLE;
@@ -502,12 +528,16 @@ public class RooftopAgilityPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
+		if (!startAgility || chinBreakHandler.isBreakActive(this))
+		{
+			return;
+		}
 		player = client.getLocalPlayer();
 		if (alchTimeout > 0)
 		{
 			alchTimeout--;
 		}
-		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN && startAgility && client.getBoostedSkillLevel(Skill.HITPOINTS) > config.lowHP())
+		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN && client.getBoostedSkillLevel(Skill.HITPOINTS) > config.lowHP())
 		{
 			if (!REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
 			{
@@ -559,12 +589,28 @@ public class RooftopAgilityPlugin extends Plugin
 							priffPortal.getSceneMinLocation().getX(), priffPortal.getSceneMinLocation().getY(), false);
 					utils.delayMouseClick(priffPortal.getConvexHull().getBounds(), sleepDelay());
 					break;
+				case HANDLE_BREAK:
+					chinBreakHandler.startBreak(this);
+					timeout = 10;
+					break;
 			}
 		}
 		else
 		{
 			log.debug("client/ player is null or bot isn't started");
 			return;
+		}
+	}
+
+	@Subscribe
+	private void onGameStateChanged(GameStateChanged event)
+	{
+		if (event.getGameState() == GameState.LOGGED_IN && startAgility)
+		{
+			markOfGraceTile = null;
+			markOfGrace = null;
+			state = TIMEOUT;
+			timeout = 2;
 		}
 	}
 
@@ -649,6 +695,7 @@ public class RooftopAgilityPlugin extends Plugin
 		{
 			log.debug("Mark of grace despawned");
 			markOfGrace = null;
+			markOfGraceTile = null;
 		}
 	}
 
