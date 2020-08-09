@@ -53,7 +53,7 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "drinkAntiPoison",
 		name = "Drink Anti-Poison/Dote Potions",
 		description = "Enable to drink Anti-Poisons or Antidotes when poisoned",
-		position = 5
+		position = 2
 	)
 	default boolean drinkAntiPoison() { return true; }
 
@@ -61,7 +61,7 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "drinkPrayer",
 		name = "Drink Prayer restoration Potions",
 		description = "Enable to drink Prayer/Super Restore pots below given Prayer levels",
-		position = 6
+		position = 3
 	)
 	default boolean drinkPrayer() { return false; }
 
@@ -69,27 +69,147 @@ public interface QuickEaterConfiguration extends Config
 		keyName = "minPrayerPoints",
 		name = "Minimum Prayer Points",
 		description = "Minimum Prayer points to drink at. i.e. will always drink",
-		position = 7,
 		hidden = true,
-		unhide = "drinkPrayer"
+		unhide = "drinkPrayer",
+		position = 4
 	)
 	default int minPrayerPoints()	{ return 10; }
 
 	@ConfigItem(
 		keyName = "maxPrayerPoints",
 		name = "Maximum Prayer Points",
-		description = "Highest Prayer points to consider drinking. Value MUST be higher than minimum HP config. If Prayer drops below this value bot may randomly decide to drink.",
-		position = 8,
+		description = "Highest Prayer points to consider drinking. Value MUST be higher than minimum Prayer config. If Prayer drops below this value bot may randomly decide to eat.",
 		hidden = true,
-		unhide = "drinkPrayer"
+		unhide = "drinkPrayer",
+		position = 5
 	)
 	default int maxPrayerPoints()	{ return 20; }
+
+	@ConfigItem(
+		keyName = "drinkStrength",
+		name = "Enable Drink Strength Pots",
+		description = "Enable to drink pots to restore strength",
+		position = 6
+	)
+	default boolean drinkStrength()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "strengthPoints",
+		name = "Strength Points",
+		description = "Drink strength boosting pot below this level",
+		position = 7,
+		hidden = true,
+		unhide = "drinkStrength"
+	)
+	default int strengthPoints()
+	{
+		return 100;
+	}
+	
+	@ConfigItem(
+		keyName = "drinkAttack",
+		name = "Enable Drink Attack Pots",
+		description = "Enable to drink pots to restore attack",
+		position = 8
+	)
+	default boolean drinkAttack()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "attackPoints",
+		name = "Attack Points",
+		description = "Drink attack boosting pot below this level",
+		position = 9,
+		hidden = true,
+		unhide = "drinkAttack"
+	)
+	default int attackPoints()
+	{
+		return 100;
+	}
+
+	@ConfigItem(
+		keyName = "drinkDefence",
+		name = "Enable Drink Defence Pots",
+		description = "Enable to drink pots to restore defence",
+		position = 10
+	)
+	default boolean drinkDefence()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "defencePoints",
+		name = "Defence Points",
+		description = "Drink defence boosting pot below this level",
+		position = 11,
+		hidden = true,
+		unhide = "drinkDefence"
+	)
+	default int defencePoints()
+	{
+		return 100;
+	}
+
+	@ConfigItem(
+		keyName = "drinkRanged",
+		name = "Enable Drink Ranged Pots",
+		description = "Enable to drink pots to restore ranged",
+		position = 12
+	)
+	default boolean drinkRanged()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "rangedPoints",
+		name = "Ranged Points",
+		description = "Drink ranged boosting pot below this level",
+		position = 13,
+		hidden = true,
+		unhide = "drinkRanged"
+	)
+	default int rangedPoints()
+	{
+		return 100;
+	}
+
+	@ConfigItem(
+		keyName = "drinkMagic",
+		name = "Enable Drink Magic Pots",
+		description = "Enable to drink pots to restore magic",
+		position = 14
+	)
+	default boolean drinkMagic()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "magicPoints",
+		name = "Magic Points",
+		description = "Drink magic boosting pot below this level",
+		position = 15,
+		hidden = true,
+		unhide = "drinkMagic"
+	)
+	default int magicPoints()
+	{
+		return 100;
+	}
 
 	@ConfigItem(
 		keyName = "drinkStamina",
 		name = "Drink Stamina Potions",
 		description = "Enable to drink Stamina Potions below given energy level",
-		position = 10
+		position = 16
 	)
 	default boolean drinkStamina() { return false; }
 
