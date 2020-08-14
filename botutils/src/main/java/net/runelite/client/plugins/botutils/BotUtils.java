@@ -262,7 +262,7 @@ public class BotUtils extends Plugin
 	}
 
 	@Nullable
-	public NPC findNearestAttackableNpcWithin(WorldPoint worldPoint, int dist, String... names)
+	public NPC findNearestAttackableNpcWithin(WorldPoint worldPoint, int dist, String name)
 	{
 		assert client.isClientThread();
 
@@ -272,15 +272,14 @@ public class BotUtils extends Plugin
 		}
 
 		return new NPCQuery()
-			.nameContains(names)
 			.isWithinDistance(worldPoint, dist)
-			.filter(npc -> npc.getInteracting() == null && npc.getHealthRatio() != 0)
+			.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
-	public NPC findNearestNpcTargetingLocal(String... names)
+	public NPC findNearestNpcTargetingLocal(String name)
 	{
 		assert client.isClientThread();
 
@@ -290,8 +289,7 @@ public class BotUtils extends Plugin
 		}
 
 		return new NPCQuery()
-			.nameContains(names)
-			.filter(npc -> npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
+			.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name) && npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}
@@ -725,7 +723,7 @@ public class BotUtils extends Plugin
 		assert !client.isClientThread();
 
 		Point point = getClickPoint(rectangle);
-		moveClick(point);
+		click(point);
 	}
 
 	public void moveClick(Point p)
@@ -822,7 +820,7 @@ public class BotUtils extends Plugin
 		assert !client.isClientThread();
 
 		Point point = new Point(client.getCenterX() + getRandomIntBetweenRange(min, max), client.getCenterY() + getRandomIntBetweenRange(min, max));
-		moveClick(point);
+		click(point);
 	}
 
 	public void delayClickRandomPointCenter(int min, int max, long delay)
@@ -858,7 +856,7 @@ public class BotUtils extends Plugin
 			clickRandomPointCenter(-200, 200);
 			return;
 		}
-		moveClick(point);
+		click(point);
 	}
 
 	public void handleMouseClick(Rectangle rectangle)
@@ -866,7 +864,7 @@ public class BotUtils extends Plugin
 		assert !client.isClientThread();
 
 		Point point = getClickPoint(rectangle);
-		handleMouseClick(point);
+		click(point);
 	}
 
 	public void delayMouseClick(Point point, long delay)
@@ -1300,7 +1298,7 @@ public class BotUtils extends Plugin
 		assert !client.isClientThread();
 
 		targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(), item.getIndex(), 9764864, false);
-		moveClick(item.getCanvasBounds());
+		click(item.getCanvasBounds());
 	}
 
 	public void dropItems(Collection<Integer> ids, boolean dropAll, int minDelayBetween, int maxDelayBetween)
@@ -1629,7 +1627,7 @@ public class BotUtils extends Plugin
 		boolean depositBox = isDepositBoxOpen();
 		targetMenu = new MenuEntry("", "", (depositBox) ? 1 : 2, MenuOpcode.CC_OP.getId(), item.getIndex(),
 			(depositBox) ? 12582914 : 983043, false);
-		moveClick(item.getCanvasBounds());
+		click(item.getCanvasBounds());
 	}
 
 	public void depositAllOfItem(int itemID)
