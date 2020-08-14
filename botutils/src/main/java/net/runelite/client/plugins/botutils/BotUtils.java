@@ -273,7 +273,7 @@ public class BotUtils extends Plugin
 
 		return new NPCQuery()
 			.isWithinDistance(worldPoint, dist)
-			.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
+			.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}
@@ -289,7 +289,7 @@ public class BotUtils extends Plugin
 		}
 
 		return new NPCQuery()
-			.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name) && npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
+			.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name.toLowerCase()) && npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}
