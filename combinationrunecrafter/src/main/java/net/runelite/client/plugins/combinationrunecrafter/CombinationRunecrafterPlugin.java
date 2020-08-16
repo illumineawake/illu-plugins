@@ -521,6 +521,12 @@ public class CombinationRunecrafterPlugin extends Plugin
 		player = client.getLocalPlayer();
 		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
 		{
+			if (!client.isResized())
+			{
+				utils.sendGameMessage("illu - client must be set to resizable");
+				startBot = false;
+				return;
+			}
 			state = getState();
 			log.debug(state.name());
 			switch (state)

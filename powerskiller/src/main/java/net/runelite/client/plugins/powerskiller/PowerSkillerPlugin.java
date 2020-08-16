@@ -415,6 +415,12 @@ public class PowerSkillerPlugin extends Plugin
 		player = client.getLocalPlayer();
 		if (client != null && player != null && skillLocation != null)
 		{
+			if (!client.isResized())
+			{
+				utils.sendGameMessage("illu - client must be set to resizable");
+				startPowerSkiller = false;
+				return;
+			}
 			state = getState();
 			beforeLoc = player.getLocalLocation();
 			switch (state)

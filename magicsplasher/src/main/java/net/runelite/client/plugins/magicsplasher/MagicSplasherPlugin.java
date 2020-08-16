@@ -307,6 +307,12 @@ public class MagicSplasherPlugin extends Plugin
 		player = client.getLocalPlayer();
 		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
 		{
+			if (!client.isResized())
+			{
+				utils.sendGameMessage("illu - client must be set to resizable");
+				startSplasher = false;
+				return;
+			}
 			utils.handleRun(40, 20);
 			state = getState();
 			beforeLoc = player.getLocalLocation();

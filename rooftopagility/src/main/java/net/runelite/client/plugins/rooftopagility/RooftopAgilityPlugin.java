@@ -539,6 +539,12 @@ public class RooftopAgilityPlugin extends Plugin
 		}
 		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN && client.getBoostedSkillLevel(Skill.HITPOINTS) > config.lowHP())
 		{
+			if (!client.isResized())
+			{
+				utils.sendGameMessage("illu - client must be set to resizable");
+				startAgility = false;
+				return;
+			}
 			if (!REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
 			{
 				log.debug("not in agility course region");
