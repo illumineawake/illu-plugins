@@ -141,6 +141,7 @@ public class PowerFighterPlugin extends Plugin
 
 	String SLAYER_MESSAGE = "return to a Slayer master";
 	Set<Integer> BONE_BLACKLIST = Set.of(ItemID.CURVED_BONE, ItemID.LONG_BONE);
+	Set<Integer> BRACELETS = Set.of(ItemID.BRACELET_OF_SLAUGHTER, ItemID.EXPEDITIOUS_BRACELET);
 
 	@Provides
 	PowerFighterConfig provideConfig(ConfigManager configManager)
@@ -317,6 +318,11 @@ public class PowerFighterPlugin extends Plugin
 			utils.findNearestAttackableNpcWithin(player.getWorldLocation(), config.searchRadius(), config.npcName());
 	}
 
+	private boolean shouldEquipBracelet()
+	{
+		return !utils.isItemEquipped(BRACELETS) && utils.inventoryContains(BRACELETS) && config.equipBracelet();
+	}
+
 	private PowerFighterState getState()
 	{
 		if (timeout > 0)
@@ -331,6 +337,10 @@ public class PowerFighterPlugin extends Plugin
 		if (utils.isMoving(beforeLoc))
 		{
 			return MOVING;
+		}
+		if(shouldEquipBracelet())
+		{
+			return EQUIP_BRACELET;
 		}
 		if (config.lootAmmo() && !utils.isItemEquipped(List.of(config.ammoID())))
 		{
@@ -473,6 +483,16 @@ public class PowerFighterPlugin extends Plugin
 						targetMenu = new MenuEntry("", "", ammoItem.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), ammoItem.getIndex(),
 							9764864, false);
 						utils.delayMouseClick(ammoItem.getCanvasBounds(), sleepDelay());
+					}
+					break;
+				case EQUIP_BRACELET:
+					WidgetItem bracelet = utils.getInventoryWidgetItem(BRACELETS);
+					if (bracelet != null)
+					{
+						log.info("Equipping bracelet");
+						targetMenu = new MenuEntry("", "", bracelet.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), bracelet.getIndex(),
+								9764864, false);
+						utils.delayMouseClick(bracelet.getCanvasBounds(), sleepDelay());
 					}
 					break;
 				case FORCE_LOOT:

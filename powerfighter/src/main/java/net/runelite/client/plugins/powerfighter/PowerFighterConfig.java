@@ -472,10 +472,22 @@ public interface PowerFighterConfig extends Config
 		keyName = "stopSlayer",
 		name = "Stop on Slayer task completion",
 		description = "Enable to stop when Slayer task completes",
-		position = 57,
+		position = 52,
 		titleSection = "generalTitle"
 	)
 	default boolean stopSlayer()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "equipBracelet",
+			name = "Equip Bracelets of Slaughter/Expeditious",
+			description = "Enable to equip Bracelets of Slaughter/Expeditious Bracelet if in inventory",
+			position = 52,
+			titleSection = "generalTitle"
+	)
+	default boolean equipBracelet()
 	{
 		return false;
 	}
