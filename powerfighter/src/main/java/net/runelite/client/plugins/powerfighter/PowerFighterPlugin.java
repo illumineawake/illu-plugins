@@ -356,10 +356,10 @@ public class PowerFighterPlugin extends Plugin
 			if (newLoot != null)
 			{
 				Duration duration = Duration.between(newLoot, Instant.now());
-				nextItemLootTime = (nextItemLootTime == 0) ? utils.getRandomIntBetweenRange(45, 90) : nextItemLootTime;
-				if (duration.toSeconds() > utils.getRandomIntBetweenRange(45, 90))
+				nextItemLootTime = (nextItemLootTime == 0) ? utils.getRandomIntBetweenRange(10, 50) : nextItemLootTime;
+				if (duration.toSeconds() > nextItemLootTime)
 				{
-					nextItemLootTime = utils.getRandomIntBetweenRange(45, 90);
+					nextItemLootTime = utils.getRandomIntBetweenRange(10, 50);
 					return FORCE_LOOT;
 				}
 			}
