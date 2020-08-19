@@ -543,6 +543,18 @@ public interface PowerFighterConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "disableMouse",
+		name = "Disable mouse input",
+		description = "Disable mouse input, can prevent issues of random mis-clicks",
+		position = 69,
+		titleSection = "generalTitle"
+	)
+	default boolean disableMouse()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 			keyName = "enableUI",
 			name = "Enable UI",
 			description = "Enable to turn on in game UI",

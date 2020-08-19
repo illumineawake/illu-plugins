@@ -247,10 +247,21 @@ public interface MagicSplasherConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "disableMouse",
+		name = "Disable mouse input",
+		description = "Disable mouse input, can prevent issues of random mis-clicks",
+		position = 20
+	)
+	default boolean disableMouse()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "enableUI",
 		name = "Enable UI",
 		description = "Enable to turn on in game UI",
-		position = 17
+		position = 25
 	)
 	default boolean enableUI()
 	{
@@ -261,7 +272,7 @@ public interface MagicSplasherConfig extends Config
 		keyName = "startButton",
 		name = "Start/Stop",
 		description = "Start or stop the bot",
-		position = 18
+		position = 30
 	)
 	default Button startButton()
 	{

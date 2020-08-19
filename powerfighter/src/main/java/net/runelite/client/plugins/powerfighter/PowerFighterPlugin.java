@@ -64,6 +64,7 @@ import net.runelite.api.queries.ActorQuery;
 import net.runelite.api.queries.NPCQuery;
 import net.runelite.api.queries.TileObjectQuery;
 import net.runelite.api.queries.TileQuery;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -128,6 +129,7 @@ public class PowerFighterPlugin extends Plugin
 	PowerFighterState state;
 	Instant lootTimer;
 	LocalPoint beforeLoc = new LocalPoint(0, 0);
+	WorldPoint startLoc;
 
 	boolean startBot;
 	boolean slayerCompleted;
@@ -190,6 +192,11 @@ public class PowerFighterPlugin extends Plugin
 			if (!startBot)
 			{
 				log.debug("starting template plugin");
+				if (client == null || client.getLocalPlayer() == null || client.getGameState() != GameState.LOGGED_IN)
+				{
+					log.info("startup failed, log in before starting");
+					return;
+				}
 				startBot = true;
 				chinBreakHandler.startPlugin(this);
 				timeout = 0;
@@ -206,6 +213,8 @@ public class PowerFighterPlugin extends Plugin
 					lootableItems.addAll(Arrays.asList(values));
 					log.info("Lootable items are: {}", lootableItems.toString());
 				}
+				startLoc = client.getLocalPlayer().getWorldLocation();
+				beforeLoc = client.getLocalPlayer().getLocalLocation();
 			}
 			else
 			{
@@ -275,7 +284,8 @@ public class PowerFighterPlugin extends Plugin
 	{
 		String itemName = client.getItemDefinition(item.getId()).getName().toLowerCase();
 		return config.lootItems() &&
-			((config.lootNPCOnly() && item.getTile().getWorldLocation().equals(deathLocation)) || !config.lootNPCOnly()) &&
+			((config.lootNPCOnly() && item.getTile().getWorldLocation().equals(deathLocation)) ||
+				(!config.lootNPCOnly() && item.getTile().getWorldLocation().distanceTo(startLoc) < config.searchRadius())) &&
 			((config.lootGEValue() && utils.getOSBItem(item.getId()).getOverall_average() > config.minGEValue()) ||
 				(lootableItems.stream().anyMatch(itemName.toLowerCase()::contains)) ||
 				(config.buryBones() && itemName.contains("bones")) ||
@@ -315,7 +325,7 @@ public class PowerFighterPlugin extends Plugin
 	{
 		NPC npc = utils.findNearestNpcTargetingLocal(config.npcName());
 		return (npc != null) ? npc :
-			utils.findNearestAttackableNpcWithin(player.getWorldLocation(), config.searchRadius(), config.npcName());
+			utils.findNearestAttackableNpcWithin(startLoc, config.searchRadius(), config.npcName());
 	}
 
 	private boolean shouldEquipBracelet()
@@ -388,6 +398,7 @@ public class PowerFighterPlugin extends Plugin
 				else
 				{
 					//Click randomly to try get unstuck
+					log.info("Clicking randomly to try get unstuck");
 					targetMenu = null;
 					utils.clickRandomPointCenter(-200, 200);
 					return TIMEOUT;
@@ -635,19 +646,34 @@ public class PowerFighterPlugin extends Plugin
 	@Subscribe
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (!startBot || targetMenu == null)
+		if (!startBot)
 		{
 			return;
 		}
-		if (utils.getRandomEvent()) //for random events
+		if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
+			event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
 		{
-			log.debug("Template plugin not overriding due to random event");
+			//Either logging out or world-hopping which is handled by 3rd party plugins so let them have priority
+			log.info("Received world-hop/login related click. Giving them priority");
+			targetMenu = null;
 			return;
+		}
+		if (config.disableMouse())
+		{
+			event.consume();
+		}
+/*		if (utils.getRandomEvent()) //for random events
+		{
+			log.debug("Power Fighter plugin not overriding due to random event");
 		}
 		else
-		{
-			event.setMenuEntry(targetMenu);
-			targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
-		}
+		{*/
+			if (targetMenu != null)
+			{
+				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(),
+					targetMenu.getOpcode(), targetMenu.getParam0(), targetMenu.getParam1());
+				targetMenu = null;
+			}
+		//}
 	}
 }

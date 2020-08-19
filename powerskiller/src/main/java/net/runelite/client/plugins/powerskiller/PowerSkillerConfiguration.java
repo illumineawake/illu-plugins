@@ -456,6 +456,18 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
+		keyName = "disableMouse",
+		name = "Disable mouse input",
+		description = "Disable mouse input, can prevent issues of random mis-clicks",
+		position = 132,
+		titleSection = "skillerTitle"
+	)
+	default boolean disableMouse()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "enableUI",
 		name = "Enable UI",
 		description = "Enable to turn on in game UI",

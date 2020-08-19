@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.3.1"
+version = "1.5.0"
 
 project.extra["PluginName"] = "Combination Runecrafter Plugin"
 project.extra["PluginDescription"] = "Illumine - Combination Runecrafting plugin"
