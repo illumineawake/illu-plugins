@@ -254,8 +254,8 @@ public interface PowerFighterConfig extends Config
 	)
 	@ConfigItem(
 		keyName = "searchRadius",
-		name = "Search radius NPC/loot ",
-		description = "The distance (in tiles) to search for target NPC/loot. Center search point is set when you click start.",
+		name = "Search radius NPC",
+		description = "The distance (in tiles) to search for target NPC. Center search point is set when you click start.",
 		position = 31,
 		titleSection = "generalTitle"
 	)
@@ -358,8 +358,8 @@ public interface PowerFighterConfig extends Config
 	)
 	@ConfigItem(
 		keyName = "lootRadius",
-		name = "Search radius NPC/loot ",
-		description = "The distance (in tiles) to search for target NPC/loot. Center search point is set when you click start.",
+		name = "Loot radius",
+		description = "The distance (in tiles) to search for target loot. Center search point is set when you click start.",
 		position = 40,
 		hidden = true,
 		unhide = "lootItems",
