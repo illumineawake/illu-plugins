@@ -352,6 +352,21 @@ public interface PowerFighterConfig extends Config
 		return true;
 	}
 
+	@Range(
+		min = 1,
+		max = 64
+	)
+	@ConfigItem(
+		keyName = "lootRadius",
+		name = "Search radius NPC/loot ",
+		description = "The distance (in tiles) to search for target NPC/loot. Center search point is set when you click start.",
+		position = 31,
+		hidden = true,
+		unhide = "lootItems",
+		titleSection = "lootItems"
+	)
+	default int lootRadius() { return 20; }
+
 	@ConfigItem(
 		keyName = "lootGEValue",
 		name = "Loot all items above GE value",

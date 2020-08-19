@@ -285,7 +285,7 @@ public class PowerFighterPlugin extends Plugin
 		String itemName = client.getItemDefinition(item.getId()).getName().toLowerCase();
 		return config.lootItems() &&
 			((config.lootNPCOnly() && item.getTile().getWorldLocation().equals(deathLocation)) ||
-				(!config.lootNPCOnly() && item.getTile().getWorldLocation().distanceTo(startLoc) < config.searchRadius())) &&
+				(!config.lootNPCOnly() && item.getTile().getWorldLocation().distanceTo(startLoc) < config.lootRadius())) &&
 			((config.lootGEValue() && utils.getOSBItem(item.getId()).getOverall_average() > config.minGEValue()) ||
 				(lootableItems.stream().anyMatch(itemName.toLowerCase()::contains)) ||
 				(config.buryBones() && itemName.contains("bones")) ||
