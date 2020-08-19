@@ -548,6 +548,7 @@ public class BotUtils extends Plugin
 	 * Returns if a specific item is equipped
 	 *
 	 * */
+
 	public boolean isItemEquipped(Collection<Integer> itemIds)
 	{
 		assert client.isClientThread();
