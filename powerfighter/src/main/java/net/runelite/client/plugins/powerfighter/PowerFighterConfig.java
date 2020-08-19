@@ -360,7 +360,7 @@ public interface PowerFighterConfig extends Config
 		keyName = "lootRadius",
 		name = "Search radius NPC/loot ",
 		description = "The distance (in tiles) to search for target NPC/loot. Center search point is set when you click start.",
-		position = 31,
+		position = 40,
 		hidden = true,
 		unhide = "lootItems",
 		titleSection = "lootItems"
@@ -371,7 +371,7 @@ public interface PowerFighterConfig extends Config
 		keyName = "lootGEValue",
 		name = "Loot all items above GE value",
 		description = "Enable to loot all items above the given Grand Exchange value. Uses OSBuddy avg price.",
-		position = 40,
+		position = 41,
 		hidden = true,
 		unhide = "lootItems",
 		titleSection = "lootTitle"
@@ -386,7 +386,7 @@ public interface PowerFighterConfig extends Config
 		keyName = "minGEValue",
 		name = "",
 		description = "The minimum Grand Exchange value for loot. Uses OSBuddy avg price.",
-		position = 41,
+		position = 42,
 		hidden = true,
 		unhide = "lootGEValue",
 		titleSection = "lootTitle"
@@ -401,7 +401,7 @@ public interface PowerFighterConfig extends Config
 		keyName = "lootItemNames",
 		name = "Item Names to loot (separate with comma)",
 		description = "Provide part or all of the item name to loot. Separate each item with a comma. Not case sensitive.",
-		position = 42,
+		position = 43,
 		hidden = true,
 		unhide = "lootItems",
 		titleSection = "lootTitle"
@@ -416,7 +416,7 @@ public interface PowerFighterConfig extends Config
 		keyName = "lootClueScrolls",
 		name = "Pick-up Clue Scrolls",
 		description = "Enable to loot CLue Scrolls",
-		position = 43,
+		position = 44,
 		hidden = true,
 		unhide = "lootItems",
 		titleSection = "lootTitle"
@@ -431,7 +431,7 @@ public interface PowerFighterConfig extends Config
 		keyName = "buryBones",
 		name = "Loot and Bury Bones",
 		description = "Enable to loot and bury Bones",
-		position = 44,
+		position = 46,
 		hidden = true,
 		unhide = "lootItems",
 		titleSection = "lootTitle"
@@ -445,7 +445,7 @@ public interface PowerFighterConfig extends Config
 			keyName = "buryOne",
 			name = "Get 1 Bury 1",
 			description = "Enable to bury bones as they are picked up. Disable to bury bones once inventory is full.",
-			position = 45,
+			position = 48,
 			hidden = true,
 			unhide = "buryBones",
 			titleSection = "lootTitle"
