@@ -44,6 +44,7 @@ import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -311,21 +312,25 @@ public class QuickEaterPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event)
+	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (targetMenu == null)
+		if (config.disableMouse() && !(event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
+			event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686)))
 		{
-			return;
+			event.consume();
 		}
 		if (utils.getRandomEvent()) //for random events
 		{
-			log.debug("Quick Eater not overriding due to random event");
-			return;
+			log.debug("Quick Eater plugin not overriding due to random event");
 		}
 		else
 		{
-			event.setMenuEntry(targetMenu);
-			targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
+			if (targetMenu != null)
+			{
+				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(),
+					targetMenu.getOpcode(), targetMenu.getParam0(), targetMenu.getParam1());
+				targetMenu = null;
+			}
 		}
 	}
 }

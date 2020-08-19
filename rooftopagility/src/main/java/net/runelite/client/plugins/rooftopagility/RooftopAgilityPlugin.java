@@ -623,15 +623,38 @@ public class RooftopAgilityPlugin extends Plugin
 	@Subscribe
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (!startAgility || targetMenu == null)
+		if (!startAgility)
 		{
 			return;
 		}
-		log.debug("MenuEntry string event: " + targetMenu.toString());
-		event.setMenuEntry(targetMenu);
-		alchClick = (targetMenu.getOption().equals("Cast"));
-		timeout = tickDelay();
-		targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
+		if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
+			event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
+		{
+			//Either logging out or world-hopping which is handled by 3rd party plugins so let them have priority
+			log.info("Received world-hop/login related click. Giving them priority");
+			targetMenu = null;
+			return;
+		}
+		if (config.disableMouse())
+		{
+			event.consume();
+		}
+		if (utils.getRandomEvent()) //for random events
+		{
+			log.debug("Template plugin not overriding due to random event");
+		}
+		else
+		{
+			if (targetMenu != null)
+			{
+				log.debug("MenuEntry string event: " + targetMenu.toString());
+				alchClick = (targetMenu.getOption().equals("Cast"));
+				timeout = tickDelay();
+				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(),
+					targetMenu.getOpcode(), targetMenu.getParam0(), targetMenu.getParam1());
+				targetMenu = null;
+			}
+		}
 	}
 
 	@Subscribe

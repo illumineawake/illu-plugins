@@ -51,6 +51,7 @@ import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.NpcDefinitionChanged;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -493,6 +494,18 @@ public class PowerSkillerPlugin extends Plugin
 				log.info("Modified MenuEntry is null");
 				return;
 			}
+			if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
+				event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
+			{
+				//Either logging out or world-hopping which is handled by 3rd party plugins so let them have priority
+				log.info("Received world-hop/login related click. Giving them priority");
+				targetMenu = null;
+				return;
+			}
+			if (config.disableMouse())
+			{
+				event.consume();
+			}
 			if (utils.getRandomEvent()) //for random events
 			{
 				log.info("Powerskiller not overriding due to random event");
@@ -500,9 +513,10 @@ public class PowerSkillerPlugin extends Plugin
 			else
 			{
 				log.debug("MenuEntry string event: " + targetMenu.toString());
-				event.setMenuEntry(targetMenu);
+				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(),
+					targetMenu.getOpcode(), targetMenu.getParam0(), targetMenu.getParam1());
+				targetMenu = null;
 				timeout = tickDelay();
-				targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
 			}
 		}
 	}

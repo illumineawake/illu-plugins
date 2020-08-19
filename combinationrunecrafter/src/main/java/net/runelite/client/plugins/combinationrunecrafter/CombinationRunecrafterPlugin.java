@@ -619,19 +619,34 @@ public class CombinationRunecrafterPlugin extends Plugin
 	@Subscribe
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (!startBot || targetMenu == null)
+		if (!startBot)
 		{
 			return;
+		}
+		if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
+			event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
+		{
+			//Either logging out or world-hopping which is handled by 3rd party plugins so let them have priority
+			log.info("Received world-hop/login related click. Giving them priority");
+			targetMenu = null;
+			return;
+		}
+		if (config.disableMouse())
+		{
+			event.consume();
 		}
 		if (utils.getRandomEvent()) //for random events
 		{
-			log.info("Combination Runecrafter plugin not overriding due to random event");
-			return;
+			log.debug("Combination Runecrafter plugin not overriding due to random event");
 		}
 		else
 		{
-			event.setMenuEntry(targetMenu);
-			targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
+			if (targetMenu != null)
+			{
+				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(),
+					targetMenu.getOpcode(), targetMenu.getParam0(), targetMenu.getParam1());
+				targetMenu = null;
+			}
 		}
 	}
 
