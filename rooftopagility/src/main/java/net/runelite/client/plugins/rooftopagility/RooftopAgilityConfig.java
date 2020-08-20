@@ -323,18 +323,6 @@ public interface RooftopAgilityConfig extends Config
 		return false;
 	}
 
-	/*@ConfigItem(
-		keyName = "disableMouse",
-		name = "Disable mouse input",
-		description = "Disable mouse input, can prevent issues of random mis-clicks",
-		position = 28,
-		titleSection = "agilityTitle"
-	)
-	default boolean disableMouse()
-	{
-		return false;
-	}*/
-
 	@ConfigItem(
 		keyName = "enableUI",
 		name = "Enable UI",

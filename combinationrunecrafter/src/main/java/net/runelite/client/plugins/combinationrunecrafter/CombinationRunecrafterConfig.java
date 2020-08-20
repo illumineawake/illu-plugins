@@ -319,17 +319,6 @@ public interface CombinationRunecrafterConfig extends Config
 		return false;
 	}
 
-	/*@ConfigItem(
-		keyName = "disableMouse",
-		name = "Disable mouse input",
-		description = "Disable mouse input, can prevent issues of random mis-clicks",
-		position = 45
-	)
-	default boolean disableMouse()
-	{
-		return false;
-	}*/
-
 	@ConfigItem(
 		keyName = "startButton",
 		name = "Start/Stop",
