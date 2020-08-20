@@ -234,7 +234,7 @@ public interface QuickEaterConfiguration extends Config
 	)
 	default int randEnergy() { return 20; }
 
-	@ConfigItem(
+	/*@ConfigItem(
 		keyName = "disableMouse",
 		name = "Disable mouse input",
 		description = "Disable mouse input, can prevent issues of random mis-clicks",
@@ -243,5 +243,5 @@ public interface QuickEaterConfiguration extends Config
 	default boolean disableMouse()
 	{
 		return false;
-	}
+	}*/
 }

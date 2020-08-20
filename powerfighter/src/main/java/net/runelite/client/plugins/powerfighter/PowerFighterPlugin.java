@@ -29,12 +29,10 @@ import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.TemporalField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.Timer;
 import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -45,11 +43,8 @@ import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.NPC;
-import net.runelite.api.NPCDefinition;
 import net.runelite.api.Player;
 import net.runelite.api.TileItem;
-import net.runelite.api.VarPlayer;
-import net.runelite.api.Varbits;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ActorDeath;
@@ -59,17 +54,9 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.ItemSpawned;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.queries.ActorQuery;
-import net.runelite.api.queries.NPCQuery;
-import net.runelite.api.queries.TileObjectQuery;
-import net.runelite.api.queries.TileQuery;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.NpcLootReceived;
-import net.runelite.client.game.WorldLocation;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -276,6 +263,7 @@ public class PowerFighterPlugin extends Plugin
 		{
 			targetMenu = new MenuEntry("", "", lootItem.getId(), MenuOpcode.GROUND_ITEM_THIRD_OPTION.getId(),
 				lootItem.getTile().getSceneLocation().getX(), lootItem.getTile().getSceneLocation().getY(), false);
+			utils.setMenuEntry(targetMenu);
 			utils.delayMouseClick(lootItem.getTile().getItemLayer().getCanvasTilePoly().getBounds(), sleepDelay());
 		}
 	}
@@ -306,6 +294,7 @@ public class PowerFighterPlugin extends Plugin
 				}
 				targetMenu = new MenuEntry("", "", bone.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(),
 					bone.getIndex(), 9764864, false);
+				utils.setMenuEntry(targetMenu);
 				utils.handleMouseClick(bone.getCanvasBounds());
 				utils.sleep(utils.getRandomIntBetweenRange(800, 2200));
 			}
@@ -317,6 +306,7 @@ public class PowerFighterPlugin extends Plugin
 	{
 		targetMenu = new MenuEntry("", "", npc.getIndex(), MenuOpcode.NPC_SECOND_OPTION.getId(),
 			0, 0, false);
+		utils.setMenuEntry(targetMenu);
 		utils.delayMouseClick(currentNPC.getConvexHull().getBounds(), sleepDelay());
 		timeout = 2 + tickDelay();
 	}
@@ -493,6 +483,7 @@ public class PowerFighterPlugin extends Plugin
 					{
 						targetMenu = new MenuEntry("", "", ammoItem.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), ammoItem.getIndex(),
 							9764864, false);
+						utils.setMenuEntry(targetMenu);
 						utils.delayMouseClick(ammoItem.getCanvasBounds(), sleepDelay());
 					}
 					break;
@@ -503,6 +494,7 @@ public class PowerFighterPlugin extends Plugin
 						log.info("Equipping bracelet");
 						targetMenu = new MenuEntry("", "", bracelet.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), bracelet.getIndex(),
 								9764864, false);
+						utils.setMenuEntry(targetMenu);
 						utils.delayMouseClick(bracelet.getCanvasBounds(), sleepDelay());
 					}
 					break;
@@ -641,39 +633,5 @@ public class PowerFighterPlugin extends Plugin
 		currentNPC = null;
 		state = TIMEOUT;
 		timeout = 2;
-	}
-
-	@Subscribe
-	private void onMenuOptionClicked(MenuOptionClicked event)
-	{
-		if (!startBot)
-		{
-			return;
-		}
-		if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
-			event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
-		{
-			//Either logging out or world-hopping which is handled by 3rd party plugins so let them have priority
-			log.info("Received world-hop/login related click. Giving them priority");
-			targetMenu = null;
-			return;
-		}
-		if (config.disableMouse())
-		{
-			event.consume();
-		}
-/*		if (utils.getRandomEvent()) //for random events
-		{
-			log.debug("Power Fighter plugin not overriding due to random event");
-		}
-		else
-		{*/
-			if (targetMenu != null)
-			{
-				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(),
-					targetMenu.getOpcode(), targetMenu.getParam0(), targetMenu.getParam1());
-				targetMenu = null;
-			}
-		//}
 	}
 }

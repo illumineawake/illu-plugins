@@ -44,6 +44,7 @@ import net.runelite.api.Varbits;
 import net.runelite.api.WallObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.queries.BankItemQuery;
 import net.runelite.api.queries.DecorativeObjectQuery;
@@ -724,7 +725,7 @@ public class BotUtils extends Plugin
 		assert !client.isClientThread();
 
 		Point point = getClickPoint(rectangle);
-		click(point);
+		moveClick(point);
 	}
 
 	public void moveClick(Point p)
@@ -1883,14 +1884,47 @@ public class BotUtils extends Plugin
         }
     }*/
 
+	public void setMenuEntry(MenuEntry menuEntry)
+	{
+		targetMenu = menuEntry;
+	}
+
+	@Subscribe
+	private void onMenuEntryAdded(MenuEntryAdded event)
+	{
+		if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
+			event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
+		{
+			log.info("No interrupt menu found in MEA");
+			return;
+		}
+		if (targetMenu != null)
+		{
+			log.info("Insert menu entry: {}", targetMenu);
+			//client.insertMenuItem(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getOpcode(), targetMenu.getIdentifier(),
+			//	targetMenu.getParam0(), targetMenu.getParam1(), false);
+			client.setLeftClickMenuEntry(targetMenu);
+		}
+	}
+
 	@Subscribe
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		//sendGameMessage("do click here in event - utils");
+		if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
+			event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
+		{
+			//Either logging out or world-hopping which is handled by 3rd party plugins so let them have priority
+			log.info("Received world-hop/login related click. Giving them priority");
+			targetMenu = null;
+			return;
+		}
 		if (targetMenu != null)
 		{
-			event.setMenuEntry(targetMenu);
+			event.consume();
+			log.info("MOC event targetMenu: {}", targetMenu);
+			client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(), targetMenu.getOpcode(),
+				targetMenu.getParam0(), targetMenu.getParam1());
+			targetMenu = null;
 		}
-		targetMenu = null;
 	}
 }

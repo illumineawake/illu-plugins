@@ -455,7 +455,7 @@ public interface PowerSkillerConfiguration extends Config
 		return false;
 	}
 
-	@ConfigItem(
+	/*@ConfigItem(
 		keyName = "disableMouse",
 		name = "Disable mouse input",
 		description = "Disable mouse input, can prevent issues of random mis-clicks",
@@ -465,7 +465,7 @@ public interface PowerSkillerConfiguration extends Config
 	default boolean disableMouse()
 	{
 		return false;
-	}
+	}*/
 
 	@ConfigItem(
 		keyName = "enableUI",

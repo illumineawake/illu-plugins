@@ -38,13 +38,10 @@ import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
-import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.VarbitChanged;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -146,6 +143,7 @@ public class QuickEaterPlugin extends Plugin
 		{
 			targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), item.getIndex(),
 				9764864, false);
+			utils.setMenuEntry(targetMenu);
 			utils.delayMouseClick(item.getCanvasBounds(), utils.getRandomIntBetweenRange(25, 200));
 		}
 	}
@@ -309,28 +307,5 @@ public class QuickEaterPlugin extends Plugin
 			utils.sendGameMessage(skill + " is below threshold but we have nothing to regain " + skill);
 		}
 		return false;
-	}
-
-	@Subscribe
-	private void onMenuOptionClicked(MenuOptionClicked event)
-	{
-		if (config.disableMouse() && !(event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
-			event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686)))
-		{
-			event.consume();
-		}
-		if (utils.getRandomEvent()) //for random events
-		{
-			log.debug("Quick Eater plugin not overriding due to random event");
-		}
-		else
-		{
-			if (targetMenu != null)
-			{
-				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(),
-					targetMenu.getOpcode(), targetMenu.getParam0(), targetMenu.getParam1());
-				targetMenu = null;
-			}
-		}
 	}
 }

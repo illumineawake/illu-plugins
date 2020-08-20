@@ -276,6 +276,7 @@ public class RooftopAgilityPlugin extends Plugin
 			Widget spellWidget = client.getWidget(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY);
 			if (spellWidget != null)
 			{
+				utils.setMenuEntry(targetMenu);
 				utils.delayMouseClick(spellWidget.getBounds(), sleepDelay());
 			}
 			else
@@ -292,6 +293,7 @@ public class RooftopAgilityPlugin extends Plugin
 				MenuOpcode.ITEM_USE_ON_WIDGET.getId(),
 				alchItem.getIndex(), 9764864,
 				false);
+			utils.setMenuEntry(targetMenu);
 			utils.delayMouseClick(alchItem.getCanvasBounds(), sleepDelay());
 			alchTimeout = 4 + tickDelay();
 		}
@@ -369,6 +371,7 @@ public class RooftopAgilityPlugin extends Plugin
 				targetMenu = new MenuEntry("", "", bankBooth.getId(),
 					MenuOpcode.GAME_OBJECT_SECOND_OPTION.getId(), bankBooth.getSceneMinLocation().getX(),
 					bankBooth.getSceneMinLocation().getY(), false);
+				utils.setMenuEntry(targetMenu);
 				utils.delayMouseClick(bankBooth.getConvexHull().getBounds(), sleepDelay());
 				timeout = tickDelay();
 			}
@@ -393,6 +396,7 @@ public class RooftopAgilityPlugin extends Plugin
 				if (decObstacle != null)
 				{
 					targetMenu = new MenuEntry("", "", decObstacle.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
+					utils.setMenuEntry(targetMenu);
 					utils.delayMouseClick(decObstacle.getConvexHull().getBounds(), sleepDelay());
 					return;
 				}
@@ -403,6 +407,7 @@ public class RooftopAgilityPlugin extends Plugin
 				if (groundObstacle != null)
 				{
 					targetMenu = new MenuEntry("", "", groundObstacle.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
+					utils.setMenuEntry(targetMenu);
 					utils.delayMouseClick(groundObstacle.getConvexHull().getBounds(), sleepDelay());
 					return;
 				}
@@ -411,6 +416,7 @@ public class RooftopAgilityPlugin extends Plugin
 			if (objObstacle != null)
 			{
 				targetMenu = new MenuEntry("", "", objObstacle.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
+				utils.setMenuEntry(targetMenu);
 				utils.delayMouseClick(objObstacle.getConvexHull().getBounds(), sleepDelay());
 				return;
 			}
@@ -581,6 +587,7 @@ public class RooftopAgilityPlugin extends Plugin
 					Widget spellWidget = client.getWidget(WidgetInfo.SPELL_CAMELOT_TELEPORT);
 					if (spellWidget != null)
 					{
+						utils.setMenuEntry(targetMenu);
 						utils.delayMouseClick(spellWidget.getBounds(), sleepDelay());
 					}
 					else
@@ -592,7 +599,8 @@ public class RooftopAgilityPlugin extends Plugin
 				case PRIFF_PORTAL:
 					log.info("Using Priff portal");
 					targetMenu = new MenuEntry("", "", priffPortal.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
-							priffPortal.getSceneMinLocation().getX(), priffPortal.getSceneMinLocation().getY(), false);
+						priffPortal.getSceneMinLocation().getX(), priffPortal.getSceneMinLocation().getY(), false);
+					utils.setMenuEntry(targetMenu);
 					utils.delayMouseClick(priffPortal.getConvexHull().getBounds(), sleepDelay());
 					break;
 				case HANDLE_BREAK:
@@ -627,33 +635,11 @@ public class RooftopAgilityPlugin extends Plugin
 		{
 			return;
 		}
-		if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
-			event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
+		if (targetMenu != null)
 		{
-			//Either logging out or world-hopping which is handled by 3rd party plugins so let them have priority
-			log.info("Received world-hop/login related click. Giving them priority");
-			targetMenu = null;
-			return;
-		}
-		if (config.disableMouse())
-		{
-			event.consume();
-		}
-		if (utils.getRandomEvent()) //for random events
-		{
-			log.debug("Template plugin not overriding due to random event");
-		}
-		else
-		{
-			if (targetMenu != null)
-			{
-				log.debug("MenuEntry string event: " + targetMenu.toString());
-				alchClick = (targetMenu.getOption().equals("Cast"));
-				timeout = tickDelay();
-				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(),
-					targetMenu.getOpcode(), targetMenu.getParam0(), targetMenu.getParam1());
-				targetMenu = null;
-			}
+			log.debug("MenuEntry string event: " + targetMenu.toString());
+			alchClick = (targetMenu.getOption().equals("Cast"));
+			timeout = tickDelay();
 		}
 	}
 
@@ -691,7 +677,7 @@ public class RooftopAgilityPlugin extends Plugin
 	private void onItemSpawned(ItemSpawned event)
 	{
 		if (!startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) ||
-				!config.mogPickup())
+			!config.mogPickup())
 		{
 			return;
 		}

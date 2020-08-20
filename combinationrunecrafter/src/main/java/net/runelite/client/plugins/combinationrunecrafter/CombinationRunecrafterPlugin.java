@@ -47,7 +47,6 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -352,6 +351,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 		Widget ringWidget = client.getWidget(WidgetInfo.EQUIPMENT_RING);
 		if (ringWidget != null)
 		{
+			utils.setMenuEntry(targetMenu);
 			utils.delayMouseClick(ringWidget.getBounds(), sleepDelay());
 		}
 		else
@@ -542,6 +542,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 				case ENTER_MYSTERIOUS_RUINS:
 					targetMenu = new MenuEntry("", "", 34817, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
 						mysteriousRuins.getSceneMinLocation().getX(), mysteriousRuins.getSceneMinLocation().getY(), false);
+					utils.setMenuEntry(targetMenu);
 					utils.delayMouseClick(mysteriousRuins.getConvexHull().getBounds(), sleepDelay());
 					timeout = tickDelay();
 					break;
@@ -553,6 +554,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 					WidgetItem airTalisman = utils.getInventoryWidgetItem(talismanID);
 					targetMenu = new MenuEntry("Use", "Use", talismanID, MenuOpcode.ITEM_USE.getId(),
 						airTalisman.getIndex(), 9764864, false);
+					utils.setMenuEntry(targetMenu);
 					utils.delayMouseClick(airTalisman.getCanvasBounds(), sleepDelay());
 					setTalisman = true;
 					break;
@@ -560,12 +562,14 @@ public class CombinationRunecrafterPlugin extends Plugin
 					targetMenu = new MenuEntry("Use", "<col=ff9040>Air talisman<col=ffffff> -> <col=ffff>Altar",
 						fireAltar.getId(), MenuOpcode.ITEM_USE_ON_GAME_OBJECT.getId(), fireAltar.getSceneMinLocation().getX(),
 						fireAltar.getSceneMinLocation().getY(), false);
+					utils.setMenuEntry(targetMenu);
 					utils.delayMouseClick(fireAltar.getConvexHull().getBounds(), sleepDelay());
 					timeout = tickDelay();
 					break;
 				case OPEN_BANK:
 					targetMenu = new MenuEntry("", "", bankChest.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
 						bankChest.getSceneMinLocation().getX(), bankChest.getSceneMinLocation().getY(), false);
+					utils.setMenuEntry(targetMenu);
 					utils.delayMouseClick(bankChest.getConvexHull().getBounds(), sleepDelay());
 					timeout = tickDelay();
 					break;
@@ -588,6 +592,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 						}
 						targetMenu = new MenuEntry("", "", 9, MenuOpcode.CC_OP_LOW_PRIORITY.getId(),
 							useableItem.getIndex(), 983043, false);
+						utils.setMenuEntry(targetMenu);
 						utils.delayMouseClick(useableItem.getCanvasBounds(), sleepDelay());
 					}
 					break;
@@ -613,40 +618,6 @@ public class CombinationRunecrafterPlugin extends Plugin
 					break;
 			}
 			beforeLoc = player.getLocalLocation();
-		}
-	}
-
-	@Subscribe
-	private void onMenuOptionClicked(MenuOptionClicked event)
-	{
-		if (!startBot)
-		{
-			return;
-		}
-		if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
-			event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
-		{
-			//Either logging out or world-hopping which is handled by 3rd party plugins so let them have priority
-			log.info("Received world-hop/login related click. Giving them priority");
-			targetMenu = null;
-			return;
-		}
-		if (config.disableMouse())
-		{
-			event.consume();
-		}
-		if (utils.getRandomEvent()) //for random events
-		{
-			log.debug("Combination Runecrafter plugin not overriding due to random event");
-		}
-		else
-		{
-			if (targetMenu != null)
-			{
-				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(),
-					targetMenu.getOpcode(), targetMenu.getParam0(), targetMenu.getParam1());
-				targetMenu = null;
-			}
 		}
 	}
 

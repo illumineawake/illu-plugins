@@ -263,6 +263,7 @@ public class PowerSkillerPlugin extends Plugin
 		if (targetNPC != null)
 		{
 			targetMenu = new MenuEntry("", "", targetNPC.getIndex(), opcode, 0, 0, false);
+			utils.setMenuEntry(targetMenu);
 			utils.delayMouseClick(config.altMouse() ? altRect : targetNPC.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
@@ -295,6 +296,7 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			targetMenu = new MenuEntry("", "", targetObject.getId(), opcode,
 				targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
+			utils.setMenuEntry(targetMenu);
 			utils.delayMouseClick(config.altMouse() ? altRect : targetObject.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
@@ -336,6 +338,7 @@ public class PowerSkillerPlugin extends Plugin
 			targetMenu = new MenuEntry("", "", bank.getId(),
 				utils.getBankMenuOpcode(bank.getId()), bank.getSceneMinLocation().getX(),
 				bank.getSceneMinLocation().getY(), false);
+			utils.setMenuEntry(targetMenu);
 			utils.delayMouseClick(config.altMouse() ? altRect : bank.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
@@ -432,31 +435,40 @@ public class PowerSkillerPlugin extends Plugin
 					break;
 				case DROP_ALL:
 					utils.dropInventory(true, config.sleepMin(), config.sleepMax());
+					timeout = tickDelay();
 					break;
 				case DROP_EXCEPT:
 					utils.dropAllExcept(itemIds, true, config.sleepMin(), config.sleepMax());
+					timeout = tickDelay();
 					break;
 				case DROP_ITEMS:
 					utils.dropItems(itemIds, true, config.sleepMin(), config.sleepMax());
+					timeout = tickDelay();
 					break;
 				case FIND_GAME_OBJECT:
 					interactObject();
+					timeout = tickDelay();
 					break;
 				case FIND_NPC:
 					interactNPC();
 					npcMoved = false;
+					timeout = tickDelay();
 					break;
 				case FIND_BANK:
 					openBank();
+					timeout = tickDelay();
 					break;
 				case DEPOSIT_ALL:
 					utils.depositAll();
+					timeout = tickDelay();
 					break;
 				case DEPOSIT_EXCEPT:
 					utils.depositAllExcept(requiredIds);
+					timeout = tickDelay();
 					break;
 				case DEPOSIT_ITEMS:
 					utils.depositAllOfItems(itemIds);
+					timeout = tickDelay();
 					break;
 				case MISSING_ITEMS:
 					startPowerSkiller = false;
@@ -486,38 +498,6 @@ public class PowerSkillerPlugin extends Plugin
 		if (config.customOpcode() && config.printOpcode())
 		{
 			utils.sendGameMessage("Opcode value: " + event.getOpcode());
-		}
-		if (startPowerSkiller)
-		{
-			if (targetMenu == null)
-			{
-				log.info("Modified MenuEntry is null");
-				return;
-			}
-			if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
-				event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
-			{
-				//Either logging out or world-hopping which is handled by 3rd party plugins so let them have priority
-				log.info("Received world-hop/login related click. Giving them priority");
-				targetMenu = null;
-				return;
-			}
-			if (config.disableMouse())
-			{
-				event.consume();
-			}
-			if (utils.getRandomEvent()) //for random events
-			{
-				log.info("Powerskiller not overriding due to random event");
-			}
-			else
-			{
-				log.debug("MenuEntry string event: " + targetMenu.toString());
-				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(),
-					targetMenu.getOpcode(), targetMenu.getParam0(), targetMenu.getParam1());
-				targetMenu = null;
-				timeout = tickDelay();
-			}
 		}
 	}
 

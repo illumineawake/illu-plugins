@@ -28,8 +28,6 @@ package net.runelite.client.plugins.magicsplasher;
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
 import java.time.Instant;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -46,7 +44,6 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.queries.NPCQuery;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -229,6 +226,7 @@ public class MagicSplasherPlugin extends Plugin
 		Widget spellBookWidget = client.getWidget(WidgetInfo.SPELLBOOK);
 		if (spellBookWidget != null)
 		{
+			utils.setMenuEntry(targetMenu);
 			utils.delayMouseClick(spellBookWidget.getBounds(), sleepDelay());
 		}
 		else
@@ -271,6 +269,7 @@ public class MagicSplasherPlugin extends Plugin
 				timeout = 5 + tickDelay();
 				break;
 		}
+		utils.setMenuEntry(targetMenu);
 		utils.delayMouseClick(splashNPC.getConvexHull().getBounds(), sleepDelay());
 	}
 
@@ -358,40 +357,6 @@ public class MagicSplasherPlugin extends Plugin
 		else
 		{
 			log.debug("client/player is null or bot isn't started");
-		}
-	}
-
-	@Subscribe
-	private void onMenuOptionClicked(MenuOptionClicked event)
-	{
-		if (!startSplasher)
-		{
-			return;
-		}
-		if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
-			event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
-		{
-			//Either logging out or world-hopping which is handled by 3rd party plugins so let them have priority
-			log.info("Received world-hop/login related click. Giving them priority");
-			targetMenu = null;
-			return;
-		}
-		if (config.disableMouse())
-		{
-			event.consume();
-		}
-		if (utils.getRandomEvent()) //for random events
-		{
-			log.debug("Magic Splasher plugin not overriding due to random event");
-		}
-		else
-		{
-			if (targetMenu != null)
-			{
-				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(),
-					targetMenu.getOpcode(), targetMenu.getParam0(), targetMenu.getParam1());
-				targetMenu = null;
-			}
 		}
 	}
 

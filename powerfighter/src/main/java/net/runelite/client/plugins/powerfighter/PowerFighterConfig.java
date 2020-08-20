@@ -557,7 +557,7 @@ public interface PowerFighterConfig extends Config
 		return true;
 	}
 
-	@ConfigItem(
+	/*@ConfigItem(
 		keyName = "disableMouse",
 		name = "Disable mouse input",
 		description = "Disable mouse input, can prevent issues of random mis-clicks",
@@ -567,7 +567,7 @@ public interface PowerFighterConfig extends Config
 	default boolean disableMouse()
 	{
 		return true;
-	}
+	}*/
 
 	@ConfigItem(
 			keyName = "enableUI",
