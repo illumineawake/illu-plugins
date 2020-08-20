@@ -51,7 +51,6 @@ import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.NpcDefinitionChanged;
 import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;

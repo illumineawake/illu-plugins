@@ -281,6 +281,7 @@ public class RooftopAgilityPlugin extends Plugin
 			}
 			else
 			{
+				utils.setMenuEntry(targetMenu);
 				utils.delayClickRandomPointCenter(-200, 200, sleepDelay());
 			}
 			setHighAlch = true;
@@ -318,6 +319,7 @@ public class RooftopAgilityPlugin extends Plugin
 			if (client.getVarbitValue(Varbits.BANK_NOTE_FLAG.getId()) != 1)
 			{
 				targetMenu = new MenuEntry("Note", "", 1, MenuOpcode.CC_OP.getId(), -1, 786455, false);
+				utils.setMenuEntry(targetMenu);
 				utils.delayClickRandomPointCenter(-200, 200, sleepDelay());
 				return;
 			}
@@ -568,6 +570,7 @@ public class RooftopAgilityPlugin extends Plugin
 				case MARK_OF_GRACE:
 					log.debug("Picking up mark of grace");
 					targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
+					utils.setMenuEntry(targetMenu);
 					utils.delayClickRandomPointCenter(-200, 200, sleepDelay());
 					break;
 				case FIND_OBSTACLE:
@@ -592,6 +595,7 @@ public class RooftopAgilityPlugin extends Plugin
 					}
 					else
 					{
+						utils.setMenuEntry(targetMenu);
 						utils.delayClickRandomPointCenter(-200, 200, sleepDelay());
 					}
 					timeout = 2 + tickDelay();

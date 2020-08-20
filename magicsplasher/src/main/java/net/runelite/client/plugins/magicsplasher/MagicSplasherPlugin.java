@@ -231,6 +231,7 @@ public class MagicSplasherPlugin extends Plugin
 		}
 		else
 		{
+			utils.setMenuEntry(targetMenu);
 			utils.delayClickRandomPointCenter(-200, 200, sleepDelay());
 		}
 	}

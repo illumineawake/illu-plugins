@@ -356,6 +356,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 		}
 		else
 		{
+			utils.setMenuEntry(targetMenu);
 			utils.delayClickRandomPointCenter(-200, 200, sleepDelay());
 		}
 	}
