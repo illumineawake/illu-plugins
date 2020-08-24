@@ -85,9 +85,9 @@ public enum RooftopAgilityObstacles
 	POLL_ROOF_SEVEN(new WorldPoint(3357, 2991, 2), new WorldPoint(3367, 2996, 2), TREE_14944),
 	POLL_ROOF_EIGHT(new WorldPoint(3356, 3000, 2), new WorldPoint(3363, 3005, 2), DRYING_LINE),
 	//Prifddinas
-	PRIF_LADDER(new WorldPoint(3237, 6099, 0), new WorldPoint(3275, 6114, 0), LADDER_36221),
+	PRIF_LADDER(new WorldPoint(3237, 6099, 0), new WorldPoint(3275, 6114, 0), LADDER_36221, ObjectID.BANK_BOOTH_10355),
 	PRIF_TIGHTROPE(new WorldPoint(3254, 6102, 2), new WorldPoint(3259, 6112, 2), TIGHTROPE_36225),//TIGHTROPE_36255
-	PRIF_CHIMNEY(new WorldPoint(3271, 6104, 2), new WorldPoint(3275, 6107, 2), CHIMNEY_36227),
+	PRIF_CHIMNEY(new WorldPoint(3271, 6104, 2), new WorldPoint(3276, 6107, 2), CHIMNEY_36227),
 	PRIF_ROOFEDGE(new WorldPoint(3268, 6111, 2), new WorldPoint(3270, 6116, 2), ROOF_EDGE),
 	PRIF_DARK_HOLE(new WorldPoint(3267, 6115, 0), new WorldPoint(3271, 6119, 0), DARK_HOLE_36229),
 	PRIF_LADDER_TWO(new WorldPoint (2239, 3386, 0), new WorldPoint(2271, 3410, 0), LADDER_36231),
