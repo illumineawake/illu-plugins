@@ -42,6 +42,7 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -142,7 +143,7 @@ public class QuickEaterPlugin extends Plugin
 		if (item != null)
 		{
 			targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), item.getIndex(),
-				9764864, false);
+				WidgetInfo.INVENTORY.getId(), false);
 			utils.setMenuEntry(targetMenu);
 			utils.delayMouseClick(item.getCanvasBounds(), utils.getRandomIntBetweenRange(25, 200));
 		}
@@ -155,7 +156,7 @@ public class QuickEaterPlugin extends Plugin
 		{
 			if (utils.inventoryContains(POISON_SET))
 			{
-				log.info("Drinking anti-poison");
+				log.debug("Drinking anti-poison");
 				WidgetItem poisonItem = utils.getInventoryWidgetItem(POISON_SET);
 				useItem(poisonItem);
 			}
@@ -173,10 +174,6 @@ public class QuickEaterPlugin extends Plugin
 		{
 			drinkTimeout--;
 		}
-		if (!config.drinkStamina())
-		{
-			return;
-		}
 		player = client.getLocalPlayer();
 		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
 		{
@@ -185,43 +182,43 @@ public class QuickEaterPlugin extends Plugin
 				timeout--;
 				return;
 			}
-			if (drinkEnergy == 0)
+			if (client.getBoostedSkillLevel(Skill.HITPOINTS) <= nextEatHP)
 			{
-				drinkEnergy = utils.getRandomIntBetweenRange(config.maxDrinkEnergy() - config.randEnergy(), config.maxDrinkEnergy());
+				WidgetItem eatItem = utils.getInventoryItemMenu(itemManager, "Eat", 33,
+					IGNORE_FOOD);
+				if (eatItem != null)
+				{
+					useItem(eatItem);
+					nextEatHP = utils.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
+					log.debug("Next Eat HP: {}", nextEatHP);
+					return;
+				}
+				if (utils.inventoryContains(DRINK_SET))
+				{
+					WidgetItem drinkItem = utils.getInventoryWidgetItem(DRINK_SET);
+					useItem(drinkItem);
+					nextEatHP = utils.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
+					log.debug("Next Eat HP: {}", nextEatHP);
+					return;
+				}
+				utils.sendGameMessage("Health is below threshold but we're out of food");
 			}
-			if (client.getEnergy() < drinkEnergy)
+			if (config.drinkStamina() && drinkTimeout == 0)
 			{
-				utils.drinkStamPot();
-				drinkEnergy = utils.getRandomIntBetweenRange(config.maxDrinkEnergy() - config.randEnergy(), config.maxDrinkEnergy());
+				if (drinkEnergy == 0)
+				{
+					drinkEnergy = utils.getRandomIntBetweenRange(config.maxDrinkEnergy() - config.randEnergy(), config.maxDrinkEnergy());
+					log.debug("Max drink energy: {}, Rand drink value: {}, Next drink energy: {}",config.maxDrinkEnergy(), config.randEnergy(), drinkEnergy);
+				}
+				if (client.getEnergy() < drinkEnergy)
+				{
+					utils.drinkStamPot();
+					drinkEnergy = utils.getRandomIntBetweenRange(config.maxDrinkEnergy() - config.randEnergy(), config.maxDrinkEnergy());
+					log.debug("Max drink energy: {}, Rand drink value: {}, Next drink energy: {}",config.maxDrinkEnergy(), config.randEnergy(), drinkEnergy);
+					drinkTimeout = 2;
+				}
 			}
 		}
-	}
-
-	@Subscribe
-	private void onHitsplatApplied(HitsplatApplied event)
-	{
-		if (event.getActor() != client.getLocalPlayer() || client.getBoostedSkillLevel(Skill.HITPOINTS) > nextEatHP)
-		{
-			return;
-		}
-		WidgetItem eatItem = utils.getInventoryItemMenu(itemManager, "Eat", 33,
-			IGNORE_FOOD);
-		if (eatItem != null)
-		{
-			useItem(eatItem);
-			nextEatHP = utils.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
-			log.debug("Next Eat HP: {}", nextEatHP);
-			return;
-		}
-		if (utils.inventoryContains(DRINK_SET))
-		{
-			WidgetItem drinkItem = utils.getInventoryWidgetItem(DRINK_SET);
-			useItem(drinkItem);
-			nextEatHP = utils.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
-			log.debug("Next Eat HP: {}", nextEatHP);
-			return;
-		}
-		utils.sendGameMessage("Health is below threshold but we're out of food");
 	}
 
 	@Subscribe
