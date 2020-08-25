@@ -592,7 +592,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 							totalStaminaPots++;
 						}
 						targetMenu = new MenuEntry("", "", 9, MenuOpcode.CC_OP_LOW_PRIORITY.getId(),
-							useableItem.getIndex(), 983043, false);
+							useableItem.getIndex(), 983043, true);
 						utils.setMenuEntry(targetMenu);
 						utils.delayMouseClick(useableItem.getCanvasBounds(), sleepDelay());
 					}
