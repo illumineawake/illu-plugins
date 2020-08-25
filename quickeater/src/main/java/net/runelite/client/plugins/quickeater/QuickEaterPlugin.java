@@ -192,6 +192,7 @@ public class QuickEaterPlugin extends Plugin
 			if (client.getEnergy() < drinkEnergy)
 			{
 				utils.drinkStamPot();
+				drinkEnergy = utils.getRandomIntBetweenRange(config.maxDrinkEnergy() - config.randEnergy(), config.maxDrinkEnergy());
 			}
 		}
 	}
