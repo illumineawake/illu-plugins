@@ -8,6 +8,7 @@ public enum PowerFighterState
 	EQUIP_BRACELET,
 	FORCE_LOOT,
 	HANDLE_BREAK,
+	HIGH_ALCH,
 	IN_COMBAT,
 	ITERATING,
 	LOG_OUT,

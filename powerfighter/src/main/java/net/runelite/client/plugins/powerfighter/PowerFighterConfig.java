@@ -206,10 +206,10 @@ public interface PowerFighterConfig extends Config
 	}
 
 	@ConfigTitleSection(
-			keyName = "instructionsTitle",
-			name = "Instructions",
-			description = "",
-			position = 16
+		keyName = "instructionsTitle",
+		name = "Instructions",
+		description = "",
+		position = 16
 	)
 	default Title instructionsTitle()
 	{
@@ -217,11 +217,11 @@ public interface PowerFighterConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "instruction",
-			name = "",
-			description = "Instructions. Don't enter anything into this field",
-			position = 17,
-			titleSection = "instructionsTitle"
+		keyName = "instruction",
+		name = "",
+		description = "Instructions. Don't enter anything into this field",
+		position = 17,
+		titleSection = "instructionsTitle"
 	)
 	default String instruction()
 	{
@@ -442,13 +442,13 @@ public interface PowerFighterConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "buryOne",
-			name = "Get 1 Bury 1",
-			description = "Enable to bury bones as they are picked up. Disable to bury bones once inventory is full.",
-			position = 48,
-			hidden = true,
-			unhide = "buryBones",
-			titleSection = "lootTitle"
+		keyName = "buryOne",
+		name = "Get 1 Bury 1",
+		description = "Enable to bury bones as they are picked up. Disable to bury bones once inventory is full.",
+		position = 48,
+		hidden = true,
+		unhide = "buryBones",
+		titleSection = "lootTitle"
 	)
 	default boolean buryOne()
 	{
@@ -483,6 +483,73 @@ public interface PowerFighterConfig extends Config
 		return true;
 	}
 
+	@ConfigTitleSection(
+		keyName = "alchTitle",
+		name = "Alch Settings",
+		description = "",
+		position = 90
+	)
+	default Title alchTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "alchItems",
+		name = "Alch Items",
+		description = "Enable to alch looted items. Requires fire and nature runes in inventory",
+		position = 95,
+		titleSection = "alchTitle"
+	)
+	default boolean alchItems()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "alchByValue",
+		name = "Alch Value",
+		description = "Alch items that have a higher HA value than GE value",
+		position = 100,
+		hidden = true,
+		unhide = "alchItems",
+		titleSection = "alchTitle"
+	)
+	default boolean alchByValue() { return false; }
+
+	@ConfigItem(
+		keyName = "maxAlchValue",
+		name = "Max alch value",
+		description = "Don't alch items above this value, to prevent alching rare items",
+		position = 105,
+		hidden = true,
+		unhide = "alchByValue",
+		titleSection = "alchTitle"
+	)
+	default int maxAlchValue() { return 100000; }
+
+	@ConfigItem(
+		keyName = "alchByName",
+		name = "Alch Item Name",
+		description = "Alch items that contain provided names. Names should be separated with commas, no spaces.",
+		position = 110,
+		hidden = true,
+		unhide = "alchItems",
+		titleSection = "alchTitle"
+	)
+	default boolean alchByName() { return false; }
+
+	@ConfigItem(
+		keyName = "alchNames",
+		name = "",
+		description = "Alch items that contain provided names. Names should be separated with commas, no spaces.",
+		position = 115,
+		hidden = true,
+		unhide = "alchByName",
+		titleSection = "alchTitle"
+	)
+	default String alchNames() { return "Steel platebody,Rune scimitar"; }
+
 	@ConfigItem(
 		keyName = "stopSlayer",
 		name = "Stop on Slayer task completion",
@@ -496,11 +563,11 @@ public interface PowerFighterConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "equipBracelet",
-			name = "Equip Bracelets of Slaughter/Expeditious",
-			description = "Enable to equip Bracelets of Slaughter/Expeditious Bracelet if in inventory",
-			position = 52,
-			titleSection = "generalTitle"
+		keyName = "equipBracelet",
+		name = "Equip Bracelets of Slaughter/Expeditious",
+		description = "Enable to equip Bracelets of Slaughter/Expeditious Bracelet if in inventory",
+		position = 52,
+		titleSection = "generalTitle"
 	)
 	default boolean equipBracelet()
 	{
@@ -558,10 +625,10 @@ public interface PowerFighterConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "enableUI",
-			name = "Enable UI",
-			description = "Enable to turn on in game UI",
-			position = 70,
+		keyName = "enableUI",
+		name = "Enable UI",
+		description = "Enable to turn on in game UI",
+		position = 70,
 		titleSection = "generalTitle"
 	)
 	default boolean enableUI()

@@ -31,6 +31,7 @@ include(":magicsplasher")
 include("powerfighter")
 include("powerskiller")
 include(":quickeater")
+include("randomhandler")
 include(":rooftopagility")
 
 for (project in rootProject.children) {

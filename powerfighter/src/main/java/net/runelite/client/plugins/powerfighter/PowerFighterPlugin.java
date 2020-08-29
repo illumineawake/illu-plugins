@@ -31,17 +31,21 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
-import net.runelite.api.queries.InventoryWidgetItemQuery;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -51,7 +55,9 @@ import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
 import static net.runelite.client.plugins.powerfighter.PowerFighterState.*;
 
+import static net.runelite.client.plugins.powerfighter.PowerFighterState.HIGH_ALCH;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
 import org.pf4j.Extension;
 
 
@@ -89,6 +95,9 @@ public class PowerFighterPlugin extends Plugin
 	private ExecutorService executorService;
 
 	@Inject
+	private ClientThread clientThread;
+
+	@Inject
 	private ChinBreakHandler chinBreakHandler;
 
 	NPC currentNPC;
@@ -96,6 +105,9 @@ public class PowerFighterPlugin extends Plugin
 	List<TileItem> loot = new ArrayList<>();
 	List<TileItem> ammoLoot = new ArrayList<>();
 	List<String> lootableItems = new ArrayList<>();
+	Set<String> alchableItems = new HashSet<>();
+	Set<Integer> alchBlacklist = Set.of(ItemID.NATURE_RUNE, ItemID.FIRE_RUNE, ItemID.COINS_995);
+	List<Item> alchLoot = new ArrayList<>();;
 	MenuEntry targetMenu;
 	Instant botTimer;
 	Instant newLoot;
@@ -104,13 +116,14 @@ public class PowerFighterPlugin extends Plugin
 	Instant lootTimer;
 	LocalPoint beforeLoc = new LocalPoint(0, 0);
 	WorldPoint startLoc;
+	OSBGrandExchangeResult itemGeValue;
 
+	int highAlchCost;
 	boolean startBot;
 	boolean slayerCompleted;
 	long sleepLength;
 	int tickLength;
 	int timeout;
-	int coinsPH;
 	int nextAmmoLootTime;
 	int nextItemLootTime;
 	int killcount;
@@ -140,7 +153,7 @@ public class PowerFighterPlugin extends Plugin
 
 	private void resetVals()
 	{
-		log.debug("stopping template plugin");
+		log.debug("stopping power fighter plugin");
 		overlayManager.remove(overlay);
 		chinBreakHandler.stopPlugin(this);
 		startBot = false;
@@ -150,7 +163,9 @@ public class PowerFighterPlugin extends Plugin
 		loot.clear();
 		ammoLoot.clear();
 		lootableItems.clear();
+		alchLoot.clear();
 		currentNPC = null;
+		state = null;
 	}
 
 	@Subscribe
@@ -160,7 +175,6 @@ public class PowerFighterPlugin extends Plugin
 		{
 			return;
 		}
-		log.debug("button {} pressed!", configButtonClicked.getKey());
 		if (configButtonClicked.getKey().equals("startButton"))
 		{
 			if (!startBot)
@@ -180,13 +194,8 @@ public class PowerFighterPlugin extends Plugin
 				targetMenu = null;
 				botTimer = Instant.now();
 				overlayManager.add(overlay);
-				String[] values = config.lootItemNames().toLowerCase().split("\\s*,\\s*");
-				if (config.lootItems() && !config.lootItemNames().isBlank())
-				{
-					lootableItems.clear();
-					lootableItems.addAll(Arrays.asList(values));
-					log.info("Lootable items are: {}", lootableItems.toString());
-				}
+				updateConfigValues();
+				highAlchCost = utils.getOSBItem(ItemID.NATURE_RUNE).getOverall_average() + (utils.getOSBItem(ItemID.FIRE_RUNE).getOverall_average() * 5);
 				startLoc = client.getLocalPlayer().getWorldLocation();
 				beforeLoc = client.getLocalPlayer().getLocalLocation();
 			}
@@ -197,20 +206,25 @@ public class PowerFighterPlugin extends Plugin
 		}
 	}
 
-	public void updateStats()
+	private void updateConfigValues()
 	{
-		//templatePH = (int) getPerHour(totalBraceletCount);
-		//coinsPH = (int) getPerHour(totalCoins - ((totalCoins / BRACELET_HA_VAL) * (unchargedBraceletCost + revEtherCost + natureRuneCost)));
-	}
-
-	public long getPerHour(int quantity)
-	{
-		Duration timeSinceStart = Duration.between(botTimer, Instant.now());
-		if (!timeSinceStart.isZero())
+		alchableItems.clear();
+		if (config.alchItems() && config.alchByName() && !config.alchNames().equals("0") && !config.alchNames().equals(""))
 		{
-			return (int) ((double) quantity * (double) Duration.ofHours(1).toMillis() / (double) timeSinceStart.toMillis());
+			alchableItems.addAll(Stream.of(config.alchNames()
+				.toLowerCase()
+				.split(",", -1))
+				.map(String::trim)
+				.collect(Collectors.toList()));
+			log.debug("alchable items list: {}", alchableItems.toString());
 		}
-		return 0;
+		String[] values = config.lootItemNames().toLowerCase().split("\\s*,\\s*");
+		if (config.lootItems() && !config.lootItemNames().isBlank())
+		{
+			lootableItems.clear();
+			lootableItems.addAll(Arrays.asList(values));
+			log.debug("Lootable items are: {}", lootableItems.toString());
+		}
 	}
 
 	private long sleepDelay()
@@ -262,9 +276,54 @@ public class PowerFighterPlugin extends Plugin
 			((config.lootNPCOnly() && item.getTile().getWorldLocation().equals(deathLocation)) ||
 				(!config.lootNPCOnly() && item.getTile().getWorldLocation().distanceTo(startLoc) < config.lootRadius())) &&
 			((config.lootGEValue() && utils.getOSBItem(item.getId()).getOverall_average() > config.minGEValue()) ||
-				(lootableItems.stream().anyMatch(itemName.toLowerCase()::contains)) ||
-				(config.buryBones() && itemName.contains("bones")) ||
-				(config.lootClueScrolls() && itemName.contains("scroll")));
+				lootableItems.stream().anyMatch(itemName.toLowerCase()::contains) ||
+				config.buryBones() && itemName.contains("bones") ||
+				config.lootClueScrolls() && itemName.contains("scroll"));
+	}
+
+	private boolean canAlch()
+	{
+		return config.alchItems() &&
+			client.getBoostedSkillLevel(Skill.MAGIC) >= 55 &&
+			utils.inventoryContains(ItemID.NATURE_RUNE) && utils.inventoryContains(ItemID.FIRE_RUNE, 5);
+	}
+
+	private boolean alchableItem(int itemID)
+	{
+		if (itemID == 0 || alchBlacklist.contains(itemID))
+		{
+			return false;
+		}
+		if (config.alchByValue())
+		{
+			itemGeValue = utils.getOSBItem(itemID);
+		}
+		ItemDefinition itemDef = client.getItemDefinition(itemID);
+		log.debug("Checking alch value of item: {}", itemDef.getName());
+		return config.alchItems() &&
+			(config.alchByValue() && itemDef.getHaPrice() > highAlchCost &&
+				itemDef.getHaPrice() > itemGeValue.getOverall_average() &&
+				itemDef.getHaPrice() < config.maxAlchValue()) ||
+			(config.alchByName() && !alchableItems.isEmpty() && alchableItems.stream().anyMatch(itemDef.getName().toLowerCase()::contains));
+	}
+
+	private void castHighAlch(Integer itemID)
+	{
+		WidgetItem alchItem = utils.getInventoryWidgetItem(itemID);
+		if (alchItem != null)
+		{
+			log.debug("Alching item: {}", alchItem.getId());
+			targetMenu = new MenuEntry("", "",
+				alchItem.getId(),
+				MenuOpcode.ITEM_USE_ON_WIDGET.getId(),
+				alchItem.getIndex(), WidgetInfo.INVENTORY.getId(),
+				false);
+			utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, alchItem.getCanvasBounds().getBounds(), sleepDelay());
+		}
+		else
+		{
+			log.debug("castHighAlch widgetItem is null");
+		}
 	}
 
 	private void buryBones()
@@ -280,7 +339,7 @@ public class PowerFighterPlugin extends Plugin
 					continue;
 				}
 				targetMenu = new MenuEntry("", "", bone.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(),
-					bone.getIndex(), 9764864, false);
+					bone.getIndex(), WidgetInfo.INVENTORY.getId(), false);
 				utils.setMenuEntry(targetMenu);
 				utils.handleMouseClick(bone.getCanvasBounds());
 				utils.sleep(utils.getRandomIntBetweenRange(800, 2200));
@@ -325,7 +384,7 @@ public class PowerFighterPlugin extends Plugin
 		{
 			return MOVING;
 		}
-		if(shouldEquipBracelet())
+		if (shouldEquipBracelet())
 		{
 			return EQUIP_BRACELET;
 		}
@@ -366,7 +425,7 @@ public class PowerFighterPlugin extends Plugin
 			currentNPC = (NPC) player.getInteracting();
 			if (currentNPC != null && currentNPC.getHealthRatio() == -1) //NPC has noHealthBar, NPC ran away and we are stuck with a target we can't attack
 			{
-				log.info("interacting and npc has not health bar. Finding new NPC");
+				log.debug("interacting and npc has not health bar. Finding new NPC");
 				currentNPC = findSuitableNPC();
 				if (currentNPC != null)
 				{
@@ -374,8 +433,7 @@ public class PowerFighterPlugin extends Plugin
 				}
 				else
 				{
-					//Click randomly to try get unstuck
-					log.info("Clicking randomly to try get unstuck");
+					log.debug("Clicking randomly to try get unstuck");
 					targetMenu = null;
 					utils.clickRandomPointCenter(-200, 200);
 					return TIMEOUT;
@@ -387,7 +445,7 @@ public class PowerFighterPlugin extends Plugin
 		if (currentNPC != null)
 		{
 			int chance = utils.getRandomIntBetweenRange(0, 1);
-			log.info("Chance result: {}", chance);
+			log.debug("Chance result: {}", chance);
 			return (chance == 0) ? ATTACK_NPC : WAIT_COMBAT;
 		}
 		if (chinBreakHandler.shouldBreak(this))
@@ -397,6 +455,11 @@ public class PowerFighterPlugin extends Plugin
 		if (config.buryBones() && utils.inventoryContains("bones") && (utils.inventoryFull() || config.buryOne()))
 		{
 			return BURY_BONES;
+		}
+		if (canAlch() && !alchLoot.isEmpty())
+		{
+			log.debug("high alch conditions met");
+			return HIGH_ALCH;
 		}
 		if (config.lootItems() && !utils.inventoryFull() && !loot.isEmpty())
 		{
@@ -469,7 +532,7 @@ public class PowerFighterPlugin extends Plugin
 					if (ammoItem != null)
 					{
 						targetMenu = new MenuEntry("", "", ammoItem.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), ammoItem.getIndex(),
-							9764864, false);
+							WidgetInfo.INVENTORY.getId(), false);
 						utils.setMenuEntry(targetMenu);
 						utils.delayMouseClick(ammoItem.getCanvasBounds(), sleepDelay());
 					}
@@ -478,12 +541,16 @@ public class PowerFighterPlugin extends Plugin
 					WidgetItem bracelet = utils.getInventoryWidgetItem(BRACELETS);
 					if (bracelet != null)
 					{
-						log.info("Equipping bracelet");
+						log.debug("Equipping bracelet");
 						targetMenu = new MenuEntry("", "", bracelet.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), bracelet.getIndex(),
-								9764864, false);
+							WidgetInfo.INVENTORY.getId(), false);
 						utils.setMenuEntry(targetMenu);
 						utils.delayMouseClick(bracelet.getCanvasBounds(), sleepDelay());
 					}
+					break;
+				case HIGH_ALCH:
+					castHighAlch(alchLoot.get(0).getId());
+					timeout = 4 + tickDelay();
 					break;
 				case FORCE_LOOT:
 				case LOOT_ITEMS:
@@ -492,7 +559,6 @@ public class PowerFighterPlugin extends Plugin
 					break;
 				case LOOT_AMMO:
 					lootItem(ammoLoot);
-					//timeout = tickDelay();
 					break;
 				case WAIT_COMBAT:
 					timeout = 10 + tickDelay();
@@ -530,10 +596,39 @@ public class PowerFighterPlugin extends Plugin
 		if (event.getActor() == currentNPC)
 		{
 			deathLocation = event.getActor().getWorldLocation();
-			log.info("Our npc died, updating deathLocation: {}", deathLocation.toString());
+			log.debug("Our npc died, updating deathLocation: {}", deathLocation.toString());
 			killcount++;
 		}
 	}
+
+	@Subscribe
+	public void onItemContainerChanged(ItemContainerChanged event)
+	{
+		if (!startBot || client.getLocalPlayer() == null || event.getContainerId() != InventoryID.INVENTORY.getId() || !canAlch())
+		{
+			return;
+		}
+		log.debug("Processing inventory change");
+		final ItemContainer inventoryContainer = client.getItemContainer(InventoryID.INVENTORY);
+		if (inventoryContainer == null)
+		{
+			return;
+		}
+		List<Item> currentInventory = List.of(inventoryContainer.getItems());
+		if (state == HIGH_ALCH)
+		{
+			alchLoot.removeIf(item -> !currentInventory.contains(item));
+			log.debug("Container changed during high alch phase, after removed high alch items, alchLoot: {}", alchLoot.toString());
+		}
+		else
+		{
+			alchLoot.addAll(currentInventory.stream()
+				.filter(item -> alchableItem(item.getId()))
+				.collect(Collectors.toList()));
+			log.debug("Final alchLoot items: {}", alchLoot.toString());
+		}
+	}
+
 
 	@Subscribe
 	private void onItemSpawned(ItemSpawned event)
@@ -544,10 +639,10 @@ public class PowerFighterPlugin extends Plugin
 		}
 		if (lootableItem(event.getItem()))
 		{
-			log.info("Adding loot item: {}", client.getItemDefinition(event.getItem().getId()).getName());
+			log.debug("Adding loot item: {}", client.getItemDefinition(event.getItem().getId()).getName());
 			if (loot.isEmpty())
 			{
-				log.info("Starting force loot timer");
+				log.debug("Starting force loot timer");
 				newLoot = Instant.now();
 			}
 			loot.add(event.getItem());
@@ -561,7 +656,7 @@ public class PowerFighterPlugin extends Plugin
 					return;
 				}
 			}
-			log.info("adding ammo loot item: {}", event.getItem().getId());
+			log.debug("adding ammo loot item: {}", event.getItem().getId());
 			ammoLoot.add(event.getItem());
 		}
 	}
@@ -576,12 +671,10 @@ public class PowerFighterPlugin extends Plugin
 		loot.remove(event.getItem());
 		if (loot.isEmpty())
 		{
-			log.info("Resetting force loot timer");
 			newLoot = null;
 		}
 		if (ammoLoot.isEmpty())
 		{
-			log.info("Resetting ammo loot timer");
 			lootTimer = null;
 		}
 		ammoLoot.remove(event.getItem());
@@ -592,16 +685,15 @@ public class PowerFighterPlugin extends Plugin
 	{
 		if (startBot && (event.getType() == ChatMessageType.SPAM || event.getType() == ChatMessageType.GAMEMESSAGE))
 		{
-//			log.info("Chat message: {}, Chat Type: {}", event.getMessage(), event.getType());
 			if (event.getMessage().contains("I'm already under attack") && event.getType() == ChatMessageType.SPAM)
 			{
-				log.info("We already have a target. Waiting to auto-retaliate new target");
+				log.debug("We already have a target. Waiting to auto-retaliate new target");
 				timeout = 10;
 				return;
 			}
 			if (event.getMessage().contains(SLAYER_MESSAGE) && event.getType() == ChatMessageType.GAMEMESSAGE)
 			{
-				log.info("Slayer task completed");
+				log.debug("Slayer task completed");
 				slayerCompleted = true;
 			}
 		}
@@ -614,9 +706,10 @@ public class PowerFighterPlugin extends Plugin
 		{
 			return;
 		}
-		log.info("GameState changed to logged in, clearing loot and npc");
+		log.debug("GameState changed to logged in, clearing loot and npc");
 		loot.clear();
 		ammoLoot.clear();
+		alchLoot.clear();
 		currentNPC = null;
 		state = TIMEOUT;
 		timeout = 2;

@@ -30,7 +30,7 @@ project.extra["PluginDescription"] = "Illumine automated rooftop agility plugin"
 
 dependencies {
     compileOnly(project(":botutils"))
-    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.3+")
+    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.12+")
 }
 
 tasks {
