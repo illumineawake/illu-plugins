@@ -27,7 +27,8 @@ package net.runelite.client.plugins.powerskiller;
 
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
-import java.awt.Rectangle;
+
+import java.awt.*;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -60,6 +61,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
+import net.runelite.client.plugins.botutils.Tab;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 import static net.runelite.client.plugins.powerskiller.PowerSkillerState.*;
@@ -120,6 +122,7 @@ public class PowerSkillerPlugin extends Plugin
 	private final Set<Integer> itemIds = new HashSet<>();
 	private final Set<Integer> objectIds = new HashSet<>();
 	private final Set<Integer> requiredIds = new HashSet<>();
+	private Robot robot;
 
 
 	@Provides
@@ -130,9 +133,9 @@ public class PowerSkillerPlugin extends Plugin
 	}
 
 	@Override
-	protected void startUp()
-	{
+	protected void startUp() throws AWTException {
 		chinBreakHandler.registerPlugin(this);
+		robot = new Robot();
 	}
 
 	@Override
@@ -433,14 +436,17 @@ public class PowerSkillerPlugin extends Plugin
 					timeout--;
 					break;
 				case DROP_ALL:
+					robot.keyPress(utils.getTabHotkey(Tab.INVENTORY));
 					utils.dropInventory(true, config.sleepMin(), config.sleepMax());
 					timeout = tickDelay();
 					break;
 				case DROP_EXCEPT:
+					robot.keyPress(utils.getTabHotkey(Tab.INVENTORY));
 					utils.dropAllExcept(itemIds, true, config.sleepMin(), config.sleepMax());
 					timeout = tickDelay();
 					break;
 				case DROP_ITEMS:
+					robot.keyPress(utils.getTabHotkey(Tab.INVENTORY));
 					utils.dropItems(itemIds, true, config.sleepMin(), config.sleepMax());
 					timeout = tickDelay();
 					break;
