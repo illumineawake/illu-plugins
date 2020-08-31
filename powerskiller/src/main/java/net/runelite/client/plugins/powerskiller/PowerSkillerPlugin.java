@@ -28,7 +28,9 @@ package net.runelite.client.plugins.powerskiller;
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
 
-import java.awt.*;
+import java.awt.AWTException;
+import java.awt.Rectangle;
+import java.awt.Robot;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
