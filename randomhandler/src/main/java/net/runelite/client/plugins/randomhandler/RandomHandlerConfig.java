@@ -232,7 +232,7 @@ public interface RandomHandlerConfig extends Config
 
 	@ConfigItem(
 		keyName = "dismissDwarf",
-		name = "dismiss on Drunken Dward",
+		name = "dismiss on Drunken Dwarf",
 		description = "",
 		hide = "dismissAllEvents"
 	)
