@@ -585,6 +585,7 @@ public class PowerFighterPlugin extends Plugin
 					break;
 				case RETURN_SAFE_SPOT:
 					utils.walk(safeSpotLoc, config.safeSpotRadius(), sleepDelay());
+					timeout = 2 + tickDelay();
 					break;
 				case LOG_OUT:
 					if (player.getInteracting() == null)
