@@ -210,8 +210,8 @@ public interface RandomHandlerConfig extends Config
 
 	@ConfigItem(
 		keyName = "dismissAllEvents",
-		name = "dismiss for all events",
-		description = "",
+		name = "handle/dismiss all events",
+		description = "Enable to handle and dismiss all random event types. Includes handling genie for XP lamp.",
 		position = -2
 	)
 	default boolean dismissAllEvents()
@@ -226,6 +226,17 @@ public interface RandomHandlerConfig extends Config
 		hide = "dismissAllEvents"
 	)
 	default boolean dismissDunce()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "dismissDwarf",
+		name = "dismiss on Drunken Dward",
+		description = "",
+		hide = "dismissAllEvents"
+	)
+	default boolean dismissDwarf()
 	{
 		return false;
 	}
