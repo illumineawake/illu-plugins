@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -73,10 +74,14 @@ import static net.runelite.client.plugins.botutils.Banks.ALL_BANKS;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
+import net.runelite.rs.api.RSClient;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 import org.pf4j.Extension;
 
+/**
+ *
+ */
 @Extension
 @PluginDescriptor(
 	name = "BotUtils",
@@ -113,6 +118,9 @@ public class BotUtils extends Plugin {
 	public boolean randomEvent;
 	public boolean iterating;
 	private boolean consumeClick;
+	private int coordX;
+	private int coordY;
+	private boolean walkAction;
 
 	@Provides
 	OSBGrandExchangeClient provideOsbGrandExchangeClient(OkHttpClient okHttpClient) {
@@ -712,7 +720,8 @@ public class BotUtils extends Plugin {
 	}
 
 	public int getRandomIntBetweenRange(int min, int max) {
-		return (int) ((Math.random() * ((max - min) + 1)) + min);
+		//return (int) ((Math.random() * ((max - min) + 1)) + min); //This does not allow return of negative values
+		return ThreadLocalRandom.current().nextInt(min, max + 1);
 	}
 
 	private void mouseEvent(int id, @NotNull Point point) {
@@ -817,6 +826,49 @@ public class BotUtils extends Plugin {
 
 	public boolean isAnimating() {
 		return client.getLocalPlayer().getAnimation() != -1;
+	}
+
+	/**
+	 *
+	 * Walks to a scene tile, must be accompanied with a click using it without
+	 * will cause a ban.
+	 *
+	**/
+	private void walkTile(int x, int y)
+	{
+		RSClient rsClient = (RSClient) client;
+		rsClient.setSelectedSceneTileX(x);
+		rsClient.setSelectedSceneTileY(y);
+		rsClient.setViewportWalking(true);
+		rsClient.setCheckClick(false);
+	}
+
+	public void walk(LocalPoint localPoint, int rand, long delay)
+	{
+		coordX = localPoint.getSceneX() + getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
+		coordY = localPoint.getSceneY() + getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
+		walkAction = true;
+		targetMenu = new MenuEntry("Walk here", "", 0, MenuOpcode.WALK.getId(),
+			0, 0, false);
+		delayMouseClick(new Point(0,0),delay);
+	}
+
+	public void walk(WorldPoint worldPoint, int rand, long delay)
+	{
+		LocalPoint localPoint = LocalPoint.fromWorld(client, worldPoint);
+		if (localPoint != null)
+		{
+			coordX = localPoint.getSceneX() + getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
+			coordY = localPoint.getSceneY() + getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
+			walkAction = true;
+			targetMenu = new MenuEntry("Walk here", "", 0, MenuOpcode.WALK.getId(),
+				0, 0, false);
+			delayMouseClick(new Point(0, 0), delay);
+		}
+		else
+		{
+			log.info("WorldPoint to LocalPoint coversion is null");
+		}
 	}
 
 	public boolean isRunEnabled() {
@@ -1640,6 +1692,13 @@ public class BotUtils extends Plugin {
 			{
 				log.info("Consuming a click and not sending anything else");
 				consumeClick = false;
+				return;
+			}
+			if (event.getOption().equals("Walk here") && walkAction)
+			{
+				log.debug("Walk action");
+				walkTile(coordX,coordX);
+				walkAction = false;
 				return;
 			}
 			client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(), targetMenu.getOpcode(),

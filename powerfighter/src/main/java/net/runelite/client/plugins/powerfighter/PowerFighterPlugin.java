@@ -102,12 +102,14 @@ public class PowerFighterPlugin extends Plugin
 
 	NPC currentNPC;
 	WorldPoint deathLocation;
+	WorldPoint safeSpotLoc;
 	List<TileItem> loot = new ArrayList<>();
 	List<TileItem> ammoLoot = new ArrayList<>();
 	List<String> lootableItems = new ArrayList<>();
 	Set<String> alchableItems = new HashSet<>();
 	Set<Integer> alchBlacklist = Set.of(ItemID.NATURE_RUNE, ItemID.FIRE_RUNE, ItemID.COINS_995);
-	List<Item> alchLoot = new ArrayList<>();;
+	List<Item> alchLoot = new ArrayList<>();
+	;
 	MenuEntry targetMenu;
 	Instant botTimer;
 	Instant newLoot;
@@ -197,6 +199,11 @@ public class PowerFighterPlugin extends Plugin
 				updateConfigValues();
 				highAlchCost = utils.getOSBItem(ItemID.NATURE_RUNE).getOverall_average() + (utils.getOSBItem(ItemID.FIRE_RUNE).getOverall_average() * 5);
 				startLoc = client.getLocalPlayer().getWorldLocation();
+				if (config.safeSpot())
+				{
+					safeSpotLoc = client.getLocalPlayer().getWorldLocation();
+					utils.sendGameMessage("Safe spot set: " + safeSpotLoc.toString());
+				}
 				beforeLoc = client.getLocalPlayer().getLocalLocation();
 			}
 			else
@@ -420,6 +427,11 @@ public class PowerFighterPlugin extends Plugin
 				}
 			}
 		}
+		if (config.safeSpot() && utils.findNearestNpcTargetingLocal("") != null &&
+			safeSpotLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
+		{
+			return RETURN_SAFE_SPOT;
+		}
 		if (player.getInteracting() != null)
 		{
 			currentNPC = (NPC) player.getInteracting();
@@ -499,6 +511,7 @@ public class PowerFighterPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick event)
 	{
+		//log.info("Result: {}",utils.getRandomIntBetweenRange(-Math.abs(config.safeSpotRadius()), config.safeSpotRadius()));
 		if (!startBot || chinBreakHandler.isBreakActive(this))
 		{
 			return;
@@ -569,6 +582,9 @@ public class PowerFighterPlugin extends Plugin
 				case HANDLE_BREAK:
 					chinBreakHandler.startBreak(this);
 					timeout = 10;
+					break;
+				case RETURN_SAFE_SPOT:
+					utils.walk(safeSpotLoc, config.safeSpotRadius(), sleepDelay());
 					break;
 				case LOG_OUT:
 					if (player.getInteracting() == null)
