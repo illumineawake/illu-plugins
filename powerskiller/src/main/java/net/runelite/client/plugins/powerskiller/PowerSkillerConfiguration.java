@@ -444,16 +444,24 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
-		keyName = "altMouse",
-		name = "Alt Mouse (for running away issues)",
-		description = "Alternative mouse for users experiencing randomly walking away",
-		position = 131,
+		keyName = "safeSpot",
+		name = "Safe spot",
+		description = "Safe spot will force your character to always return to the tile you started the plugin on",
+		position = 135,
 		titleSection = "skillerTitle"
 	)
-	default boolean altMouse()
-	{
-		return false;
-	}
+	default boolean safeSpot() { return false; }
+
+	@ConfigItem(
+		keyName = "safeSpotRadius",
+		name = "Safe spot radius",
+		description = "Radius of the safe spot to return to. 0 will always return to the same tile, 1 will return to a 1 tile radius of safespot",
+		position = 140,
+		hidden = true,
+		unhide = "safeSpot",
+		titleSection = "skillerTitle"
+	)
+	default int safeSpotRadius() { return 1; }
 
 	@ConfigItem(
 		keyName = "enableUI",

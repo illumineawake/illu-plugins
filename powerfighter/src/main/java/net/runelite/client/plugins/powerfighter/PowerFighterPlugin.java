@@ -102,7 +102,6 @@ public class PowerFighterPlugin extends Plugin
 
 	NPC currentNPC;
 	WorldPoint deathLocation;
-	WorldPoint safeSpotLoc;
 	List<TileItem> loot = new ArrayList<>();
 	List<TileItem> ammoLoot = new ArrayList<>();
 	List<String> lootableItems = new ArrayList<>();
@@ -201,8 +200,7 @@ public class PowerFighterPlugin extends Plugin
 				startLoc = client.getLocalPlayer().getWorldLocation();
 				if (config.safeSpot())
 				{
-					safeSpotLoc = client.getLocalPlayer().getWorldLocation();
-					utils.sendGameMessage("Safe spot set: " + safeSpotLoc.toString());
+					utils.sendGameMessage("Safe spot set: " + startLoc.toString());
 				}
 				beforeLoc = client.getLocalPlayer().getLocalLocation();
 			}
@@ -428,7 +426,7 @@ public class PowerFighterPlugin extends Plugin
 			}
 		}
 		if (config.safeSpot() && utils.findNearestNpcTargetingLocal("") != null &&
-			safeSpotLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
+			startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
 		{
 			return RETURN_SAFE_SPOT;
 		}
@@ -511,7 +509,6 @@ public class PowerFighterPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick event)
 	{
-		//log.info("Result: {}",utils.getRandomIntBetweenRange(-Math.abs(config.safeSpotRadius()), config.safeSpotRadius()));
 		if (!startBot || chinBreakHandler.isBreakActive(this))
 		{
 			return;
@@ -584,7 +581,7 @@ public class PowerFighterPlugin extends Plugin
 					timeout = 10;
 					break;
 				case RETURN_SAFE_SPOT:
-					utils.walk(safeSpotLoc, config.safeSpotRadius(), sleepDelay());
+					utils.walk(startLoc, config.safeSpotRadius(), sleepDelay());
 					timeout = 2 + tickDelay();
 					break;
 				case LOG_OUT:

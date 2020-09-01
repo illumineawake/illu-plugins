@@ -239,6 +239,7 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			log.debug("Tried to start bot before being logged in");
 			skillLocation = null;
+			resetVals();
 		}
 	}
 
@@ -263,7 +264,7 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			targetMenu = new MenuEntry("", "", targetNPC.getIndex(), opcode, 0, 0, false);
 			utils.setMenuEntry(targetMenu);
-			utils.delayMouseClick(config.altMouse() ? altRect : targetNPC.getConvexHull().getBounds(), sleepDelay());
+			utils.delayMouseClick(targetNPC.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
 		{
@@ -296,7 +297,7 @@ public class PowerSkillerPlugin extends Plugin
 			targetMenu = new MenuEntry("", "", targetObject.getId(), opcode,
 				targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
 			utils.setMenuEntry(targetMenu);
-			utils.delayMouseClick(config.altMouse() ? altRect : targetObject.getConvexHull().getBounds(), sleepDelay());
+			utils.delayMouseClick(targetObject.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
 		{
@@ -338,7 +339,7 @@ public class PowerSkillerPlugin extends Plugin
 				utils.getBankMenuOpcode(bank.getId()), bank.getSceneMinLocation().getX(),
 				bank.getSceneMinLocation().getY(), false);
 			utils.setMenuEntry(targetMenu);
-			utils.delayMouseClick(config.altMouse() ? altRect : bank.getConvexHull().getBounds(), sleepDelay());
+			utils.delayMouseClick(bank.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
 		{
@@ -394,6 +395,11 @@ public class PowerSkillerPlugin extends Plugin
 				return DROP_EXCEPT;
 			}
 			return (!utils.inventoryContains(itemIds)) ? INVALID_DROP_IDS : DROP_ITEMS;
+		}
+		if (config.safeSpot() &&
+			skillLocation.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
+		{
+			return RETURN_SAFE_SPOT;
 		}
 		if (client.getLocalPlayer().getAnimation() == -1 || npcMoved)
 		{
@@ -468,6 +474,10 @@ public class PowerSkillerPlugin extends Plugin
 				case DEPOSIT_ITEMS:
 					utils.depositAllOfItems(itemIds);
 					timeout = tickDelay();
+					break;
+				case RETURN_SAFE_SPOT:
+					utils.walk(skillLocation, config.safeSpotRadius(), sleepDelay());
+					timeout = 2 + tickDelay();
 					break;
 				case MISSING_ITEMS:
 					startPowerSkiller = false;
