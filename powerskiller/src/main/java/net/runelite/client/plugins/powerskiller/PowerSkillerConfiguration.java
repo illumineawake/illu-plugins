@@ -456,7 +456,7 @@ public interface PowerSkillerConfiguration extends Config
 		keyName = "safeSpotRadius",
 		name = "Safe spot radius",
 		description = "Radius of the safe spot to return to. 0 will always return to the same tile, 1 will return to a 1 tile radius of safespot",
-		position = 140,
+		position = 136,
 		hidden = true,
 		unhide = "safeSpot",
 		titleSection = "skillerTitle"
