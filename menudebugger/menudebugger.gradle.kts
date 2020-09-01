@@ -23,14 +23,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "4.3.0"
+version = "0.0.1"
 
-project.extra["PluginName"] = "Power Skiller"
-project.extra["PluginDescription"] = "Illumine auto power skiller plugin"
+project.extra["PluginName"] = "Menu Debugger Plugin"
+project.extra["PluginDescription"] = "Illumine - Menu Debugger plugin"
 
 dependencies {
     compileOnly(project(":botutils"))
-    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.12+")
 }
 
 tasks {
@@ -40,11 +39,7 @@ tasks {
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Dependencies" to
-                            arrayOf(
-                                    nameToId("BotUtils"),
-                                    "chinbreakhandler-plugin"
-                            ).joinToString(),
+                    "Plugin-Dependencies" to nameToId("BotUtils"),
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))
