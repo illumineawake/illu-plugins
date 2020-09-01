@@ -1697,7 +1697,7 @@ public class BotUtils extends Plugin {
 			if (event.getOption().equals("Walk here") && walkAction)
 			{
 				log.debug("Walk action");
-				walkTile(coordX,coordX);
+				walkTile(coordX,coordY);
 				walkAction = false;
 				return;
 			}
