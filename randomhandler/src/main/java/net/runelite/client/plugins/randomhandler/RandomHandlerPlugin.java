@@ -250,6 +250,8 @@ public class RandomHandlerPlugin extends Plugin
 			case NpcID.DR_JEKYLL:
 			case NpcID.DR_JEKYLL_314:
 				return config.dismissJekyll();
+			case NpcID.DRUNKEN_DWARF:
+				return config.dismissDwarf();
 			case NpcID.EVIL_BOB:
 			case NpcID.EVIL_BOB_6754:
 				return config.dismissBob();

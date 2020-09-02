@@ -61,6 +61,7 @@ subprojects {
         implementation(group = "org.pushing-pixels", name = "radiance-substance", version = "2.5.1")
 
         compileOnly("com.openosrs:runelite-api:$openosrsVersion+")
+        compileOnly("com.openosrs.rs:runescape-api:$openosrsVersion+")
         compileOnly("com.openosrs:runelite-client:$openosrsVersion+")
         compileOnly("com.openosrs:http-api:$openosrsVersion+")
 

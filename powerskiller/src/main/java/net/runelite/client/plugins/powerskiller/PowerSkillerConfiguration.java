@@ -314,18 +314,94 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
-		keyName = "opcodeValue",
-		name = "Custom Opcode Value",
+		keyName = "objectOpcode",
+		name = "Object Menu Opcode",
+		description = "Enable to use a custom Menu Opcode for interacting with an object." +
+			"Example default NPC Opcode works for fishing with lobster pots but not harpooning. To harpoon set an opcode of 10. Use for pickpocketing etc.",
+		position = 88,
+		titleSection = "opcodeTitle",
+		hidden = true,
+		unhide = "customOpcode"
+
+	)
+	default boolean objectOpcode()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "objectOpcodeValue",
+		name = "Object Opcode Value",
 		description = "Input custom Opcode value" +
 			"Example default NPC Opcode works for fishing with lobster pots but not harpooning. To harpoon set an opcode of 10.",
-		position = 88,
+		position = 89,
 		hidden = true,
-		unhide = "customOpcode",
+		unhide = "objectOpcode",
 		titleSection = "opcodeTitle"
 	)
-	default int opcodeValue()
+	default int objectOpcodeValue()
 	{
 		return 10;
+	}
+
+	@ConfigItem(
+		keyName = "inventoryMenu",
+		name = "Inventory Custom Menu",
+		description = "Enable to use a custom Menu for interacting with an inventory item." +
+			"Example emptying jars, combining items etc.",
+		position = 90,
+		titleSection = "opcodeTitle",
+		hidden = true,
+		unhide = "customOpcode"
+
+	)
+	default boolean inventoryMenu()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "combineItems",
+		name = "Combine Inventory Items",
+		description = "Enable to combine 2 items in inventory together" +
+			"Example cutting fish",
+		position = 91,
+		titleSection = "opcodeTitle",
+		hidden = true,
+		unhide = "inventoryMenu"
+
+	)
+	default boolean combineItems()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "toolId",
+		name = "Tool ID",
+		description = "Inventory ID of the tool you want to use for combining, e.g. knife, tinderbox etc.",
+		position = 92,
+		hidden = true,
+		unhide = "combineItems",
+		titleSection = "opcodeTitle"
+	)
+	default int toolId()
+	{
+		return 0;
+	}
+
+	@ConfigItem(
+		keyName = "inventoryOpcodeValue",
+		name = "Inventory Opcode Value",
+		description = "Input custom Opcode value. If you are combining items this is the opcode when you click on the tool, if you are not combining items it is the opcode of the action you're performing, e.g. emptying jars",
+		position = 93,
+		hidden = true,
+		unhide = "inventoryMenu",
+		titleSection = "opcodeTitle"
+	)
+	default int inventoryOpcodeValue()
+	{
+		return 0;
 	}
 
 	@ConfigTitleSection(
@@ -442,18 +518,38 @@ public interface PowerSkillerConfiguration extends Config
 	{
 		return 10;
 	}
-
+	
 	@ConfigItem(
-		keyName = "altMouse",
-		name = "Alt Mouse (for running away issues)",
-		description = "Alternative mouse for users experiencing randomly walking away",
-		position = 131,
-		titleSection = "skillerTitle"
+			keyName = "drawLocationRadius",
+			name = "Draw Location Radius",
+			description = "Draw location Radius on screen.",
+			position = 131,
+			titleSection = "skillerTitle"
 	)
-	default boolean altMouse()
+	default boolean drawlocationRadius()
 	{
 		return false;
 	}
+
+	@ConfigItem(
+		keyName = "safeSpot",
+		name = "Safe spot",
+		description = "Safe spot will force your character to always return to the tile you started the plugin on",
+		position = 135,
+		titleSection = "skillerTitle"
+	)
+	default boolean safeSpot() { return false; }
+
+	@ConfigItem(
+		keyName = "safeSpotRadius",
+		name = "Safe spot radius",
+		description = "Radius of the safe spot to return to. 0 will always return to the same tile, 1 will return to a 1 tile radius of safespot",
+		position = 136,
+		hidden = true,
+		unhide = "safeSpot",
+		titleSection = "skillerTitle"
+	)
+	default int safeSpotRadius() { return 1; }
 
 	@ConfigItem(
 		keyName = "enableUI",

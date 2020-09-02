@@ -261,6 +261,26 @@ public interface PowerFighterConfig extends Config
 	)
 	default int searchRadius() { return 20; }
 
+	@ConfigItem(
+		keyName = "safeSpot",
+		name = "Safe spot",
+		description = "Safe spot will force your character to always return to the tile you started the plugin on",
+		position = 32,
+		titleSection = "generalTitle"
+	)
+	default boolean safeSpot() { return false; }
+
+	@ConfigItem(
+		keyName = "safeSpotRadius",
+		name = "Safe spot radius",
+		description = "Radius of the safe spot to return to. 0 will always return to the same tile, 1 will return to a 1 tile radius of safespot",
+		position = 33,
+		hidden = true,
+		unhide = "safeSpot",
+		titleSection = "generalTitle"
+	)
+	default int safeSpotRadius() { return 1; }
+
 	@ConfigTitleSection(
 		keyName = "ammoTitle",
 		name = "Ammo Settings",

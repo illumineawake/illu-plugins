@@ -27,12 +27,11 @@ package net.runelite.client.plugins.powerskiller;
 
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
-
-import java.awt.AWTException;
 import java.awt.Rectangle;
-import java.awt.Robot;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +62,6 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
-import net.runelite.client.plugins.botutils.Tab;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 import static net.runelite.client.plugins.powerskiller.PowerSkillerState.*;
@@ -124,7 +122,6 @@ public class PowerSkillerPlugin extends Plugin
 	private final Set<Integer> itemIds = new HashSet<>();
 	private final Set<Integer> objectIds = new HashSet<>();
 	private final Set<Integer> requiredIds = new HashSet<>();
-	private Robot robot;
 
 
 	@Provides
@@ -135,9 +132,9 @@ public class PowerSkillerPlugin extends Plugin
 	}
 
 	@Override
-	protected void startUp() throws AWTException {
+	protected void startUp()
+	{
 		chinBreakHandler.registerPlugin(this);
-		robot = new Robot();
 	}
 
 	@Override
@@ -244,6 +241,7 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			log.debug("Tried to start bot before being logged in");
 			skillLocation = null;
+			resetVals();
 		}
 	}
 
@@ -260,21 +258,6 @@ public class PowerSkillerPlugin extends Plugin
 		return tickLength;
 	}
 
-	private void interactNPC()
-	{
-		targetNPC = utils.findNearestNpcWithin(skillLocation, config.locationRadius(), objectIds);
-		opcode = (config.customOpcode() ? config.opcodeValue() : MenuOpcode.NPC_FIRST_OPTION.getId());
-		if (targetNPC != null)
-		{
-			targetMenu = new MenuEntry("", "", targetNPC.getIndex(), opcode, 0, 0, false);
-			utils.setMenuEntry(targetMenu);
-			utils.delayMouseClick(config.altMouse() ? altRect : targetNPC.getConvexHull().getBounds(), sleepDelay());
-		}
-		else
-		{
-			log.info("NPC is null");
-		}
-	}
 
 	private GameObject getDenseEssence()
 	{
@@ -291,17 +274,33 @@ public class PowerSkillerPlugin extends Plugin
 		return null;
 	}
 
+	private void interactNPC()
+	{
+		targetNPC = utils.findNearestNpcWithin(skillLocation, config.locationRadius(), objectIds);
+		opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuOpcode.NPC_FIRST_OPTION.getId());
+		if (targetNPC != null)
+		{
+			targetMenu = new MenuEntry("", "", targetNPC.getIndex(), opcode, 0, 0, false);
+			utils.setMenuEntry(targetMenu);
+			utils.delayMouseClick(targetNPC.getConvexHull().getBounds(), sleepDelay());
+		}
+		else
+		{
+			log.info("NPC is null");
+		}
+	}
+
 	private void interactObject()
 	{
 		targetObject = (config.type() == PowerSkillerType.DENSE_ESSENCE) ? getDenseEssence() :
 			utils.findNearestGameObjectWithin(skillLocation, config.locationRadius(), objectIds);
-		opcode = (config.customOpcode() ? config.opcodeValue() : MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId());
+		opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId());
 		if (targetObject != null)
 		{
 			targetMenu = new MenuEntry("", "", targetObject.getId(), opcode,
 				targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
 			utils.setMenuEntry(targetMenu);
-			utils.delayMouseClick(config.altMouse() ? altRect : targetObject.getConvexHull().getBounds(), sleepDelay());
+			utils.delayMouseClick(targetObject.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
 		{
@@ -343,7 +342,7 @@ public class PowerSkillerPlugin extends Plugin
 				utils.getBankMenuOpcode(bank.getId()), bank.getSceneMinLocation().getX(),
 				bank.getSceneMinLocation().getY(), false);
 			utils.setMenuEntry(targetMenu);
-			utils.delayMouseClick(config.altMouse() ? altRect : bank.getConvexHull().getBounds(), sleepDelay());
+			utils.delayMouseClick(bank.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
 		{
@@ -400,6 +399,11 @@ public class PowerSkillerPlugin extends Plugin
 			}
 			return (!utils.inventoryContains(itemIds)) ? INVALID_DROP_IDS : DROP_ITEMS;
 		}
+		if (config.safeSpot() &&
+			skillLocation.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
+		{
+			return RETURN_SAFE_SPOT;
+		}
 		if (client.getLocalPlayer().getAnimation() == -1 || npcMoved)
 		{
 			if (config.type() == PowerSkillerType.DENSE_ESSENCE)
@@ -438,18 +442,45 @@ public class PowerSkillerPlugin extends Plugin
 					timeout--;
 					break;
 				case DROP_ALL:
-					robot.keyPress(utils.getTabHotkey(Tab.INVENTORY));
-					utils.dropInventory(true, config.sleepMin(), config.sleepMax());
+					if (config.customOpcode() && config.inventoryMenu())
+					{
+						Collection<Integer> inventoryItems = utils.getAllInventoryItemIDs();
+						utils.inventoryItemsInteract(inventoryItems, config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
+					}
+					else
+					{
+						utils.dropInventory(true, config.sleepMin(), config.sleepMax());
+					}
 					timeout = tickDelay();
 					break;
 				case DROP_EXCEPT:
-					robot.keyPress(utils.getTabHotkey(Tab.INVENTORY));
-					utils.dropAllExcept(itemIds, true, config.sleepMin(), config.sleepMax());
+					if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
+					{
+						utils.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
+					}
+					else if (config.customOpcode() && config.inventoryMenu())
+					{
+						utils.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
+					}
+					else
+					{
+						utils.dropAllExcept(itemIds, true, config.sleepMin(), config.sleepMax());
+					}
 					timeout = tickDelay();
 					break;
 				case DROP_ITEMS:
-					robot.keyPress(utils.getTabHotkey(Tab.INVENTORY));
-					utils.dropItems(itemIds, true, config.sleepMin(), config.sleepMax());
+					if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
+					{
+						utils.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
+					}
+					else if (config.customOpcode() && config.inventoryMenu())
+					{
+						utils.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), false,false, config.sleepMin(), config.sleepMax());
+					}
+					else
+					{
+						utils.dropItems(itemIds, true, config.sleepMin(), config.sleepMax());
+					}
 					timeout = tickDelay();
 					break;
 				case FIND_GAME_OBJECT:
@@ -476,6 +507,10 @@ public class PowerSkillerPlugin extends Plugin
 				case DEPOSIT_ITEMS:
 					utils.depositAllOfItems(itemIds);
 					timeout = tickDelay();
+					break;
+				case RETURN_SAFE_SPOT:
+					utils.walk(skillLocation, config.safeSpotRadius(), sleepDelay());
+					timeout = 2 + tickDelay();
 					break;
 				case MISSING_ITEMS:
 					startPowerSkiller = false;
@@ -504,6 +539,7 @@ public class PowerSkillerPlugin extends Plugin
 	{
 		if (config.customOpcode() && config.printOpcode())
 		{
+			utils.sendGameMessage("Identifier value: " + event.getIdentifier());
 			utils.sendGameMessage("Opcode value: " + event.getOpcode());
 		}
 	}

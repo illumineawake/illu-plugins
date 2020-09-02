@@ -107,7 +107,8 @@ public class PowerFighterPlugin extends Plugin
 	List<String> lootableItems = new ArrayList<>();
 	Set<String> alchableItems = new HashSet<>();
 	Set<Integer> alchBlacklist = Set.of(ItemID.NATURE_RUNE, ItemID.FIRE_RUNE, ItemID.COINS_995);
-	List<Item> alchLoot = new ArrayList<>();;
+	List<Item> alchLoot = new ArrayList<>();
+	;
 	MenuEntry targetMenu;
 	Instant botTimer;
 	Instant newLoot;
@@ -197,6 +198,10 @@ public class PowerFighterPlugin extends Plugin
 				updateConfigValues();
 				highAlchCost = utils.getOSBItem(ItemID.NATURE_RUNE).getOverall_average() + (utils.getOSBItem(ItemID.FIRE_RUNE).getOverall_average() * 5);
 				startLoc = client.getLocalPlayer().getWorldLocation();
+				if (config.safeSpot())
+				{
+					utils.sendGameMessage("Safe spot set: " + startLoc.toString());
+				}
 				beforeLoc = client.getLocalPlayer().getLocalLocation();
 			}
 			else
@@ -420,6 +425,11 @@ public class PowerFighterPlugin extends Plugin
 				}
 			}
 		}
+		if (config.safeSpot() && utils.findNearestNpcTargetingLocal("") != null &&
+			startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
+		{
+			return RETURN_SAFE_SPOT;
+		}
 		if (player.getInteracting() != null)
 		{
 			currentNPC = (NPC) player.getInteracting();
@@ -569,6 +579,10 @@ public class PowerFighterPlugin extends Plugin
 				case HANDLE_BREAK:
 					chinBreakHandler.startBreak(this);
 					timeout = 10;
+					break;
+				case RETURN_SAFE_SPOT:
+					utils.walk(startLoc, config.safeSpotRadius(), sleepDelay());
+					timeout = 2 + tickDelay();
 					break;
 				case LOG_OUT:
 					if (player.getInteracting() == null)

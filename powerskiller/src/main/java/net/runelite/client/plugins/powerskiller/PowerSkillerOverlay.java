@@ -9,11 +9,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.Perspective;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 import net.runelite.client.ui.overlay.components.table.TableAlignment;
 import net.runelite.client.ui.overlay.components.table.TableComponent;
@@ -35,7 +37,7 @@ class PowerSkillerOverlay extends OverlayPanel
 	private PowerSkillerOverlay(final Client client, final PowerSkillerPlugin plugin, final PowerSkillerConfiguration config)
 	{
 		super(plugin);
-		setPosition(OverlayPosition.BOTTOM_LEFT);
+		setPosition(OverlayPosition.DYNAMIC);
 		this.client = client;
 		this.plugin = plugin;
 		this.config = config;
@@ -49,6 +51,15 @@ class PowerSkillerOverlay extends OverlayPanel
 		{
 			log.debug("Overlay conditions not met, not starting overlay");
 			return null;
+		}
+		if(config.drawlocationRadius())
+		{
+			try
+			{
+				OverlayUtil.renderPolygon(graphics, Perspective.getCanvasTileAreaPoly(client, client.getLocalPlayer().getLocalLocation(),config.locationRadius()), ColorUtil.fromHex("#121212"));
+			} catch (Exception ignored) {
+				//Perspective can not find the Polygon to draw on the map.
+			}
 		}
 		TableComponent tableComponent = new TableComponent();
 		tableComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
