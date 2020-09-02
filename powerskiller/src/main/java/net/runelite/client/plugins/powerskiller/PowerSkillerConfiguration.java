@@ -518,6 +518,18 @@ public interface PowerSkillerConfiguration extends Config
 	{
 		return 10;
 	}
+	
+	@ConfigItem(
+			keyName = "drawLocationRadius",
+			name = "Draw Location Radius",
+			description = "Draw location Radius on screen.",
+			position = 131,
+			titleSection = "skillerTitle"
+	)
+	default boolean drawlocationRadius()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 		keyName = "safeSpot",
