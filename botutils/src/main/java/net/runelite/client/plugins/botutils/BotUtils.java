@@ -1042,7 +1042,8 @@ public class BotUtils extends Plugin
 
 	public void logout()
 	{
-		targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 11927560, false);
+		int param1 = (client.getWidget(WidgetInfo.LOGOUT_BUTTON) != null) ? 11927560 : 4522007;
+		targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, param1, false);
 		Widget logoutWidget = client.getWidget(WidgetInfo.LOGOUT_BUTTON);
 		if (logoutWidget != null)
 		{
