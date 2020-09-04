@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.powerfighter;
+package net.runelite.client.plugins.fountainofrune;
 
 public enum PowerFighterState
 {

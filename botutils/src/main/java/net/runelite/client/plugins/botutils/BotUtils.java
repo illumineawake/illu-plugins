@@ -563,7 +563,6 @@ public class BotUtils extends Plugin
 	 * Returns if a specific item is equipped
 	 *
 	 * */
-
 	public boolean isItemEquipped(Collection<Integer> itemIds)
 	{
 		assert client.isClientThread();
@@ -1143,6 +1142,20 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
+	public List<Item> getAllInventoryItemsExcept(List<Integer> exceptIDs)
+	{
+		exceptIDs.add(-1); //empty inventory slot
+		ItemContainer inventoryContainer = client.getItemContainer(InventoryID.INVENTORY);
+		if (inventoryContainer != null)
+		{
+			Item[] items = inventoryContainer.getItems();
+			List<Item> itemList = new ArrayList<>(Arrays.asList(items));
+			itemList.removeIf(item -> exceptIDs.contains(item.getId()));
+			return itemList.isEmpty() ? null : itemList;
+		}
+		return null;
+	}
+
 	public WidgetItem getInventoryWidgetItem(int id)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -1173,6 +1186,20 @@ public class BotUtils extends Plugin
 					return item;
 				}
 			}
+		}
+		return null;
+	}
+
+	public Item getInventoryItemExcept(List<Integer> exceptIDs)
+	{
+		exceptIDs.add(-1); //empty inventory slot
+		ItemContainer inventoryContainer = client.getItemContainer(InventoryID.INVENTORY);
+		if (inventoryContainer != null)
+		{
+			Item[] items = inventoryContainer.getItems();
+			List<Item> itemList = new ArrayList<>(Arrays.asList(items));
+			itemList.removeIf(item -> exceptIDs.contains(item.getId()));
+			return itemList.isEmpty() ? null : itemList.get(0);
 		}
 		return null;
 	}
@@ -1294,7 +1321,7 @@ public class BotUtils extends Plugin
 		return inventoryItem != null;
 	}
 
-	public boolean inventoryContains(int itemID, int minStackAmount)
+	public boolean inventoryContainsStack(int itemID, int minStackAmount)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
 		{
