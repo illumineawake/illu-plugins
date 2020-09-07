@@ -23,7 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.powerfighter;
+package net.runelite.client.plugins.fountainofrune;
 
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
@@ -53,9 +53,9 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
-import static net.runelite.client.plugins.powerfighter.PowerFighterState.*;
+import static net.runelite.client.plugins.fountainofrune.PowerFighterState.*;
 
-import static net.runelite.client.plugins.powerfighter.PowerFighterState.HIGH_ALCH;
+import static net.runelite.client.plugins.fountainofrune.PowerFighterState.HIGH_ALCH;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
 import org.pf4j.Extension;
@@ -290,7 +290,7 @@ public class PowerFighterPlugin extends Plugin
 	{
 		return config.alchItems() &&
 			client.getBoostedSkillLevel(Skill.MAGIC) >= 55 &&
-			utils.inventoryContains(ItemID.NATURE_RUNE) && utils.inventoryContains(ItemID.FIRE_RUNE, 5);
+			utils.inventoryContains(ItemID.NATURE_RUNE) && utils.inventoryContainsStack(ItemID.FIRE_RUNE, 5);
 	}
 
 	private boolean alchableItem(int itemID)

@@ -28,6 +28,7 @@ rootProject.name = "Illumine Plugins"
 include(":botutils")
 include("combinationrunecrafter")
 include(":magicsplasher")
+include(":menudebugger")
 include("powerfighter")
 include("powerskiller")
 include(":quickeater")

@@ -238,7 +238,7 @@ public class RooftopAgilityPlugin extends Plugin {
     private boolean shouldCastTeleport() {
         return config.camelotTeleport() && client.getBoostedSkillLevel(Skill.MAGIC) >= 45 &&
                 CAMELOT_TELE_LOC.distanceTo(client.getLocalPlayer().getWorldLocation()) <= 3 &&
-                (utils.inventoryContains(ItemID.LAW_RUNE) && utils.inventoryContains(ItemID.AIR_RUNE, 5) ||
+                (utils.inventoryContains(ItemID.LAW_RUNE) && utils.inventoryContainsStack(ItemID.AIR_RUNE, 5) ||
                         utils.inventoryContains(ItemID.LAW_RUNE) && utils.isItemEquipped(AIR_STAFFS));
     }
 
