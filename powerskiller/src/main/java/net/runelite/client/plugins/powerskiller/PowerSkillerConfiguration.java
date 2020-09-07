@@ -503,6 +503,18 @@ public interface PowerSkillerConfiguration extends Config
 		return false;
 	}
 
+	@ConfigItem(
+			keyName = "depositGrinder",
+			name = "Deposit Grinder",
+			description = "Deposit in Grinder",
+			position = 122,
+			titleSection = "dropTitle"
+	)
+	default boolean depositGrinder()
+	{
+		return false;
+	}
+
 	@Range(
 		min = 1,
 		max = 60
@@ -522,7 +534,7 @@ public interface PowerSkillerConfiguration extends Config
 	@ConfigItem(
 			keyName = "drawLocationRadius",
 			name = "Draw Location Radius",
-			description = "Draw location Radius on screen.",
+			description = "Draws location radius on screen.",
 			position = 131,
 			titleSection = "skillerTitle"
 	)
