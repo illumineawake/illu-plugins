@@ -534,7 +534,7 @@ public interface PowerSkillerConfiguration extends Config
 	@ConfigItem(
 			keyName = "drawLocationRadius",
 			name = "Draw Location Radius",
-			description = "Draws location radius on screen.",
+			description = "Draw location Radius on screen.",
 			position = 131,
 			titleSection = "skillerTitle"
 	)
