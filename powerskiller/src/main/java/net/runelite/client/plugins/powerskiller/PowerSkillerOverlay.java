@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
+import net.runelite.api.coords.LocalPoint;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
 import net.runelite.client.ui.overlay.OverlayPanel;
@@ -56,7 +57,7 @@ class PowerSkillerOverlay extends OverlayPanel
 		{
 			try
 			{
-				OverlayUtil.renderPolygon(graphics, Perspective.getCanvasTileAreaPoly(client, client.getLocalPlayer().getLocalLocation(),config.locationRadius()), ColorUtil.fromHex("#121212"));
+				OverlayUtil.renderPolygon(graphics, Perspective.getCanvasTileAreaPoly(client, LocalPoint.fromWorld(client, plugin.skillLocation) /* client.getLocalPlayer().getLocalLocation()*/,config.locationRadius()), ColorUtil.fromHex("#121212"));
 			} catch (Exception ignored) {
 				//Perspective can not find the Polygon to draw on the map.
 			}

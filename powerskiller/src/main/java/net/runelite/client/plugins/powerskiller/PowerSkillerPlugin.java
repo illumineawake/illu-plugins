@@ -40,6 +40,7 @@ import net.runelite.api.GameObject;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
 import net.runelite.api.NullObjectID;
+import net.runelite.api.ObjectID;
 import net.runelite.api.Player;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuOpcode;
@@ -113,6 +114,9 @@ public class PowerSkillerPlugin extends Plugin
 	Player player;
 	Rectangle altRect = new Rectangle(-100,-100, 10, 10);
 	WorldArea DENSE_ESSENCE_AREA = new WorldArea(new WorldPoint(1754, 3845, 0), new WorldPoint(1770, 3862, 0));
+	private final WorldPoint WEST_ROCK = new WorldPoint(3164, 2914, 0);
+	private final WorldPoint SW_ROCK = new WorldPoint(3166, 2913, 0);
+	private final WorldPoint SE_ROCK = new WorldPoint(3167, 2913, 0);
 
 	int timeout = 0;
 	int opcode;
@@ -375,7 +379,7 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			return HANDLE_BREAK;
 		}
-		if(config.depositGrinder()){
+		if(config.type() == PowerSkillerType.SANDSTONE){
 			if(utils.inventoryFull()){
 				return ADDING_SANDSTONE_TO_GRINDER;
 			} else if (player.getWorldLocation().equals(new WorldPoint(3152,2910,0))) {
@@ -450,10 +454,10 @@ public class PowerSkillerPlugin extends Plugin
 					break;
 				case ADDING_SANDSTONE_TO_GRINDER:
 					objectIds.clear();
-					objectIds.add(26199); //grinder id
+					objectIds.add(ObjectID.GRINDER);
 					interactSandstoneObject();
 					objectIds.clear();
-					objectIds.add(11386); //sandstone id
+					objectIds.add(ObjectID.ROCKS_11386); //sandstone id
 					timeout=tickDelay();
 					return;
 				case WALKING_BACK_TO_SANDSTONE:
@@ -503,7 +507,7 @@ public class PowerSkillerPlugin extends Plugin
 					timeout = tickDelay();
 					break;
 				case FIND_GAME_OBJECT:
-					if(config.depositGrinder()){
+					if(config.type() == PowerSkillerType.SANDSTONE){
 						interactSandstoneObject();
 						timeout = tickDelay();
 						return;
@@ -608,7 +612,7 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			return;
 		}
-		if(config.depositGrinder()){
+		if(config.type() == PowerSkillerType.SANDSTONE){
 			return;
 		}
 		if (config.dropInventory())
@@ -649,25 +653,24 @@ public class PowerSkillerPlugin extends Plugin
 		//a custom function that looks for a grinder outside of the players usual location radius
 		//it also only interacts with the three most efficient sandstone rocks
 		log.info(objectIds.toString());
-		if(!objectIds.contains(26199)){ //if not looking for the grinder
+		if(!objectIds.contains(ObjectID.GRINDER)){ //if not looking for the grinder
 			//look for sandstone in the radius set by the player
-			for(GameObject gameObject : utils.getGameObjects(11386)){
-				if(gameObject.getWorldLocation().equals(new WorldPoint(3164, 2914, 0))){
+			for(GameObject gameObject : utils.getGameObjects(ObjectID.ROCKS_11386)){
+				if(gameObject.getWorldLocation().equals(WEST_ROCK)){
 					targetObject=gameObject; //west rock
 					break;
-				} else if(gameObject.getWorldLocation().equals(new WorldPoint(3166, 2913, 0))){
+				} else if(gameObject.getWorldLocation().equals(SW_ROCK)){
 					targetObject=gameObject; //south west rock
 					break;
-				} else if(gameObject.getWorldLocation().equals(new WorldPoint(3167, 2913, 0))){
+				} else if(gameObject.getWorldLocation().equals(SE_ROCK)){
 					targetObject=gameObject; //south east rock
 					break;
 				}
 			}
 		} else { //looking for the grinder
 			//extend search outside the players set radius
-			targetObject = utils.getGameObjects(26199).get(0);
+			targetObject = utils.getGameObjects(ObjectID.GRINDER).get(0);
 		}
-
 		opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId());
 		if (targetObject != null)
 		{

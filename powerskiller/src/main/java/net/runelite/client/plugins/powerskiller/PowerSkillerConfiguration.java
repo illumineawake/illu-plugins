@@ -503,18 +503,6 @@ public interface PowerSkillerConfiguration extends Config
 		return false;
 	}
 
-	@ConfigItem(
-			keyName = "depositGrinder",
-			name = "Deposit Grinder",
-			description = "Deposit in Grinder",
-			position = 122,
-			titleSection = "dropTitle"
-	)
-	default boolean depositGrinder()
-	{
-		return false;
-	}
-
 	@Range(
 		min = 1,
 		max = 60
