@@ -76,6 +76,9 @@ class PowerSkillerOverlay extends OverlayPanel
 			}
 		}
 		tableComponent.addRow("Status:", infoStatus);
+		if(config.type().equals(PowerSkillerType.SANDSTONE)){
+			tableComponent.addRow("Waterskins left:", plugin.waterskinsLeft + " sips");
+		}
 
 		TableComponent tableDelayComponent = new TableComponent();
 		tableDelayComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);

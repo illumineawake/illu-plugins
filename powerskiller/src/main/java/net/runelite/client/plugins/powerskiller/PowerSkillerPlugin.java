@@ -54,6 +54,7 @@ import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.NpcDefinitionChanged;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -117,6 +118,7 @@ public class PowerSkillerPlugin extends Plugin
 	private final WorldPoint WEST_ROCK = new WorldPoint(3164, 2914, 0);
 	private final WorldPoint SW_ROCK = new WorldPoint(3166, 2913, 0);
 	private final WorldPoint SE_ROCK = new WorldPoint(3167, 2913, 0);
+	int waterskinsLeft;
 
 	int timeout = 0;
 	int opcode;
@@ -380,7 +382,10 @@ public class PowerSkillerPlugin extends Plugin
 			return HANDLE_BREAK;
 		}
 		if(config.type() == PowerSkillerType.SANDSTONE){
-			if(utils.inventoryFull()){
+			updateWaterskinsLeft();
+			if(waterskinsLeft==0){
+				return CASTING_HUMIDIFY;
+			} else if(utils.inventoryFull()){
 				return ADDING_SANDSTONE_TO_GRINDER;
 			} else if (player.getWorldLocation().equals(new WorldPoint(3152,2910,0))) {
 				return WALKING_BACK_TO_SANDSTONE;
@@ -452,6 +457,10 @@ public class PowerSkillerPlugin extends Plugin
 					utils.handleRun(30, 20);
 					timeout--;
 					break;
+				case CASTING_HUMIDIFY:
+					castHumidify();
+					timeout=tickDelay();
+					break;
 				case ADDING_SANDSTONE_TO_GRINDER:
 					objectIds.clear();
 					objectIds.add(ObjectID.GRINDER);
@@ -459,11 +468,11 @@ public class PowerSkillerPlugin extends Plugin
 					objectIds.clear();
 					objectIds.add(ObjectID.ROCKS_11386); //sandstone id
 					timeout=tickDelay();
-					return;
+					break;
 				case WALKING_BACK_TO_SANDSTONE:
 					utils.walk(new WorldPoint(3166,2914,0),1,sleepDelay());
 					timeout=tickDelay();
-					return;
+					break;
 				case DROP_ALL:
 					if (config.customOpcode() && config.inventoryMenu())
 					{
@@ -652,7 +661,6 @@ public class PowerSkillerPlugin extends Plugin
 	{
 		//a custom function that looks for a grinder outside of the players usual location radius
 		//it also only interacts with the three most efficient sandstone rocks
-		log.info(objectIds.toString());
 		if(!objectIds.contains(ObjectID.GRINDER)){ //if not looking for the grinder
 			//look for sandstone in the radius set by the player
 			for(GameObject gameObject : utils.getGameObjects(ObjectID.ROCKS_11386)){
@@ -683,5 +691,27 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			log.info("Game Object is null, ids are: {}", objectIds.toString());
 		}
+	}
+
+	private void updateWaterskinsLeft(){
+		waterskinsLeft=0;
+		waterskinsLeft+=utils.getInventoryItemCount(1823,false)*4; //4 dose waterskin
+		waterskinsLeft+=utils.getInventoryItemCount(1825,false)*3; //3 dose waterskin
+		waterskinsLeft+=utils.getInventoryItemCount(1827,false)*2; //2 dose waterskin
+		waterskinsLeft+=utils.getInventoryItemCount(1829,false); //3 dose waterskin
+	}
+
+	private void castHumidify(){
+		if(!utils.inventoryContains(9075)){
+			utils.sendGameMessage("illu - out of astrals runes");
+			startPowerSkiller = false;
+		}
+		targetMenu = new MenuEntry("Cast","<col=00ff00>Humidify</col>",1,57,-1,14286954,false);
+		Widget spellWidget = utils.getSpellWidget("Humidify");
+		if(spellWidget==null){
+			utils.sendGameMessage("illu - unable to find humidify widget");
+			startPowerSkiller = false;
+		}
+		utils.oneClickCastSpell(utils.getSpellWidgetInfo("Humidify"),targetMenu,sleepDelay());
 	}
 }

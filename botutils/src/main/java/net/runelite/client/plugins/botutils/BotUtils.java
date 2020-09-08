@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -1542,6 +1543,29 @@ public class BotUtils extends Plugin
 				e.printStackTrace();
 			}
 		});
+	}
+
+	public boolean runePouchContains(int id)
+	{
+
+		Set<Integer> runePouchIds = Stream.of(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE1)).getItemId(),Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE2)).getItemId(),
+				Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE3)).getItemId()).collect(Collectors.toSet());
+		for(int runePouchId : runePouchIds){
+			if(runePouchId==id){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean runePouchContains(Collection<Integer> ids)
+	{
+		for(int runeId : ids){
+			if(!runePouchContains(runeId)){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
