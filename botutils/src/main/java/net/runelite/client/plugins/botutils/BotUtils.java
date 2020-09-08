@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -563,7 +564,6 @@ public class BotUtils extends Plugin
 	 * Returns if a specific item is equipped
 	 *
 	 * */
-
 	public boolean isItemEquipped(Collection<Integer> itemIds)
 	{
 		assert client.isClientThread();
@@ -1043,7 +1043,8 @@ public class BotUtils extends Plugin
 
 	public void logout()
 	{
-		targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 11927560, false);
+		int param1 = (client.getWidget(WidgetInfo.LOGOUT_BUTTON) != null) ? 11927560 : 4522007;
+		targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, param1, false);
 		Widget logoutWidget = client.getWidget(WidgetInfo.LOGOUT_BUTTON);
 		if (logoutWidget != null)
 		{
@@ -1143,6 +1144,20 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
+	public List<Item> getAllInventoryItemsExcept(List<Integer> exceptIDs)
+	{
+		exceptIDs.add(-1); //empty inventory slot
+		ItemContainer inventoryContainer = client.getItemContainer(InventoryID.INVENTORY);
+		if (inventoryContainer != null)
+		{
+			Item[] items = inventoryContainer.getItems();
+			List<Item> itemList = new ArrayList<>(Arrays.asList(items));
+			itemList.removeIf(item -> exceptIDs.contains(item.getId()));
+			return itemList.isEmpty() ? null : itemList;
+		}
+		return null;
+	}
+
 	public WidgetItem getInventoryWidgetItem(int id)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -1173,6 +1188,20 @@ public class BotUtils extends Plugin
 					return item;
 				}
 			}
+		}
+		return null;
+	}
+
+	public Item getInventoryItemExcept(List<Integer> exceptIDs)
+	{
+		exceptIDs.add(-1); //empty inventory slot
+		ItemContainer inventoryContainer = client.getItemContainer(InventoryID.INVENTORY);
+		if (inventoryContainer != null)
+		{
+			Item[] items = inventoryContainer.getItems();
+			List<Item> itemList = new ArrayList<>(Arrays.asList(items));
+			itemList.removeIf(item -> exceptIDs.contains(item.getId()));
+			return itemList.isEmpty() ? null : itemList.get(0);
 		}
 		return null;
 	}
@@ -1294,7 +1323,7 @@ public class BotUtils extends Plugin
 		return inventoryItem != null;
 	}
 
-	public boolean inventoryContains(int itemID, int minStackAmount)
+	public boolean inventoryContainsStack(int itemID, int minStackAmount)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
 		{
@@ -1514,6 +1543,29 @@ public class BotUtils extends Plugin
 				e.printStackTrace();
 			}
 		});
+	}
+
+	public boolean runePouchContains(int id)
+	{
+
+		Set<Integer> runePouchIds = Stream.of(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE1)).getItemId(),Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE2)).getItemId(),
+				Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE3)).getItemId()).collect(Collectors.toSet());
+		for(int runePouchId : runePouchIds){
+			if(runePouchId==id){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean runePouchContains(Collection<Integer> ids)
+	{
+		for(int runeId : ids){
+			if(!runePouchContains(runeId)){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -2010,10 +2062,10 @@ public class BotUtils extends Plugin
 
 	public void oneClickCastSpell(WidgetInfo spellWidget, MenuEntry targetMenu, Rectangle targetBounds, long sleepLength)
 	{
-		setMenuEntry(targetMenu, true);
-		delayMouseClick(targetBounds, sleepLength);
+		setMenuEntry(targetMenu, false);
+		//delayMouseClick(targetBounds, sleepLength);
 		setSelectSpell(spellWidget);
-		delayMouseClick(targetBounds, getRandomIntBetweenRange(20, 60));
+		delayMouseClick(targetBounds, sleepLength /*getRandomIntBetweenRange(20, 60)*/);
 	}
 
 	private void setSelectSpell(WidgetInfo info)

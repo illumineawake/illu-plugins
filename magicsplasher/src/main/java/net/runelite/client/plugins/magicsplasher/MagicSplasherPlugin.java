@@ -268,10 +268,10 @@ public class MagicSplasherPlugin extends Plugin
 			case "High Alchemy":
 				targetMenu = new MenuEntry("Cast", "", targetItem.getId(), MenuOpcode.ITEM_USE_ON_WIDGET.getId(), targetItem.getIndex(), 9764864, true);
 				timeout = 5 + tickDelay();
-				break;
+				utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, targetItem.getCanvasBounds().getBounds(), sleepDelay());
+				return;
 		}
-		utils.setMenuEntry(targetMenu);
-		utils.delayMouseClick(splashNPC.getConvexHull().getBounds(), sleepDelay());
+		utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, splashNPC.getConvexHull().getBounds(), sleepDelay());
 	}
 
 	public MagicSplasherState getState()

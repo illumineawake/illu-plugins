@@ -23,14 +23,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "4.3.0"
+version = "4.4.1"
 
 project.extra["PluginName"] = "Power Skiller"
 project.extra["PluginDescription"] = "Illumine auto power skiller plugin"
 
 dependencies {
     compileOnly(project(":botutils"))
-    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.12+")
+    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.13+")
 }
 
 tasks {

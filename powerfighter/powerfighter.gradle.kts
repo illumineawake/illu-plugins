@@ -23,14 +23,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.5.2"
+version = "1.5.3"
 
 project.extra["PluginName"] = "Powerfighter Plugin"
 project.extra["PluginDescription"] = "Illumine - Powerfighter plugin"
 
 dependencies {
     compileOnly(project(":botutils"))
-    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.12+")
+    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.13+")
 }
 
 tasks {
