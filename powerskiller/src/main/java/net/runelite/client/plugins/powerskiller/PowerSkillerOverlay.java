@@ -85,11 +85,6 @@ class PowerSkillerOverlay extends OverlayPanel
 		tableDelayComponent.addRow("Sleep delay:", plugin.sleepLength + "ms");
 		tableDelayComponent.addRow("Tick delay:", String.valueOf(plugin.timeout));
 
-
-		TableComponent tableWaterskinComponent = new TableComponent();
-		tableDelayComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
-
-
 		if (!tableComponent.isEmpty())
 		{
 			panelComponent.setBackgroundColor(ColorUtil.fromHex("#121212")); //Material Dark default
