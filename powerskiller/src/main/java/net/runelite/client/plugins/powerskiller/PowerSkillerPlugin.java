@@ -72,11 +72,11 @@ import static net.runelite.client.plugins.powerskiller.PowerSkillerState.*;
 @Extension
 @PluginDependency(BotUtils.class)
 @PluginDescriptor(
-		name = "Power Skiller",
-		enabledByDefault = false,
-		description = "Illumine auto power-skill plugin",
-		tags = {"fishing, mining, wood-cutting, illumine, bot, power, skill"},
-		type = PluginType.SKILLING
+	name = "Power Skiller",
+	enabledByDefault = false,
+	description = "Illumine auto power-skill plugin",
+	tags = {"fishing, mining, wood-cutting, illumine, bot, power, skill"},
+	type = PluginType.SKILLING
 )
 @Slf4j
 public class PowerSkillerPlugin extends Plugin
@@ -299,12 +299,12 @@ public class PowerSkillerPlugin extends Plugin
 	private void interactObject()
 	{
 		targetObject = (config.type() == PowerSkillerType.DENSE_ESSENCE) ? getDenseEssence() :
-				utils.findNearestGameObjectWithin(skillLocation, config.locationRadius(), objectIds);
+			utils.findNearestGameObjectWithin(skillLocation, config.locationRadius(), objectIds);
 		opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId());
 		if (targetObject != null)
 		{
 			targetMenu = new MenuEntry("", "", targetObject.getId(), opcode,
-					targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
+				targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
 			utils.setMenuEntry(targetMenu);
 			utils.delayMouseClick(targetObject.getConvexHull().getBounds(), sleepDelay());
 		}
@@ -345,8 +345,8 @@ public class PowerSkillerPlugin extends Plugin
 		if (bank != null)
 		{
 			targetMenu = new MenuEntry("", "", bank.getId(),
-					utils.getBankMenuOpcode(bank.getId()), bank.getSceneMinLocation().getX(),
-					bank.getSceneMinLocation().getY(), false);
+				utils.getBankMenuOpcode(bank.getId()), bank.getSceneMinLocation().getX(),
+				bank.getSceneMinLocation().getY(), false);
 			utils.setMenuEntry(targetMenu);
 			utils.delayMouseClick(bank.getConvexHull().getBounds(), sleepDelay());
 		}
@@ -368,7 +368,7 @@ public class PowerSkillerPlugin extends Plugin
 			return ITERATING;
 		}
 		if (!config.dropInventory() && !requiredIds.isEmpty() && !utils.inventoryContainsAllOf(requiredIds) &&
-				config.type() != PowerSkillerType.DENSE_ESSENCE)
+			config.type() != PowerSkillerType.DENSE_ESSENCE)
 		{
 			return MISSING_ITEMS;
 		}
@@ -416,7 +416,7 @@ public class PowerSkillerPlugin extends Plugin
 			return (!utils.inventoryContains(itemIds)) ? INVALID_DROP_IDS : DROP_ITEMS;
 		}
 		if (config.safeSpot() &&
-				skillLocation.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
+			skillLocation.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
 		{
 			return RETURN_SAFE_SPOT;
 		}
@@ -425,10 +425,10 @@ public class PowerSkillerPlugin extends Plugin
 			if (config.type() == PowerSkillerType.DENSE_ESSENCE)
 			{
 				return (DENSE_ESSENCE_AREA.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) ?
-						FIND_GAME_OBJECT : WAIT_DENSE_ESSENCE;
+					FIND_GAME_OBJECT : WAIT_DENSE_ESSENCE;
 			}
 			return (config.type() == PowerSkillerType.NPC) ?
-					FIND_NPC : FIND_GAME_OBJECT;
+				FIND_NPC : FIND_GAME_OBJECT;
 		}
 		return ANIMATING;
 	}
