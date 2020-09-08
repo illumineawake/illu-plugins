@@ -76,11 +76,19 @@ class PowerSkillerOverlay extends OverlayPanel
 			}
 		}
 		tableComponent.addRow("Status:", infoStatus);
+		if(config.type().equals(PowerSkillerType.SANDSTONE)){
+			tableComponent.addRow("Waterskins left:", plugin.waterskinsLeft + " sips");
+		}
 
 		TableComponent tableDelayComponent = new TableComponent();
 		tableDelayComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
 		tableDelayComponent.addRow("Sleep delay:", plugin.sleepLength + "ms");
 		tableDelayComponent.addRow("Tick delay:", String.valueOf(plugin.timeout));
+
+
+		TableComponent tableWaterskinComponent = new TableComponent();
+		tableDelayComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
+
 
 		if (!tableComponent.isEmpty())
 		{
