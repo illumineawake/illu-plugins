@@ -422,8 +422,8 @@ public class PowerSkillerPlugin extends Plugin
 				return (DENSE_ESSENCE_AREA.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) ?
 					FIND_GAME_OBJECT : WAIT_DENSE_ESSENCE;
 			}
-			return (config.type() == PowerSkillerType.GAME_OBJECT) ?
-				FIND_GAME_OBJECT : FIND_NPC;
+			return (config.type() == PowerSkillerType.NPC) ?
+				FIND_NPC : FIND_GAME_OBJECT;
 		}
 		return ANIMATING;
 	}
