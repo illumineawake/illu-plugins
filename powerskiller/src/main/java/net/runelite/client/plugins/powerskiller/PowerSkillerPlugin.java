@@ -54,6 +54,7 @@ import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.NpcDefinitionChanged;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -71,11 +72,11 @@ import static net.runelite.client.plugins.powerskiller.PowerSkillerState.*;
 @Extension
 @PluginDependency(BotUtils.class)
 @PluginDescriptor(
-	name = "Power Skiller",
-	enabledByDefault = false,
-	description = "Illumine auto power-skill plugin",
-	tags = {"fishing, mining, wood-cutting, illumine, bot, power, skill"},
-	type = PluginType.SKILLING
+		name = "Power Skiller",
+		enabledByDefault = false,
+		description = "Illumine auto power-skill plugin",
+		tags = {"fishing, mining, wood-cutting, illumine, bot, power, skill"},
+		type = PluginType.SKILLING
 )
 @Slf4j
 public class PowerSkillerPlugin extends Plugin
@@ -117,6 +118,7 @@ public class PowerSkillerPlugin extends Plugin
 	private final WorldPoint WEST_ROCK = new WorldPoint(3164, 2914, 0);
 	private final WorldPoint SW_ROCK = new WorldPoint(3166, 2913, 0);
 	private final WorldPoint SE_ROCK = new WorldPoint(3167, 2913, 0);
+	int waterskinsLeft;
 
 	int timeout = 0;
 	int opcode;
@@ -297,12 +299,12 @@ public class PowerSkillerPlugin extends Plugin
 	private void interactObject()
 	{
 		targetObject = (config.type() == PowerSkillerType.DENSE_ESSENCE) ? getDenseEssence() :
-			utils.findNearestGameObjectWithin(skillLocation, config.locationRadius(), objectIds);
+				utils.findNearestGameObjectWithin(skillLocation, config.locationRadius(), objectIds);
 		opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId());
 		if (targetObject != null)
 		{
 			targetMenu = new MenuEntry("", "", targetObject.getId(), opcode,
-				targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
+					targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
 			utils.setMenuEntry(targetMenu);
 			utils.delayMouseClick(targetObject.getConvexHull().getBounds(), sleepDelay());
 		}
@@ -343,8 +345,8 @@ public class PowerSkillerPlugin extends Plugin
 		if (bank != null)
 		{
 			targetMenu = new MenuEntry("", "", bank.getId(),
-				utils.getBankMenuOpcode(bank.getId()), bank.getSceneMinLocation().getX(),
-				bank.getSceneMinLocation().getY(), false);
+					utils.getBankMenuOpcode(bank.getId()), bank.getSceneMinLocation().getX(),
+					bank.getSceneMinLocation().getY(), false);
 			utils.setMenuEntry(targetMenu);
 			utils.delayMouseClick(bank.getConvexHull().getBounds(), sleepDelay());
 		}
@@ -366,7 +368,7 @@ public class PowerSkillerPlugin extends Plugin
 			return ITERATING;
 		}
 		if (!config.dropInventory() && !requiredIds.isEmpty() && !utils.inventoryContainsAllOf(requiredIds) &&
-			config.type() != PowerSkillerType.DENSE_ESSENCE)
+				config.type() != PowerSkillerType.DENSE_ESSENCE)
 		{
 			return MISSING_ITEMS;
 		}
@@ -380,7 +382,10 @@ public class PowerSkillerPlugin extends Plugin
 			return HANDLE_BREAK;
 		}
 		if(config.type() == PowerSkillerType.SANDSTONE){
-			if(utils.inventoryFull()){
+			updateWaterskinsLeft();
+			if(waterskinsLeft==0){
+				return CASTING_HUMIDIFY;
+			} else if(utils.inventoryFull()){
 				return ADDING_SANDSTONE_TO_GRINDER;
 			} else if (player.getWorldLocation().equals(new WorldPoint(3152,2910,0))) {
 				return WALKING_BACK_TO_SANDSTONE;
@@ -411,7 +416,7 @@ public class PowerSkillerPlugin extends Plugin
 			return (!utils.inventoryContains(itemIds)) ? INVALID_DROP_IDS : DROP_ITEMS;
 		}
 		if (config.safeSpot() &&
-			skillLocation.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
+				skillLocation.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
 		{
 			return RETURN_SAFE_SPOT;
 		}
@@ -420,10 +425,10 @@ public class PowerSkillerPlugin extends Plugin
 			if (config.type() == PowerSkillerType.DENSE_ESSENCE)
 			{
 				return (DENSE_ESSENCE_AREA.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) ?
-					FIND_GAME_OBJECT : WAIT_DENSE_ESSENCE;
+						FIND_GAME_OBJECT : WAIT_DENSE_ESSENCE;
 			}
 			return (config.type() == PowerSkillerType.NPC) ?
-				FIND_NPC : FIND_GAME_OBJECT;
+					FIND_NPC : FIND_GAME_OBJECT;
 		}
 		return ANIMATING;
 	}
@@ -452,6 +457,10 @@ public class PowerSkillerPlugin extends Plugin
 					utils.handleRun(30, 20);
 					timeout--;
 					break;
+				case CASTING_HUMIDIFY:
+					castHumidify();
+					timeout=tickDelay();
+					break;
 				case ADDING_SANDSTONE_TO_GRINDER:
 					objectIds.clear();
 					objectIds.add(ObjectID.GRINDER);
@@ -459,11 +468,11 @@ public class PowerSkillerPlugin extends Plugin
 					objectIds.clear();
 					objectIds.add(ObjectID.ROCKS_11386); //sandstone id
 					timeout=tickDelay();
-					return;
+					break;
 				case WALKING_BACK_TO_SANDSTONE:
 					utils.walk(new WorldPoint(3166,2914,0),1,sleepDelay());
 					timeout=tickDelay();
-					return;
+					break;
 				case DROP_ALL:
 					if (config.customOpcode() && config.inventoryMenu())
 					{
@@ -652,7 +661,6 @@ public class PowerSkillerPlugin extends Plugin
 	{
 		//a custom function that looks for a grinder outside of the players usual location radius
 		//it also only interacts with the three most efficient sandstone rocks
-		log.info(objectIds.toString());
 		if(!objectIds.contains(ObjectID.GRINDER)){ //if not looking for the grinder
 			//look for sandstone in the radius set by the player
 			for(GameObject gameObject : utils.getGameObjects(ObjectID.ROCKS_11386)){
@@ -683,5 +691,27 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			log.info("Game Object is null, ids are: {}", objectIds.toString());
 		}
+	}
+
+	private void updateWaterskinsLeft(){
+		waterskinsLeft=0;
+		waterskinsLeft+=utils.getInventoryItemCount(1823,false)*4; //4 dose waterskin
+		waterskinsLeft+=utils.getInventoryItemCount(1825,false)*3; //3 dose waterskin
+		waterskinsLeft+=utils.getInventoryItemCount(1827,false)*2; //2 dose waterskin
+		waterskinsLeft+=utils.getInventoryItemCount(1829,false); //3 dose waterskin
+	}
+
+	private void castHumidify(){
+		if(!utils.inventoryContains(9075)){
+			utils.sendGameMessage("illu - out of astrals runes");
+			startPowerSkiller = false;
+		}
+		targetMenu = new MenuEntry("Cast","<col=00ff00>Humidify</col>",1,57,-1,14286954,false);
+		Widget spellWidget = utils.getSpellWidget("Humidify");
+		if(spellWidget==null){
+			utils.sendGameMessage("illu - unable to find humidify widget");
+			startPowerSkiller = false;
+		}
+		utils.oneClickCastSpell(utils.getSpellWidgetInfo("Humidify"),targetMenu,sleepDelay());
 	}
 }
