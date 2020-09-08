@@ -269,7 +269,7 @@ public class MagicSplasherPlugin extends Plugin
 				targetMenu = new MenuEntry("Cast", "", targetItem.getId(), MenuOpcode.ITEM_USE_ON_WIDGET.getId(), targetItem.getIndex(), 9764864, true);
 				timeout = 5 + tickDelay();
 				utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, targetItem.getCanvasBounds().getBounds(), sleepDelay());
-				break;
+				return;
 		}
 		utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, splashNPC.getConvexHull().getBounds(), sleepDelay());
 	}
