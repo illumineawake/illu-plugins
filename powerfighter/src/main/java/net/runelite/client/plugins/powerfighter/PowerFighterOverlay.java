@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.fountainofrune;
+package net.runelite.client.plugins.powerfighter;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;

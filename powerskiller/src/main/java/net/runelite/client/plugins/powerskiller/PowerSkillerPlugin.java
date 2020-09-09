@@ -576,7 +576,6 @@ public class PowerSkillerPlugin extends Plugin
 	{
 		if (config.customOpcode() && config.printOpcode())
 		{
-			utils.sendGameMessage("Identifier value: " + event.getIdentifier());
 			utils.sendGameMessage("Opcode value: " + event.getOpcode());
 		}
 	}

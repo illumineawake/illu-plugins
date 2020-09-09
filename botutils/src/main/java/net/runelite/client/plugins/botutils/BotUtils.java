@@ -327,6 +327,23 @@ public class BotUtils extends Plugin
 	}
 
 	@Nullable
+	public WallObject findWallObjectWithin(WorldPoint worldPoint, int radius, int... ids)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new WallObjectQuery()
+			.isWithinDistance(worldPoint, radius)
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
 	public DecorativeObject findNearestDecorObject(int... ids)
 	{
 		assert client.isClientThread();
