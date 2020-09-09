@@ -205,8 +205,8 @@ public class BotUtils extends Plugin
 		}
 
 		return new GameObjectQuery()
-			.idEquals(ids)
 			.isWithinDistance(worldPoint, dist)
+			.idEquals(ids)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}
@@ -222,8 +222,8 @@ public class BotUtils extends Plugin
 		}
 
 		return new GameObjectQuery()
-			.idEquals(ids)
 			.isWithinDistance(worldPoint, dist)
+			.idEquals(ids)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}
@@ -271,8 +271,8 @@ public class BotUtils extends Plugin
 		}
 
 		return new NPCQuery()
-			.idEquals(ids)
 			.isWithinDistance(worldPoint, dist)
+			.idEquals(ids)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}
