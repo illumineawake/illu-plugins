@@ -630,25 +630,49 @@ public class PowerSkillerPlugin extends Plugin
 		}
 		if (config.dropInventory())
 		{
-			utils.dropInventory(false, config.sleepMin(), config.sleepMax());
+			if (config.customOpcode() && config.inventoryMenu())
+			{
+				Collection<Integer> inventoryItems = utils.getAllInventoryItemIDs();
+				utils.inventoryItemsInteract(inventoryItems, config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
+			}
+			else
+			{
+				utils.dropInventory(true, config.sleepMin(), config.sleepMax());
+			}
+			timeout = tickDelay();
 			return;
 		}
 		if (config.dropExcept() && !config.dropInventory())
 		{
-			if (!itemIds.containsAll(requiredIds))
+			if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
 			{
-				itemIds.addAll(requiredIds);
+				utils.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
 			}
-			if (utils.inventoryContainsExcept(itemIds))
+			else if (config.customOpcode() && config.inventoryMenu())
 			{
-				utils.dropAllExcept(itemIds, false, config.sleepMin(), config.sleepMax());
+				utils.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
 			}
+			else
+			{
+				utils.dropAllExcept(itemIds, true, config.sleepMin(), config.sleepMax());
+			}
+			timeout = tickDelay();
 			return;
 		}
-		if (utils.inventoryContains(itemIds))
+		if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
 		{
-			utils.dropItems(itemIds, false, config.sleepMin(), config.sleepMax());
+			utils.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
 		}
+		else if (config.customOpcode() && config.inventoryMenu())
+		{
+			utils.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), false,false, config.sleepMin(), config.sleepMax());
+		}
+		else
+		{
+			utils.dropItems(itemIds, true, config.sleepMin(), config.sleepMax());
+		}
+		timeout = tickDelay();
+		return;
 	}
 
 	@Subscribe
