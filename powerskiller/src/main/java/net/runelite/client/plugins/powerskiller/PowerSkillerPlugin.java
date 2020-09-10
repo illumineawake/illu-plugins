@@ -118,6 +118,7 @@ public class PowerSkillerPlugin extends Plugin
 	private final WorldPoint WEST_ROCK = new WorldPoint(3164, 2914, 0);
 	private final WorldPoint SW_ROCK = new WorldPoint(3166, 2913, 0);
 	private final WorldPoint SE_ROCK = new WorldPoint(3167, 2913, 0);
+	private final WorldArea DESERT_QUARRY = new WorldArea(new WorldPoint(3148,2896,0),new WorldPoint(3186,2926,0));
 	int waterskinsLeft;
 
 	int timeout = 0;
@@ -381,11 +382,14 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			return HANDLE_BREAK;
 		}
-		if(config.type() == PowerSkillerType.SANDSTONE){
+		if(DESERT_QUARRY.intersectsWith(player.getWorldArea())){
 			updateWaterskinsLeft();
 			if(waterskinsLeft==0){
 				return CASTING_HUMIDIFY;
-			} else if(utils.inventoryFull()){
+			}
+		}
+		if(config.type() == PowerSkillerType.SANDSTONE){
+			 if(utils.inventoryFull()){
 				return ADDING_SANDSTONE_TO_GRINDER;
 			} else if (player.getWorldLocation().equals(new WorldPoint(3152,2910,0))) {
 				return WALKING_BACK_TO_SANDSTONE;
@@ -576,6 +580,7 @@ public class PowerSkillerPlugin extends Plugin
 	{
 		if (config.customOpcode() && config.printOpcode())
 		{
+			utils.sendGameMessage("Identifier value: " + event.getIdentifier());
 			utils.sendGameMessage("Opcode value: " + event.getOpcode());
 		}
 	}
@@ -697,11 +702,17 @@ public class PowerSkillerPlugin extends Plugin
 		waterskinsLeft+=utils.getInventoryItemCount(1823,false)*4; //4 dose waterskin
 		waterskinsLeft+=utils.getInventoryItemCount(1825,false)*3; //3 dose waterskin
 		waterskinsLeft+=utils.getInventoryItemCount(1827,false)*2; //2 dose waterskin
-		waterskinsLeft+=utils.getInventoryItemCount(1829,false); //3 dose waterskin
+		waterskinsLeft+=utils.getInventoryItemCount(1829,false); //1 dose waterskin
+
+		if(waterskinsLeft==0){
+			if(!utils.inventoryContains(1831)){
+				waterskinsLeft=-1; //no waterskins detected
+			}
+		}
 	}
 
 	private void castHumidify(){
-		if(!utils.inventoryContains(9075)){
+		if(!utils.inventoryContains(9075) && !utils.runePouchContains(9075)){
 			utils.sendGameMessage("illu - out of astrals runes");
 			startPowerSkiller = false;
 		}
