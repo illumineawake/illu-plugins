@@ -47,8 +47,6 @@ import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.GameObjectSpawned;
-import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.GameState;
 import net.runelite.api.GameObject;
 import net.runelite.api.GroundObject;
