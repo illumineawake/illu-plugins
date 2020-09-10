@@ -17,8 +17,22 @@ project.extra["GithubUrl"] = "https://github.com/illumineawake/illu-plugins"
 
 apply<BootstrapPlugin>()
 
+allprojects {
+    group = "com.openosrs.externals"
+    apply<MavenPublishPlugin>()
+}
+
+allprojects {
+    apply<MavenPublishPlugin>()
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+}
+
 subprojects {
-    //group = "com.example"
     group = "com.openosrs.externals"
 
     project.extra["PluginProvider"] = "illumine"
@@ -76,6 +90,19 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
+    configure<PublishingExtension> {
+        repositories {
+            maven {
+                url = uri("$buildDir/repo")
+            }
+        }
+        publications {
+            register("mavenJava", MavenPublication::class) {
+                from(components["java"])
+            }
+        }
+    }
+
     tasks {
         withType<JavaCompile> {
             options.encoding = "UTF-8"
@@ -85,7 +112,7 @@ subprojects {
             doLast {
                 copy {
                     from("./build/libs/")
-                    into("C:\\Users\\joshm\\Documents\\JavaProjects\\My Plugins Jars")
+                    into(System.getProperty("user.home") + "/Documents/JavaProjects/My Plugins Jars")
                 }
             }
         }

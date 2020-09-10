@@ -265,6 +265,6 @@ public interface MagicSplasherConfig extends Config
 	)
 	default Button startButton()
 	{
-		return null;
+		return new Button();
 	}
 }

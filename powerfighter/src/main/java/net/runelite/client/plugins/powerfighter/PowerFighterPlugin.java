@@ -23,7 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.fountainofrune;
+package net.runelite.client.plugins.powerfighter;
 
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
@@ -53,9 +53,7 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
-import static net.runelite.client.plugins.fountainofrune.PowerFighterState.*;
 
-import static net.runelite.client.plugins.fountainofrune.PowerFighterState.HIGH_ALCH;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
 import org.pf4j.Extension;
@@ -379,38 +377,38 @@ public class PowerFighterPlugin extends Plugin
 		if (timeout > 0)
 		{
 			utils.handleRun(20, 20);
-			return TIMEOUT;
+			return PowerFighterState.TIMEOUT;
 		}
 		if (utils.iterating)
 		{
-			return ITERATING;
+			return PowerFighterState.ITERATING;
 		}
 		if (utils.isMoving(beforeLoc))
 		{
-			return MOVING;
+			return PowerFighterState.MOVING;
 		}
 		if (shouldEquipBracelet())
 		{
-			return EQUIP_BRACELET;
+			return PowerFighterState.EQUIP_BRACELET;
 		}
 		if (config.lootAmmo() && !utils.isItemEquipped(List.of(config.ammoID())))
 		{
 			if (utils.inventoryContains(config.ammoID()))
 			{
-				return EQUIP_AMMO;
+				return PowerFighterState.EQUIP_AMMO;
 			}
 			else if (config.stopAmmo())
 			{
-				return (config.logout()) ? LOG_OUT : MISSING_ITEMS;
+				return (config.logout()) ? PowerFighterState.LOG_OUT : PowerFighterState.MISSING_ITEMS;
 			}
 		}
 		if (config.stopFood() && !utils.inventoryContains(config.foodID()))
 		{
-			return (config.logout()) ? LOG_OUT : MISSING_ITEMS;
+			return (config.logout()) ? PowerFighterState.LOG_OUT : PowerFighterState.MISSING_ITEMS;
 		}
 		if (config.stopSlayer() && slayerCompleted)
 		{
-			return (config.logout()) ? LOG_OUT : SLAYER_COMPLETED;
+			return (config.logout()) ? PowerFighterState.LOG_OUT : PowerFighterState.SLAYER_COMPLETED;
 		}
 		if (config.forceLoot() && config.lootItems() && !utils.inventoryFull() && !loot.isEmpty())
 		{
@@ -421,14 +419,14 @@ public class PowerFighterPlugin extends Plugin
 				if (duration.toSeconds() > nextItemLootTime)
 				{
 					nextItemLootTime = utils.getRandomIntBetweenRange(10, 50);
-					return FORCE_LOOT;
+					return PowerFighterState.FORCE_LOOT;
 				}
 			}
 		}
 		if (config.safeSpot() && utils.findNearestNpcTargetingLocal("") != null &&
 			startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
 		{
-			return RETURN_SAFE_SPOT;
+			return PowerFighterState.RETURN_SAFE_SPOT;
 		}
 		if (player.getInteracting() != null)
 		{
@@ -439,41 +437,41 @@ public class PowerFighterPlugin extends Plugin
 				currentNPC = findSuitableNPC();
 				if (currentNPC != null)
 				{
-					return ATTACK_NPC;
+					return PowerFighterState.ATTACK_NPC;
 				}
 				else
 				{
 					log.debug("Clicking randomly to try get unstuck");
 					targetMenu = null;
 					utils.clickRandomPointCenter(-200, 200);
-					return TIMEOUT;
+					return PowerFighterState.TIMEOUT;
 				}
 			}
-			return IN_COMBAT;
+			return PowerFighterState.IN_COMBAT;
 		}
 		currentNPC = utils.findNearestNpcTargetingLocal(config.npcName());
 		if (currentNPC != null)
 		{
 			int chance = utils.getRandomIntBetweenRange(0, 1);
 			log.debug("Chance result: {}", chance);
-			return (chance == 0) ? ATTACK_NPC : WAIT_COMBAT;
+			return (chance == 0) ? PowerFighterState.ATTACK_NPC : PowerFighterState.WAIT_COMBAT;
 		}
 		if (chinBreakHandler.shouldBreak(this))
 		{
-			return HANDLE_BREAK;
+			return PowerFighterState.HANDLE_BREAK;
 		}
 		if (config.buryBones() && utils.inventoryContains("bones") && (utils.inventoryFull() || config.buryOne()))
 		{
-			return BURY_BONES;
+			return PowerFighterState.BURY_BONES;
 		}
 		if (canAlch() && !alchLoot.isEmpty())
 		{
 			log.debug("high alch conditions met");
-			return HIGH_ALCH;
+			return PowerFighterState.HIGH_ALCH;
 		}
 		if (config.lootItems() && !utils.inventoryFull() && !loot.isEmpty())
 		{
-			return LOOT_ITEMS;
+			return PowerFighterState.LOOT_ITEMS;
 		}
 		if (config.lootAmmo() && (!utils.inventoryFull() || utils.inventoryContains(config.ammoID())))
 		{
@@ -489,7 +487,7 @@ public class PowerFighterPlugin extends Plugin
 					Duration duration = Duration.between(lootTimer, Instant.now());
 					if (duration.toSeconds() > nextAmmoLootTime)
 					{
-						return LOOT_AMMO;
+						return PowerFighterState.LOOT_AMMO;
 					}
 				}
 				else
@@ -501,9 +499,9 @@ public class PowerFighterPlugin extends Plugin
 		currentNPC = findSuitableNPC();
 		if (currentNPC != null)
 		{
-			return ATTACK_NPC;
+			return PowerFighterState.ATTACK_NPC;
 		}
-		return NPC_NOT_FOUND;
+		return PowerFighterState.NPC_NOT_FOUND;
 	}
 
 	@Subscribe
@@ -629,7 +627,7 @@ public class PowerFighterPlugin extends Plugin
 			return;
 		}
 		List<Item> currentInventory = List.of(inventoryContainer.getItems());
-		if (state == HIGH_ALCH)
+		if (state == PowerFighterState.HIGH_ALCH)
 		{
 			alchLoot.removeIf(item -> !currentInventory.contains(item));
 			log.debug("Container changed during high alch phase, after removed high alch items, alchLoot: {}", alchLoot.toString());
@@ -725,7 +723,7 @@ public class PowerFighterPlugin extends Plugin
 		ammoLoot.clear();
 		alchLoot.clear();
 		currentNPC = null;
-		state = TIMEOUT;
+		state = PowerFighterState.TIMEOUT;
 		timeout = 2;
 	}
 }

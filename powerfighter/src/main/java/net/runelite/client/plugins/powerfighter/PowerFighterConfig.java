@@ -23,7 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.fountainofrune;
+package net.runelite.client.plugins.powerfighter;
 
 import net.runelite.client.config.*;
 
@@ -665,6 +665,6 @@ public interface PowerFighterConfig extends Config
 	)
 	default Button startButton()
 	{
-		return null;
+		return new Button();
 	}
 }
