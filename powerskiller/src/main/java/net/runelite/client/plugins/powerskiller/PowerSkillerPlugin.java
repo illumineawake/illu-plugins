@@ -358,6 +358,51 @@ public class PowerSkillerPlugin extends Plugin
 		}
 	}
 
+	private void handleDropAll()
+    {
+        if (config.customOpcode() && config.inventoryMenu())
+        {
+            Collection<Integer> inventoryItems = utils.getAllInventoryItemIDs();
+            utils.inventoryItemsInteract(inventoryItems, config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
+        }
+        else
+        {
+            utils.dropInventory(true, config.sleepMin(), config.sleepMax());
+        }
+    }
+
+    private void handleDropExcept()
+    {
+        if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
+        {
+            utils.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
+        }
+        else if (config.customOpcode() && config.inventoryMenu())
+        {
+            utils.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
+        }
+        else
+        {
+            utils.dropAllExcept(itemIds, true, config.sleepMin(), config.sleepMax());
+        }
+    }
+
+    private void handleDropItems()
+    {
+        if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
+        {
+            utils.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
+        }
+        else if (config.customOpcode() && config.inventoryMenu())
+        {
+            utils.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), false,false, config.sleepMin(), config.sleepMax());
+        }
+        else
+        {
+            utils.dropItems(itemIds, true, config.sleepMin(), config.sleepMax());
+        }
+    }
+
 	public PowerSkillerState getState()
 	{
 		if (timeout > 0)
@@ -478,45 +523,15 @@ public class PowerSkillerPlugin extends Plugin
 					timeout=tickDelay();
 					break;
 				case DROP_ALL:
-					if (config.customOpcode() && config.inventoryMenu())
-					{
-						Collection<Integer> inventoryItems = utils.getAllInventoryItemIDs();
-						utils.inventoryItemsInteract(inventoryItems, config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
-					}
-					else
-					{
-						utils.dropInventory(true, config.sleepMin(), config.sleepMax());
-					}
+					handleDropAll();
 					timeout = tickDelay();
 					break;
 				case DROP_EXCEPT:
-					if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
-					{
-						utils.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
-					}
-					else if (config.customOpcode() && config.inventoryMenu())
-					{
-						utils.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
-					}
-					else
-					{
-						utils.dropAllExcept(itemIds, true, config.sleepMin(), config.sleepMax());
-					}
+					handleDropExcept();
 					timeout = tickDelay();
 					break;
 				case DROP_ITEMS:
-					if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
-					{
-						utils.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
-					}
-					else if (config.customOpcode() && config.inventoryMenu())
-					{
-						utils.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), false,false, config.sleepMin(), config.sleepMax());
-					}
-					else
-					{
-						utils.dropItems(itemIds, true, config.sleepMin(), config.sleepMax());
-					}
+                    handleDropItems();
 					timeout = tickDelay();
 					break;
 				case FIND_GAME_OBJECT:
@@ -630,47 +645,17 @@ public class PowerSkillerPlugin extends Plugin
 		}
 		if (config.dropInventory())
 		{
-			if (config.customOpcode() && config.inventoryMenu())
-			{
-				Collection<Integer> inventoryItems = utils.getAllInventoryItemIDs();
-				utils.inventoryItemsInteract(inventoryItems, config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
-			}
-			else
-			{
-				utils.dropInventory(true, config.sleepMin(), config.sleepMax());
-			}
+			handleDropAll();
 			timeout = tickDelay();
 			return;
 		}
 		if (config.dropExcept() && !config.dropInventory())
 		{
-			if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
-			{
-				utils.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
-			}
-			else if (config.customOpcode() && config.inventoryMenu())
-			{
-				utils.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
-			}
-			else
-			{
-				utils.dropAllExcept(itemIds, true, config.sleepMin(), config.sleepMax());
-			}
+			handleDropExcept();
 			timeout = tickDelay();
 			return;
 		}
-		if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
-		{
-			utils.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
-		}
-		else if (config.customOpcode() && config.inventoryMenu())
-		{
-			utils.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), false,false, config.sleepMin(), config.sleepMax());
-		}
-		else
-		{
-			utils.dropItems(itemIds, true, config.sleepMin(), config.sleepMax());
-		}
+		handleDropItems();
 		timeout = tickDelay();
 		return;
 	}

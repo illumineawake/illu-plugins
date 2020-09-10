@@ -410,6 +410,10 @@ public class PowerFighterPlugin extends Plugin
 		{
 			return (config.logout()) ? PowerFighterState.LOG_OUT : PowerFighterState.SLAYER_COMPLETED;
 		}
+		if (config.lootOnly())
+		{
+			return (config.lootItems() && !utils.inventoryFull() && !loot.isEmpty()) ? PowerFighterState.LOOT_ITEMS : PowerFighterState.TIMEOUT;
+		}
 		if (config.forceLoot() && config.lootItems() && !utils.inventoryFull() && !loot.isEmpty())
 		{
 			if (newLoot != null)
