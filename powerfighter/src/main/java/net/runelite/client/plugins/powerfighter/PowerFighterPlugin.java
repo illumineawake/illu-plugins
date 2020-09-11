@@ -362,9 +362,16 @@ public class PowerFighterPlugin extends Plugin
 
 	private NPC findSuitableNPC()
 	{
-		NPC npc = utils.findNearestNpcTargetingLocal(config.npcName());
-		return (npc != null) ? npc :
-			utils.findNearestAttackableNpcWithin(startLoc, config.searchRadius(), config.npcName());
+		if(config.exactNpcOnly()){
+			NPC npc = utils.findNearestNpcTargetingLocal(config.npcName(),true);
+			return (npc != null) ? npc :
+					utils.findNearestAttackableNpcWithin(startLoc, config.searchRadius(), config.npcName(),true);
+		} else {
+			NPC npc = utils.findNearestNpcTargetingLocal(config.npcName(),false);
+			return (npc != null) ? npc :
+					utils.findNearestAttackableNpcWithin(startLoc, config.searchRadius(), config.npcName(),false);
+		}
+
 	}
 
 	private boolean shouldEquipBracelet()
@@ -427,10 +434,18 @@ public class PowerFighterPlugin extends Plugin
 				}
 			}
 		}
-		if (config.safeSpot() && utils.findNearestNpcTargetingLocal("") != null &&
-			startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
+		if (config.safeSpot() && startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
 		{
-			return PowerFighterState.RETURN_SAFE_SPOT;
+			if(config.exactNpcOnly()){
+				 if(utils.findNearestNpcTargetingLocal("",true) != null){
+					 return PowerFighterState.RETURN_SAFE_SPOT;
+				 }
+			} else {
+				if(utils.findNearestNpcTargetingLocal("",false) != null){
+					return PowerFighterState.RETURN_SAFE_SPOT;
+				}
+			}
+
 		}
 		if (player.getInteracting() != null)
 		{
@@ -453,7 +468,12 @@ public class PowerFighterPlugin extends Plugin
 			}
 			return PowerFighterState.IN_COMBAT;
 		}
-		currentNPC = utils.findNearestNpcTargetingLocal(config.npcName());
+		if(config.exactNpcOnly()){
+			currentNPC = utils.findNearestNpcTargetingLocal(config.npcName(),true);
+		} else {
+			currentNPC = utils.findNearestNpcTargetingLocal(config.npcName(),false);
+		}
+
 		if (currentNPC != null)
 		{
 			int chance = utils.getRandomIntBetweenRange(0, 1);

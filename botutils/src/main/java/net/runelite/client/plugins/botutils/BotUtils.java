@@ -278,7 +278,7 @@ public class BotUtils extends Plugin
 	}
 
 	@Nullable
-	public NPC findNearestAttackableNpcWithin(WorldPoint worldPoint, int dist, String name)
+	public NPC findNearestAttackableNpcWithin(WorldPoint worldPoint, int dist, String name, boolean exactnpcname)
 	{
 		assert client.isClientThread();
 
@@ -287,15 +287,24 @@ public class BotUtils extends Plugin
 			return null;
 		}
 
-		return new NPCQuery()
-			.isWithinDistance(worldPoint, dist)
-			.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
+		if(exactnpcname)
+		{
+			return new NPCQuery()
+				.isWithinDistance(worldPoint, dist)
+				.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().equals(name.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
+		} else {
+			return new NPCQuery()
+				.isWithinDistance(worldPoint, dist)
+				.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
+		}
 	}
 
 	@Nullable
-	public NPC findNearestNpcTargetingLocal(String name)
+	public NPC findNearestNpcTargetingLocal(String name, boolean exactnpcname)
 	{
 		assert client.isClientThread();
 
@@ -304,10 +313,19 @@ public class BotUtils extends Plugin
 			return null;
 		}
 
-		return new NPCQuery()
-			.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name.toLowerCase()) && npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
+		if(exactnpcname)
+		{
+			return new NPCQuery()
+				.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().equals(name.toLowerCase()) && npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
+		} else {
+			return new NPCQuery()
+				.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name.toLowerCase()) && npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
+		}
+
 	}
 
 	@Nullable
