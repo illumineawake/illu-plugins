@@ -247,6 +247,15 @@ public interface PowerFighterConfig extends Config
 			titleSection = "generalTitle"
 	)
 	default boolean lootOnly() { return false; }
+	
+		@ConfigItem(
+			keyName = "exactNpcOnly",
+			name = "Exact NPC only mode",
+			description = "Exact NPC only mode, will fight exact NPC names only",
+			position = 29,
+			titleSection = "generalTitle"
+	)
+	default boolean exactNpcOnly() { return false; }
 
 	@ConfigItem(
 		keyName = "npcName",
