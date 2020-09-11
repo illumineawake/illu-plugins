@@ -295,6 +295,23 @@ public class BotUtils extends Plugin
 	}
 
 	@Nullable
+	public NPC findNearestAttackableExactNpcWithin(WorldPoint worldPoint, int dist, String name)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new NPCQuery()
+				.isWithinDistance(worldPoint, dist)
+				.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().equals(name.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
 	public NPC findNearestNpcTargetingLocal(String name)
 	{
 		assert client.isClientThread();
@@ -308,6 +325,22 @@ public class BotUtils extends Plugin
 			.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name.toLowerCase()) && npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
+	public NPC findNearestExactNpcTargetingLocal(String name)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new NPCQuery()
+				.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().equals(name.toLowerCase()) && npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
