@@ -362,7 +362,7 @@ public class PowerFighterPlugin extends Plugin
 
 	private NPC findSuitableNPC()
 	{
-		if(config.exactNpcOnly){
+		if(config.exactNpcOnly()){
 			NPC npc = utils.findNearestExactNpcTargetingLocal(config.npcName());
 			return (npc != null) ? npc :
 				utils.findNearestAttackableExactNpcWithin(startLoc, config.searchRadius(), config.npcName());
