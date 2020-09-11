@@ -362,9 +362,15 @@ public class PowerFighterPlugin extends Plugin
 
 	private NPC findSuitableNPC()
 	{
-		NPC npc = utils.findNearestNpcTargetingLocal(config.npcName());
-		return (npc != null) ? npc :
-			utils.findNearestAttackableNpcWithin(startLoc, config.searchRadius(), config.npcName());
+		if(config.exactNpcOnly){
+			NPC npc = utils.findNearestExactNpcTargetingLocal(config.npcName());
+			return (npc != null) ? npc :
+				utils.findNearestAttackableExactNpcWithin(startLoc, config.searchRadius(), config.npcName());
+		} else {
+			NPC npc = utils.findNearestNpcTargetingLocal(config.npcName());
+			return (npc != null) ? npc :
+				utils.findNearestAttackableNpcWithin(startLoc, config.searchRadius(), config.npcName());
+		}
 	}
 
 	private boolean shouldEquipBracelet()
