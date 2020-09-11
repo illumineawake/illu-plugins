@@ -434,13 +434,11 @@ public class PowerFighterPlugin extends Plugin
 				}
 			}
 		}
-		if (config.safeSpot() && startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
+		if (config.safeSpot() && utils.findNearestNpcTargetingLocal("",false) != null &&
+			startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
 		{
-             if(utils.findNearestNpcTargetingLocal("", config.exactNpcOnly()) != null)
-             {
-                 return PowerFighterState.RETURN_SAFE_SPOT;
-             }
-        }
+			return PowerFighterState.RETURN_SAFE_SPOT;
+		}
 		if (player.getInteracting() != null)
 		{
 			currentNPC = (NPC) player.getInteracting();
