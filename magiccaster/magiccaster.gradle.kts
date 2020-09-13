@@ -25,8 +25,8 @@
 
 version = "2.6.2"
 
-project.extra["PluginName"] = "Magic Splasher"
-project.extra["PluginDescription"] = "Illumine automated magic splasher"
+project.extra["PluginName"] = "Magic Caster"
+project.extra["PluginDescription"] = "Illumine automated magic caster"
 
 dependencies {
     compileOnly(project(":botutils"))

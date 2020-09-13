@@ -23,10 +23,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.magicsplasher;
+package net.runelite.client.plugins.magiccaster;
 
-import java.time.Instant;
-import java.util.function.Consumer;
 import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -34,14 +32,16 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
 
-@ConfigGroup("MagicSplasher")
-public interface MagicSplasherConfig extends Config
+
+@ConfigGroup("MagicCaster")
+public interface MagicCasterConfig extends Config
 {
+
 	@ConfigItem(
 		keyName = "npcID",
 		name = "NPC ID",
-		description = "Provide ID of the NPC to splash",
-		position = 1
+		description = "Provide ID of the NPC to target",
+		position = 0
 	)
 	default int npcID()	{ return 0;	}
 
@@ -49,25 +49,36 @@ public interface MagicSplasherConfig extends Config
 		keyName = "itemID",
 		name = "Item ID",
 		description = "Provide ID of the item to High Alc",
-		position = 2
+		position = 1
 	)
 	default int itemID()	{ return 0;	}
 
 	@ConfigItem(
-		keyName = "getSpells",
+		keyName = "getSpellType",
+		name = "Spell type",
+		description = "Choose a spell",
+		position = 2
+	)
+	default CastType getSpellType()
+	{
+		return CastType.AUTO_CAST;
+	}
+
+	@ConfigItem(
+		keyName = "getSpell",
 		name = "Splash Spell",
 		description = "Choose a spell",
-		position = 3
+		position = 2
 	)
-	default SplashSpells getSpells()
+	default Spells getSpell()
 	{
-		return SplashSpells.AUTO_CAST;
+		return Spells.CURSE;
 	}
 
 	@ConfigItem(
 		keyName = "logout",
 		name = "Logout when out of runes",
-		description = "Enable to logout when out of runes. Won't work if you are splashing an npc that attacks you",
+		description = "Enable to logout when out of runes. Won't work if you are attacking an npc that attacks you",
 		position = 4
 	)
 	default boolean logout() { return true; }
