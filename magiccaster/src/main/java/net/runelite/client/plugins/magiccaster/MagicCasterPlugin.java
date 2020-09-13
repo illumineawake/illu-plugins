@@ -95,7 +95,8 @@ public class MagicCasterPlugin extends Plugin
 	@Inject
 	private ChinBreakHandler chinBreakHandler;
 
-	CastType selectedSpell;
+	CastType castType;
+	Spells selectedSpell;
 	MagicCasterState state;
 	Instant botTimer;
 	MenuEntry targetMenu;
@@ -151,6 +152,7 @@ public class MagicCasterPlugin extends Plugin
 					botTimer = Instant.now();
 					state = null;
 					targetMenu = null;
+					timeout = 0;
 					botTimer = Instant.now();
 					initVals();
 					overlayManager.add(overlay);
@@ -165,7 +167,8 @@ public class MagicCasterPlugin extends Plugin
 
 	public void initVals()
 	{
-		selectedSpell = config.getSpellType();
+		castType = config.getSpellType();
+		selectedSpell = config.getSpell();
 		npcID = config.npcID();
 		itemID = config.itemID();
 	}
@@ -175,6 +178,7 @@ public class MagicCasterPlugin extends Plugin
 		overlayManager.remove(overlay);
 		chinBreakHandler.stopPlugin(this);
 		startBot = false;
+		castType = null;
 		selectedSpell = null;
 		botTimer = null;
 		failureCount = 0;
@@ -200,9 +204,13 @@ public class MagicCasterPlugin extends Plugin
 				itemID = config.itemID();
 				log.debug("Item ID set to {}", itemID);
 				break;
-			case "getSpells":
-				selectedSpell = config.getSpellType();
-				log.debug("Cast spell set to {}", selectedSpell.getName());
+			case "getSpellType":
+				castType = config.getSpellType();
+				log.debug("Spell cast type set to {}", castType.getName());
+				break;
+			case "getSpell":
+				selectedSpell = config.getSpell();
+				log.debug("Spell set to {}", selectedSpell.getName());
 				break;
 		}
 	}
@@ -218,22 +226,6 @@ public class MagicCasterPlugin extends Plugin
 		int tickLength = (int) utils.randomDelay(config.tickDelayWeightedDistribution(), config.tickDelayMin(), config.tickDelayMax(), config.tickDelayDeviation(), config.tickDelayTarget());
 		log.debug("tick delay for {} ticks", tickLength);
 		return tickLength;
-	}
-
-	private void openSpellBook()
-	{
-		targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 10551356, false); //open spellbook
-		Widget spellBookWidget = client.getWidget(WidgetInfo.SPELLBOOK);
-		if (spellBookWidget != null)
-		{
-			utils.setMenuEntry(targetMenu);
-			utils.delayMouseClick(spellBookWidget.getBounds(), sleepDelay());
-		}
-		else
-		{
-			utils.setMenuEntry(targetMenu);
-			utils.delayClickRandomPointCenter(-200, 200, sleepDelay());
-		}
 	}
 
 	private NPC findNPC()
@@ -255,23 +247,26 @@ public class MagicCasterPlugin extends Plugin
 
 	private void castSpell()
 	{
-		switch (selectedSpell.getName())
+		switch (castType.getName())
 		{
 			case "Single cast":
-				targetMenu = new MenuEntry(selectedSpell.getMenuOption(), "", targetNPC.getIndex(), MenuOpcode.SPELL_CAST_ON_NPC.getId(), 0, 0, false);
+				targetMenu = new MenuEntry("Cast", "", targetNPC.getIndex(), MenuOpcode.SPELL_CAST_ON_NPC.getId(),
+						0, 0, false);
+				utils.oneClickCastSpell(selectedSpell.getSpell(), targetMenu, targetNPC.getConvexHull().getBounds(), sleepDelay());
 				timeout = 4 + tickDelay();
-				break;
+				return;
 			case "Auto-cast":
-				targetMenu = new MenuEntry(selectedSpell.getMenuOption(), "", targetNPC.getIndex(), MenuOpcode.NPC_SECOND_OPTION.getId(), 0, 0, false);
+				targetMenu = new MenuEntry("", "", targetNPC.getIndex(), MenuOpcode.NPC_SECOND_OPTION.getId(), 0, 0, false);
+				utils.setMenuEntry(targetMenu);
+				utils.delayMouseClick(targetNPC.getConvexHull().getBounds(), sleepDelay());
 				timeout = 10 + tickDelay();
-				break;
+				return;
 			case "High Alchemy":
 				targetMenu = new MenuEntry("Cast", "", targetItem.getId(), MenuOpcode.ITEM_USE_ON_WIDGET.getId(), targetItem.getIndex(), 9764864, true);
 				timeout = 5 + tickDelay();
 				utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, targetItem.getCanvasBounds().getBounds(), sleepDelay());
 				return;
 		}
-		utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, targetNPC.getConvexHull().getBounds(), sleepDelay());
 	}
 
 	public MagicCasterState getState()
@@ -323,9 +318,6 @@ public class MagicCasterPlugin extends Plugin
 					return;
 				case MOVING:
 					timeout = tickDelay();
-					break;
-				case OPENING_SPELLBOOK:
-					openSpellBook();
 					break;
 				case NPC_NOT_FOUND:
 					log.debug("NPC not found");

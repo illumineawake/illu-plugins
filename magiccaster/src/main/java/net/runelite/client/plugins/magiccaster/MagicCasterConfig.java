@@ -56,7 +56,7 @@ public interface MagicCasterConfig extends Config
 	@ConfigItem(
 		keyName = "getSpellType",
 		name = "Spell type",
-		description = "Choose a spell",
+		description = "Select the type of spell.",
 		position = 2
 	)
 	default CastType getSpellType()
@@ -66,9 +66,9 @@ public interface MagicCasterConfig extends Config
 
 	@ConfigItem(
 		keyName = "getSpell",
-		name = "Splash Spell",
-		description = "Choose a spell",
-		position = 2
+		name = "Spell",
+		description = "Choose a spell, only required for single casting",
+		position = 3
 	)
 	default Spells getSpell()
 	{

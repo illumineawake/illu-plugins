@@ -2098,9 +2098,8 @@ public class BotUtils extends Plugin
 	public void oneClickCastSpell(WidgetInfo spellWidget, MenuEntry targetMenu, Rectangle targetBounds, long sleepLength)
 	{
 		setMenuEntry(targetMenu, false);
-		//delayMouseClick(targetBounds, sleepLength);
 		setSelectSpell(spellWidget);
-		delayMouseClick(targetBounds, sleepLength /*getRandomIntBetweenRange(20, 60)*/);
+		delayMouseClick(targetBounds, sleepLength);
 	}
 
 	private void setSelectSpell(WidgetInfo info)
