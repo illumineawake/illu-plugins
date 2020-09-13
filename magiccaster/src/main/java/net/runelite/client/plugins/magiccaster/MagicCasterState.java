@@ -1,6 +1,6 @@
-package net.runelite.client.plugins.magicsplasher;
+package net.runelite.client.plugins.magiccaster;
 
-public enum MagicSplasherState
+public enum MagicCasterState
 {
 	FIND_ITEM,
 	FIND_NPC,

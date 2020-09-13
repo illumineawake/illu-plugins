@@ -3,12 +3,12 @@
  * All rights reserved.
  * Licensed under GPL3, see LICENSE for the full scope.
  */
-package net.runelite.client.plugins.magicsplasher;
+package net.runelite.client.plugins.magiccaster;
 
 import lombok.Getter;
 
 @Getter
-public enum SplashSpells
+public enum CastType
 {
 
 	AUTO_CAST("Auto-cast"),
@@ -18,12 +18,12 @@ public enum SplashSpells
 	private final String name;
 	private String menuOption = "";
 
-	SplashSpells(String name)
+	CastType(String name)
 	{
 		this.name = name;
 	}
 
-	SplashSpells(String name, String menuOption)
+	CastType(String name, String menuOption)
 	{
 		this.name = name;
 		this.menuOption = menuOption;
