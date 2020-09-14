@@ -289,7 +289,7 @@ public class PowerFighterPlugin extends Plugin
 		return config.alchItems() &&
 			client.getBoostedSkillLevel(Skill.MAGIC) >= 55 &&
 			((utils.inventoryContains(ItemID.NATURE_RUNE) && utils.inventoryContainsStack(ItemID.FIRE_RUNE, 5)) 
-				|| (utils.runePouchContains(554) && utils.runePouchContains(561)));
+				|| (utils.runePouchQuanitity(554)>=5 && utils.runePouchContains(561)));
 	}
 
 	private boolean alchableItem(int itemID)
