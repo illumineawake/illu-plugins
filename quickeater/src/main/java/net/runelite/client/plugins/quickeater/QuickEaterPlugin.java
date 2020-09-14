@@ -219,6 +219,22 @@ public class QuickEaterPlugin extends Plugin
 					drinkTimeout = 2;
 				}
 			}
+			if(config.keepPNeckEquipped())
+			{
+				timeout+=4;
+				if(utils.inventoryContains(11090))
+				{
+					if(utils.getEquippedItems()!=null && utils.getEquippedItems().get(2).getId()!=11090)
+					{
+						targetMenu = new MenuEntry("Wear", "Wear", 11090, MenuOpcode.ITEM_SECOND_OPTION.getId(), utils.getInventoryWidgetItem(11090).getIndex(),
+								WidgetInfo.INVENTORY.getId(), false);
+						utils.setMenuEntry(targetMenu);
+						utils.delayMouseClick(utils.getInventoryWidgetItem(11090).getCanvasBounds(), utils.getRandomIntBetweenRange(25, 200));
+					}
+				} else {
+					utils.sendGameMessage("No phoenix necklaces in inventory.");
+				}
+			}
 		}
 	}
 

@@ -233,5 +233,13 @@ public interface QuickEaterConfiguration extends Config
 		unhide = "drinkStamina"
 	)
 	default int randEnergy() { return 20; }
+	
+	@ConfigItem(
+			keyName = "keepPNeckEquipped",
+			name = "Keep Phoenix Neck Equipped",
+			description = "This will keep a phoenix necklace equipped.",
+			position = 40
+	)
+	default boolean keepPNeckEquipped() { return false; }
 
 }
