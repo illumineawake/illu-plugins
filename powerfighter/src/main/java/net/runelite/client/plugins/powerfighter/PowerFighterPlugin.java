@@ -288,8 +288,8 @@ public class PowerFighterPlugin extends Plugin
 	{
 		return config.alchItems() &&
 			client.getBoostedSkillLevel(Skill.MAGIC) >= 55 &&
-			((utils.inventoryContains(ItemID.NATURE_RUNE) && utils.inventoryContainsStack(ItemID.FIRE_RUNE, 5)) 
-				|| (utils.runePouchQuanitity(554)>=5 && utils.runePouchContains(561)));
+			((utils.inventoryContains(ItemID.NATURE_RUNE) && utils.inventoryContainsStack(ItemID.FIRE_RUNE, 5))
+				|| (utils.runePouchQuanitity(554) >= 5 && utils.runePouchContains(561)));
 	}
 
 	private boolean alchableItem(int itemID)
@@ -363,14 +363,17 @@ public class PowerFighterPlugin extends Plugin
 
 	private NPC findSuitableNPC()
 	{
-		if(config.exactNpcOnly()){
-			NPC npc = utils.findNearestNpcTargetingLocal(config.npcName(),true);
+		if (config.exactNpcOnly())
+		{
+			NPC npc = utils.findNearestNpcTargetingLocal(config.npcName(), true);
 			return (npc != null) ? npc :
-					utils.findNearestAttackableNpcWithin(startLoc, config.searchRadius(), config.npcName(),true);
-		} else {
-			NPC npc = utils.findNearestNpcTargetingLocal(config.npcName(),false);
+				utils.findNearestAttackableNpcWithin(startLoc, config.searchRadius(), config.npcName(), true);
+		}
+		else
+		{
+			NPC npc = utils.findNearestNpcTargetingLocal(config.npcName(), false);
 			return (npc != null) ? npc :
-					utils.findNearestAttackableNpcWithin(startLoc, config.searchRadius(), config.npcName(),false);
+				utils.findNearestAttackableNpcWithin(startLoc, config.searchRadius(), config.npcName(), false);
 		}
 
 	}
@@ -435,7 +438,7 @@ public class PowerFighterPlugin extends Plugin
 				}
 			}
 		}
-		if (config.safeSpot() && utils.findNearestNpcTargetingLocal("",false) != null &&
+		if (config.safeSpot() && utils.findNearestNpcTargetingLocal("", false) != null &&
 			startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
 		{
 			return PowerFighterState.RETURN_SAFE_SPOT;
@@ -461,10 +464,13 @@ public class PowerFighterPlugin extends Plugin
 			}
 			return PowerFighterState.IN_COMBAT;
 		}
-		if(config.exactNpcOnly()){
-			currentNPC = utils.findNearestNpcTargetingLocal(config.npcName(),true);
-		} else {
-			currentNPC = utils.findNearestNpcTargetingLocal(config.npcName(),false);
+		if (config.exactNpcOnly())
+		{
+			currentNPC = utils.findNearestNpcTargetingLocal(config.npcName(), true);
+		}
+		else
+		{
+			currentNPC = utils.findNearestNpcTargetingLocal(config.npcName(), false);
 		}
 
 		if (currentNPC != null)
