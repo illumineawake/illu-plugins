@@ -1582,9 +1582,19 @@ public class BotUtils extends Plugin
 
 	public boolean runePouchContains(int id)
 	{
-
-		Set<Integer> runePouchIds = Stream.of(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE1)).getItemId(),Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE2)).getItemId(),
-				Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE3)).getItemId()).collect(Collectors.toSet());
+		Set<Integer> runePouchIds = new HashSet<>();
+		if(client.getVar(Varbits.RUNE_POUCH_RUNE1)!=0)
+		{
+			runePouchIds.add(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE1)).getItemId());
+		}
+		if (client.getVar(Varbits.RUNE_POUCH_RUNE2)!=0)
+		{
+			runePouchIds.add(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE2)).getItemId());
+		}
+		if (client.getVar(Varbits.RUNE_POUCH_RUNE3)!=0)
+		{
+			runePouchIds.add(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE3)).getItemId());
+		}
 		for(int runePouchId : runePouchIds){
 			if(runePouchId==id){
 				return true;
@@ -1601,6 +1611,29 @@ public class BotUtils extends Plugin
 			}
 		}
 		return true;
+	}
+	
+	public int runePouchQuanitity(int id)
+	{
+		Set<Pair<Integer, Integer>> runePouchSlots = new HashSet<>();
+		if(client.getVar(Varbits.RUNE_POUCH_RUNE1)!=0)
+		{
+			runePouchSlots.add(new Pair<Integer, Integer>(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE1)).getItemId(),client.getVar(Varbits.RUNE_POUCH_AMOUNT1)));
+		}
+		if (client.getVar(Varbits.RUNE_POUCH_RUNE2)!=0)
+		{
+			runePouchSlots.add(new Pair<Integer, Integer>(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE2)).getItemId(),client.getVar(Varbits.RUNE_POUCH_AMOUNT2)));
+		}
+		if (client.getVar(Varbits.RUNE_POUCH_RUNE3)!=0)
+		{
+			runePouchSlots.add(new Pair<Integer, Integer>(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE3)).getItemId(),client.getVar(Varbits.RUNE_POUCH_AMOUNT3)));
+		}
+		for(Pair<Integer, Integer> pair : runePouchSlots){
+			if(pair.getKey()==id){
+				return pair.getValue();
+			}
+		}
+		return 0;
 	}
 
 	/**
