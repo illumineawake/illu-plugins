@@ -93,7 +93,7 @@ public enum RooftopAgilityObstacles
 	PRIF_LADDER_TWO(new WorldPoint (2239, 3386, 0), new WorldPoint(2271, 3410, 0), LADDER_36231),
 	PRIF_LADDER_FAIL(new WorldPoint (3265, 6138, 0), new WorldPoint (3276, 6150, 0), LADDER_36232),
 	PRIF_ROPE_BRIDGE(new WorldPoint(2264, 3388, 2), new WorldPoint(2270, 3394, 2), ROPE_BRIDGE_36233),
-	PRIF_TIGHTROPE_TWO(new WorldPoint(2252, 3386, 2), new WorldPoint(2258, 3391, 2), TIGHTROPE_36234),
+	PRIF_TIGHTROPE_TWO(new WorldPoint(2252, 3386, 2), new WorldPoint(2259, 3391, 2), TIGHTROPE_36234),
 	PRIF_ROPE_BRIDGE_TWO(new WorldPoint(2242, 3393, 2), new WorldPoint(2248, 3399, 2), ROPE_BRIDGE_36235),
 	PRIF_TIGHTROPE_THREE(new WorldPoint(2243, 3404, 2), new WorldPoint(2249, 3411, 2), TIGHTROPE_36236),
 	PRIF_TIGHTROPE_FOUR(new WorldPoint(2248, 3414, 2), new WorldPoint(2254, 3420, 2), TIGHTROPE_36237),
