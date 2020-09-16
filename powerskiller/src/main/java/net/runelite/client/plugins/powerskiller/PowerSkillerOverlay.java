@@ -76,7 +76,7 @@ class PowerSkillerOverlay extends OverlayPanel
 			}
 		}
 		tableComponent.addRow("Status:", infoStatus);
-		if(config.type().equals(PowerSkillerType.SANDSTONE)){
+		if(config.type().equals(PowerSkillerType.SANDSTONE) && plugin.waterskinsLeft!=-1){
 			tableComponent.addRow("Waterskins left:", plugin.waterskinsLeft + " sips");
 		}
 

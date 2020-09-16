@@ -86,7 +86,7 @@ public class QuickEaterPlugin extends Plugin
 	Player player;
 
 	private final Set<Integer> IGNORE_FOOD = Set.of(ItemID.DWARVEN_ROCK_CAKE, ItemID.DWARVEN_ROCK_CAKE_7510);
-	private final Set<Integer> DRINK_SET = Set.of(ItemID.JUG_OF_WINE, ItemID.SARADOMIN_BREW1, ItemID.SARADOMIN_BREW2, ItemID.SARADOMIN_BREW3, ItemID.SARADOMIN_BREW4);
+	private final Set<Integer> DRINK_SET = Set.of(ItemID.JUG_OF_WINE, ItemID.SARADOMIN_BREW1, ItemID.SARADOMIN_BREW2, ItemID.SARADOMIN_BREW3, ItemID.SARADOMIN_BREW4, ItemID.BANDAGES);
 	private final Set<Integer> POISON_SET = Set.of(ItemID.ANTIPOISON1, ItemID.ANTIPOISON2, ItemID.ANTIPOISON3, ItemID.ANTIPOISON4, ItemID.SUPERANTIPOISON1, ItemID.SUPERANTIPOISON2, ItemID.SUPERANTIPOISON3, ItemID.SUPERANTIPOISON4,
 		ItemID.ANTIDOTE1, ItemID.ANTIDOTE2, ItemID.ANTIDOTE3, ItemID.ANTIDOTE4, ItemID.ANTIDOTE1_5958, ItemID.ANTIDOTE2_5956, ItemID.ANTIDOTE3_5954, ItemID.ANTIDOTE4_5952);
 	private final Set<Integer> PRAYER_SET = Set.of(ItemID.PRAYER_POTION1, ItemID.PRAYER_POTION2, ItemID.PRAYER_POTION3, ItemID.PRAYER_POTION4,
@@ -217,6 +217,22 @@ public class QuickEaterPlugin extends Plugin
 					drinkEnergy = utils.getRandomIntBetweenRange(config.maxDrinkEnergy() - config.randEnergy(), config.maxDrinkEnergy());
 					log.debug("Max drink energy: {}, Rand drink value: {}, Next drink energy: {}",config.maxDrinkEnergy(), config.randEnergy(), drinkEnergy);
 					drinkTimeout = 2;
+				}
+			}
+			if(config.keepPNeckEquipped())
+			{
+				timeout+=4;
+				if(utils.inventoryContains(11090))
+				{
+					if(utils.getEquippedItems()!=null && utils.getEquippedItems().get(2).getId()!=11090)
+					{
+						targetMenu = new MenuEntry("Wear", "Wear", 11090, MenuOpcode.ITEM_SECOND_OPTION.getId(), utils.getInventoryWidgetItem(11090).getIndex(),
+								WidgetInfo.INVENTORY.getId(), false);
+						utils.setMenuEntry(targetMenu);
+						utils.delayMouseClick(utils.getInventoryWidgetItem(11090).getCanvasBounds(), utils.getRandomIntBetweenRange(25, 200));
+					}
+				} else {
+					utils.sendGameMessage("No phoenix necklaces in inventory.");
 				}
 			}
 		}

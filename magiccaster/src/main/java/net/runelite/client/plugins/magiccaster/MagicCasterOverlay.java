@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.magicsplasher;
+package net.runelite.client.plugins.magiccaster;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -22,30 +22,30 @@ import static org.apache.commons.lang3.time.DurationFormatUtils.formatDuration;
 
 @Slf4j
 @Singleton
-class MagicSplasherOverlay extends OverlayPanel
+class MagicCasterOverlay extends OverlayPanel
 {
 	private final Client client;
-	private final MagicSplasherPlugin plugin;
-	private final MagicSplasherConfig config;
+	private final MagicCasterPlugin plugin;
+	private final MagicCasterConfig config;
 
 	String timeFormat;
 	private String infoStatus = "Starting...";
 
 	@Inject
-	private MagicSplasherOverlay(final Client client, final MagicSplasherPlugin plugin, final MagicSplasherConfig config)
+	private MagicCasterOverlay(final Client client, final MagicCasterPlugin plugin, final MagicCasterConfig config)
 	{
 		super(plugin);
 		setPosition(OverlayPosition.BOTTOM_LEFT);
 		this.client = client;
 		this.plugin = plugin;
 		this.config = config;
-		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Magic Splasher overlay"));
+		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Magic Caster overlay"));
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (plugin.botTimer == null || !plugin.startSplasher || !config.enableUI())
+		if (plugin.botTimer == null || !plugin.startBot || !config.enableUI())
 		{
 			log.debug("Overlay conditions not met, not starting overlay");
 			return null;
@@ -74,7 +74,7 @@ class MagicSplasherOverlay extends OverlayPanel
 			panelComponent.setPreferredSize(new Dimension(200,200));
 			panelComponent.setBorder(new Rectangle(5,5,5,5));
 			panelComponent.getChildren().add(TitleComponent.builder()
-				.text("Illumine Magic Splasher")
+				.text("Illumine Magic Caster")
 				.color(ColorUtil.fromHex("#40C4FF"))
 				.build());
 			panelComponent.getChildren().add(tableComponent);

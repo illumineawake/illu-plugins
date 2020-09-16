@@ -12,18 +12,18 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
@@ -205,8 +205,8 @@ public class BotUtils extends Plugin
 		}
 
 		return new GameObjectQuery()
-			.idEquals(ids)
 			.isWithinDistance(worldPoint, dist)
+			.idEquals(ids)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}
@@ -222,8 +222,8 @@ public class BotUtils extends Plugin
 		}
 
 		return new GameObjectQuery()
-			.idEquals(ids)
 			.isWithinDistance(worldPoint, dist)
+			.idEquals(ids)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}
@@ -271,14 +271,14 @@ public class BotUtils extends Plugin
 		}
 
 		return new NPCQuery()
+			.isWithinDistance(worldPoint, dist)
 			.idEquals(ids)
-			.isWithinDistance(worldPoint, dist)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
-	public NPC findNearestAttackableNpcWithin(WorldPoint worldPoint, int dist, String name)
+	public NPC findNearestAttackableNpcWithin(WorldPoint worldPoint, int dist, String name, boolean exactnpcname)
 	{
 		assert client.isClientThread();
 
@@ -287,15 +287,26 @@ public class BotUtils extends Plugin
 			return null;
 		}
 
-		return new NPCQuery()
-			.isWithinDistance(worldPoint, dist)
-			.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
+		if (exactnpcname)
+		{
+			return new NPCQuery()
+				.isWithinDistance(worldPoint, dist)
+				.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().equals(name.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
+		}
+		else
+		{
+			return new NPCQuery()
+				.isWithinDistance(worldPoint, dist)
+				.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
+		}
 	}
 
 	@Nullable
-	public NPC findNearestNpcTargetingLocal(String name)
+	public NPC findNearestNpcTargetingLocal(String name, boolean exactnpcname)
 	{
 		assert client.isClientThread();
 
@@ -304,10 +315,21 @@ public class BotUtils extends Plugin
 			return null;
 		}
 
-		return new NPCQuery()
-			.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name.toLowerCase()) && npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
-			.result(client)
-			.nearestTo(client.getLocalPlayer());
+		if (exactnpcname)
+		{
+			return new NPCQuery()
+				.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().equals(name.toLowerCase()) && npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
+		}
+		else
+		{
+			return new NPCQuery()
+				.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name.toLowerCase()) && npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
+		}
+
 	}
 
 	@Nullable
@@ -321,6 +343,23 @@ public class BotUtils extends Plugin
 		}
 
 		return new WallObjectQuery()
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
+	public WallObject findWallObjectWithin(WorldPoint worldPoint, int radius, int... ids)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new WallObjectQuery()
+			.isWithinDistance(worldPoint, radius)
 			.idEquals(ids)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
@@ -1547,11 +1586,23 @@ public class BotUtils extends Plugin
 
 	public boolean runePouchContains(int id)
 	{
-
-		Set<Integer> runePouchIds = Stream.of(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE1)).getItemId(),Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE2)).getItemId(),
-				Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE3)).getItemId()).collect(Collectors.toSet());
-		for(int runePouchId : runePouchIds){
-			if(runePouchId==id){
+		Set<Integer> runePouchIds = new HashSet<>();
+		if (client.getVar(Varbits.RUNE_POUCH_RUNE1) != 0)
+		{
+			runePouchIds.add(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE1)).getItemId());
+		}
+		if (client.getVar(Varbits.RUNE_POUCH_RUNE2) != 0)
+		{
+			runePouchIds.add(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE2)).getItemId());
+		}
+		if (client.getVar(Varbits.RUNE_POUCH_RUNE3) != 0)
+		{
+			runePouchIds.add(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE3)).getItemId());
+		}
+		for (int runePouchId : runePouchIds)
+		{
+			if (runePouchId == id)
+			{
 				return true;
 			}
 		}
@@ -1560,12 +1611,36 @@ public class BotUtils extends Plugin
 
 	public boolean runePouchContains(Collection<Integer> ids)
 	{
-		for(int runeId : ids){
-			if(!runePouchContains(runeId)){
+		for (int runeId : ids)
+		{
+			if (!runePouchContains(runeId))
+			{
 				return false;
 			}
 		}
 		return true;
+	}
+
+	public int runePouchQuanitity(int id)
+	{
+		Map<Integer, Integer> runePouchSlots = new HashMap<>();
+		if (client.getVar(Varbits.RUNE_POUCH_RUNE1) != 0)
+		{
+			runePouchSlots.put(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE1)).getItemId(), client.getVar(Varbits.RUNE_POUCH_AMOUNT1));
+		}
+		if (client.getVar(Varbits.RUNE_POUCH_RUNE2) != 0)
+		{
+			runePouchSlots.put(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE2)).getItemId(), client.getVar(Varbits.RUNE_POUCH_AMOUNT2));
+		}
+		if (client.getVar(Varbits.RUNE_POUCH_RUNE3) != 0)
+		{
+			runePouchSlots.put(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE3)).getItemId(), client.getVar(Varbits.RUNE_POUCH_AMOUNT3));
+		}
+		if (runePouchSlots.containsKey(id))
+		{
+			return runePouchSlots.get(id);
+		}
+		return 0;
 	}
 
 	/**
@@ -2063,9 +2138,8 @@ public class BotUtils extends Plugin
 	public void oneClickCastSpell(WidgetInfo spellWidget, MenuEntry targetMenu, Rectangle targetBounds, long sleepLength)
 	{
 		setMenuEntry(targetMenu, false);
-		//delayMouseClick(targetBounds, sleepLength);
 		setSelectSpell(spellWidget);
-		delayMouseClick(targetBounds, sleepLength /*getRandomIntBetweenRange(20, 60)*/);
+		delayMouseClick(targetBounds, sleepLength);
 	}
 
 	private void setSelectSpell(WidgetInfo info)

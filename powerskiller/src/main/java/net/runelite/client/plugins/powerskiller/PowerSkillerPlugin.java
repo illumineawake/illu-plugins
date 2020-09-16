@@ -118,6 +118,7 @@ public class PowerSkillerPlugin extends Plugin
 	private final WorldPoint WEST_ROCK = new WorldPoint(3164, 2914, 0);
 	private final WorldPoint SW_ROCK = new WorldPoint(3166, 2913, 0);
 	private final WorldPoint SE_ROCK = new WorldPoint(3167, 2913, 0);
+	private final WorldArea DESERT_QUARRY = new WorldArea(new WorldPoint(3148,2896,0),new WorldPoint(3186,2926,0));
 	int waterskinsLeft;
 
 	int timeout = 0;
@@ -357,6 +358,51 @@ public class PowerSkillerPlugin extends Plugin
 		}
 	}
 
+	private void handleDropAll()
+    {
+        if (config.customOpcode() && config.inventoryMenu())
+        {
+            Collection<Integer> inventoryItems = utils.getAllInventoryItemIDs();
+            utils.inventoryItemsInteract(inventoryItems, config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
+        }
+        else
+        {
+            utils.dropInventory(true, config.sleepMin(), config.sleepMax());
+        }
+    }
+
+    private void handleDropExcept()
+    {
+        if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
+        {
+            utils.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
+        }
+        else if (config.customOpcode() && config.inventoryMenu())
+        {
+            utils.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
+        }
+        else
+        {
+            utils.dropAllExcept(itemIds, true, config.sleepMin(), config.sleepMax());
+        }
+    }
+
+    private void handleDropItems()
+    {
+        if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
+        {
+            utils.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
+        }
+        else if (config.customOpcode() && config.inventoryMenu())
+        {
+            utils.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), false,false, config.sleepMin(), config.sleepMax());
+        }
+        else
+        {
+            utils.dropItems(itemIds, true, config.sleepMin(), config.sleepMax());
+        }
+    }
+
 	public PowerSkillerState getState()
 	{
 		if (timeout > 0)
@@ -381,11 +427,14 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			return HANDLE_BREAK;
 		}
-		if(config.type() == PowerSkillerType.SANDSTONE){
+		if(DESERT_QUARRY.intersectsWith(player.getWorldArea())){
 			updateWaterskinsLeft();
 			if(waterskinsLeft==0){
 				return CASTING_HUMIDIFY;
-			} else if(utils.inventoryFull()){
+			}
+		}
+		if(config.type() == PowerSkillerType.SANDSTONE){
+			 if(utils.inventoryFull()){
 				return ADDING_SANDSTONE_TO_GRINDER;
 			} else if (player.getWorldLocation().equals(new WorldPoint(3152,2910,0))) {
 				return WALKING_BACK_TO_SANDSTONE;
@@ -474,45 +523,15 @@ public class PowerSkillerPlugin extends Plugin
 					timeout=tickDelay();
 					break;
 				case DROP_ALL:
-					if (config.customOpcode() && config.inventoryMenu())
-					{
-						Collection<Integer> inventoryItems = utils.getAllInventoryItemIDs();
-						utils.inventoryItemsInteract(inventoryItems, config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
-					}
-					else
-					{
-						utils.dropInventory(true, config.sleepMin(), config.sleepMax());
-					}
+					handleDropAll();
 					timeout = tickDelay();
 					break;
 				case DROP_EXCEPT:
-					if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
-					{
-						utils.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
-					}
-					else if (config.customOpcode() && config.inventoryMenu())
-					{
-						utils.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
-					}
-					else
-					{
-						utils.dropAllExcept(itemIds, true, config.sleepMin(), config.sleepMax());
-					}
+					handleDropExcept();
 					timeout = tickDelay();
 					break;
 				case DROP_ITEMS:
-					if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
-					{
-						utils.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
-					}
-					else if (config.customOpcode() && config.inventoryMenu())
-					{
-						utils.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), false,false, config.sleepMin(), config.sleepMax());
-					}
-					else
-					{
-						utils.dropItems(itemIds, true, config.sleepMin(), config.sleepMax());
-					}
+                    handleDropItems();
 					timeout = tickDelay();
 					break;
 				case FIND_GAME_OBJECT:
@@ -626,25 +645,19 @@ public class PowerSkillerPlugin extends Plugin
 		}
 		if (config.dropInventory())
 		{
-			utils.dropInventory(false, config.sleepMin(), config.sleepMax());
+			handleDropAll();
+			timeout = tickDelay();
 			return;
 		}
 		if (config.dropExcept() && !config.dropInventory())
 		{
-			if (!itemIds.containsAll(requiredIds))
-			{
-				itemIds.addAll(requiredIds);
-			}
-			if (utils.inventoryContainsExcept(itemIds))
-			{
-				utils.dropAllExcept(itemIds, false, config.sleepMin(), config.sleepMax());
-			}
+			handleDropExcept();
+			timeout = tickDelay();
 			return;
 		}
-		if (utils.inventoryContains(itemIds))
-		{
-			utils.dropItems(itemIds, false, config.sleepMin(), config.sleepMax());
-		}
+		handleDropItems();
+		timeout = tickDelay();
+		return;
 	}
 
 	@Subscribe
@@ -698,11 +711,17 @@ public class PowerSkillerPlugin extends Plugin
 		waterskinsLeft+=utils.getInventoryItemCount(1823,false)*4; //4 dose waterskin
 		waterskinsLeft+=utils.getInventoryItemCount(1825,false)*3; //3 dose waterskin
 		waterskinsLeft+=utils.getInventoryItemCount(1827,false)*2; //2 dose waterskin
-		waterskinsLeft+=utils.getInventoryItemCount(1829,false); //3 dose waterskin
+		waterskinsLeft+=utils.getInventoryItemCount(1829,false); //1 dose waterskin
+
+		if(waterskinsLeft==0){
+			if(!utils.inventoryContains(1831)){
+				waterskinsLeft=-1; //no waterskins detected
+			}
+		}
 	}
 
 	private void castHumidify(){
-		if(!utils.inventoryContains(9075)){
+		if(!utils.inventoryContains(9075) && !utils.runePouchContains(9075)){
 			utils.sendGameMessage("illu - out of astrals runes");
 			startPowerSkiller = false;
 		}

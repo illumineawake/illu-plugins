@@ -23,7 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.magicsplasher;
+package net.runelite.client.plugins.magiccaster;
 
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
@@ -59,20 +59,20 @@ import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
-import static net.runelite.client.plugins.magicsplasher.MagicSplasherState.*;
+import static net.runelite.client.plugins.magiccaster.MagicCasterState.*;
 
 
 @Extension
 @PluginDependency(BotUtils.class)
 @PluginDescriptor(
-	name = "Magic Splasher",
+	name = "Magic Caster",
 	enabledByDefault = false,
-	description = "Illumine automated magic splasher",
-	tags = {"Magic", "Splashing"},
+	description = "Illumine automated magic caster",
+	tags = {"Magic", "Splashing", "Profit", "Casting"},
 	type = PluginType.SKILLING
 )
 @Slf4j
-public class MagicSplasherPlugin extends Plugin
+public class MagicCasterPlugin extends Plugin
 {
 	@Inject
 	private Client client;
@@ -81,7 +81,7 @@ public class MagicSplasherPlugin extends Plugin
 	private BotUtils utils;
 
 	@Inject
-	private MagicSplasherConfig config;
+	private MagicCasterConfig config;
 
 	@Inject
 	PluginManager pluginManager;
@@ -90,18 +90,19 @@ public class MagicSplasherPlugin extends Plugin
 	private OverlayManager overlayManager;
 
 	@Inject
-	MagicSplasherOverlay overlay;
+	MagicCasterOverlay overlay;
 
 	@Inject
 	private ChinBreakHandler chinBreakHandler;
 
-	SplashSpells selectedSpell;
-	MagicSplasherState state;
+	CastType castType;
+	Spells selectedSpell;
+	MagicCasterState state;
 	Instant botTimer;
 	MenuEntry targetMenu;
 	LocalPoint beforeLoc = new LocalPoint(0, 0); //initiate to mitigate npe
 	Player player;
-	NPC splashNPC;
+	NPC targetNPC;
 	WidgetItem targetItem;
 
 	int npcID = -1;
@@ -109,7 +110,7 @@ public class MagicSplasherPlugin extends Plugin
 	int timeout = 0;
 	int failureCount = 0;
 	long sleepLength = 0;
-	boolean startSplasher;
+	boolean startBot;
 	private static final String OUT_OF_RUNES_MSG = "You do not have enough";
 	private static final String UNREACHABLE_MSG = "I can't reach that";
 	private final int MAX_FAILURE = 10;
@@ -128,15 +129,15 @@ public class MagicSplasherPlugin extends Plugin
 	}
 
 	@Provides
-	MagicSplasherConfig provideConfig(ConfigManager configManager)
+	MagicCasterConfig provideConfig(ConfigManager configManager)
 	{
-		return configManager.getConfig(MagicSplasherConfig.class);
+		return configManager.getConfig(MagicCasterConfig.class);
 	}
 
 	@Subscribe
 	private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked)
 	{
-		if (!configButtonClicked.getGroup().equalsIgnoreCase("MagicSplasher"))
+		if (!configButtonClicked.getGroup().equalsIgnoreCase("MagicCaster"))
 		{
 			return;
 		}
@@ -144,13 +145,14 @@ public class MagicSplasherPlugin extends Plugin
 		switch (configButtonClicked.getKey())
 		{
 			case "startButton":
-				if (!startSplasher)
+				if (!startBot)
 				{
-					startSplasher = true;
+					startBot = true;
 					chinBreakHandler.startPlugin(this);
 					botTimer = Instant.now();
 					state = null;
 					targetMenu = null;
+					timeout = 0;
 					botTimer = Instant.now();
 					initVals();
 					overlayManager.add(overlay);
@@ -165,7 +167,8 @@ public class MagicSplasherPlugin extends Plugin
 
 	public void initVals()
 	{
-		selectedSpell = config.getSpells();
+		castType = config.getSpellType();
+		selectedSpell = config.getSpell();
 		npcID = config.npcID();
 		itemID = config.itemID();
 	}
@@ -174,7 +177,8 @@ public class MagicSplasherPlugin extends Plugin
 	{
 		overlayManager.remove(overlay);
 		chinBreakHandler.stopPlugin(this);
-		startSplasher = false;
+		startBot = false;
+		castType = null;
 		selectedSpell = null;
 		botTimer = null;
 		failureCount = 0;
@@ -186,7 +190,7 @@ public class MagicSplasherPlugin extends Plugin
 	@Subscribe
 	private void onConfigChanged(ConfigChanged event)
 	{
-		if (event.getGroup() != "MagicSplasher")
+		if (event.getGroup() != "MagicCaster")
 		{
 			return;
 		}
@@ -200,9 +204,13 @@ public class MagicSplasherPlugin extends Plugin
 				itemID = config.itemID();
 				log.debug("Item ID set to {}", itemID);
 				break;
-			case "getSpells":
-				selectedSpell = config.getSpells();
-				log.debug("Splashing spell set to {}", selectedSpell.getName());
+			case "getSpellType":
+				castType = config.getSpellType();
+				log.debug("Spell cast type set to {}", castType.getName());
+				break;
+			case "getSpell":
+				selectedSpell = config.getSpell();
+				log.debug("Spell set to {}", selectedSpell.getName());
 				break;
 		}
 	}
@@ -218,22 +226,6 @@ public class MagicSplasherPlugin extends Plugin
 		int tickLength = (int) utils.randomDelay(config.tickDelayWeightedDistribution(), config.tickDelayMin(), config.tickDelayMax(), config.tickDelayDeviation(), config.tickDelayTarget());
 		log.debug("tick delay for {} ticks", tickLength);
 		return tickLength;
-	}
-
-	private void openSpellBook()
-	{
-		targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 10551356, false); //open spellbook
-		Widget spellBookWidget = client.getWidget(WidgetInfo.SPELLBOOK);
-		if (spellBookWidget != null)
-		{
-			utils.setMenuEntry(targetMenu);
-			utils.delayMouseClick(spellBookWidget.getBounds(), sleepDelay());
-		}
-		else
-		{
-			utils.setMenuEntry(targetMenu);
-			utils.delayClickRandomPointCenter(-200, 200, sleepDelay());
-		}
 	}
 
 	private NPC findNPC()
@@ -255,26 +247,29 @@ public class MagicSplasherPlugin extends Plugin
 
 	private void castSpell()
 	{
-		switch (selectedSpell.getName())
+		switch (castType.getName())
 		{
 			case "Single cast":
-				targetMenu = new MenuEntry(selectedSpell.getMenuOption(), "", splashNPC.getIndex(), MenuOpcode.SPELL_CAST_ON_NPC.getId(), 0, 0, false);
+				targetMenu = new MenuEntry("Cast", "", targetNPC.getIndex(), MenuOpcode.SPELL_CAST_ON_NPC.getId(),
+						0, 0, false);
+				utils.oneClickCastSpell(selectedSpell.getSpell(), targetMenu, targetNPC.getConvexHull().getBounds(), sleepDelay());
 				timeout = 4 + tickDelay();
-				break;
+				return;
 			case "Auto-cast":
-				targetMenu = new MenuEntry(selectedSpell.getMenuOption(), "", splashNPC.getIndex(), MenuOpcode.NPC_SECOND_OPTION.getId(), 0, 0, false);
+				targetMenu = new MenuEntry("", "", targetNPC.getIndex(), MenuOpcode.NPC_SECOND_OPTION.getId(), 0, 0, false);
+				utils.setMenuEntry(targetMenu);
+				utils.delayMouseClick(targetNPC.getConvexHull().getBounds(), sleepDelay());
 				timeout = 10 + tickDelay();
-				break;
+				return;
 			case "High Alchemy":
 				targetMenu = new MenuEntry("Cast", "", targetItem.getId(), MenuOpcode.ITEM_USE_ON_WIDGET.getId(), targetItem.getIndex(), 9764864, true);
 				timeout = 5 + tickDelay();
 				utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, targetItem.getCanvasBounds().getBounds(), sleepDelay());
 				return;
 		}
-		utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, splashNPC.getConvexHull().getBounds(), sleepDelay());
 	}
 
-	public MagicSplasherState getState()
+	public MagicCasterState getState()
 	{
 		if (timeout > 0)
 		{
@@ -293,14 +288,14 @@ public class MagicSplasherPlugin extends Plugin
 			targetItem = getItem();
 			return (targetItem != null && targetItem.getQuantity() > 0) ? FIND_ITEM : ITEM_NOT_FOUND;
 		}
-		splashNPC = findNPC();
-		return (splashNPC != null) ? FIND_NPC : NPC_NOT_FOUND;
+		targetNPC = findNPC();
+		return (targetNPC != null) ? FIND_NPC : NPC_NOT_FOUND;
 	}
 
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
-		if (!startSplasher || chinBreakHandler.isBreakActive(this))
+		if (!startBot || chinBreakHandler.isBreakActive(this))
 		{
 			return;
 		}
@@ -310,7 +305,7 @@ public class MagicSplasherPlugin extends Plugin
 			if (!client.isResized())
 			{
 				utils.sendGameMessage("illu - client must be set to resizable");
-				startSplasher = false;
+				startBot = false;
 				return;
 			}
 			utils.handleRun(40, 20);
@@ -323,9 +318,6 @@ public class MagicSplasherPlugin extends Plugin
 					return;
 				case MOVING:
 					timeout = tickDelay();
-					break;
-				case OPENING_SPELLBOOK:
-					openSpellBook();
 					break;
 				case NPC_NOT_FOUND:
 					log.debug("NPC not found");
@@ -364,7 +356,7 @@ public class MagicSplasherPlugin extends Plugin
 	@Subscribe
 	public void onAnimationChanged(AnimationChanged event)
 	{
-		if (!startSplasher || event.getActor() != player)
+		if (!startBot || event.getActor() != player)
 		{
 			return;
 		}
@@ -380,7 +372,7 @@ public class MagicSplasherPlugin extends Plugin
 	@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
-		if (!startSplasher || event.getType() != ChatMessageType.GAMEMESSAGE &&
+		if (!startBot || event.getType() != ChatMessageType.GAMEMESSAGE &&
 			event.getType() != ChatMessageType.ENGINE)
 		{
 			return;
@@ -389,7 +381,7 @@ public class MagicSplasherPlugin extends Plugin
 		{
 			log.debug("Out of runes!");
 			utils.sendGameMessage("Out of runes!");
-			startSplasher = false;
+			startBot = false;
 			if (config.logout())
 			{
 				utils.logout();
@@ -402,7 +394,7 @@ public class MagicSplasherPlugin extends Plugin
 			if (failureCount >= MAX_FAILURE)
 			{
 				utils.sendGameMessage("failed to reach NPC too many times, stopping");
-				startSplasher = false;
+				startBot = false;
 				if (config.logout())
 				{
 					utils.logout();
@@ -418,7 +410,7 @@ public class MagicSplasherPlugin extends Plugin
 	@Subscribe
 	private void onGameStateChanged(GameStateChanged event)
 	{
-		if (!startSplasher)
+		if (!startBot)
 		{
 			return;
 		}

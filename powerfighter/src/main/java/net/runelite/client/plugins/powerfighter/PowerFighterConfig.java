@@ -23,7 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.fountainofrune;
+package net.runelite.client.plugins.powerfighter;
 
 import net.runelite.client.config.*;
 
@@ -232,7 +232,7 @@ public interface PowerFighterConfig extends Config
 		keyName = "generalTitle",
 		name = "General Config",
 		description = "",
-		position = 29
+		position = 28
 	)
 	default Title generalTitle()
 	{
@@ -240,10 +240,29 @@ public interface PowerFighterConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "lootOnly",
+			name = "Loot only mode",
+			description = "Loot only mode, will loot items and not fight NPCs",
+			position = 29,
+			titleSection = "generalTitle"
+	)
+	default boolean lootOnly() { return false; }
+
+	@ConfigItem(
+			keyName = "exactNpcOnly",
+			name = "Exact NPC only mode",
+			description = "Exact NPC only mode, will fight exact NPC names only",
+			position = 29,
+			titleSection = "generalTitle"
+	)
+	default boolean exactNpcOnly() { return false; }
+
+	@ConfigItem(
 		keyName = "npcName",
 		name = "NPC Name",
 		description = "Name of NPC. Will attack any NPC containing given name.",
 		position = 30,
+			hide = "dropInventory",
 		titleSection = "generalTitle"
 	)
 	default String npcName() { return "chicken"; }
@@ -257,6 +276,7 @@ public interface PowerFighterConfig extends Config
 		name = "Search radius NPC",
 		description = "The distance (in tiles) to search for target NPC. Center search point is set when you click start.",
 		position = 31,
+			hide = "dropInventory",
 		titleSection = "generalTitle"
 	)
 	default int searchRadius() { return 20; }
@@ -266,6 +286,7 @@ public interface PowerFighterConfig extends Config
 		name = "Safe spot",
 		description = "Safe spot will force your character to always return to the tile you started the plugin on",
 		position = 32,
+			hide = "dropInventory",
 		titleSection = "generalTitle"
 	)
 	default boolean safeSpot() { return false; }
@@ -312,7 +333,6 @@ public interface PowerFighterConfig extends Config
 		hidden = true,
 		unhide = "lootAmmo",
 		titleSection = "ammoTitle"
-
 	)
 	default int ammoID()
 	{
@@ -327,7 +347,6 @@ public interface PowerFighterConfig extends Config
 		hidden = true,
 		unhide = "lootAmmo",
 		titleSection = "ammoTitle"
-
 	)
 	default int minAmmoLootTime()
 	{
@@ -342,7 +361,6 @@ public interface PowerFighterConfig extends Config
 		hidden = true,
 		unhide = "lootAmmo",
 		titleSection = "ammoTitle"
-
 	)
 	default int randAmmoLootTime()
 	{
@@ -395,7 +413,6 @@ public interface PowerFighterConfig extends Config
 		hidden = true,
 		unhide = "lootItems",
 		titleSection = "lootTitle"
-
 	)
 	default boolean lootGEValue()
 	{
@@ -410,7 +427,6 @@ public interface PowerFighterConfig extends Config
 		hidden = true,
 		unhide = "lootGEValue",
 		titleSection = "lootTitle"
-
 	)
 	default int minGEValue()
 	{
@@ -425,7 +441,6 @@ public interface PowerFighterConfig extends Config
 		hidden = true,
 		unhide = "lootItems",
 		titleSection = "lootTitle"
-
 	)
 	default String lootItemNames()
 	{
@@ -440,7 +455,6 @@ public interface PowerFighterConfig extends Config
 		hidden = true,
 		unhide = "lootItems",
 		titleSection = "lootTitle"
-
 	)
 	default boolean lootClueScrolls()
 	{
@@ -665,6 +679,6 @@ public interface PowerFighterConfig extends Config
 	)
 	default Button startButton()
 	{
-		return null;
+		return new Button();
 	}
 }
