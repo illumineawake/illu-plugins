@@ -32,6 +32,8 @@ public enum Location
 	TREE_GNOME_NIEVE("Tree Gnome Nieve", new WorldPoint(2611, 3092, 0)),
 	BARBARIAN_BANK("Barbarian Bank", new WorldPoint(2533, 3572, 0)),
 	BURTHORPE_SLAYER("Burthorpe Slayer", new WorldPoint(2931, 3536, 0)),
+	FISHING_GUILD("Fishing Guild", new WorldPoint(2611,3393,0)),
+	WINTERTODT_BANK("Wintertodt Bank", new WorldPoint(1639, 3943, 0)),
 	CUSTOM("Custom");
 
 	private final String name;

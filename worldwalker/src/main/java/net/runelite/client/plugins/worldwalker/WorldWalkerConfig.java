@@ -265,6 +265,17 @@ public interface WorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "notepad",
+		name = "Notepad for coords",
+		description = "Paste custom coords that you want to save for frequent use",
+		position = 30
+	)
+	default String notepad()
+	{
+		return "Paste custom co-ords that you want to save for frequent use";
+	}
+
+	@ConfigItem(
 			keyName = "enableUI",
 			name = "Enable UI",
 			description = "Enable to turn on in game UI",

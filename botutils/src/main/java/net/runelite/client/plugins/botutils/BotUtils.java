@@ -1150,10 +1150,18 @@ public class BotUtils extends Plugin
 			if (!isMoving || (nextPoint != null && nextPoint.distanceTo(player.getWorldLocation()) < nextFlagDist))
 			{
 				nextPoint = getNextPoint(currentPath, randRadius);
-				log.info("Walking to next tile: {}", nextPoint);
-				walk(nextPoint, 0, sleepDelay);
-				nextFlagDist = nextPoint.equals(destination) ? 0 : getRandomIntBetweenRange(0, 10);
-				//log.info("Next flag distance: {}", nextFlagDist);
+				if (nextPoint != null)
+				{
+					log.info("Walking to next tile: {}", nextPoint);
+					walk(nextPoint, 0, sleepDelay);
+					nextFlagDist = nextPoint.equals(destination) ? 0 : getRandomIntBetweenRange(0, 10);
+					//log.info("Next flag distance: {}", nextFlagDist);
+				}
+				else
+				{
+					log.info("nextPoint is null");
+					return false;
+				}
 			}
 		}
 		return false;
