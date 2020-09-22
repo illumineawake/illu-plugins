@@ -263,6 +263,21 @@ public interface PowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
+			keyName = "craftBloods",
+			name = "Craft Blood Runes",
+			description = "Crafts blood runes.",
+			position = 71,
+			titleSection = "skillerTitle",
+			hidden = true,
+			unhide = "type",
+			unhideValue = "DENSE_ESSENCE"
+	)
+	default boolean craftBloods()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "objectIds",
 		name = "IDs to power-skill",
 		description = "Separate with comma",

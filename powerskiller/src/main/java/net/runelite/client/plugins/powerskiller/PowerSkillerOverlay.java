@@ -79,6 +79,9 @@ class PowerSkillerOverlay extends OverlayPanel
 		if(config.type().equals(PowerSkillerType.SANDSTONE) && plugin.waterskinsLeft!=-1){
 			tableComponent.addRow("Waterskins left:", plugin.waterskinsLeft + " sips");
 		}
+		if(config.craftBloods()){
+			tableComponent.addRow("Crafting Bloods:", "True");
+		}
 
 		TableComponent tableDelayComponent = new TableComponent();
 		tableDelayComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);

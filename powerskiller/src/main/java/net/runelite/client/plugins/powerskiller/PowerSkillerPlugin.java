@@ -29,21 +29,10 @@ import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
 import java.awt.Rectangle;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
-import net.runelite.api.GameObject;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.NPC;
-import net.runelite.api.NullObjectID;
-import net.runelite.api.ObjectID;
-import net.runelite.api.Player;
-import net.runelite.api.GameState;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
@@ -107,6 +96,7 @@ public class PowerSkillerPlugin extends Plugin
 
 	PowerSkillerState state;
 	GameObject targetObject;
+	GroundObject targetGroundObject;
 	NPC targetNPC;
 	MenuEntry targetMenu;
 	WorldPoint skillLocation;
@@ -114,7 +104,11 @@ public class PowerSkillerPlugin extends Plugin
 	LocalPoint beforeLoc;
 	Player player;
 	Rectangle altRect = new Rectangle(-100,-100, 10, 10);
-	WorldArea DENSE_ESSENCE_AREA = new WorldArea(new WorldPoint(1754, 3845, 0), new WorldPoint(1770, 3862, 0));
+	WorldArea DENSE_ESSENCE_AREA = new WorldArea(new WorldPoint(1751, 3845, 0), new WorldPoint(1770, 3862, 0));
+	WorldArea DARK_ALTAR_AREA = new WorldArea(new WorldPoint(1717, 3881, 0), new WorldPoint(1720, 3884, 0));
+	WorldArea FIRST_CLICK_BLOOD_ALTAR_AREA = new WorldArea(new WorldPoint(1719, 3854, 0), new WorldPoint(1729, 3860, 0));
+	WorldArea OBSTACLE_AFTER_CHISELING_AREA = new WorldArea(new WorldPoint(1745, 3871, 0), new WorldPoint(1752, 3881, 0));
+	WorldArea START_CHISELING_AREA = new WorldArea(new WorldPoint(1720, 3874, 0), new WorldPoint(1734, 3881, 0));
 	private final WorldPoint WEST_ROCK = new WorldPoint(3164, 2914, 0);
 	private final WorldPoint SW_ROCK = new WorldPoint(3166, 2913, 0);
 	private final WorldPoint SE_ROCK = new WorldPoint(3167, 2913, 0);
@@ -381,6 +375,9 @@ public class PowerSkillerPlugin extends Plugin
         {
             utils.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
         }
+		else if (config.craftBloods()){
+			utils.inventoryItemsCombine(Collections.singleton(13446), 1755,38, false,true, config.sleepMin(), config.sleepMax());
+		}
         else
         {
             utils.dropAllExcept(itemIds, true, config.sleepMin(), config.sleepMax());
@@ -444,7 +441,11 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			if (config.type() == PowerSkillerType.DENSE_ESSENCE)
 			{
-				return WAIT_DENSE_ESSENCE;
+				if(config.craftBloods()){
+					return getBloodRunecraftState();
+				} else {
+					return WAIT_DENSE_ESSENCE;
+				}
 			}
 			if (config.bankItems())
 			{
@@ -473,8 +474,13 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			if (config.type() == PowerSkillerType.DENSE_ESSENCE)
 			{
-				return (DENSE_ESSENCE_AREA.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) ?
-					FIND_GAME_OBJECT : WAIT_DENSE_ESSENCE;
+				if(config.craftBloods()){
+					return (DENSE_ESSENCE_AREA.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) ?
+							FIND_GAME_OBJECT : getBloodRunecraftState();
+				} else {
+					return (DENSE_ESSENCE_AREA.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) ?
+							FIND_GAME_OBJECT : WAIT_DENSE_ESSENCE;
+				}
 			}
 			return (config.type() == PowerSkillerType.NPC) ?
 				FIND_NPC : FIND_GAME_OBJECT;
@@ -583,9 +589,20 @@ public class PowerSkillerPlugin extends Plugin
 					break;
 				case ANIMATING:
 				case MOVING:
-					utils.handleRun(30, 20);
+					if (config.craftBloods()) {
+						bloodRunecraftFunction();
+					} else {
+						utils.handleRun(30, 20);
+					}
 					timeout = tickDelay();
 					break;
+				default:
+					if(config.craftBloods()){
+						bloodRunecraftFunction();
+						timeout = tickDelay();
+						break;
+					}
+
 			}
 		}
 	}
@@ -732,5 +749,130 @@ public class PowerSkillerPlugin extends Plugin
 			startPowerSkiller = false;
 		}
 		utils.oneClickCastSpell(utils.getSpellWidgetInfo("Humidify"),targetMenu,sleepDelay());
+	}
+
+	private void bloodRunecraftFunction(){
+		switch (state){
+			case BLOOD_OBSTACLE_1:
+				targetGroundObject = utils.findNearestGroundObject(34741);
+				if(targetGroundObject!=null){
+					targetMenu = new MenuEntry("Climb", "<col=ffff>Rocks", targetGroundObject.getId(), 3,
+							targetGroundObject.getLocalLocation().getSceneX(), targetGroundObject.getLocalLocation().getSceneY(), false);
+					utils.setMenuEntry(targetMenu);
+					utils.delayMouseClick(targetGroundObject.getConvexHull().getBounds(), sleepDelay());
+				}
+				break;
+			case CLICK_DARK_ALTAR:
+				targetObject = utils.findNearestGameObject(27979);
+				if (targetObject != null)
+				{
+					targetMenu = new MenuEntry("Venerate", "<col=ffff>Dark Altar", targetObject.getId(), 3,
+							targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
+					utils.setMenuEntry(targetMenu);
+					utils.delayMouseClick(targetObject.getConvexHull().getBounds(), sleepDelay());
+				}
+			case WALK_BLOOD_ALTAR:
+				if(player.getWorldArea().intersectsWith(DARK_ALTAR_AREA)){
+					utils.walk(new WorldPoint(1724,3857,0),3,sleepDelay());
+					break;
+				} else if(player.getWorldArea().intersectsWith(FIRST_CLICK_BLOOD_ALTAR_AREA)){
+					targetObject = utils.findNearestGameObject(27978);
+					if (targetObject != null)
+					{
+						targetMenu = new MenuEntry("Bind", "<col=ffff>Blood Altar", targetObject.getId(), 3,
+								targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
+						utils.setMenuEntry(targetMenu);
+						utils.delayMouseClick(targetObject.getConvexHull().getBounds(), sleepDelay());
+					}
+				}
+				break;
+			case CHISEL_AT_ALTAR:
+			case CHISEL_WHILE_RUNNING:
+				handleDropExcept();
+				break;
+			case CLICK_BLOOD_ALTAR:
+				targetObject = utils.findNearestGameObject(27978);
+				if (targetObject != null)
+				{
+					targetMenu = new MenuEntry("Bind", "<col=ffff>Blood Altar", targetObject.getId(), 3,
+							targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
+					utils.setMenuEntry(targetMenu);
+					utils.delayMouseClick(targetObject.getConvexHull().getBounds(), sleepDelay());
+				}
+				break;
+			case BLOOD_OBSTACLE_2:
+				targetGroundObject = utils.findNearestGroundObject(27984);
+				if(targetGroundObject!=null){
+					targetMenu = new MenuEntry("Climb", "<col=ffff>Rocks", targetGroundObject.getId(), 3,
+							targetGroundObject.getLocalLocation().getSceneX(), targetGroundObject.getLocalLocation().getSceneY(), false);
+					utils.setMenuEntry(targetMenu);
+					utils.delayMouseClick(targetGroundObject.getConvexHull().getBounds(), sleepDelay());
+				}
+				break;
+			case WALK_TO_ESSENCE:
+				utils.walk(new WorldPoint(1763,3851,0),2,sleepDelay());
+				break;
+			case MOVING:
+				if (player.getWorldArea().intersectsWith(START_CHISELING_AREA)){ //running back from dark altar
+					if(utils.inventoryContains(13446)){
+						state = CHISEL_WHILE_RUNNING;
+						bloodRunecraftFunction();
+						break;
+					}
+				} else if (player.getWorldArea().intersectsWith(OBSTACLE_AFTER_CHISELING_AREA)){
+					if(utils.inventoryContains(7938) && utils.getInventorySpace()>20){
+						state = BLOOD_OBSTACLE_1;
+						bloodRunecraftFunction();
+						break;
+					}
+				} else if (player.getWorldArea().intersectsWith(FIRST_CLICK_BLOOD_ALTAR_AREA)){
+					state = CLICK_BLOOD_ALTAR;
+					bloodRunecraftFunction();
+					break;
+				}
+				utils.handleRun(30, 20);
+		}
+	}
+
+	private PowerSkillerState getBloodRunecraftState(){
+		if(utils.inventoryFull()){
+			if(utils.inventoryContains(13445)) { //mined blocks
+				if (player.getWorldArea().intersectsWith(DENSE_ESSENCE_AREA)) { //dense essence area
+					return BLOOD_OBSTACLE_1;
+				} else if (player.getWorldLocation().equals(new WorldPoint(1761,3874,0))){ //just after shortcut
+					return CLICK_DARK_ALTAR;
+				}
+			}
+
+			if(utils.inventoryContains(13446)){ //altered blocks
+				if(player.getWorldLocation().equals(new WorldPoint(1718,3882,0))) { //dark altar
+					if (!utils.inventoryContains(7938)) { //essence fragments
+						return BLOOD_OBSTACLE_1;
+					} else {
+						return WALK_BLOOD_ALTAR;
+					}
+				} else if (player.getWorldLocation().equals(new WorldPoint(1719,3828,0))){ //blood altar
+					return CHISEL_AT_ALTAR;
+				} else if (player.getWorldArea().intersectsWith(FIRST_CLICK_BLOOD_ALTAR_AREA)){ //blood altar
+					return CLICK_BLOOD_ALTAR;
+				}
+			}
+		}
+		if(client.getLocalPlayer().getAnimation()==-1 || npcMoved){
+			if(player.getWorldLocation().equals(new WorldPoint(1719,3828,0))) { //blood altar
+				if(utils.inventoryContains(7938)){ //fragments
+					return CLICK_BLOOD_ALTAR;
+				} else if(utils.inventoryContains(13446)) {
+					return CHISEL_AT_ALTAR;
+				} else {
+					return BLOOD_OBSTACLE_2;
+				}
+			} else if(player.getWorldLocation().equals(new WorldPoint(1761,3874,0))) {
+				return BLOOD_OBSTACLE_1;
+			} else if(player.getWorldLocation().equals(new WorldPoint(1761,3872,0))) {
+				return WALK_TO_ESSENCE;
+			}
+		}
+		return WAIT_DENSE_ESSENCE;
 	}
 }
