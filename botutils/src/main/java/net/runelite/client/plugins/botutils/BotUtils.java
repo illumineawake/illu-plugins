@@ -2520,7 +2520,7 @@ public class BotUtils extends Plugin
 				client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
 				client.setSelectedItemSlot(modifiedItemIndex);
 				client.setSelectedItemID(modifiedItemID);
-				log.info("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", modifiedItemID, modifiedItemIndex, targetMenu.getParam1());
+				//log.info("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", modifiedItemID, modifiedItemIndex, targetMenu.getParam1());
 				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(), MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId(),
 					targetMenu.getParam0(), targetMenu.getParam1());
 				modifiedMenu = false;
