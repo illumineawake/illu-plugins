@@ -2089,7 +2089,7 @@ public class BotUtils extends Plugin
 			}
 			else
 			{
-				targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 786473, false); //deposit all in bank interface
+				targetMenu = new MenuEntry("", "", 8, MenuOpcode.CC_OP.getId(), -1, 786473, false); //deposit all in bank interface
 			}
 			if ((depositInventoryWidget != null))
 			{
@@ -2145,7 +2145,7 @@ public class BotUtils extends Plugin
 			return;
 		}
 		boolean depositBox = isDepositBoxOpen();
-		targetMenu = new MenuEntry("", "", (depositBox) ? 1 : 2, MenuOpcode.CC_OP.getId(), item.getIndex(),
+		targetMenu = new MenuEntry("", "", (depositBox) ? 1 : 8, MenuOpcode.CC_OP.getId(), item.getIndex(),
 			(depositBox) ? 12582914 : 983043, false);
 		click(item.getCanvasBounds());
 	}
