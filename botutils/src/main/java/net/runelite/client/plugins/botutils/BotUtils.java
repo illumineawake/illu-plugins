@@ -2089,7 +2089,7 @@ public class BotUtils extends Plugin
 			}
 			else
 			{
-				targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 786473, false); //deposit all in bank interface
+				targetMenu = new MenuEntry("", "", 8, MenuOpcode.CC_OP.getId(), -1, 786473, false); //deposit all in bank interface
 			}
 			if ((depositInventoryWidget != null))
 			{
@@ -2145,7 +2145,7 @@ public class BotUtils extends Plugin
 			return;
 		}
 		boolean depositBox = isDepositBoxOpen();
-		targetMenu = new MenuEntry("", "", (depositBox) ? 1 : 2, MenuOpcode.CC_OP.getId(), item.getIndex(),
+		targetMenu = new MenuEntry("", "", (depositBox) ? 1 : 8, MenuOpcode.CC_OP.getId(), item.getIndex(),
 			(depositBox) ? 12582914 : 983043, false);
 		click(item.getCanvasBounds());
 	}
@@ -2197,7 +2197,7 @@ public class BotUtils extends Plugin
 	{
 		executorService.submit(() ->
 		{
-			targetMenu = new MenuEntry("Withdraw-All", "", 1, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
+			targetMenu = new MenuEntry("Withdraw-All", "", 7, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
 			clickRandomPointCenter(-200, 200);
 		});
 	}
@@ -2219,7 +2219,7 @@ public class BotUtils extends Plugin
 	{
 		executorService.submit(() ->
 		{
-			targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
+			targetMenu = new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 1 : 2, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
 			setMenuEntry(targetMenu);
 			clickRandomPointCenter(-200, 200);
 		});
@@ -2244,7 +2244,7 @@ public class BotUtils extends Plugin
 				switch (amount)
 				{
 					case 1:
-						identifier = 2;
+						identifier = (client.getVarbitValue(6590) == 0) ? 1 : 2;
 						break;
 					case 5:
 						identifier = 3;
@@ -2520,7 +2520,7 @@ public class BotUtils extends Plugin
 				client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
 				client.setSelectedItemSlot(modifiedItemIndex);
 				client.setSelectedItemID(modifiedItemID);
-				//log.info("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", modifiedItemID, modifiedItemIndex, targetMenu.getParam1());
+				log.info("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", modifiedItemID, modifiedItemIndex, targetMenu.getParam1());
 				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(), MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId(),
 					targetMenu.getParam0(), targetMenu.getParam1());
 				modifiedMenu = false;
