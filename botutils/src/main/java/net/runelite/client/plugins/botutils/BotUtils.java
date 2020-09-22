@@ -64,6 +64,7 @@ import net.runelite.api.queries.WallObjectQuery;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
@@ -74,6 +75,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 
+import static java.awt.event.KeyEvent.VK_ENTER;
 import static net.runelite.client.plugins.botutils.Banks.ALL_BANKS;
 
 import net.runelite.http.api.ge.GrandExchangeClient;
@@ -117,6 +119,9 @@ public class BotUtils extends Plugin
 
 	@Inject
 	private OSBGrandExchangeClient osbGrandExchangeClient;
+
+	@Inject
+	private ClientThread clientThread;
 
 	@Inject
 	ExecutorService executorService;
@@ -1422,6 +1427,27 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
+	public WidgetItem getInventoryItemMenu(Collection<String> menuOptions)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				String[] menuActions = itemManager.getItemDefinition(item.getId()).getInventoryActions();
+				for (String action : menuActions)
+				{
+					if (action != null && menuOptions.contains(action))
+					{
+						return item;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	public WidgetItem getInventoryWidgetItemMenu(ItemManager itemManager, String menuOption, int opcode)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -1526,6 +1552,60 @@ public class BotUtils extends Plugin
 			.first();
 
 		return item != null && item.getQuantity() >= minStackAmount;
+	}
+
+	public boolean inventoryItemContainsAmount(int id, int amount, boolean stackable, boolean exactAmount)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		int total = 0;
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				if (item.getId() == id)
+				{
+					if (stackable)
+					{
+						total = item.getQuantity();
+						break;
+					}
+					total++;
+				}
+			}
+		}
+		if ((exactAmount && total != amount) || (total < amount))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	public boolean inventoryItemContainsAmount(Collection<Integer> ids, int amount, boolean stackable, boolean exactAmount)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		int total = 0;
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				if (ids.contains(item.getId()))
+				{
+					if (stackable)
+					{
+						total = item.getQuantity();
+						break;
+					}
+					total++;
+				}
+			}
+		}
+		if ((exactAmount && total != amount) || (total < amount))
+		{
+			return false;
+		}
+		return true;
 	}
 
 	public boolean inventoryContains(Collection<Integer> itemIds)
@@ -1822,7 +1902,7 @@ public class BotUtils extends Plugin
 			executorService.submit(() -> handleMouseClick(bankCloseWidget.getBounds()));
 			return;
 		}
-		clickRandomPointCenter(-200, 200);
+		delayMouseClick(new Point(0,0), getRandomIntBetweenRange(10, 100));
 	}
 
 	public int getBankMenuOpcode(int bankID)
@@ -1901,9 +1981,39 @@ public class BotUtils extends Plugin
 		if (isBankOpen())
 		{
 			ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
-			WidgetItem bankItem = new BankItemQuery().idEquals(itemID).result(client).first();
+			final WidgetItem bankItem;
+			if (bankItemContainer != null)
+			{
+				for (Item item : bankItemContainer.getItems())
+				{
+					if (item.getId() == itemID)
+					{
+						return item.getQuantity() >= minStackAmount;
+					}
+				}
+			}
+		}
+		return false;
+	}
 
-			return bankItem != null && bankItem.getQuantity() >= minStackAmount;
+	public boolean bankContains2(int itemID, int minStackAmount)
+	{
+		if (isBankOpen())
+		{
+			clientThread.invokeLater(() -> {
+				ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
+				final WidgetItem bankItem;
+				if (client.isClientThread())
+				{
+					bankItem = new BankItemQuery().idEquals(itemID).result(client).first();
+				}
+				else
+				{
+					bankItem = new BankItemQuery().idEquals(itemID).result(client).first();
+				}
+
+				return bankItem != null && bankItem.getQuantity() >= minStackAmount;
+			});
 		}
 		return false;
 	}
@@ -2110,6 +2220,7 @@ public class BotUtils extends Plugin
 		executorService.submit(() ->
 		{
 			targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
+			setMenuEntry(targetMenu);
 			clickRandomPointCenter(-200, 200);
 		});
 	}
@@ -2121,6 +2232,44 @@ public class BotUtils extends Plugin
 		{
 			withdrawItem(item);
 		}
+	}
+
+	public void withdrawItemAmount(int bankItemID, int amount)
+	{
+		clientThread.invokeLater(() -> {
+			Widget item = getBankItemWidget(bankItemID);
+			if (item != null)
+			{
+				int identifier;
+				switch (amount)
+				{
+					case 1:
+						identifier = 2;
+						break;
+					case 5:
+						identifier = 3;
+						break;
+					case 10:
+						identifier = 4;
+						break;
+					default:
+						identifier = 6;
+						break;
+				}
+				targetMenu = new MenuEntry("", "", identifier, MenuOpcode.CC_OP.getId(), item.getIndex(), 786444, false);
+				setMenuEntry(targetMenu);
+				delayClickRandomPointCenter(-200, 200, 50);
+				if (identifier == 6)
+				{
+					executorService.submit(() -> {
+						sleep(getRandomIntBetweenRange(1000, 1500));
+						typeString(String.valueOf(amount));
+						sleep(getRandomIntBetweenRange(80, 250));
+						pressKey(VK_ENTER);
+					});
+				}
+			}
+		});
 	}
 
 	/**
@@ -2164,11 +2313,11 @@ public class BotUtils extends Plugin
 		return randomEvent;
 	}
 
-	/**
-	 *
-	 *  UTILITY FUNCTIONS
-	 *
-	 */
+/**
+ *
+ *  UTILITY FUNCTIONS
+ *
+ */
 
 	/**
 	 * Pauses execution for a random amount of time between two values.
@@ -2368,8 +2517,12 @@ public class BotUtils extends Plugin
 			}
 			if (modifiedMenu)
 			{
-				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), modifiedItemID, MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId(),
-					modifiedItemIndex, targetMenu.getParam1());
+				client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+				client.setSelectedItemSlot(modifiedItemIndex);
+				client.setSelectedItemID(modifiedItemID);
+				log.info("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", modifiedItemID, modifiedItemIndex, targetMenu.getParam1());
+				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(), MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId(),
+					targetMenu.getParam0(), targetMenu.getParam1());
 				modifiedMenu = false;
 			}
 			else
