@@ -34,6 +34,7 @@ include("powerskiller")
 include(":quickeater")
 include("randomhandler")
 include(":rooftopagility")
+include(":worldwalker")
 
 for (project in rootProject.children) {
     project.apply {
