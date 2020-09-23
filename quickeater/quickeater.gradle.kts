@@ -23,10 +23,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "2.9.3"
+version = "3.0.0"
 
 project.extra["PluginName"] = "Quick Eater"
-project.extra["PluginDescription"] = "Illumine - auto eat food below configured HP"
+project.extra["PluginDescription"] = "Illumine - auto eat food below configured HP and consume potions"
 
 dependencies {
     compileOnly(project(":botutils"))

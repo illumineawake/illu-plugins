@@ -283,7 +283,7 @@ public class MagicCasterPlugin extends Plugin
 		{
 			return HANDLE_BREAK;
 		}
-		if (selectedSpell.getName().equals("High Alchemy"))
+		if (castType.getName().equals("High Alchemy"))
 		{
 			targetItem = getItem();
 			return (targetItem != null && targetItem.getQuantity() > 0) ? FIND_ITEM : ITEM_NOT_FOUND;
@@ -325,7 +325,7 @@ public class MagicCasterPlugin extends Plugin
 					timeout = tickDelay();
 					break;
 				case ITEM_NOT_FOUND:
-					log.info("Item not found, config: {}, ID: {}, quantity {}", config.itemID(), targetItem.getId(), targetItem.getQuantity());
+					log.info("Item not found, config: {}", config.itemID());
 					utils.sendGameMessage("Item not found");
 					if (config.logout())
 					{

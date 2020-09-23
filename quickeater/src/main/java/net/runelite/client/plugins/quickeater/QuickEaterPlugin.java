@@ -37,6 +37,7 @@ import net.runelite.api.MenuOpcode;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
@@ -113,6 +114,10 @@ public class QuickEaterPlugin extends Plugin
 		ItemID.BATTLEMAGE_POTION1, ItemID.BATTLEMAGE_POTION2, ItemID.BATTLEMAGE_POTION3, ItemID.BATTLEMAGE_POTION4,
 		ItemID.DIVINE_MAGIC_POTION1, ItemID.DIVINE_MAGIC_POTION2, ItemID.DIVINE_MAGIC_POTION3, ItemID.DIVINE_MAGIC_POTION4,
 		ItemID.DIVINE_BATTLEMAGE_POTION1, ItemID.DIVINE_BATTLEMAGE_POTION2, ItemID.DIVINE_BATTLEMAGE_POTION3, ItemID.DIVINE_BATTLEMAGE_POTION4);
+	private final Set<Integer> ANTI_FIRE_SET = Set.of(ItemID.ANTIFIRE_POTION1, ItemID.ANTIFIRE_POTION2, ItemID.ANTIFIRE_POTION3, ItemID.ANTIFIRE_POTION4, ItemID.SUPER_ANTIFIRE_POTION1, ItemID.SUPER_ANTIFIRE_POTION2, ItemID.SUPER_ANTIFIRE_POTION3, ItemID.SUPER_ANTIFIRE_POTION4,
+		ItemID.EXTENDED_ANTIFIRE1, ItemID.EXTENDED_ANTIFIRE2, ItemID.EXTENDED_ANTIFIRE3, ItemID.EXTENDED_ANTIFIRE4, ItemID.EXTENDED_SUPER_ANTIFIRE1, ItemID.EXTENDED_SUPER_ANTIFIRE2,ItemID.EXTENDED_SUPER_ANTIFIRE3,ItemID.EXTENDED_SUPER_ANTIFIRE4);
+
+	private final String BURN_MESSAGE = ("You're horribly burnt by the dragon fire!");
 
 	private int timeout;
 	private int drinkTimeout;
@@ -234,6 +239,24 @@ public class QuickEaterPlugin extends Plugin
 				} else {
 					utils.sendGameMessage("No phoenix necklaces in inventory.");
 				}
+			}
+		}
+	}
+
+	@Subscribe
+	private void onChatMessage(ChatMessage event)
+	{
+		if (event.getMessage().equals(BURN_MESSAGE) && config.drinkAntiFire())
+		{
+			if (utils.inventoryContains(ANTI_FIRE_SET))
+			{
+				log.debug("Drinking anti-fire");
+				WidgetItem antiFireItem = utils.getInventoryWidgetItem(ANTI_FIRE_SET);
+				useItem(antiFireItem);
+			}
+			else
+			{
+				utils.sendGameMessage("You are Burnt but missing anti-fire potions");
 			}
 		}
 	}
