@@ -233,6 +233,14 @@ public interface QuickEaterConfiguration extends Config
 		unhide = "drinkStamina"
 	)
 	default int randEnergy() { return 20; }
+
+	@ConfigItem(
+		keyName = "drinkAntiFire",
+		name = "Drink Anti-Fire Potions",
+		description = "Enable to drink Anti-Fire when burnt",
+		position = 2
+	)
+	default boolean drinkAntiFire() { return true; }
 	
 	@ConfigItem(
 			keyName = "keepPNeckEquipped",
