@@ -2089,7 +2089,7 @@ public class BotUtils extends Plugin
 			}
 			else
 			{
-				targetMenu = new MenuEntry("", "", 8, MenuOpcode.CC_OP.getId(), -1, 786473, false); //deposit all in bank interface
+				targetMenu = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 786473, false); //deposit all in bank interface
 			}
 			if ((depositInventoryWidget != null))
 			{
