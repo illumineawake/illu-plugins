@@ -69,6 +69,7 @@ import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
@@ -124,6 +125,9 @@ public class BotUtils extends Plugin
 	private ClientThread clientThread;
 
 	@Inject
+	private BotUtilsConfig config;
+
+	@Inject
 	ExecutorService executorService;
 
 	MenuEntry targetMenu;
@@ -146,6 +150,12 @@ public class BotUtils extends Plugin
 	protected static final java.util.Random random = new java.util.Random();
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 	private final String DAX_API_URL = "https://api.dax.cloud/walker/generatePath";
+
+	@Provides
+	BotUtilsConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(BotUtilsConfig.class);
+	}
 
 	@Provides
 	OSBGrandExchangeClient provideOsbGrandExchangeClient(OkHttpClient okHttpClient)
@@ -923,16 +933,36 @@ public class BotUtils extends Plugin
 	public void handleMouseClick(Point point)
 	{
 		assert !client.isClientThread();
-
 		final int viewportHeight = client.getViewportHeight();
 		final int viewportWidth = client.getViewportWidth();
+		log.info("Performing mouse click: {}", config.getMouse());
 
-		if (point.getX() > viewportWidth || point.getY() > viewportHeight || point.getX() < 0 || point.getY() < 0)
+		switch(config.getMouse())
 		{
-			clickRandomPointCenter(-100, 100);
-			return;
+			case ZERO_MOUSE:
+				click(new Point(0, 0));
+				return;
+			case MOVE:
+				if (point.getX() > viewportWidth || point.getY() > viewportHeight || point.getX() < 0 || point.getY() < 0)
+				{
+					clickRandomPointCenter(-100, 100);
+					return;
+				}
+				moveClick(point);
+				return;
+			case NO_MOVE:
+				if (point.getX() > viewportWidth || point.getY() > viewportHeight || point.getX() < 0 || point.getY() < 0)
+				{
+					Point rectPoint = new Point(client.getCenterX() + getRandomIntBetweenRange(-100, 100), client.getCenterY() + getRandomIntBetweenRange(-100, 100));
+					click(rectPoint);
+					return;
+				}
+				click(point);
+				return;
+			case RECTANGLE:
+				Point rectPoint = new Point(client.getCenterX() + getRandomIntBetweenRange(-100, 100), client.getCenterY() + getRandomIntBetweenRange(-100, 100));
+				click(rectPoint);
 		}
-		moveClick(point);
 	}
 
 	public void handleMouseClick(Rectangle rectangle)
