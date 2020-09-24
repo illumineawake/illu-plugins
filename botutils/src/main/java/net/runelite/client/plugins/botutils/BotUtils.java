@@ -441,6 +441,23 @@ public class BotUtils extends Plugin
 			.result(client)
 			.list;
 	}
+	
+	public List<GameObject> getLocalGameObjects(int distanceAway, int... ids)
+	{
+		if (client.getLocalPlayer() == null)
+		{
+			return new ArrayList<>();
+		}
+		List<GameObject> localGameObjects = new ArrayList<>();
+		for(GameObject gameObject : getGameObjects(ids))
+			{
+			if(gameObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation())<distanceAway)
+			{
+				localGameObjects.add(gameObject);
+			}
+		}
+		return localGameObjects;
+	}
 
 	public List<NPC> getNPCs(int... ids)
 	{
