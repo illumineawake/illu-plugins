@@ -969,7 +969,7 @@ public class BotUtils extends Plugin
 		assert !client.isClientThread();
 		final int viewportHeight = client.getViewportHeight();
 		final int viewportWidth = client.getViewportWidth();
-		log.info("Performing mouse click: {}", config.getMouse());
+		log.debug("Performing mouse click: {}", config.getMouse());
 
 		switch(config.getMouse())
 		{
