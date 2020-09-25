@@ -93,7 +93,7 @@ public class QuickEaterPlugin extends Plugin
 	private final Set<Integer> PRAYER_SET = Set.of(ItemID.PRAYER_POTION1, ItemID.PRAYER_POTION2, ItemID.PRAYER_POTION3, ItemID.PRAYER_POTION4,
 		ItemID.SUPER_RESTORE1, ItemID.SUPER_RESTORE2, ItemID.SUPER_RESTORE3, ItemID.SUPER_RESTORE4, ItemID.BLIGHTED_SUPER_RESTORE1,
 		ItemID.BLIGHTED_SUPER_RESTORE2, ItemID.BLIGHTED_SUPER_RESTORE3, ItemID.BLIGHTED_SUPER_RESTORE4, ItemID.EGNIOL_POTION_1,
-		ItemID.EGNIOL_POTION_2,ItemID.EGNIOL_POTION_3,ItemID.EGNIOL_POTION_4);
+		ItemID.EGNIOL_POTION_2, ItemID.EGNIOL_POTION_3, ItemID.EGNIOL_POTION_4);
 	private final Set<Integer> STRENGTH_SET = Set.of(ItemID.STRENGTH_POTION1, ItemID.STRENGTH_POTION2, ItemID.STRENGTH_POTION3, ItemID.STRENGTH_POTION4,
 		ItemID.SUPER_STRENGTH1, ItemID.SUPER_STRENGTH2, ItemID.SUPER_STRENGTH3, ItemID.SUPER_STRENGTH4,
 		ItemID.DIVINE_SUPER_STRENGTH_POTION1, ItemID.DIVINE_SUPER_STRENGTH_POTION2, ItemID.DIVINE_SUPER_STRENGTH_POTION3, ItemID.DIVINE_SUPER_STRENGTH_POTION4,
@@ -115,9 +115,7 @@ public class QuickEaterPlugin extends Plugin
 		ItemID.DIVINE_MAGIC_POTION1, ItemID.DIVINE_MAGIC_POTION2, ItemID.DIVINE_MAGIC_POTION3, ItemID.DIVINE_MAGIC_POTION4,
 		ItemID.DIVINE_BATTLEMAGE_POTION1, ItemID.DIVINE_BATTLEMAGE_POTION2, ItemID.DIVINE_BATTLEMAGE_POTION3, ItemID.DIVINE_BATTLEMAGE_POTION4);
 	private final Set<Integer> ANTI_FIRE_SET = Set.of(ItemID.ANTIFIRE_POTION1, ItemID.ANTIFIRE_POTION2, ItemID.ANTIFIRE_POTION3, ItemID.ANTIFIRE_POTION4, ItemID.SUPER_ANTIFIRE_POTION1, ItemID.SUPER_ANTIFIRE_POTION2, ItemID.SUPER_ANTIFIRE_POTION3, ItemID.SUPER_ANTIFIRE_POTION4,
-		ItemID.EXTENDED_ANTIFIRE1, ItemID.EXTENDED_ANTIFIRE2, ItemID.EXTENDED_ANTIFIRE3, ItemID.EXTENDED_ANTIFIRE4, ItemID.EXTENDED_SUPER_ANTIFIRE1, ItemID.EXTENDED_SUPER_ANTIFIRE2,ItemID.EXTENDED_SUPER_ANTIFIRE3,ItemID.EXTENDED_SUPER_ANTIFIRE4);
-
-	private final String BURN_MESSAGE = ("You're horribly burnt by the dragon fire!");
+		ItemID.EXTENDED_ANTIFIRE1, ItemID.EXTENDED_ANTIFIRE2, ItemID.EXTENDED_ANTIFIRE3, ItemID.EXTENDED_ANTIFIRE4, ItemID.EXTENDED_SUPER_ANTIFIRE1, ItemID.EXTENDED_SUPER_ANTIFIRE2, ItemID.EXTENDED_SUPER_ANTIFIRE3, ItemID.EXTENDED_SUPER_ANTIFIRE4);
 
 	private int timeout;
 	private int drinkTimeout;
@@ -214,29 +212,31 @@ public class QuickEaterPlugin extends Plugin
 				if (drinkEnergy == 0)
 				{
 					drinkEnergy = utils.getRandomIntBetweenRange(config.maxDrinkEnergy() - config.randEnergy(), config.maxDrinkEnergy());
-					log.debug("Max drink energy: {}, Rand drink value: {}, Next drink energy: {}",config.maxDrinkEnergy(), config.randEnergy(), drinkEnergy);
+					log.debug("Max drink energy: {}, Rand drink value: {}, Next drink energy: {}", config.maxDrinkEnergy(), config.randEnergy(), drinkEnergy);
 				}
 				if (client.getEnergy() < drinkEnergy)
 				{
 					utils.drinkStamPot();
 					drinkEnergy = utils.getRandomIntBetweenRange(config.maxDrinkEnergy() - config.randEnergy(), config.maxDrinkEnergy());
-					log.debug("Max drink energy: {}, Rand drink value: {}, Next drink energy: {}",config.maxDrinkEnergy(), config.randEnergy(), drinkEnergy);
+					log.debug("Max drink energy: {}, Rand drink value: {}, Next drink energy: {}", config.maxDrinkEnergy(), config.randEnergy(), drinkEnergy);
 					drinkTimeout = 2;
 				}
 			}
-			if(config.keepPNeckEquipped())
+			if (config.keepPNeckEquipped())
 			{
-				timeout+=4;
-				if(utils.inventoryContains(11090))
+				timeout += 4;
+				if (utils.inventoryContains(11090))
 				{
-					if(utils.getEquippedItems()!=null && utils.getEquippedItems().get(2).getId()!=11090)
+					if (utils.getEquippedItems() != null && utils.getEquippedItems().get(2).getId() != 11090)
 					{
 						targetMenu = new MenuEntry("Wear", "Wear", 11090, MenuOpcode.ITEM_SECOND_OPTION.getId(), utils.getInventoryWidgetItem(11090).getIndex(),
-								WidgetInfo.INVENTORY.getId(), false);
+							WidgetInfo.INVENTORY.getId(), false);
 						utils.setMenuEntry(targetMenu);
 						utils.delayMouseClick(utils.getInventoryWidgetItem(11090).getCanvasBounds(), utils.getRandomIntBetweenRange(25, 200));
 					}
-				} else {
+				}
+				else
+				{
 					utils.sendGameMessage("No phoenix necklaces in inventory.");
 				}
 			}
@@ -247,6 +247,9 @@ public class QuickEaterPlugin extends Plugin
 	@Subscribe
 	private void onChatMessage(ChatMessage event)
 	{
+		String BURN_MESSAGE = ("You're horribly burnt by the dragon fire!");
+		String IMB_HEART_MESSAGE = ("Your imbued heart has regained its magical power.");
+
 		if (event.getMessage().equals(BURN_MESSAGE) && config.drinkAntiFire())
 		{
 			if (utils.inventoryContains(ANTI_FIRE_SET))
@@ -260,15 +263,13 @@ public class QuickEaterPlugin extends Plugin
 				utils.sendGameMessage("You are Burnt but missing anti-fire potions");
 			}
 		}
-		if(event.getMessage().contains("Your imbued heart has regained its magical power.") && config.activateImbHeart())
+		if (event.getMessage().contains(IMB_HEART_MESSAGE) && config.activateImbHeart())
 		{
-				if(utils.inventoryContains(20724))
-				{
-					WidgetItem imbHeart = utils.getInventoryWidgetItem(20724);
-					useItem(imbHeart);
-				} else {
-					utils.sendGameMessage("No imbued heart in inventory.");
-				}
+			if (utils.inventoryContains(ItemID.IMBUED_HEART))
+			{
+				WidgetItem imbHeart = utils.getInventoryWidgetItem(ItemID.IMBUED_HEART);
+				useItem(imbHeart);
+			}
 		}
 	}
 

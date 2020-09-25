@@ -5,5 +5,6 @@ public enum PowerSkillerType
 	DENSE_ESSENCE,
 	SANDSTONE,
 	GAME_OBJECT,
-	NPC
+	NPC,
+	WALL_OBJECT
 }

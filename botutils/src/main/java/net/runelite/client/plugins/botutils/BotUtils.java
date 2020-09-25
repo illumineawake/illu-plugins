@@ -396,6 +396,23 @@ public class BotUtils extends Plugin
 	}
 
 	@Nullable
+	public WallObject findWallObjectWithin(WorldPoint worldPoint, int radius, Collection<Integer> ids)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new WallObjectQuery()
+				.isWithinDistance(worldPoint, radius)
+				.idEquals(ids)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
 	public DecorativeObject findNearestDecorObject(int... ids)
 	{
 		assert client.isClientThread();
@@ -440,6 +457,23 @@ public class BotUtils extends Plugin
 			.idEquals(ids)
 			.result(client)
 			.list;
+	}
+	
+	public List<GameObject> getLocalGameObjects(int distanceAway, int... ids)
+	{
+		if (client.getLocalPlayer() == null)
+		{
+			return new ArrayList<>();
+		}
+		List<GameObject> localGameObjects = new ArrayList<>();
+		for(GameObject gameObject : getGameObjects(ids))
+			{
+			if(gameObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation())<distanceAway)
+			{
+				localGameObjects.add(gameObject);
+			}
+		}
+		return localGameObjects;
 	}
 
 	public List<NPC> getNPCs(int... ids)
@@ -935,7 +969,7 @@ public class BotUtils extends Plugin
 		assert !client.isClientThread();
 		final int viewportHeight = client.getViewportHeight();
 		final int viewportWidth = client.getViewportWidth();
-		log.info("Performing mouse click: {}", config.getMouse());
+		log.debug("Performing mouse click: {}", config.getMouse());
 
 		switch(config.getMouse())
 		{
