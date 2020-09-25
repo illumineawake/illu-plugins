@@ -118,6 +118,7 @@ public class QuickEaterPlugin extends Plugin
 		ItemID.EXTENDED_ANTIFIRE1, ItemID.EXTENDED_ANTIFIRE2, ItemID.EXTENDED_ANTIFIRE3, ItemID.EXTENDED_ANTIFIRE4, ItemID.EXTENDED_SUPER_ANTIFIRE1, ItemID.EXTENDED_SUPER_ANTIFIRE2,ItemID.EXTENDED_SUPER_ANTIFIRE3,ItemID.EXTENDED_SUPER_ANTIFIRE4);
 
 	private final String BURN_MESSAGE = ("You're horribly burnt by the dragon fire!");
+	private final String HEART_MESSAGE = ("Your imbued heart has regained its magical power.");
 
 	private int timeout;
 	private int drinkTimeout;
@@ -240,6 +241,7 @@ public class QuickEaterPlugin extends Plugin
 					utils.sendGameMessage("No phoenix necklaces in inventory.");
 				}
 			}
+
 		}
 	}
 
@@ -248,6 +250,7 @@ public class QuickEaterPlugin extends Plugin
 	{
 		if (event.getMessage().equals(BURN_MESSAGE) && config.drinkAntiFire())
 		{
+			timeout+=4;
 			if (utils.inventoryContains(ANTI_FIRE_SET))
 			{
 				log.debug("Drinking anti-fire");
@@ -259,7 +262,18 @@ public class QuickEaterPlugin extends Plugin
 				utils.sendGameMessage("You are Burnt but missing anti-fire potions");
 			}
 		}
+		if(event.getMessage().contains("Your imbued heart has regained its magical power.") && config.activateImbHeart())
+		{
+				if(utils.inventoryContains(20724))
+				{
+					WidgetItem imbHeart = utils.getInventoryWidgetItem(20724);
+					useItem(imbHeart);
+				} else {
+					utils.sendGameMessage("No imbued heart in inventory.");
+				}
+		}
 	}
+
 
 	@Subscribe
 	protected void onGameStateChanged(GameStateChanged event)
