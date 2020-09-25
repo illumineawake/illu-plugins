@@ -250,4 +250,11 @@ public interface QuickEaterConfiguration extends Config
 	)
 	default boolean keepPNeckEquipped() { return false; }
 
+	@ConfigItem(
+			keyName = "activateImbHeart",
+			name = "Reactivate Imbued Heart",
+			description = "Enable to automatically reactivate the imbued heart - activate heart once manually. ",
+			position = 41
+	)
+	default boolean activateImbHeart() { return false; }
 }

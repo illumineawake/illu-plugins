@@ -240,6 +240,7 @@ public class QuickEaterPlugin extends Plugin
 					utils.sendGameMessage("No phoenix necklaces in inventory.");
 				}
 			}
+
 		}
 	}
 
@@ -259,7 +260,18 @@ public class QuickEaterPlugin extends Plugin
 				utils.sendGameMessage("You are Burnt but missing anti-fire potions");
 			}
 		}
+		if(event.getMessage().contains("Your imbued heart has regained its magical power.") && config.activateImbHeart())
+		{
+				if(utils.inventoryContains(20724))
+				{
+					WidgetItem imbHeart = utils.getInventoryWidgetItem(20724);
+					useItem(imbHeart);
+				} else {
+					utils.sendGameMessage("No imbued heart in inventory.");
+				}
+		}
 	}
+
 
 	@Subscribe
 	protected void onGameStateChanged(GameStateChanged event)
