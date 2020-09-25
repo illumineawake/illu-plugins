@@ -108,6 +108,7 @@ public class PowerSkillerPlugin extends Plugin
 	PowerSkillerState state;
 	GameObject targetObject;
 	NPC targetNPC;
+	WallObject targetWall;
 	MenuEntry targetMenu;
 	WorldPoint skillLocation;
 	Instant botTimer;
@@ -312,6 +313,23 @@ public class PowerSkillerPlugin extends Plugin
 		else
 		{
 			log.info("Game Object is null, ids are: {}", objectIds.toString());
+		}
+	}
+
+	private void interactWall()
+	{
+		targetWall = utils.findWallObjectWithin(skillLocation, config.locationRadius(), objectIds);
+		opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId());
+		if (targetWall != null)
+		{
+			targetMenu = new MenuEntry("", "", targetWall.getId(), opcode,
+					targetWall.getLocalLocation().getSceneX(), targetWall.getLocalLocation().getSceneY(), false);
+			utils.setMenuEntry(targetMenu);
+			utils.delayMouseClick(targetWall.getConvexHull().getBounds(), sleepDelay());
+		}
+		else
+		{
+			log.info("Wall Object is null, ids are: {}", objectIds.toString());
 		}
 	}
 
@@ -541,6 +559,10 @@ public class PowerSkillerPlugin extends Plugin
 						return;
 					}
 					interactObject();
+					timeout = tickDelay();
+					break;
+				case FIND_WALL:
+					interactWall();
 					timeout = tickDelay();
 					break;
 				case FIND_NPC:
