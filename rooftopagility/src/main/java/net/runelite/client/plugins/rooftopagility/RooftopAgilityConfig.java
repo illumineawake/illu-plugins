@@ -59,7 +59,7 @@ public interface RooftopAgilityConfig extends Config
 	)
 	default String Course()
 	{
-		return "Gnome, Draynor (banking), Al kharid, Varrock (banking), Canifis (banking), Falador (banking), Seers (banking), Pollnivneach, Prifddinas, Rellekka, Ardougne (banking)";
+		return "Gnome, Draynor (banking), Al kharid, Varrock (banking), Canifis (banking), Ape Atoll, Falador (banking), Seers (banking), Pollnivneach, Prifddinas, Rellekka, Ardougne (banking)";
 	}
 
 	@ConfigSection(
