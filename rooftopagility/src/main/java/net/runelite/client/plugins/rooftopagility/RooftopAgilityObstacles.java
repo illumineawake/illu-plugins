@@ -53,6 +53,13 @@ public enum RooftopAgilityObstacles
 	CAN_ROOFTOP_FIVE(new WorldPoint(3477, 3481, 2), new WorldPoint(3485, 3488, 2), POLEVAULT),
 	CAN_ROOFTOP_SIX(new WorldPoint(3488, 3468, 3), new WorldPoint(3505, 3480, 3), GAP_14847),
 	CAN_ROOFTOP_SEVEN(new WorldPoint(3508, 3474, 2), new WorldPoint(3517, 3484, 2), GAP_14897),
+	//APE ATOLL
+	APE_STEPSTONE(new WorldPoint(2754,2741,0), new WorldPoint(2784,2751,0), STEPPING_STONE_15412, RooftopAgilityObstacleType.GROUND_OBJECT),
+	APE_TROPTREE1(new WorldPoint(2753,2742,0), new WorldPoint(2751,2739,0), TROPICAL_TREE_15414),
+	APE_MONKEYBARS(new WorldPoint(2753,2742,2), new WorldPoint(2752,2741,2), MONKEYBARS_15417),
+	APE_SKULLSLOPE(new WorldPoint(2747,2741,0), new WorldPoint(2746,2741,0), SKULL_SLOPE_15483, RooftopAgilityObstacleType.GROUND_OBJECT),
+	APE_ROPE(new WorldPoint(2735,2741,0), new WorldPoint(2754,2726,0), ROPE_15487),
+	APE_TROPTREE2(new WorldPoint(2755,2726,0), new WorldPoint(2760,2737,0), TROPICAL_TREE_16062),
 	//FALADOR
 	FAL_GROUND(new WorldPoint(3008, 3328, 0), new WorldPoint(3071, 3391, 0), ROUGH_WALL_14898, RooftopAgilityObstacleType.DECORATION, ObjectID.BANK_BOOTH_24101),
 	FAL_ROOFTOP_ONE(new WorldPoint(3034, 3342, 3), new WorldPoint(3040, 3347, 3), TIGHTROPE_14899, RooftopAgilityObstacleType.GROUND_OBJECT),
