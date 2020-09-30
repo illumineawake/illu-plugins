@@ -219,7 +219,7 @@ public class QuickEaterPlugin extends Plugin
 				}
 				if (client.getEnergy() < drinkEnergy)
 				{
-					utils.drinkStamPot();
+					utils.drinkStamPot(15 + utils.getRandomIntBetweenRange(0, 30));
 					drinkEnergy = utils.getRandomIntBetweenRange(config.maxDrinkEnergy() - config.randEnergy(), config.maxDrinkEnergy());
 					log.debug("Max drink energy: {}, Rand drink value: {}, Next drink energy: {}", config.maxDrinkEnergy(), config.randEnergy(), drinkEnergy);
 					drinkTimeout = 2;

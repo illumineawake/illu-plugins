@@ -146,6 +146,7 @@ public class BotUtils extends Plugin
 	private int modifiedOpCode;
 	private int coordX;
 	private int coordY;
+	private int nextRunEnergy;
 	private boolean walkAction;
 
 	protected static final java.util.Random random = new java.util.Random();
@@ -1246,16 +1247,46 @@ public class BotUtils extends Plugin
 	public void handleRun(int minEnergy, int randMax)
 	{
 		assert client.isClientThread();
-
+		if (nextRunEnergy < minEnergy || nextRunEnergy > minEnergy + randMax)
+		{
+			nextRunEnergy = getRandomIntBetweenRange(minEnergy, minEnergy + getRandomIntBetweenRange(0, randMax));
+		}
 		if (client.getEnergy() > (minEnergy + getRandomIntBetweenRange(0, randMax)) ||
 			client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) != 0)
 		{
-			if (drinkStamPot())
+			if (drinkStamPot(15 + getRandomIntBetweenRange(0, 30)))
 			{
 				return;
 			}
 			if (!isRunEnabled())
 			{
+				nextRunEnergy = 0;
+				Widget runOrb = client.getWidget(WidgetInfo.MINIMAP_RUN_ORB);
+				if (runOrb != null)
+				{
+					enableRun(runOrb.getBounds());
+				}
+			}
+		}
+	}
+
+	public void handleRun(int minEnergy, int randMax, int potEnergy)
+	{
+		assert client.isClientThread();
+		if (nextRunEnergy < minEnergy || nextRunEnergy > minEnergy + randMax)
+		{
+			nextRunEnergy = getRandomIntBetweenRange(minEnergy, minEnergy + getRandomIntBetweenRange(0, randMax));
+		}
+		if (client.getEnergy() > (minEnergy + getRandomIntBetweenRange(0, randMax)) ||
+			client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) != 0)
+		{
+			if (drinkStamPot(potEnergy))
+			{
+				return;
+			}
+			if (!isRunEnabled())
+			{
+				nextRunEnergy = 0;
 				Widget runOrb = client.getWidget(WidgetInfo.MINIMAP_RUN_ORB);
 				if (runOrb != null)
 				{
@@ -1276,12 +1307,13 @@ public class BotUtils extends Plugin
 	}
 
 	//Checks if Stamina enhancement is active and if stamina potion is in inventory
-	public WidgetItem shouldStamPot()
+	public WidgetItem shouldStamPot(int energy)
 	{
 		if (!getInventoryItems(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4)).isEmpty()
-			&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < 15 + getRandomIntBetweenRange(0, 30) && !isBankOpen())
+			&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < energy && !isBankOpen())
 		{
-			return getInventoryWidgetItem(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4));
+			return getInventoryWidgetItem(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3,
+				ItemID.STAMINA_POTION4, ItemID.ENERGY_POTION1, ItemID.ENERGY_POTION2, ItemID.ENERGY_POTION3, ItemID.ENERGY_POTION4));
 		}
 		else
 		{
@@ -1289,9 +1321,9 @@ public class BotUtils extends Plugin
 		}
 	}
 
-	public boolean drinkStamPot()
+	public boolean drinkStamPot(int energy)
 	{
-		WidgetItem staminaPotion = shouldStamPot();
+		WidgetItem staminaPotion = shouldStamPot(energy);
 		if (staminaPotion != null)
 		{
 			log.info("using stamina potion");
