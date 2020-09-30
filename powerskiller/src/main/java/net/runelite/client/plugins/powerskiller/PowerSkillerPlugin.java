@@ -490,13 +490,17 @@ public class PowerSkillerPlugin extends Plugin
 		}
 		if (client.getLocalPlayer().getAnimation() == -1 || npcMoved)
 		{
-			if (config.type() == PowerSkillerType.DENSE_ESSENCE)
-			{
-				return (DENSE_ESSENCE_AREA.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) ?
-					FIND_GAME_OBJECT : WAIT_DENSE_ESSENCE;
+			switch (config.type()) {
+				case DENSE_ESSENCE:
+					return (DENSE_ESSENCE_AREA.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) ?
+							FIND_GAME_OBJECT : WAIT_DENSE_ESSENCE;
+				case WALL_OBJECT:
+					return FIND_WALL;
+				case NPC:
+					return FIND_NPC;
+				case GAME_OBJECT:
+					return FIND_GAME_OBJECT;
 			}
-			return (config.type() == PowerSkillerType.NPC) ?
-				FIND_NPC : FIND_GAME_OBJECT;
 		}
 		return ANIMATING;
 	}
