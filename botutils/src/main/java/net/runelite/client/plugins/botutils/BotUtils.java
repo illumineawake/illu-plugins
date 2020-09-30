@@ -143,6 +143,7 @@ public class BotUtils extends Plugin
 	private boolean modifiedMenu;
 	private int modifiedItemID;
 	private int modifiedItemIndex;
+	private int modifiedOpCode;
 	private int coordX;
 	private int coordY;
 	private boolean walkAction;
@@ -1862,7 +1863,7 @@ public class BotUtils extends Plugin
 						log.info("interacting inventory item: {}", item.getId());
 						sleep(minDelayBetween, maxDelayBetween);
 						setModifiedMenuEntry(new MenuEntry("", "", item1.getId(), opcode, item1.getIndex(), WidgetInfo.INVENTORY.getId(),
-							false), item.getId(), item.getIndex());
+							false), item.getId(), item.getIndex(),MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId());
 						click(item1.getCanvasBounds());
 						if (!interactAll)
 						{
@@ -2526,12 +2527,13 @@ public class BotUtils extends Plugin
 		consumeClick = consume;
 	}
 
-	public void setModifiedMenuEntry(MenuEntry menuEntry, int itemID, int itemIndex)
+	public void setModifiedMenuEntry(MenuEntry menuEntry, int itemID, int itemIndex, int opCode)
 	{
 		targetMenu = menuEntry;
 		modifiedMenu = true;
 		modifiedItemID = itemID;
 		modifiedItemIndex = itemIndex;
+		modifiedOpCode = opCode;
 	}
 
 	@Subscribe
@@ -2585,7 +2587,7 @@ public class BotUtils extends Plugin
 				client.setSelectedItemSlot(modifiedItemIndex);
 				client.setSelectedItemID(modifiedItemID);
 				log.info("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", modifiedItemID, modifiedItemIndex, targetMenu.getParam1());
-				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(), MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId(),
+				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(), modifiedOpCode,
 					targetMenu.getParam0(), targetMenu.getParam1());
 				modifiedMenu = false;
 			}
