@@ -936,7 +936,7 @@ public class BotUtils extends Plugin
 		assert !client.isClientThread();
 
 		Point point = new Point(getRandomIntBetweenRange(min, max), getRandomIntBetweenRange(min, max));
-		moveClick(point);
+		handleMouseClick(point);
 	}
 
 	public void clickRandomPointCenter(int min, int max)
@@ -944,7 +944,7 @@ public class BotUtils extends Plugin
 		assert !client.isClientThread();
 
 		Point point = new Point(client.getCenterX() + getRandomIntBetweenRange(min, max), client.getCenterY() + getRandomIntBetweenRange(min, max));
-		moveClick(point);
+		handleMouseClick(point);
 	}
 
 	public void delayClickRandomPointCenter(int min, int max, long delay)
