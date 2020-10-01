@@ -2549,15 +2549,20 @@ public class BotUtils extends Plugin
 		return Math.min(min, max) + (n == 0 ? 0 : random.nextInt(n));
 	}
 
-	static void resumePauseWidget(int widgetId, int arg) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	static void resumePauseWidget(int widgetId, int arg){
 		final int garbageValue = 1292618906;
 		final String className = "ln";
 		final String methodName = "hs";
 
-		Class clazz = Class.forName(className);
-		Method method = clazz.getDeclaredMethod(methodName, int.class, int.class, int.class);
-		method.setAccessible(true);
-		method.invoke(null, widgetId, arg, garbageValue);
+		try {
+
+			Class clazz = Class.forName(className);
+			Method method = clazz.getDeclaredMethod(methodName, int.class, int.class, int.class);
+			method.setAccessible(true);
+			method.invoke(null, widgetId, arg, garbageValue);
+		} catch (Exception ignored) {
+			return;
+		}
 	}
 
 	public void oneClickCastSpell(WidgetInfo spellWidget, MenuEntry targetMenu, long sleepLength)
