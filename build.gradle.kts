@@ -108,6 +108,11 @@ subprojects {
             options.encoding = "UTF-8"
         }
 
+        register<Copy>("copyDeps") {
+            into("./build/deps/")
+            from(configurations["runtimeClasspath"])
+        }
+
         withType<Jar> {
             doLast {
                 copy {
