@@ -11,6 +11,8 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1251,7 +1253,7 @@ public class BotUtils extends Plugin
 		{
 			nextRunEnergy = getRandomIntBetweenRange(minEnergy, minEnergy + getRandomIntBetweenRange(0, randMax));
 		}
-		if (client.getEnergy() > (minEnergy + getRandomIntBetweenRange(0, randMax)) ||
+		if (client.getEnergy() > nextRunEnergy ||
 			client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) != 0)
 		{
 			if (drinkStamPot(15 + getRandomIntBetweenRange(0, 30)))
@@ -2290,6 +2292,28 @@ public class BotUtils extends Plugin
 		});
 	}
 
+	public void depositOneOfItem(WidgetItem item)
+	{
+		if (!isBankOpen() && !isDepositBoxOpen() || item == null)
+		{
+			return;
+		}
+		boolean depositBox = isDepositBoxOpen();
+
+		targetMenu = new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 2 : 3, MenuOpcode.CC_OP.getId(), item.getIndex(),
+			(depositBox) ? 12582914 : 983043, false);
+		delayMouseClick(item.getCanvasBounds(), getRandomIntBetweenRange(0,50));
+	}
+
+	public void depositOneOfItem(int itemID)
+	{
+		if (!isBankOpen() && !isDepositBoxOpen())
+		{
+			return;
+		}
+		depositOneOfItem(getInventoryWidgetItem(itemID));
+	}
+
 	public void withdrawAllItem(Widget bankItemWidget)
 	{
 		executorService.submit(() ->
@@ -2523,6 +2547,17 @@ public class BotUtils extends Plugin
 	{
 		int n = Math.abs(max - min);
 		return Math.min(min, max) + (n == 0 ? 0 : random.nextInt(n));
+	}
+
+	static void resumePauseWidget(int widgetId, int arg) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		final int garbageValue = 1292618906;
+		final String className = "ln";
+		final String methodName = "hs";
+
+		Class clazz = Class.forName(className);
+		Method method = clazz.getDeclaredMethod(methodName, int.class, int.class, int.class);
+		method.setAccessible(true);
+		method.invoke(null, widgetId, arg, garbageValue);
 	}
 
 	public void oneClickCastSpell(WidgetInfo spellWidget, MenuEntry targetMenu, long sleepLength)
