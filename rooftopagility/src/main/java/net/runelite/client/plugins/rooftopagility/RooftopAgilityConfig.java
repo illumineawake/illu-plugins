@@ -255,8 +255,8 @@ public interface RooftopAgilityConfig extends Config
 
 	@ConfigItem(
 			keyName = "alchCourse",
-			name = "Alching Courses",
-			description = "Supported alching agility courses",
+			name = "Banking Courses",
+			description = "Agility courses that support bank restocking",
 			position = 16,
 			titleSection = "agilityTitle",
 			hidden = true,
