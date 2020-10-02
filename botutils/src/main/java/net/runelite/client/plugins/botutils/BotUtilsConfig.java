@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2018, SomeoneWithAnInternetConnection
+ * Copyright (c) 2018, oplosthee <https://github.com/oplosthee>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +23,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.botutils;
 
-version = "4.9.0"
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
 
-project.extra["PluginName"] = "BotUtils"
-project.extra["PluginDescription"] = "Illumine - Utils required for plugins to function with added automation"
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
-    }
+@ConfigGroup("BotUtils")
+public interface BotUtilsConfig extends Config
+{
+	@ConfigItem(
+		keyName = "getMouse",
+		name = "Mouse",
+		description = "Choose a mouse movement style",
+		position = 0
+	)
+	default Mouse getMouse()
+	{
+		return Mouse.NO_MOVE;
+	}
 }

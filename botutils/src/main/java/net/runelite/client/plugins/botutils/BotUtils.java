@@ -6,11 +6,14 @@
 package net.runelite.client.plugins.botutils;
 
 import com.google.gson.Gson;
+import com.google.inject.Provides;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import static java.awt.event.KeyEvent.VK_ENTER;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,7 +29,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -64,18 +66,18 @@ import net.runelite.api.queries.WallObjectQuery;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-
 import static net.runelite.client.plugins.botutils.Banks.ALL_BANKS;
-
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
@@ -119,6 +121,12 @@ public class BotUtils extends Plugin
 	private OSBGrandExchangeClient osbGrandExchangeClient;
 
 	@Inject
+	private ClientThread clientThread;
+
+	@Inject
+	private BotUtilsConfig config;
+
+	@Inject
 	ExecutorService executorService;
 
 	MenuEntry targetMenu;
@@ -134,13 +142,21 @@ public class BotUtils extends Plugin
 	private boolean modifiedMenu;
 	private int modifiedItemID;
 	private int modifiedItemIndex;
+	private int modifiedOpCode;
 	private int coordX;
 	private int coordY;
+	private int nextRunEnergy;
 	private boolean walkAction;
 
 	protected static final java.util.Random random = new java.util.Random();
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 	private final String DAX_API_URL = "https://api.dax.cloud/walker/generatePath";
+
+	@Provides
+	BotUtilsConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(BotUtilsConfig.class);
+	}
 
 	@Provides
 	OSBGrandExchangeClient provideOsbGrandExchangeClient(OkHttpClient okHttpClient)
@@ -381,6 +397,23 @@ public class BotUtils extends Plugin
 	}
 
 	@Nullable
+	public WallObject findWallObjectWithin(WorldPoint worldPoint, int radius, Collection<Integer> ids)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new WallObjectQuery()
+				.isWithinDistance(worldPoint, radius)
+				.idEquals(ids)
+				.result(client)
+				.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
 	public DecorativeObject findNearestDecorObject(int... ids)
 	{
 		assert client.isClientThread();
@@ -425,6 +458,23 @@ public class BotUtils extends Plugin
 			.idEquals(ids)
 			.result(client)
 			.list;
+	}
+	
+	public List<GameObject> getLocalGameObjects(int distanceAway, int... ids)
+	{
+		if (client.getLocalPlayer() == null)
+		{
+			return new ArrayList<>();
+		}
+		List<GameObject> localGameObjects = new ArrayList<>();
+		for(GameObject gameObject : getGameObjects(ids))
+			{
+			if(gameObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation())<distanceAway)
+			{
+				localGameObjects.add(gameObject);
+			}
+		}
+		return localGameObjects;
 	}
 
 	public List<NPC> getNPCs(int... ids)
@@ -883,7 +933,7 @@ public class BotUtils extends Plugin
 		assert !client.isClientThread();
 
 		Point point = new Point(getRandomIntBetweenRange(min, max), getRandomIntBetweenRange(min, max));
-		moveClick(point);
+		handleMouseClick(point);
 	}
 
 	public void clickRandomPointCenter(int min, int max)
@@ -891,7 +941,7 @@ public class BotUtils extends Plugin
 		assert !client.isClientThread();
 
 		Point point = new Point(client.getCenterX() + getRandomIntBetweenRange(min, max), client.getCenterY() + getRandomIntBetweenRange(min, max));
-		moveClick(point);
+		handleMouseClick(point);
 	}
 
 	public void delayClickRandomPointCenter(int min, int max, long delay)
@@ -918,16 +968,36 @@ public class BotUtils extends Plugin
 	public void handleMouseClick(Point point)
 	{
 		assert !client.isClientThread();
-
 		final int viewportHeight = client.getViewportHeight();
 		final int viewportWidth = client.getViewportWidth();
+		log.debug("Performing mouse click: {}", config.getMouse());
 
-		if (point.getX() > viewportWidth || point.getY() > viewportHeight || point.getX() < 0 || point.getY() < 0)
+		switch(config.getMouse())
 		{
-			clickRandomPointCenter(-100, 100);
-			return;
+			case ZERO_MOUSE:
+				click(new Point(0, 0));
+				return;
+			case MOVE:
+				if (point.getX() > viewportWidth || point.getY() > viewportHeight || point.getX() < 0 || point.getY() < 0)
+				{
+					clickRandomPointCenter(-100, 100);
+					return;
+				}
+				moveClick(point);
+				return;
+			case NO_MOVE:
+				if (point.getX() > viewportWidth || point.getY() > viewportHeight || point.getX() < 0 || point.getY() < 0)
+				{
+					Point rectPoint = new Point(client.getCenterX() + getRandomIntBetweenRange(-100, 100), client.getCenterY() + getRandomIntBetweenRange(-100, 100));
+					click(rectPoint);
+					return;
+				}
+				click(point);
+				return;
+			case RECTANGLE:
+				Point rectPoint = new Point(client.getCenterX() + getRandomIntBetweenRange(-100, 100), client.getCenterY() + getRandomIntBetweenRange(-100, 100));
+				click(rectPoint);
 		}
-		moveClick(point);
 	}
 
 	public void handleMouseClick(Rectangle rectangle)
@@ -1176,16 +1246,46 @@ public class BotUtils extends Plugin
 	public void handleRun(int minEnergy, int randMax)
 	{
 		assert client.isClientThread();
-
-		if (client.getEnergy() > (minEnergy + getRandomIntBetweenRange(0, randMax)) ||
+		if (nextRunEnergy < minEnergy || nextRunEnergy > minEnergy + randMax)
+		{
+			nextRunEnergy = getRandomIntBetweenRange(minEnergy, minEnergy + getRandomIntBetweenRange(0, randMax));
+		}
+		if (client.getEnergy() > nextRunEnergy ||
 			client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) != 0)
 		{
-			if (drinkStamPot())
+			if (drinkStamPot(15 + getRandomIntBetweenRange(0, 30)))
 			{
 				return;
 			}
 			if (!isRunEnabled())
 			{
+				nextRunEnergy = 0;
+				Widget runOrb = client.getWidget(WidgetInfo.MINIMAP_RUN_ORB);
+				if (runOrb != null)
+				{
+					enableRun(runOrb.getBounds());
+				}
+			}
+		}
+	}
+
+	public void handleRun(int minEnergy, int randMax, int potEnergy)
+	{
+		assert client.isClientThread();
+		if (nextRunEnergy < minEnergy || nextRunEnergy > minEnergy + randMax)
+		{
+			nextRunEnergy = getRandomIntBetweenRange(minEnergy, minEnergy + getRandomIntBetweenRange(0, randMax));
+		}
+		if (client.getEnergy() > (minEnergy + getRandomIntBetweenRange(0, randMax)) ||
+			client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) != 0)
+		{
+			if (drinkStamPot(potEnergy))
+			{
+				return;
+			}
+			if (!isRunEnabled())
+			{
+				nextRunEnergy = 0;
 				Widget runOrb = client.getWidget(WidgetInfo.MINIMAP_RUN_ORB);
 				if (runOrb != null)
 				{
@@ -1206,12 +1306,13 @@ public class BotUtils extends Plugin
 	}
 
 	//Checks if Stamina enhancement is active and if stamina potion is in inventory
-	public WidgetItem shouldStamPot()
+	public WidgetItem shouldStamPot(int energy)
 	{
 		if (!getInventoryItems(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4)).isEmpty()
-			&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < 15 + getRandomIntBetweenRange(0, 30) && !isBankOpen())
+			&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < energy && !isBankOpen())
 		{
-			return getInventoryWidgetItem(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4));
+			return getInventoryWidgetItem(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3,
+				ItemID.STAMINA_POTION4, ItemID.ENERGY_POTION1, ItemID.ENERGY_POTION2, ItemID.ENERGY_POTION3, ItemID.ENERGY_POTION4));
 		}
 		else
 		{
@@ -1219,9 +1320,9 @@ public class BotUtils extends Plugin
 		}
 	}
 
-	public boolean drinkStamPot()
+	public boolean drinkStamPot(int energy)
 	{
-		WidgetItem staminaPotion = shouldStamPot();
+		WidgetItem staminaPotion = shouldStamPot(energy);
 		if (staminaPotion != null)
 		{
 			log.info("using stamina potion");
@@ -1422,6 +1523,27 @@ public class BotUtils extends Plugin
 		return null;
 	}
 
+	public WidgetItem getInventoryItemMenu(Collection<String> menuOptions)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				String[] menuActions = itemManager.getItemDefinition(item.getId()).getInventoryActions();
+				for (String action : menuActions)
+				{
+					if (action != null && menuOptions.contains(action))
+					{
+						return item;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	public WidgetItem getInventoryWidgetItemMenu(ItemManager itemManager, String menuOption, int opcode)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -1526,6 +1648,60 @@ public class BotUtils extends Plugin
 			.first();
 
 		return item != null && item.getQuantity() >= minStackAmount;
+	}
+
+	public boolean inventoryItemContainsAmount(int id, int amount, boolean stackable, boolean exactAmount)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		int total = 0;
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				if (item.getId() == id)
+				{
+					if (stackable)
+					{
+						total = item.getQuantity();
+						break;
+					}
+					total++;
+				}
+			}
+		}
+		if ((exactAmount && total != amount) || (total < amount))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	public boolean inventoryItemContainsAmount(Collection<Integer> ids, int amount, boolean stackable, boolean exactAmount)
+	{
+		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		int total = 0;
+		if (inventoryWidget != null)
+		{
+			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+			for (WidgetItem item : items)
+			{
+				if (ids.contains(item.getId()))
+				{
+					if (stackable)
+					{
+						total = item.getQuantity();
+						break;
+					}
+					total++;
+				}
+			}
+		}
+		if ((exactAmount && total != amount) || (total < amount))
+		{
+			return false;
+		}
+		return true;
 	}
 
 	public boolean inventoryContains(Collection<Integer> itemIds)
@@ -1718,7 +1894,7 @@ public class BotUtils extends Plugin
 						log.info("interacting inventory item: {}", item.getId());
 						sleep(minDelayBetween, maxDelayBetween);
 						setModifiedMenuEntry(new MenuEntry("", "", item1.getId(), opcode, item1.getIndex(), WidgetInfo.INVENTORY.getId(),
-							false), item.getId(), item.getIndex());
+							false), item.getId(), item.getIndex(),MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId());
 						click(item1.getCanvasBounds());
 						if (!interactAll)
 						{
@@ -1822,7 +1998,7 @@ public class BotUtils extends Plugin
 			executorService.submit(() -> handleMouseClick(bankCloseWidget.getBounds()));
 			return;
 		}
-		clickRandomPointCenter(-200, 200);
+		delayMouseClick(new Point(0,0), getRandomIntBetweenRange(10, 100));
 	}
 
 	public int getBankMenuOpcode(int bankID)
@@ -1901,9 +2077,39 @@ public class BotUtils extends Plugin
 		if (isBankOpen())
 		{
 			ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
-			WidgetItem bankItem = new BankItemQuery().idEquals(itemID).result(client).first();
+			final WidgetItem bankItem;
+			if (bankItemContainer != null)
+			{
+				for (Item item : bankItemContainer.getItems())
+				{
+					if (item.getId() == itemID)
+					{
+						return item.getQuantity() >= minStackAmount;
+					}
+				}
+			}
+		}
+		return false;
+	}
 
-			return bankItem != null && bankItem.getQuantity() >= minStackAmount;
+	public boolean bankContains2(int itemID, int minStackAmount)
+	{
+		if (isBankOpen())
+		{
+			clientThread.invokeLater(() -> {
+				ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
+				final WidgetItem bankItem;
+				if (client.isClientThread())
+				{
+					bankItem = new BankItemQuery().idEquals(itemID).result(client).first();
+				}
+				else
+				{
+					bankItem = new BankItemQuery().idEquals(itemID).result(client).first();
+				}
+
+				return bankItem != null && bankItem.getQuantity() >= minStackAmount;
+			});
 		}
 		return false;
 	}
@@ -2035,7 +2241,7 @@ public class BotUtils extends Plugin
 			return;
 		}
 		boolean depositBox = isDepositBoxOpen();
-		targetMenu = new MenuEntry("", "", (depositBox) ? 1 : 2, MenuOpcode.CC_OP.getId(), item.getIndex(),
+		targetMenu = new MenuEntry("", "", (depositBox) ? 1 : 8, MenuOpcode.CC_OP.getId(), item.getIndex(),
 			(depositBox) ? 12582914 : 983043, false);
 		click(item.getCanvasBounds());
 	}
@@ -2083,11 +2289,33 @@ public class BotUtils extends Plugin
 		});
 	}
 
+	public void depositOneOfItem(WidgetItem item)
+	{
+		if (!isBankOpen() && !isDepositBoxOpen() || item == null)
+		{
+			return;
+		}
+		boolean depositBox = isDepositBoxOpen();
+
+		targetMenu = new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 2 : 3, MenuOpcode.CC_OP.getId(), item.getIndex(),
+			(depositBox) ? 12582914 : 983043, false);
+		delayMouseClick(item.getCanvasBounds(), getRandomIntBetweenRange(0,50));
+	}
+
+	public void depositOneOfItem(int itemID)
+	{
+		if (!isBankOpen() && !isDepositBoxOpen())
+		{
+			return;
+		}
+		depositOneOfItem(getInventoryWidgetItem(itemID));
+	}
+
 	public void withdrawAllItem(Widget bankItemWidget)
 	{
 		executorService.submit(() ->
 		{
-			targetMenu = new MenuEntry("Withdraw-All", "", 1, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
+			targetMenu = new MenuEntry("Withdraw-All", "", 7, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
 			clickRandomPointCenter(-200, 200);
 		});
 	}
@@ -2109,7 +2337,8 @@ public class BotUtils extends Plugin
 	{
 		executorService.submit(() ->
 		{
-			targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
+			targetMenu = new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 1 : 2, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
+			setMenuEntry(targetMenu);
 			clickRandomPointCenter(-200, 200);
 		});
 	}
@@ -2121,6 +2350,44 @@ public class BotUtils extends Plugin
 		{
 			withdrawItem(item);
 		}
+	}
+
+	public void withdrawItemAmount(int bankItemID, int amount)
+	{
+		clientThread.invokeLater(() -> {
+			Widget item = getBankItemWidget(bankItemID);
+			if (item != null)
+			{
+				int identifier;
+				switch (amount)
+				{
+					case 1:
+						identifier = (client.getVarbitValue(6590) == 0) ? 1 : 2;
+						break;
+					case 5:
+						identifier = 3;
+						break;
+					case 10:
+						identifier = 4;
+						break;
+					default:
+						identifier = 6;
+						break;
+				}
+				targetMenu = new MenuEntry("", "", identifier, MenuOpcode.CC_OP.getId(), item.getIndex(), 786444, false);
+				setMenuEntry(targetMenu);
+				delayClickRandomPointCenter(-200, 200, 50);
+				if (identifier == 6)
+				{
+					executorService.submit(() -> {
+						sleep(getRandomIntBetweenRange(1000, 1500));
+						typeString(String.valueOf(amount));
+						sleep(getRandomIntBetweenRange(80, 250));
+						pressKey(VK_ENTER);
+					});
+				}
+			}
+		});
 	}
 
 	/**
@@ -2164,11 +2431,11 @@ public class BotUtils extends Plugin
 		return randomEvent;
 	}
 
-	/**
-	 *
-	 *  UTILITY FUNCTIONS
-	 *
-	 */
+/**
+ *
+ *  UTILITY FUNCTIONS
+ *
+ */
 
 	/**
 	 * Pauses execution for a random amount of time between two values.
@@ -2279,6 +2546,22 @@ public class BotUtils extends Plugin
 		return Math.min(min, max) + (n == 0 ? 0 : random.nextInt(n));
 	}
 
+	static void resumePauseWidget(int widgetId, int arg){
+		final int garbageValue = 1292618906;
+		final String className = "ln";
+		final String methodName = "hs";
+
+		try {
+
+			Class clazz = Class.forName(className);
+			Method method = clazz.getDeclaredMethod(methodName, int.class, int.class, int.class);
+			method.setAccessible(true);
+			method.invoke(null, widgetId, arg, garbageValue);
+		} catch (Exception ignored) {
+			return;
+		}
+	}
+
 	public void oneClickCastSpell(WidgetInfo spellWidget, MenuEntry targetMenu, long sleepLength)
 	{
 		setMenuEntry(targetMenu, true);
@@ -2313,12 +2596,13 @@ public class BotUtils extends Plugin
 		consumeClick = consume;
 	}
 
-	public void setModifiedMenuEntry(MenuEntry menuEntry, int itemID, int itemIndex)
+	public void setModifiedMenuEntry(MenuEntry menuEntry, int itemID, int itemIndex, int opCode)
 	{
 		targetMenu = menuEntry;
 		modifiedMenu = true;
 		modifiedItemID = itemID;
 		modifiedItemIndex = itemIndex;
+		modifiedOpCode = opCode;
 	}
 
 	@Subscribe
@@ -2368,8 +2652,12 @@ public class BotUtils extends Plugin
 			}
 			if (modifiedMenu)
 			{
-				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), modifiedItemID, MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId(),
-					modifiedItemIndex, targetMenu.getParam1());
+				client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+				client.setSelectedItemSlot(modifiedItemIndex);
+				client.setSelectedItemID(modifiedItemID);
+				log.info("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", modifiedItemID, modifiedItemIndex, targetMenu.getParam1());
+				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(), modifiedOpCode,
+					targetMenu.getParam0(), targetMenu.getParam1());
 				modifiedMenu = false;
 			}
 			else

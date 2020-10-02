@@ -30,12 +30,12 @@ import com.owain.chinbreakhandler.ChinBreakHandler;
 import java.time.Instant;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.AnimationID;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
-import net.runelite.api.GameState;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.AnimationID;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.coords.LocalPoint;
@@ -45,7 +45,6 @@ import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.queries.NPCQuery;
-import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
@@ -57,9 +56,16 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
+import net.runelite.client.plugins.botutils.ContainerUtils;
+import static net.runelite.client.plugins.magiccaster.MagicCasterState.FIND_ITEM;
+import static net.runelite.client.plugins.magiccaster.MagicCasterState.FIND_NPC;
+import static net.runelite.client.plugins.magiccaster.MagicCasterState.HANDLE_BREAK;
+import static net.runelite.client.plugins.magiccaster.MagicCasterState.IDLING;
+import static net.runelite.client.plugins.magiccaster.MagicCasterState.ITEM_NOT_FOUND;
+import static net.runelite.client.plugins.magiccaster.MagicCasterState.MOVING;
+import static net.runelite.client.plugins.magiccaster.MagicCasterState.NPC_NOT_FOUND;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
-import static net.runelite.client.plugins.magiccaster.MagicCasterState.*;
 
 
 @Extension
@@ -171,6 +177,7 @@ public class MagicCasterPlugin extends Plugin
 		selectedSpell = config.getSpell();
 		npcID = config.npcID();
 		itemID = config.itemID();
+		ContainerUtils.hasItem(1234, client);
 	}
 
 	public void resetVals()
@@ -283,7 +290,7 @@ public class MagicCasterPlugin extends Plugin
 		{
 			return HANDLE_BREAK;
 		}
-		if (selectedSpell.getName().equals("High Alchemy"))
+		if (castType.getName().equals("High Alchemy"))
 		{
 			targetItem = getItem();
 			return (targetItem != null && targetItem.getQuantity() > 0) ? FIND_ITEM : ITEM_NOT_FOUND;
@@ -325,7 +332,7 @@ public class MagicCasterPlugin extends Plugin
 					timeout = tickDelay();
 					break;
 				case ITEM_NOT_FOUND:
-					log.info("Item not found, config: {}, ID: {}, quantity {}", config.itemID(), targetItem.getId(), targetItem.getQuantity());
+					log.info("Item not found, config: {}", config.itemID());
 					utils.sendGameMessage("Item not found");
 					if (config.logout())
 					{

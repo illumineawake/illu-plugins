@@ -31,29 +31,29 @@ import java.awt.Rectangle;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
+import net.runelite.api.GameState;
 import net.runelite.api.MenuEntry;
+import net.runelite.api.MenuOpcode;
 import net.runelite.api.NPC;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.ObjectID;
 import net.runelite.api.Player;
-import net.runelite.api.GameState;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.WallObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ConfigButtonClicked;
+import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.GameObjectDespawned;
-import net.runelite.api.events.ConfigButtonClicked;
-import net.runelite.api.events.NpcDefinitionChanged;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.events.NpcDefinitionChanged;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -64,9 +64,9 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
+import static net.runelite.client.plugins.powerskiller.PowerSkillerState.*;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
-import static net.runelite.client.plugins.powerskiller.PowerSkillerState.*;
 
 
 @Extension
@@ -108,6 +108,7 @@ public class PowerSkillerPlugin extends Plugin
 	PowerSkillerState state;
 	GameObject targetObject;
 	NPC targetNPC;
+	WallObject targetWall;
 	MenuEntry targetMenu;
 	WorldPoint skillLocation;
 	Instant botTimer;
@@ -315,6 +316,23 @@ public class PowerSkillerPlugin extends Plugin
 		}
 	}
 
+	private void interactWall()
+	{
+		targetWall = utils.findWallObjectWithin(skillLocation, config.locationRadius(), objectIds);
+		opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId());
+		if (targetWall != null)
+		{
+			targetMenu = new MenuEntry("", "", targetWall.getId(), opcode,
+					targetWall.getLocalLocation().getSceneX(), targetWall.getLocalLocation().getSceneY(), false);
+			utils.setMenuEntry(targetMenu);
+			utils.delayMouseClick(targetWall.getConvexHull().getBounds(), sleepDelay());
+		}
+		else
+		{
+			log.info("Wall Object is null, ids are: {}", objectIds.toString());
+		}
+	}
+
 	private PowerSkillerState getBankState()
 	{
 		if (!utils.isBankOpen() && !utils.isDepositBoxOpen())
@@ -471,13 +489,17 @@ public class PowerSkillerPlugin extends Plugin
 		}
 		if (client.getLocalPlayer().getAnimation() == -1 || npcMoved)
 		{
-			if (config.type() == PowerSkillerType.DENSE_ESSENCE)
-			{
-				return (DENSE_ESSENCE_AREA.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) ?
-					FIND_GAME_OBJECT : WAIT_DENSE_ESSENCE;
+			switch (config.type()) {
+				case DENSE_ESSENCE:
+					return (DENSE_ESSENCE_AREA.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) ?
+							FIND_GAME_OBJECT : WAIT_DENSE_ESSENCE;
+				case WALL_OBJECT:
+					return FIND_WALL;
+				case NPC:
+					return FIND_NPC;
+				case GAME_OBJECT:
+					return FIND_GAME_OBJECT;
 			}
-			return (config.type() == PowerSkillerType.NPC) ?
-				FIND_NPC : FIND_GAME_OBJECT;
 		}
 		return ANIMATING;
 	}
@@ -541,6 +563,10 @@ public class PowerSkillerPlugin extends Plugin
 						return;
 					}
 					interactObject();
+					timeout = tickDelay();
+					break;
+				case FIND_WALL:
+					interactWall();
 					timeout = tickDelay();
 					break;
 				case FIND_NPC:
