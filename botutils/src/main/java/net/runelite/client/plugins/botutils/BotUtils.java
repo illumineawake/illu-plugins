@@ -6,12 +6,13 @@
 package net.runelite.client.plugins.botutils;
 
 import com.google.gson.Gson;
+import com.google.inject.Provides;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import static java.awt.event.KeyEvent.VK_ENTER;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +29,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -77,10 +77,7 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-
-import static java.awt.event.KeyEvent.VK_ENTER;
 import static net.runelite.client.plugins.botutils.Banks.ALL_BANKS;
-
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
@@ -913,7 +910,7 @@ public class BotUtils extends Plugin
 		mouseEvent(503, p);
 	}
 
-	public int getRandomIntBetweenRange(int min, int max)
+	public static int getRandomIntBetweenRange(int min, int max)
 	{
 		//return (int) ((Math.random() * ((max - min) + 1)) + min); //This does not allow return of negative values
 		return ThreadLocalRandom.current().nextInt(min, max + 1);

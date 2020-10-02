@@ -25,8 +25,6 @@
  */
 package net.runelite.client.plugins.powerskiller;
 
-import java.time.Instant;
-import java.util.function.Consumer;
 import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
