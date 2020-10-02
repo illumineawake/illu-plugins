@@ -333,29 +333,11 @@ public interface RooftopAgilityConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "camelotTeleportAlch",
-			name = "Use Camelot Teleport",
-			description = "Use Camelot Teleport if you have hard diaries completed. Requires Air Runes or (Air Staff equipped) and Law Runes in inventory",
-			position = 22,
-			titleSection = "agilityTitle",
-			hidden = true,
-			unhide = "highAlch",
-			unhideValue = "true"
-	)
-	default boolean camelotTeleportAlch()
-	{
-		return false;
-	}
-
-	@ConfigItem(
 			keyName = "camelotTeleport",
 			name = "Use Camelot Teleport",
 			description = "Use Camelot Teleport if you have hard diaries completed. Requires Air Runes or (Air Staff equipped) and Law Runes in inventory",
-			position = 23,
-			titleSection = "agilityTitle",
-			hidden = false,
-			hide = "highAlch",
-			hideValue = "true"
+			position = 22,
+			titleSection = "agilityTitle"
 	)
 	default boolean camelotTeleport()
 	{
