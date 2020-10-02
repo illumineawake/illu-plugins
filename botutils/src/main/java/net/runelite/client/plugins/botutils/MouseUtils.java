@@ -3,12 +3,12 @@ package net.runelite.client.plugins.botutils;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
+import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Point;
-import static net.runelite.client.plugins.botutils.BotUtils.getRandomIntBetweenRange;
 import org.jetbrains.annotations.NotNull;
 
 @Slf4j
@@ -20,8 +20,13 @@ public class MouseUtils
 	private Client client;
 
 	@Inject
+	private BotUtils utils;
+
+	@Inject
 	private BotUtilsConfig config;
 
+	@Inject
+	private ExecutorService executorService;
 
 	private void mouseEvent(int id, @NotNull Point point)
 	{
@@ -107,8 +112,8 @@ public class MouseUtils
 
 	public Point getClickPoint(@NotNull Rectangle rect)
 	{
-		final int x = (int) (rect.getX() + getRandomIntBetweenRange((int) rect.getWidth() / 6 * -1, (int) rect.getWidth() / 6) + rect.getWidth() / 2);
-		final int y = (int) (rect.getY() + getRandomIntBetweenRange((int) rect.getHeight() / 6 * -1, (int) rect.getHeight() / 6) + rect.getHeight() / 2);
+		final int x = (int) (rect.getX() + utils.getRandomIntBetweenRange((int) rect.getWidth() / 6 * -1, (int) rect.getWidth() / 6) + rect.getWidth() / 2);
+		final int y = (int) (rect.getY() + utils.getRandomIntBetweenRange((int) rect.getHeight() / 6 * -1, (int) rect.getHeight() / 6) + rect.getHeight() / 2);
 
 		return new Point(x, y);
 	}
@@ -120,4 +125,107 @@ public class MouseUtils
 		Point point = getClickPoint(rectangle);
 		moveClick(point);
 	}
+
+	public void clickRandomPoint(int min, int max)
+	{
+		assert !client.isClientThread();
+
+		Point point = new Point(utils.getRandomIntBetweenRange(min, max), utils.getRandomIntBetweenRange(min, max));
+		handleMouseClick(point);
+	}
+
+	public void clickRandomPointCenter(int min, int max)
+	{
+		assert !client.isClientThread();
+
+		Point point = new Point(client.getCenterX() + utils.getRandomIntBetweenRange(min, max), client.getCenterY() + utils.getRandomIntBetweenRange(min, max));
+		handleMouseClick(point);
+	}
+
+	public void delayClickRandomPointCenter(int min, int max, long delay)
+	{
+		executorService.submit(() ->
+		{
+			try
+			{
+				utils.sleep(delay);
+				clickRandomPointCenter(min, max);
+			}
+			catch (RuntimeException e)
+			{
+				e.printStackTrace();
+			}
+		});
+	}
+
+	/*
+	 *
+	 * if given Point is in the viewport, click on the Point otherwise click a random point in the centre of the screen
+	 *
+	 * */
+	public void handleMouseClick(Point point)
+	{
+		assert !client.isClientThread();
+		final int viewportHeight = client.getViewportHeight();
+		final int viewportWidth = client.getViewportWidth();
+		log.debug("Performing mouse click: {}", config.getMouse());
+
+		switch(config.getMouse())
+		{
+			case ZERO_MOUSE:
+				click(new Point(0, 0));
+				return;
+			case MOVE:
+				if (point.getX() > viewportWidth || point.getY() > viewportHeight || point.getX() < 0 || point.getY() < 0)
+				{
+					clickRandomPointCenter(-100, 100);
+					return;
+				}
+				moveClick(point);
+				return;
+			case NO_MOVE:
+				if (point.getX() > viewportWidth || point.getY() > viewportHeight || point.getX() < 0 || point.getY() < 0)
+				{
+					Point rectPoint = new Point(client.getCenterX() + utils.getRandomIntBetweenRange(-100, 100), client.getCenterY() + utils.getRandomIntBetweenRange(-100, 100));
+					click(rectPoint);
+					return;
+				}
+				click(point);
+				return;
+			case RECTANGLE:
+				Point rectPoint = new Point(client.getCenterX() + utils.getRandomIntBetweenRange(-100, 100), client.getCenterY() + utils.getRandomIntBetweenRange(-100, 100));
+				click(rectPoint);
+		}
+	}
+
+	public void handleMouseClick(Rectangle rectangle)
+	{
+		assert !client.isClientThread();
+
+		Point point = getClickPoint(rectangle);
+		moveClick(point);
+	}
+
+	public void delayMouseClick(Point point, long delay)
+	{
+		executorService.submit(() ->
+		{
+			try
+			{
+				utils.sleep(delay);
+				handleMouseClick(point);
+			}
+			catch (RuntimeException e)
+			{
+				e.printStackTrace();
+			}
+		});
+	}
+
+	public void delayMouseClick(Rectangle rectangle, long delay)
+	{
+		Point point = getClickPoint(rectangle);
+		delayMouseClick(point, delay);
+	}
+
 }
