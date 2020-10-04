@@ -29,9 +29,6 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-import javax.swing.*;
-import java.awt.*;
-
 @ConfigGroup("EssenceHighlighter")
 public interface EssenceConfig extends Config
 {

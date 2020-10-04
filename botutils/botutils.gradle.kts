@@ -1,5 +1,3 @@
-import ProjectVersions.openosrsVersion
-
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -25,7 +23,7 @@ import ProjectVersions.openosrsVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "4.7.0"
+version = "4.9.1"
 
 project.extra["PluginName"] = "BotUtils"
 project.extra["PluginDescription"] = "Illumine - Utils required for plugins to function with added automation"

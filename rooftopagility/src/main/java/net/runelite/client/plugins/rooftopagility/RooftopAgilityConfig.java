@@ -39,34 +39,11 @@ import net.runelite.client.config.Title;
 @ConfigGroup("RooftopAgility")
 public interface RooftopAgilityConfig extends Config
 {
-	@ConfigTitleSection(
-		keyName = "courseTitle",
-		name = "Supported Courses",
-		description = "",
-		position = 0
-	)
-	default Title courseTitle()
-	{
-		return new Title();
-	}
-
-	@ConfigItem(
-		keyName = "Course",
-		name = "",
-		description = "Supported agility courses (don't enter anything into this field)",
-		position = 1,
-		titleSection = "courseTitle"
-	)
-	default String Course()
-	{
-		return "Gnome, Draynor (banking), Al kharid, Varrock (banking), Canifis (banking), Ape Atoll, Falador (banking), Seers (banking), Pollnivneach, Prifddinas, Rellekka, Ardougne (banking)";
-	}
-
 	@ConfigSection(
 		keyName = "delayConfig",
 		name = "Sleep Delay(ms) Configuration",
 		description = "Configure how the bot handles sleep delays in milliseconds",
-		position = 2
+		position = 1
 	)
 	default boolean delayConfig()
 	{
@@ -81,7 +58,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "sleepMin",
 		name = "Sleep Min",
 		description = "",
-		position = 3,
+		position = 2,
 		section = "delayConfig"
 	)
 	default int sleepMin()
@@ -97,7 +74,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "sleepMax",
 		name = "Sleep Max",
 		description = "",
-		position = 4,
+		position = 3,
 		section = "delayConfig"
 	)
 	default int sleepMax()
@@ -113,7 +90,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "sleepTarget",
 		name = "Sleep Target",
 		description = "",
-		position = 5,
+		position = 4,
 		section = "delayConfig"
 	)
 	default int sleepTarget()
@@ -129,7 +106,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "sleepDeviation",
 		name = "Sleep Deviation",
 		description = "",
-		position = 6,
+		position = 5,
 		section = "delayConfig"
 	)
 	default int sleepDeviation()
@@ -141,7 +118,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "sleepWeightedDistribution",
 		name = "Sleep Weighted Distribution",
 		description = "Shifts the random distribution towards the lower end at the target, otherwise it will be an even distribution",
-		position = 7,
+		position = 6,
 		section = "delayConfig"
 	)
 	default boolean sleepWeightedDistribution()
@@ -153,7 +130,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "delayTickConfig",
 		name = "Game Tick Configuration",
 		description = "Configure how the bot handles game tick delays, 1 game tick equates to roughly 600ms",
-		position = 8
+		position = 7
 	)
 	default boolean delayTickConfig()
 	{
@@ -168,7 +145,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "tickDelayMin",
 		name = "Game Tick Min",
 		description = "",
-		position = 9,
+		position = 8,
 		section = "delayTickConfig"
 	)
 	default int tickDelayMin()
@@ -184,7 +161,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "tickDelayMax",
 		name = "Game Tick Max",
 		description = "",
-		position = 10,
+		position = 9,
 		section = "delayTickConfig"
 	)
 	default int tickDelayMax()
@@ -200,7 +177,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "tickDelayTarget",
 		name = "Game Tick Target",
 		description = "",
-		position = 11,
+		position = 10,
 		section = "delayTickConfig"
 	)
 	default int tickDelayTarget()
@@ -216,7 +193,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "tickDelayDeviation",
 		name = "Game Tick Deviation",
 		description = "",
-		position = 12,
+		position = 11,
 		section = "delayTickConfig"
 	)
 	default int tickDelayDeviation()
@@ -228,7 +205,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "tickDelayWeightedDistribution",
 		name = "Game Tick Weighted Distribution",
 		description = "Shifts the random distribution towards the lower end at the target, otherwise it will be an even distribution",
-		position = 13,
+		position = 12,
 		section = "delayTickConfig"
 	)
 	default boolean tickDelayWeightedDistribution()
@@ -240,7 +217,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "agilityTitle",
 		name = "Agility Configuration",
 		description = "",
-		position = 14
+		position = 13
 	)
 	default Title agilityTitle()
 	{
@@ -248,10 +225,82 @@ public interface RooftopAgilityConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "highAlch",
+			name = "High Alch",
+			description = "Enable to High Alch while running",
+			position = 14,
+			titleSection = "agilityTitle"
+	)
+	default boolean highAlch()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "Course",
+			name = "Course",
+			description = "Supported agility courses",
+			position = 15,
+			titleSection = "agilityTitle",
+			hidden = false,
+			hide = "highAlch",
+			hideValue = "true"
+	)
+	default Course course()
+	{
+		return Course.GNOME;
+	}
+
+
+
+	@ConfigItem(
+			keyName = "alchCourse",
+			name = "Banking Courses",
+			description = "Agility courses that support bank restocking",
+			position = 16,
+			titleSection = "agilityTitle",
+			hidden = true,
+			unhide = "highAlch",
+			unhideValue = "true"
+	)
+	default AlchCourse alchcourse()
+	{
+		return AlchCourse.DRAYNOR;
+	}
+
+	@ConfigItem(
+			keyName = "alchItemID",
+			name = "Alch Item ID (un-noted)",
+			description = "Item ID (un-noted) of item you wish to high alch.",
+			position = 17,
+			titleSection = "agilityTitle",
+			hidden = true,
+			unhide = "highAlch"
+	)
+	default int alchItemID()
+	{
+		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "bankRestock",
+			name = "Bank to restock items",
+			description = "Go to bank to restock items for high alch. Auto-disables at unsupported locations or bank doesn't contain item.",
+			position = 18,
+			titleSection = "agilityTitle",
+			hidden = true,
+			unhide = "highAlch"
+	)
+	default boolean bankRestock()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "mogPickup",
 		name = "Pick up Mark of Grace",
 		description = "Enable to pick up Marks of Grace",
-		position = 15,
+		position = 19,
 		titleSection = "agilityTitle"
 	)
 	default boolean mogPickup()
@@ -263,7 +312,7 @@ public interface RooftopAgilityConfig extends Config
 		keyName = "lowHP",
 		name = "Stop at HP",
 		description = "Stop if HP goes below given threshold",
-		position = 16,
+		position = 20,
 		titleSection = "agilityTitle"
 	)
 	default int lowHP()
@@ -272,62 +321,10 @@ public interface RooftopAgilityConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "highAlch",
-		name = "High Alch",
-		description = "Enable to High Alch while running",
-		position = 17,
-		titleSection = "agilityTitle"
-	)
-	default boolean highAlch()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "alchItemID",
-		name = "Alch Item ID (un-noted)",
-		description = "Item ID (un-noted) of item you wish to high alch.",
-		position = 18,
-		titleSection = "agilityTitle",
-		hidden = true,
-		unhide = "highAlch"
-	)
-	default int alchItemID()
-	{
-		return 0;
-	}
-
-	@ConfigItem(
-		keyName = "bankRestock",
-		name = "Bank to restock items",
-		description = "Go to bank to restock items for high alch. Auto-disables at unsupported locations or bank doesn't contain item.",
-		position = 19,
-		titleSection = "agilityTitle",
-		hidden = true,
-		unhide = "highAlch"
-	)
-	default boolean bankRestock()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "camelotTeleport",
-		name = "Use Camelot Teleport",
-		description = "Use Camelot Teleport if you have hard diaries completed. Requires Air Runes or (Air Staff equipped) and Law Runes in inventory",
-		position = 24,
-		titleSection = "agilityTitle"
-	)
-	default boolean camelotTeleport()
-	{
-		return false;
-	}
-
-	@ConfigItem(
 		keyName = "enableUI",
 		name = "Enable UI",
 		description = "Enable to turn on in game UI",
-		position = 29,
+		position = 21,
 		titleSection = "agilityTitle"
 	)
 	default boolean enableUI()
@@ -336,10 +333,22 @@ public interface RooftopAgilityConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "camelotTeleport",
+			name = "Use Camelot Teleport",
+			description = "Use Camelot Teleport if you have hard diaries completed. Requires Air Runes or (Air Staff equipped) and Law Runes in inventory",
+			position = 22,
+			titleSection = "agilityTitle"
+	)
+	default boolean camelotTeleport()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "startButton",
 		name = "Start/Stop",
 		description = "Test button that changes variable value",
-		position = 30,
+		position = 33,
 		titleSection = "agilityTitle"
 	)
 	default Button startButton()

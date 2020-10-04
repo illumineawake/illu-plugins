@@ -6,11 +6,14 @@
 package net.runelite.client.plugins.botutils;
 
 import com.google.gson.Gson;
+import com.google.inject.Provides;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import static java.awt.event.KeyEvent.VK_ENTER;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,7 +29,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -75,10 +77,7 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-
-import static java.awt.event.KeyEvent.VK_ENTER;
 import static net.runelite.client.plugins.botutils.Banks.ALL_BANKS;
-
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
@@ -818,7 +817,7 @@ public class BotUtils extends Plugin
 		click(point);
 	}
 
-	public void click(Point p)
+	public void click(Point point)
 	{
 		assert !client.isClientThread();
 
@@ -828,15 +827,11 @@ public class BotUtils extends Plugin
 			final Dimension real = client.getRealDimensions();
 			final double width = (stretched.width / real.getWidth());
 			final double height = (stretched.height / real.getHeight());
-			final Point point = new Point((int) (p.getX() * width), (int) (p.getY() * height));
-			mouseEvent(501, point);
-			mouseEvent(502, point);
-			mouseEvent(500, point);
-			return;
+			point = new Point((int) (point.getX() * width), (int) (point.getY() * height));
 		}
-		mouseEvent(501, p);
-		mouseEvent(502, p);
-		mouseEvent(500, p);
+		mouseEvent(MouseEvent.MOUSE_PRESSED, point);
+		mouseEvent(MouseEvent.MOUSE_RELEASED, point);
+		mouseEvent(MouseEvent.MOUSE_CLICKED, point);
 	}
 
 	public void moveClick(Rectangle rectangle)
@@ -847,7 +842,7 @@ public class BotUtils extends Plugin
 		moveClick(point);
 	}
 
-	public void moveClick(Point p)
+	public void moveClick(Point point)
 	{
 		assert !client.isClientThread();
 
@@ -857,21 +852,14 @@ public class BotUtils extends Plugin
 			final Dimension real = client.getRealDimensions();
 			final double width = (stretched.width / real.getWidth());
 			final double height = (stretched.height / real.getHeight());
-			final Point point = new Point((int) (p.getX() * width), (int) (p.getY() * height));
-			mouseEvent(504, point);
-			mouseEvent(505, point);
-			mouseEvent(503, point);
-			mouseEvent(501, point);
-			mouseEvent(502, point);
-			mouseEvent(500, point);
-			return;
+			point = new Point((int) (point.getX() * width), (int) (point.getY() * height));
 		}
-		mouseEvent(504, p);
-		mouseEvent(505, p);
-		mouseEvent(503, p);
-		mouseEvent(501, p);
-		mouseEvent(502, p);
-		mouseEvent(500, p);
+		mouseEvent(MouseEvent.MOUSE_ENTERED, point);
+		mouseEvent(MouseEvent.MOUSE_EXITED, point);
+		mouseEvent(MouseEvent.MOUSE_MOVED, point);
+		mouseEvent(MouseEvent.MOUSE_PRESSED, point);
+		mouseEvent(MouseEvent.MOUSE_RELEASED, point);
+		mouseEvent(MouseEvent.MOUSE_CLICKED, point);
 	}
 
 	public Point getClickPoint(@NotNull Rectangle rect)
@@ -890,7 +878,7 @@ public class BotUtils extends Plugin
 		moveClick(point);
 	}
 
-	public void moveMouseEvent(Point p)
+	public void moveMouseEvent(Point point)
 	{
 		assert !client.isClientThread();
 
@@ -900,15 +888,11 @@ public class BotUtils extends Plugin
 			final Dimension real = client.getRealDimensions();
 			final double width = (stretched.width / real.getWidth());
 			final double height = (stretched.height / real.getHeight());
-			final Point point = new Point((int) (p.getX() * width), (int) (p.getY() * height));
-			mouseEvent(504, point);
-			mouseEvent(505, point);
-			mouseEvent(503, point);
-			return;
+			point = new Point((int) (point.getX() * width), (int) (point.getY() * height));
 		}
-		mouseEvent(504, p);
-		mouseEvent(505, p);
-		mouseEvent(503, p);
+		mouseEvent(MouseEvent.MOUSE_ENTERED, point);
+		mouseEvent(MouseEvent.MOUSE_EXITED, point);
+		mouseEvent(MouseEvent.MOUSE_MOVED, point);
 	}
 
 	public int getRandomIntBetweenRange(int min, int max)
@@ -934,7 +918,7 @@ public class BotUtils extends Plugin
 		assert !client.isClientThread();
 
 		Point point = new Point(getRandomIntBetweenRange(min, max), getRandomIntBetweenRange(min, max));
-		moveClick(point);
+		handleMouseClick(point);
 	}
 
 	public void clickRandomPointCenter(int min, int max)
@@ -942,7 +926,7 @@ public class BotUtils extends Plugin
 		assert !client.isClientThread();
 
 		Point point = new Point(client.getCenterX() + getRandomIntBetweenRange(min, max), client.getCenterY() + getRandomIntBetweenRange(min, max));
-		moveClick(point);
+		handleMouseClick(point);
 	}
 
 	public void delayClickRandomPointCenter(int min, int max, long delay)
@@ -1251,7 +1235,7 @@ public class BotUtils extends Plugin
 		{
 			nextRunEnergy = getRandomIntBetweenRange(minEnergy, minEnergy + getRandomIntBetweenRange(0, randMax));
 		}
-		if (client.getEnergy() > (minEnergy + getRandomIntBetweenRange(0, randMax)) ||
+		if (client.getEnergy() > nextRunEnergy ||
 			client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) != 0)
 		{
 			if (drinkStamPot(15 + getRandomIntBetweenRange(0, 30)))
@@ -2290,6 +2274,28 @@ public class BotUtils extends Plugin
 		});
 	}
 
+	public void depositOneOfItem(WidgetItem item)
+	{
+		if (!isBankOpen() && !isDepositBoxOpen() || item == null)
+		{
+			return;
+		}
+		boolean depositBox = isDepositBoxOpen();
+
+		targetMenu = new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 2 : 3, MenuOpcode.CC_OP.getId(), item.getIndex(),
+			(depositBox) ? 12582914 : 983043, false);
+		delayMouseClick(item.getCanvasBounds(), getRandomIntBetweenRange(0,50));
+	}
+
+	public void depositOneOfItem(int itemID)
+	{
+		if (!isBankOpen() && !isDepositBoxOpen())
+		{
+			return;
+		}
+		depositOneOfItem(getInventoryWidgetItem(itemID));
+	}
+
 	public void withdrawAllItem(Widget bankItemWidget)
 	{
 		executorService.submit(() ->
@@ -2523,6 +2529,22 @@ public class BotUtils extends Plugin
 	{
 		int n = Math.abs(max - min);
 		return Math.min(min, max) + (n == 0 ? 0 : random.nextInt(n));
+	}
+
+	static void resumePauseWidget(int widgetId, int arg){
+		final int garbageValue = 1292618906;
+		final String className = "ln";
+		final String methodName = "hs";
+
+		try {
+
+			Class clazz = Class.forName(className);
+			Method method = clazz.getDeclaredMethod(methodName, int.class, int.class, int.class);
+			method.setAccessible(true);
+			method.invoke(null, widgetId, arg, garbageValue);
+		} catch (Exception ignored) {
+			return;
+		}
 	}
 
 	public void oneClickCastSpell(WidgetInfo spellWidget, MenuEntry targetMenu, long sleepLength)

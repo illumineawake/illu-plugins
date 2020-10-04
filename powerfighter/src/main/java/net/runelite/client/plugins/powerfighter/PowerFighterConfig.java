@@ -25,7 +25,14 @@
  */
 package net.runelite.client.plugins.powerfighter;
 
-import net.runelite.client.config.*;
+import net.runelite.client.config.Button;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigSection;
+import net.runelite.client.config.ConfigTitleSection;
+import net.runelite.client.config.Range;
+import net.runelite.client.config.Title;
 
 @ConfigGroup("PowerFighter")
 public interface PowerFighterConfig extends Config

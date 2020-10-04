@@ -3,8 +3,6 @@ package net.runelite.client.plugins.blastfurnacebot;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.text.NumberFormat;
 import java.time.Duration;
 import java.time.Instant;
 import javax.inject.Inject;

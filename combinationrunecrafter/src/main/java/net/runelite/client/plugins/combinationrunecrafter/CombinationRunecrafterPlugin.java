@@ -42,6 +42,7 @@ import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.ObjectID;
 import net.runelite.api.Player;
+import net.runelite.api.Point;
 import net.runelite.api.Varbits;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.ConfigButtonClicked;
@@ -357,7 +358,7 @@ public class CombinationRunecrafterPlugin extends Plugin
 		else
 		{
 			utils.setMenuEntry(targetMenu);
-			utils.delayClickRandomPointCenter(-200, 200, sleepDelay());
+			utils.delayMouseClick(new Point(0,0), sleepDelay());
 		}
 	}
 
