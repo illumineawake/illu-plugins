@@ -56,7 +56,6 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
-import net.runelite.client.plugins.botutils.ContainerUtils;
 import static net.runelite.client.plugins.magiccaster.MagicCasterState.FIND_ITEM;
 import static net.runelite.client.plugins.magiccaster.MagicCasterState.FIND_NPC;
 import static net.runelite.client.plugins.magiccaster.MagicCasterState.HANDLE_BREAK;
@@ -177,7 +176,6 @@ public class MagicCasterPlugin extends Plugin
 		selectedSpell = config.getSpell();
 		npcID = config.npcID();
 		itemID = config.itemID();
-		ContainerUtils.hasItem(1234, client);
 	}
 
 	public void resetVals()
