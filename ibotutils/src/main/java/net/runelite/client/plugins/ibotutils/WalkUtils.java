@@ -62,7 +62,7 @@ public class WalkUtils
 		rsClient.setCheckClick(false);
 	}
 
-	public void walk(LocalPoint localPoint, int rand, long delay)
+	public void sceneWalk(LocalPoint localPoint, int rand, long delay)
 	{
 		coordX = localPoint.getSceneX() + calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
 		coordY = localPoint.getSceneY() + calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
@@ -72,17 +72,12 @@ public class WalkUtils
 		mouse.delayMouseClick(new Point(0, 0), delay);
 	}
 
-	public void walk(WorldPoint worldPoint, int rand, long delay)
+	public void sceneWalk(WorldPoint worldPoint, int rand, long delay)
 	{
 		LocalPoint localPoint = LocalPoint.fromWorld(client, worldPoint);
 		if (localPoint != null)
 		{
-			coordX = localPoint.getSceneX() + calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
-			coordY = localPoint.getSceneY() + calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
-			walkAction = true;
-			menu.setEntry(new MenuEntry("Walk here", "", 0, MenuOpcode.WALK.getId(),
-					0, 0, false));
-			mouse.delayMouseClick(new Point(0, 0), delay);
+			sceneWalk(localPoint, rand, delay);
 		}
 		else
 		{
@@ -214,7 +209,7 @@ public class WalkUtils
 				if (nextPoint != null)
 				{
 					log.info("Walking to next tile: {}", nextPoint);
-					walk(nextPoint, 0, sleepDelay);
+					sceneWalk(nextPoint, 0, sleepDelay);
 					nextFlagDist = nextPoint.equals(destination) ? 0 : calc.getRandomIntBetweenRange(0, 10);
 					//log.info("Next flag distance: {}", nextFlagDist);
 				}

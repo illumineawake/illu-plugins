@@ -55,13 +55,11 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.ibotutils.BankUtils;
 import net.runelite.client.plugins.ibotutils.CalculationUtils;
 import net.runelite.client.plugins.ibotutils.InterfaceUtils;
 import net.runelite.client.plugins.ibotutils.InventoryUtils;
 import net.runelite.client.plugins.ibotutils.MenuUtils;
 import net.runelite.client.plugins.ibotutils.MouseUtils;
-import net.runelite.client.plugins.ibotutils.ObjectUtils;
 import net.runelite.client.plugins.ibotutils.PlayerUtils;
 import net.runelite.client.plugins.ibotutils.iBotUtils;
 import static net.runelite.client.plugins.imagiccaster.iMagicCasterState.FIND_ITEM;
@@ -273,7 +271,7 @@ public class iMagicCasterPlugin extends Plugin
 	private WidgetItem getItem()
 	{
 		log.debug("finding item");
-		return inventory.getInventoryWidgetItem(itemID);
+		return inventory.getWidgetItem(itemID);
 	}
 
 	private void castSpell()

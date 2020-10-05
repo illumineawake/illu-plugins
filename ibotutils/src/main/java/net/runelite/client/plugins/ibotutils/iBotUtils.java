@@ -11,14 +11,14 @@ import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.Client;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.Point;
+import net.runelite.api.*;
+import net.runelite.api.events.MenuEntryAdded;
+import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
@@ -26,9 +26,14 @@ import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import net.runelite.http.api.ge.GrandExchangeClient;
+import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
+import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
+import okhttp3.OkHttpClient;
 import org.pf4j.Extension;
 
 /**
@@ -58,6 +63,9 @@ public class iBotUtils extends Plugin {
     private MenuUtils menu;
 
     @Inject
+    private WalkUtils walk;
+
+    @Inject
     private CalculationUtils calc;
 
     @Inject
@@ -66,8 +74,25 @@ public class iBotUtils extends Plugin {
     @Inject
     ExecutorService executorService;
 
+    @Inject
+    private OSBGrandExchangeClient osbGrandExchangeClient;
+
+    private OSBGrandExchangeResult osbGrandExchangeResult;
+
     public boolean randomEvent;
     public boolean iterating;
+
+    @Provides
+    OSBGrandExchangeClient provideOsbGrandExchangeClient(OkHttpClient okHttpClient)
+    {
+        return new OSBGrandExchangeClient(okHttpClient);
+    }
+
+    @Provides
+    GrandExchangeClient provideGrandExchangeClient(OkHttpClient okHttpClient)
+    {
+        return new GrandExchangeClient(okHttpClient);
+    }
 
     @Provides
 	iBotUtilsConfig provideConfig(ConfigManager configManager) {
@@ -76,12 +101,12 @@ public class iBotUtils extends Plugin {
 
     @Override
     protected void startUp() {
-        /*executorService = Executors.newSingleThreadExecutor();*/
+        executorService = Executors.newSingleThreadExecutor();
     }
 
     @Override
     protected void shutDown() {
-        /*executorService.shutdown();*/
+        executorService.shutdown();
     }
 
     public void oneClickCastSpell(WidgetInfo spellWidget, MenuEntry targetMenu, long sleepLength) {
@@ -108,6 +133,30 @@ public class iBotUtils extends Plugin {
                         .type(ChatMessageType.CONSOLE)
                         .runeLiteFormattedMessage(chatMessage)
                         .build());
+    }
+
+    public OSBGrandExchangeResult getOSBItem(int itemId)
+    {
+        log.debug("Looking up OSB item price {}", itemId);
+        osbGrandExchangeClient.lookupItem(itemId)
+                .subscribe(
+                        (osbresult) ->
+                        {
+                            if (osbresult != null && osbresult.getOverall_average() > 0)
+                            {
+                                osbGrandExchangeResult = osbresult;
+                            }
+                        },
+                        (e) -> log.debug("Error getting price of item {}", itemId, e)
+                );
+        if (osbGrandExchangeResult != null)
+        {
+            return osbGrandExchangeResult;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     //Ganom's
@@ -224,6 +273,71 @@ public class iBotUtils extends Plugin {
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Subscribe
+    private void onMenuEntryAdded(MenuEntryAdded event)
+    {
+        if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
+                event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
+        {
+            return;
+        }
+        if (menu.entry != null)
+        {
+            client.setLeftClickMenuEntry(menu.entry);
+            if (menu.modifiedMenu)
+            {
+                event.setModified();
+            }
+        }
+    }
+
+    @Subscribe
+    private void onMenuOptionClicked(MenuOptionClicked event)
+    {
+        if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
+                event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
+        {
+            //Either logging out or world-hopping which is handled by 3rd party plugins so let them have priority
+            log.info("Received world-hop/login related click. Giving them priority");
+            menu.entry = null;
+            return;
+        }
+        if (menu.entry != null)
+        {
+            event.consume();
+            if (menu.consumeClick)
+            {
+                log.info("Consuming a click and not sending anything else");
+                menu.consumeClick = false;
+                return;
+            }
+            if (event.getOption().equals("Walk here") && walk.walkAction)
+            {
+                log.debug("Walk action");
+                walk.walkTile(walk.coordX, walk.coordY);
+                walk.walkAction = false;
+                return;
+            }
+            if (menu.modifiedMenu)
+            {
+                client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+                client.setSelectedItemSlot(menu.modifiedItemIndex);
+                client.setSelectedItemID(menu.modifiedItemID);
+                log.info("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", menu.modifiedItemID,
+                        menu.modifiedItemIndex, menu.entry.getParam1());
+                client.invokeMenuAction(menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
+                        menu.modifiedOpCode, menu.entry.getParam0(), menu.entry.getParam1());
+                menu.modifiedMenu = false;
+            }
+            else
+            {
+                client.invokeMenuAction(menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
+                        menu.entry.getOpcode(), menu.entry.getParam0(), menu.entry.getParam1());
+            }
+            menu.entry = null;
         }
     }
 }

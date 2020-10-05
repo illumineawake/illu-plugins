@@ -183,10 +183,10 @@ public class iQuickEaterPlugin extends Plugin
 	{
 		if (config.drinkAntiPoison() && event.getIndex() == VarPlayer.POISON.getId() && client.getVarpValue(VarPlayer.POISON.getId()) > 0)
 		{
-			if (inventory.inventoryContains(POISON_SET))
+			if (inventory.containsItem(POISON_SET))
 			{
 				log.debug("Drinking anti-poison");
-				WidgetItem poisonItem = inventory.getInventoryWidgetItem(POISON_SET);
+				WidgetItem poisonItem = inventory.getWidgetItem(POISON_SET);
 				useItem(poisonItem);
 			}
 			else
@@ -213,7 +213,7 @@ public class iQuickEaterPlugin extends Plugin
 			}
 			if (client.getBoostedSkillLevel(Skill.HITPOINTS) <= nextEatHP)
 			{
-				WidgetItem eatItem = inventory.getInventoryItemMenu(itemManager, "Eat", 33,
+				WidgetItem eatItem = inventory.getItemMenu(itemManager, "Eat", 33,
 					IGNORE_FOOD);
 				if (eatItem != null)
 				{
@@ -222,9 +222,9 @@ public class iQuickEaterPlugin extends Plugin
 					log.debug("Next Eat HP: {}", nextEatHP);
 					return;
 				}
-				if (inventory.inventoryContains(DRINK_SET))
+				if (inventory.containsItem(DRINK_SET))
 				{
-					WidgetItem drinkItem = inventory.getInventoryWidgetItem(DRINK_SET);
+					WidgetItem drinkItem = inventory.getWidgetItem(DRINK_SET);
 					useItem(drinkItem);
 					nextEatHP = calc.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
 					log.debug("Next Eat HP: {}", nextEatHP);
@@ -250,14 +250,14 @@ public class iQuickEaterPlugin extends Plugin
 			if (config.keepPNeckEquipped())
 			{
 				timeout += 4;
-				if (inventory.inventoryContains(11090))
+				if (inventory.containsItem(11090))
 				{
 					if (playerUtils.getEquippedItems() != null && playerUtils.getEquippedItems().get(2).getId() != 11090)
 					{
-						targetMenu = new MenuEntry("Wear", "Wear", 11090, MenuOpcode.ITEM_SECOND_OPTION.getId(), inventory.getInventoryWidgetItem(11090).getIndex(),
+						targetMenu = new MenuEntry("Wear", "Wear", 11090, MenuOpcode.ITEM_SECOND_OPTION.getId(), inventory.getWidgetItem(11090).getIndex(),
 							WidgetInfo.INVENTORY.getId(), false);
 						menu.setEntry(targetMenu);
-						mouse.delayMouseClick(inventory.getInventoryWidgetItem(11090).getCanvasBounds(), calc.getRandomIntBetweenRange(25, 200));
+						mouse.delayMouseClick(inventory.getWidgetItem(11090).getCanvasBounds(), calc.getRandomIntBetweenRange(25, 200));
 					}
 				}
 				else
@@ -277,10 +277,10 @@ public class iQuickEaterPlugin extends Plugin
 
 		if (event.getMessage().equals(BURN_MESSAGE) && config.drinkAntiFire())
 		{
-			if (inventory.inventoryContains(ANTI_FIRE_SET))
+			if (inventory.containsItem(ANTI_FIRE_SET))
 			{
 				log.debug("Drinking anti-fire");
-				WidgetItem antiFireItem = inventory.getInventoryWidgetItem(ANTI_FIRE_SET);
+				WidgetItem antiFireItem = inventory.getWidgetItem(ANTI_FIRE_SET);
 				useItem(antiFireItem);
 			}
 			else
@@ -290,9 +290,9 @@ public class iQuickEaterPlugin extends Plugin
 		}
 		if (event.getMessage().contains(IMB_HEART_MESSAGE) && config.activateImbHeart())
 		{
-			if (inventory.inventoryContains(ItemID.IMBUED_HEART))
+			if (inventory.containsItem(ItemID.IMBUED_HEART))
 			{
-				WidgetItem imbHeart = inventory.getInventoryWidgetItem(ItemID.IMBUED_HEART);
+				WidgetItem imbHeart = inventory.getWidgetItem(ItemID.IMBUED_HEART);
 				useItem(imbHeart);
 			}
 		}
@@ -371,9 +371,9 @@ public class iQuickEaterPlugin extends Plugin
 		{
 			return false;
 		}
-		if (inventory.inventoryContains(itemSet) && drinkTimeout == 0)
+		if (inventory.containsItem(itemSet) && drinkTimeout == 0)
 		{
-			WidgetItem itemToDrink = inventory.getInventoryWidgetItem(itemSet);
+			WidgetItem itemToDrink = inventory.getWidgetItem(itemSet);
 			useItem(itemToDrink);
 			drinkTimeout = 4;
 			return true;

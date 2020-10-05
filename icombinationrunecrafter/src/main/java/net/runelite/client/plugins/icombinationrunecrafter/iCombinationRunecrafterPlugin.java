@@ -264,7 +264,7 @@ public class iCombinationRunecrafterPlugin extends Plugin
 			case "getEssence":
 				essenceTypeID = config.getEssence().getId();
 				essenceCost = (essenceTypeID != ItemID.DAEYALT_ESSENCE) ?
-					grandExchange.getOSBItem(essenceTypeID).getOverall_average() : 0;
+					utils.getOSBItem(essenceTypeID).getOverall_average() : 0;
 				break;
 			case "getRunecraftingType":
 				createdRuneTypeID = config.getRunecraftingType().getCreatedRuneID();
@@ -300,14 +300,14 @@ public class iCombinationRunecrafterPlugin extends Plugin
 
 	private void updatePrices()
 	{
-		runesCost = grandExchange.getOSBItem(createdRuneTypeID).getOverall_average();
+		runesCost = utils.getOSBItem(createdRuneTypeID).getOverall_average();
 		essenceCost = (essenceTypeID != ItemID.DAEYALT_ESSENCE) ?
-			grandExchange.getOSBItem(essenceTypeID).getOverall_average() : 0;
-		talismanCost = grandExchange.getOSBItem(talismanID).getOverall_average();
-		duelRingCost = grandExchange.getOSBItem(ItemID.RING_OF_DUELING8).getOverall_average();
-		materialRuneCost = grandExchange.getOSBItem(materialRuneID).getOverall_average();
-		necklaceCost = grandExchange.getOSBItem(ItemID.BINDING_NECKLACE).getOverall_average();
-		staminaPotCost = grandExchange.getOSBItem(ItemID.STAMINA_POTION4).getOverall_average();
+			utils.getOSBItem(essenceTypeID).getOverall_average() : 0;
+		talismanCost = utils.getOSBItem(talismanID).getOverall_average();
+		duelRingCost = utils.getOSBItem(ItemID.RING_OF_DUELING8).getOverall_average();
+		materialRuneCost = utils.getOSBItem(materialRuneID).getOverall_average();
+		necklaceCost = utils.getOSBItem(ItemID.BINDING_NECKLACE).getOverall_average();
+		staminaPotCost = utils.getOSBItem(ItemID.STAMINA_POTION4).getOverall_average();
 		log.info("Item prices set to at - Crafted Runes: {}gp, Essence: {}gp, Talisman: {}gp, " +
 				"Ring of Dueling {}gp, Material Runes: {}gp, Binding Necklace: {}gp, Stamina Potion (4): {}gp",
 			runesCost, essenceCost, talismanCost, duelRingCost, materialRuneCost, necklaceCost, staminaPotCost);
@@ -315,22 +315,22 @@ public class iCombinationRunecrafterPlugin extends Plugin
 
 	private int itemTotals(int itemID, int beforeAmount, boolean stackableItem)
 	{
-		int currentAmount = inventory.getInventoryItemCount(itemID, stackableItem);
+		int currentAmount = inventory.getItemCount(itemID, stackableItem);
 		return (beforeAmount > currentAmount) ? beforeAmount - currentAmount : 0;
 	}
 
 	private void updateTotals()
 	{
 		totalEssence += itemTotals(essenceTypeID, beforeEssence, false);
-		beforeEssence = inventory.getInventoryItemCount(essenceTypeID, false);
+		beforeEssence = inventory.getItemCount(essenceTypeID, false);
 
 		totalMaterialRunes += itemTotals(materialRuneID, beforeMaterialRunes, true);
-		beforeMaterialRunes = inventory.getInventoryItemCount(materialRuneID, true);
+		beforeMaterialRunes = inventory.getItemCount(materialRuneID, true);
 
 		totalTalisman += itemTotals(talismanID, beforeTalisman, true);
-		beforeTalisman = inventory.getInventoryItemCount(talismanID, true);
+		beforeTalisman = inventory.getItemCount(talismanID, true);
 
-		currentCraftedRunes = inventory.getInventoryItemCount(createdRuneTypeID, true);
+		currentCraftedRunes = inventory.getItemCount(createdRuneTypeID, true);
 		if (beforeCraftedRunes < currentCraftedRunes)
 		{
 			totalCraftedRunes += currentCraftedRunes;
@@ -400,12 +400,12 @@ public class iCombinationRunecrafterPlugin extends Plugin
 
 	private iCombinationRunecrafterState getItemState(Set<Integer> itemIDs)
 	{
-		if (inventory.inventoryContains(itemIDs))
+		if (inventory.containsItem(itemIDs))
 		{
-			useableItem = inventory.getInventoryWidgetItem(itemIDs);
+			useableItem = inventory.getWidgetItem(itemIDs);
 			return ACTION_ITEM;
 		}
-		if (bank.bankContainsAnyOf(itemIDs))
+		if (bank.containsAnyOf(itemIDs))
 		{
 			bankItem = bank.getBankItemWidgetAnyOf(itemIDs);
 			return WITHDRAW_ITEM;
@@ -417,21 +417,21 @@ public class iCombinationRunecrafterPlugin extends Plugin
 	{
 		return (config.staminaPotion() && client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0) &&
 			(client.getEnergy() <= (75 - calc.getRandomIntBetweenRange(0, 40)) ||
-				(inventory.inventoryContains(STAMINA_POTIONS) && client.getEnergy() < 75));
+				(inventory.containsItem(STAMINA_POTIONS) && client.getEnergy() < 75));
 	}
 
 	private iCombinationRunecrafterState getRequiredItemState()
 	{
-		if ((!inventory.inventoryContains(talismanID) && !bank.bankContains(talismanID, 1)) ||
-			(!inventory.inventoryContains(materialRuneID) && !bank.bankContains(materialRuneID, 26)) ||
-			(!inventory.inventoryContains(essenceTypeID) && !bank.bankContains(essenceTypeID, 10)))
+		if ((!inventory.containsItem(talismanID) && !bank.contains(talismanID, 1)) ||
+			(!inventory.containsItem(materialRuneID) && !bank.contains(materialRuneID, 26)) ||
+			(!inventory.containsItem(essenceTypeID) && !bank.contains(essenceTypeID, 10)))
 		{
 			bankItem = null;
 			return OUT_OF_ITEM;
 		}
 		for (int itemID : REQUIRED_ITEMS)
 		{
-			if (!inventory.inventoryContains(itemID))
+			if (!inventory.containsItem(itemID))
 			{
 				bankItem = bank.getBankItemWidget(itemID);
 				return (itemID == talismanID) ? WITHDRAW_ITEM : WITHDRAW_ALL_ITEM;
@@ -472,7 +472,7 @@ public class iCombinationRunecrafterPlugin extends Plugin
 
 		if (mysteriousRuins != null)
 		{
-			if (inventory.inventoryContainsAllOf(REQUIRED_ITEMS))
+			if (inventory.containsAllOf(REQUIRED_ITEMS))
 			{
 				return ENTER_MYSTERIOUS_RUINS;
 			}
@@ -484,7 +484,7 @@ public class iCombinationRunecrafterPlugin extends Plugin
 		}
 		if (fireAltar != null)
 		{
-			if (inventory.inventoryContainsAllOf(REQUIRED_ITEMS))
+			if (inventory.containsAllOf(REQUIRED_ITEMS))
 			{
 				return (setTalisman) ? USE_FIRE_ALTAR : SET_TALISMAN;
 			}
@@ -496,19 +496,19 @@ public class iCombinationRunecrafterPlugin extends Plugin
 		}
 		if (bankChest != null)
 		{
-			if (!bank.isBankOpen())
+			if (!bank.isOpen())
 			{
 				updateStats();
 				return OPEN_BANK;
 			}
-			if (bank.isBankOpen())
+			if (bank.isOpen())
 			{
-				if (inventory.inventoryContainsAllOf(REQUIRED_ITEMS) && playerUtils.isItemEquipped(DUEL_RINGS))
+				if (inventory.containsAllOf(REQUIRED_ITEMS) && playerUtils.isItemEquipped(DUEL_RINGS))
 				{
 					updateStats();
 					return TELEPORT_DUEL_ARENA;
 				}
-				if (inventory.inventoryFull())
+				if (inventory.isFull())
 				{
 					return DEPOSIT_ALL;
 				}
@@ -540,7 +540,7 @@ public class iCombinationRunecrafterPlugin extends Plugin
 						outOfStaminaPots = true;
 					}
 				}
-				if (inventory.inventoryContainsExcept(REQUIRED_ITEMS))
+				if (inventory.containsExcept(REQUIRED_ITEMS))
 				{
 					return DEPOSIT_ALL_EXCEPT;
 				}
@@ -590,7 +590,7 @@ public class iCombinationRunecrafterPlugin extends Plugin
 					timeout = tickDelay();
 					break;
 				case SET_TALISMAN:
-					WidgetItem airTalisman = inventory.getInventoryWidgetItem(talismanID);
+					WidgetItem airTalisman = inventory.getWidgetItem(talismanID);
 					targetMenu = new MenuEntry("Use", "Use", talismanID, MenuOpcode.ITEM_USE.getId(),
 						airTalisman.getIndex(), 9764864, false);
 					menu.setEntry(targetMenu);

@@ -8,13 +8,7 @@ import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
-import net.runelite.api.InventoryID;
-import net.runelite.api.Item;
-import net.runelite.api.ItemID;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
-import net.runelite.api.Varbits;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -147,10 +141,10 @@ public class PlayerUtils
 	//Checks if Stamina enhancement is active and if stamina potion is in inventory
 	public WidgetItem shouldStamPot(int energy)
 	{
-		if (!inventory.getInventoryItems(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4)).isEmpty()
-				&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < energy && !bank.isBankOpen())
+		if (!inventory.getItems(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4)).isEmpty()
+				&& client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < energy && !bank.isOpen())
 		{
-			return inventory.getInventoryWidgetItem(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3,
+			return inventory.getWidgetItem(List.of(ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3,
 					ItemID.STAMINA_POTION4, ItemID.ENERGY_POTION1, ItemID.ENERGY_POTION2, ItemID.ENERGY_POTION3, ItemID.ENERGY_POTION4));
 		}
 		else
@@ -199,12 +193,13 @@ public class PlayerUtils
 	{
 		assert client.isClientThread();
 
-		Item[] items = client.getItemContainer(InventoryID.EQUIPMENT).getItems();
-		for (Item item : items)
-		{
-			if (itemIds.contains(item.getId()))
-			{
-				return true;
+		ItemContainer equipmentContainer = client.getItemContainer(InventoryID.EQUIPMENT);
+		if (equipmentContainer != null) {
+			Item[] items = equipmentContainer.getItems();
+			for (Item item : items) {
+				if (itemIds.contains(item.getId())) {
+					return true;
+				}
 			}
 		}
 		return false;

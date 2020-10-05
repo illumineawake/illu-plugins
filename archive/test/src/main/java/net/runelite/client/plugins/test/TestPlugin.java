@@ -181,7 +181,7 @@ public class TestPlugin extends Plugin
 				//log.info("Bank widget" + (client.getWidget(WidgetInfo.DEPOSIT_BOX_INVENTORY_ITEMS_CONTAINER) != null));
 
 
-				/*OSBGrandExchangeResult runiteBarGX = grandExchange.getOSBItem(ItemID.RUNITE_BAR);
+				/*OSBGrandExchangeResult runiteBarGX = utils.getOSBItem(ItemID.RUNITE_BAR);
 
 				if (runiteBarGX != null)
 				{

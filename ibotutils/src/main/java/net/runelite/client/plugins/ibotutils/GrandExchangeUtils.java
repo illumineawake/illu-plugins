@@ -1,11 +1,9 @@
 package net.runelite.client.plugins.ibotutils;
 
 import com.google.inject.Provides;
-import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
@@ -15,23 +13,8 @@ import okhttp3.OkHttpClient;
 @Singleton
 public class GrandExchangeUtils
 {
-	@Inject
-	private Client client;
-
-	@Inject
-	private iBotUtils utils;
-
-	@Inject
-	private MouseUtils mouse;
-
-	@Inject
-	private ExecutorService executorService;
-
-	@Inject
+	/*@Inject
 	private OSBGrandExchangeClient osbGrandExchangeClient;
-
-	@Inject
-	private GrandExchangeClient grandExchangeClient;
 
 	private OSBGrandExchangeResult osbGrandExchangeResult;
 
@@ -69,5 +52,5 @@ public class GrandExchangeUtils
 		{
 			return null;
 		}
-	}
+	}*/
 }

@@ -204,10 +204,10 @@ public class BlastFurnaceBotPlugin extends Plugin
 
 	private void getItemPrices()
 	{
-		barPrice = grandExchange.getOSBItem(bar.getItemID()).getSell_average();
-		orePrice = grandExchange.getOSBItem(bar.getOreID()).getBuy_average();
-		coalPrice = grandExchange.getOSBItem(Ores.COAL.getOreID()).getBuy_average();
-		staminaPotPrice = grandExchange.getOSBItem(ItemID.STAMINA_POTION4).getBuy_average();
+		barPrice = utils.getOSBItem(bar.getItemID()).getSell_average();
+		orePrice = utils.getOSBItem(bar.getOreID()).getBuy_average();
+		coalPrice = utils.getOSBItem(Ores.COAL.getOreID()).getBuy_average();
+		staminaPotPrice = utils.getOSBItem(ItemID.STAMINA_POTION4).getBuy_average();
 
 		log.info("{} price: {}, Ore price: {}, Coal price: {}, stamina pot price: {}", bar.name(), barPrice, orePrice, coalPrice, staminaPotPrice);
 	}

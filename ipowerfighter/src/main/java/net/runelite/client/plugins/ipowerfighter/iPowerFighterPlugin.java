@@ -65,7 +65,6 @@ import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
-import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -73,7 +72,6 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.ibotutils.CalculationUtils;
-import net.runelite.client.plugins.ibotutils.GrandExchangeUtils;
 import net.runelite.client.plugins.ibotutils.InterfaceUtils;
 import net.runelite.client.plugins.ibotutils.InventoryUtils;
 import net.runelite.client.plugins.ibotutils.MenuUtils;
@@ -139,16 +137,10 @@ public class iPowerFighterPlugin extends Plugin
 	private WalkUtils walk;
 
 	@Inject
-	private GrandExchangeUtils grandExchange;
-
-	@Inject
 	private ConfigManager configManager;
 
 	@Inject
 	private ExecutorService executorService;
-
-	@Inject
-	private ClientThread clientThread;
 
 	@Inject
 	private ChinBreakHandler chinBreakHandler;
@@ -249,7 +241,7 @@ public class iPowerFighterPlugin extends Plugin
 				botTimer = Instant.now();
 				overlayManager.add(overlay);
 				updateConfigValues();
-				highAlchCost = grandExchange.getOSBItem(ItemID.NATURE_RUNE).getOverall_average() + (grandExchange.getOSBItem(ItemID.FIRE_RUNE).getOverall_average() * 5);
+				highAlchCost = utils.getOSBItem(ItemID.NATURE_RUNE).getOverall_average() + (utils.getOSBItem(ItemID.FIRE_RUNE).getOverall_average() * 5);
 				startLoc = client.getLocalPlayer().getWorldLocation();
 				if (config.safeSpot())
 				{
@@ -333,7 +325,7 @@ public class iPowerFighterPlugin extends Plugin
 		return config.lootItems() &&
 			((config.lootNPCOnly() && item.getTile().getWorldLocation().equals(deathLocation)) ||
 				(!config.lootNPCOnly() && item.getTile().getWorldLocation().distanceTo(startLoc) < config.lootRadius())) &&
-			((config.lootGEValue() && grandExchange.getOSBItem(item.getId()).getOverall_average() > config.minGEValue()) ||
+			((config.lootGEValue() && utils.getOSBItem(item.getId()).getOverall_average() > config.minGEValue()) ||
 				lootableItems.stream().anyMatch(itemName.toLowerCase()::contains) ||
 				config.buryBones() && itemName.contains("bones") ||
 				config.lootClueScrolls() && itemName.contains("scroll"));
@@ -343,7 +335,7 @@ public class iPowerFighterPlugin extends Plugin
 	{
 		return config.alchItems() &&
 			client.getBoostedSkillLevel(Skill.MAGIC) >= 55 &&
-			((inventory.inventoryContains(ItemID.NATURE_RUNE) && inventory.inventoryContainsStack(ItemID.FIRE_RUNE, 5))
+			((inventory.containsItem(ItemID.NATURE_RUNE) && inventory.containsStackAmount(ItemID.FIRE_RUNE, 5))
 				|| (inventory.runePouchQuanitity(554) >= 5 && inventory.runePouchContains(561)));
 	}
 
@@ -355,7 +347,7 @@ public class iPowerFighterPlugin extends Plugin
 		}
 		if (config.alchByValue())
 		{
-			itemGeValue = grandExchange.getOSBItem(itemID);
+			itemGeValue = utils.getOSBItem(itemID);
 		}
 		ItemDefinition itemDef = client.getItemDefinition(itemID);
 		log.debug("Checking alch value of item: {}", itemDef.getName());
@@ -368,7 +360,7 @@ public class iPowerFighterPlugin extends Plugin
 
 	private void castHighAlch(Integer itemID)
 	{
-		WidgetItem alchItem = inventory.getInventoryWidgetItem(itemID);
+		WidgetItem alchItem = inventory.getWidgetItem(itemID);
 		if (alchItem != null)
 		{
 			log.debug("Alching item: {}", alchItem.getId());
@@ -387,7 +379,7 @@ public class iPowerFighterPlugin extends Plugin
 
 	private void buryBones()
 	{
-		List<WidgetItem> bones = inventory.getInventoryItems("bones");
+		List<WidgetItem> bones = inventory.getItems("bones");
 		executorService.submit(() ->
 		{
 			utils.iterating = true;
@@ -435,7 +427,7 @@ public class iPowerFighterPlugin extends Plugin
 
 	private boolean shouldEquipBracelet()
 	{
-		return !playerUtils.isItemEquipped(BRACELETS) && inventory.inventoryContains(BRACELETS) && config.equipBracelet();
+		return !playerUtils.isItemEquipped(BRACELETS) && inventory.containsItem(BRACELETS) && config.equipBracelet();
 	}
 
 	private iPowerFighterState getState()
@@ -459,7 +451,7 @@ public class iPowerFighterPlugin extends Plugin
 		}
 		if (config.lootAmmo() && !playerUtils.isItemEquipped(List.of(config.ammoID())))
 		{
-			if (inventory.inventoryContains(config.ammoID()))
+			if (inventory.containsItem(config.ammoID()))
 			{
 				return iPowerFighterState.EQUIP_AMMO;
 			}
@@ -468,7 +460,7 @@ public class iPowerFighterPlugin extends Plugin
 				return (config.logout()) ? iPowerFighterState.LOG_OUT : iPowerFighterState.MISSING_ITEMS;
 			}
 		}
-		if (config.stopFood() && !inventory.inventoryContains(config.foodID()))
+		if (config.stopFood() && !inventory.containsItem(config.foodID()))
 		{
 			return (config.logout()) ? iPowerFighterState.LOG_OUT : iPowerFighterState.MISSING_ITEMS;
 		}
@@ -478,9 +470,9 @@ public class iPowerFighterPlugin extends Plugin
 		}
 		if (config.lootOnly())
 		{
-			return (config.lootItems() && !inventory.inventoryFull() && !loot.isEmpty()) ? iPowerFighterState.LOOT_ITEMS : iPowerFighterState.TIMEOUT;
+			return (config.lootItems() && !inventory.isFull() && !loot.isEmpty()) ? iPowerFighterState.LOOT_ITEMS : iPowerFighterState.TIMEOUT;
 		}
-		if (config.forceLoot() && config.lootItems() && !inventory.inventoryFull() && !loot.isEmpty())
+		if (config.forceLoot() && config.lootItems() && !inventory.isFull() && !loot.isEmpty())
 		{
 			if (newLoot != null)
 			{
@@ -538,7 +530,7 @@ public class iPowerFighterPlugin extends Plugin
 		{
 			return iPowerFighterState.HANDLE_BREAK;
 		}
-		if (config.buryBones() && inventory.inventoryContains("bones") && (inventory.inventoryFull() || config.buryOne()))
+		if (config.buryBones() && inventory.containsItem("bones") && (inventory.isFull() || config.buryOne()))
 		{
 			return iPowerFighterState.BURY_BONES;
 		}
@@ -547,11 +539,11 @@ public class iPowerFighterPlugin extends Plugin
 			log.debug("high alch conditions met");
 			return iPowerFighterState.HIGH_ALCH;
 		}
-		if (config.lootItems() && !inventory.inventoryFull() && !loot.isEmpty())
+		if (config.lootItems() && !inventory.isFull() && !loot.isEmpty())
 		{
 			return iPowerFighterState.LOOT_ITEMS;
 		}
-		if (config.lootAmmo() && (!inventory.inventoryFull() || inventory.inventoryContains(config.ammoID())))
+		if (config.lootAmmo() && (!inventory.isFull() || inventory.containsItem(config.ammoID())))
 		{
 			if (ammoLoot.isEmpty() || nextAmmoLootTime == 0)
 			{
@@ -614,7 +606,7 @@ public class iPowerFighterPlugin extends Plugin
 					timeout = tickDelay();
 					break;
 				case EQUIP_AMMO:
-					WidgetItem ammoItem = inventory.getInventoryWidgetItem(config.ammoID());
+					WidgetItem ammoItem = inventory.getWidgetItem(config.ammoID());
 					if (ammoItem != null)
 					{
 						targetMenu = new MenuEntry("", "", ammoItem.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), ammoItem.getIndex(),
@@ -624,7 +616,7 @@ public class iPowerFighterPlugin extends Plugin
 					}
 					break;
 				case EQUIP_BRACELET:
-					WidgetItem bracelet = inventory.getInventoryWidgetItem(BRACELETS);
+					WidgetItem bracelet = inventory.getWidgetItem(BRACELETS);
 					if (bracelet != null)
 					{
 						log.debug("Equipping bracelet");
@@ -657,7 +649,7 @@ public class iPowerFighterPlugin extends Plugin
 					timeout = 10;
 					break;
 				case RETURN_SAFE_SPOT:
-					walk.walk(startLoc, config.safeSpotRadius(), sleepDelay());
+					walk.sceneWalk(startLoc, config.safeSpotRadius(), sleepDelay());
 					timeout = 2 + tickDelay();
 					break;
 				case LOG_OUT:

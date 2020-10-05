@@ -262,8 +262,8 @@ public class iRooftopAgilityPlugin extends Plugin {
     private boolean shouldCastTeleport() {
         return config.camelotTeleport() && client.getBoostedSkillLevel(Skill.MAGIC) >= 45 &&
                 CAMELOT_TELE_LOC.distanceTo(client.getLocalPlayer().getWorldLocation()) <= 3 &&
-                (inventory.inventoryContains(ItemID.LAW_RUNE) && inventory.inventoryContainsStack(ItemID.AIR_RUNE, 5) ||
-                        inventory.inventoryContains(ItemID.LAW_RUNE) && playerUtils.isItemEquipped(AIR_STAFFS));
+                (inventory.containsItem(ItemID.LAW_RUNE) && inventory.containsStackAmount(ItemID.AIR_RUNE, 5) ||
+                        inventory.containsItem(ItemID.LAW_RUNE) && playerUtils.isItemEquipped(AIR_STAFFS));
     }
 
     private boolean shouldAlch() {
@@ -286,7 +286,7 @@ public class iRooftopAgilityPlugin extends Plugin {
             }
             setHighAlch = true;
         } else {
-            alchItem = inventory.getInventoryWidgetItem(List.of(config.alchItemID(), (config.alchItemID() + 1)));
+            alchItem = inventory.getWidgetItem(List.of(config.alchItemID(), (config.alchItemID() + 1)));
             targetMenu = new MenuEntry("Cast", "<col=00ff00>High Level Alchemy</col><col=ffffff> ->",
                     alchItem.getId(),
                     MenuOpcode.ITEM_USE_ON_WIDGET.getId(),
@@ -305,40 +305,40 @@ public class iRooftopAgilityPlugin extends Plugin {
                 client.getBoostedSkillLevel(Skill.MAGIC) < 55) {
             return false;
         }
-        return !inventory.inventoryContains(ItemID.NATURE_RUNE) || !inventory.inventoryContains(Set.of(config.alchItemID(), (config.alchItemID() + 1)));
+        return !inventory.containsItem(ItemID.NATURE_RUNE) || !inventory.containsItem(Set.of(config.alchItemID(), (config.alchItemID() + 1)));
     }
 
     private void restockItems() {
-        if (bank.isBankOpen()) {
+        if (bank.isOpen()) {
             if (client.getVarbitValue(Varbits.BANK_NOTE_FLAG.getId()) != 1) {
                 targetMenu = new MenuEntry("Note", "", 1, MenuOpcode.CC_OP.getId(), -1, 786455, false);
                 menu.setEntry(targetMenu);
                 mouse.delayClickRandomPointCenter(-200, 200, sleepDelay());
                 return;
             }
-            if ((!bank.bankContains(ItemID.NATURE_RUNE, 1) && !inventory.inventoryContains(ItemID.NATURE_RUNE)) ||
-                    (!bank.bankContains(config.alchItemID(), 1) && !inventory.inventoryContains(Set.of(config.alchItemID(), config.alchItemID() + 1)))) {
+            if ((!bank.contains(ItemID.NATURE_RUNE, 1) && !inventory.containsItem(ItemID.NATURE_RUNE)) ||
+                    (!bank.contains(config.alchItemID(), 1) && !inventory.containsItem(Set.of(config.alchItemID(), config.alchItemID() + 1)))) {
                 log.debug("out of alching items");
                 restockBank = false;
                 return;
             } else {
-                WidgetItem food = inventory.getInventoryWidgetItemMenu(itemManager, "Eat", 33);
+                WidgetItem food = inventory.getWidgetItemMenu(itemManager, "Eat", 33);
                 if (food != null) {
                     inventoryItems.add(food.getId());
                 }
-                if (inventory.inventoryContainsExcept(inventoryItems)) {
+                if (inventory.containsExcept(inventoryItems)) {
                     log.debug("depositing items");
                     bank.depositAllExcept(inventoryItems);
                     timeout = tickDelay();
                     return;
                 }
-                if (!inventory.inventoryFull()) {
-                    if (!inventory.inventoryContains(ItemID.NATURE_RUNE)) {
+                if (!inventory.isFull()) {
+                    if (!inventory.containsItem(ItemID.NATURE_RUNE)) {
                         log.debug("withdrawing Nature runes");
                         bank.withdrawAllItem(ItemID.NATURE_RUNE);
                         return;
                     }
-                    if (!inventory.inventoryContains(Set.of(config.alchItemID(), config.alchItemID() + 1))) {
+                    if (!inventory.containsItem(Set.of(config.alchItemID(), config.alchItemID() + 1))) {
                         log.debug("withdrawing Config Alch Item");
                         bank.withdrawAllItem(config.alchItemID());
                         return;
@@ -411,15 +411,15 @@ public class iRooftopAgilityPlugin extends Plugin {
 
     public iRooftopAgilityState getState() {
         if (timeout > 0) {
-            if (alchTimeout <= 0 && shouldAlch() && inventory.inventoryContains(ItemID.NATURE_RUNE) &&
-                    inventory.inventoryContains(Set.of(config.alchItemID(), (config.alchItemID() + 1)))) {
+            if (alchTimeout <= 0 && shouldAlch() && inventory.containsItem(ItemID.NATURE_RUNE) &&
+                    inventory.containsItem(Set.of(config.alchItemID(), (config.alchItemID() + 1)))) {
                 timeout--;
                 return HIGH_ALCH;
             }
             if (alchClick) {
                 iRooftopAgilityObstacles currentObstacle = getCurrentObstacle();
                 if (currentObstacle != null) {
-                    if (markOfGrace != null && markOfGraceTile != null && config.mogPickup() && (!inventory.inventoryFull() || inventory.inventoryContains(ItemID.MARK_OF_GRACE))) {
+                    if (markOfGrace != null && markOfGraceTile != null && config.mogPickup() && (!inventory.isFull() || inventory.containsItem(ItemID.MARK_OF_GRACE))) {
                         if (currentObstacle.getLocation().distanceTo(markOfGraceTile.getWorldLocation()) == 0) {
                             if (markOfGraceTile.getGroundItems().contains(markOfGrace)) //failsafe sometimes onItemDespawned doesn't capture mog despawn
                             {
@@ -442,8 +442,8 @@ public class iRooftopAgilityPlugin extends Plugin {
             return CAST_CAMELOT_TELEPORT;
         }
         if (playerUtils.isMoving(beforeLoc)) {
-            if (alchTimeout <= 0 && shouldAlch() && (inventory.inventoryContains(ItemID.NATURE_RUNE) &&
-                    inventory.inventoryContains(Set.of(config.alchItemID(), (config.alchItemID() + 1))))) {
+            if (alchTimeout <= 0 && shouldAlch() && (inventory.containsItem(ItemID.NATURE_RUNE) &&
+                    inventory.containsItem(Set.of(config.alchItemID(), (config.alchItemID() + 1))))) {
                 timeout = tickDelay();
                 return HIGH_ALCH;
             }
@@ -462,7 +462,7 @@ public class iRooftopAgilityPlugin extends Plugin {
                 log.debug("should restock but couldn't find bank");
             }
         }
-        if (markOfGrace != null && markOfGraceTile != null && config.mogPickup() && (!inventory.inventoryFull() || inventory.inventoryContains(ItemID.MARK_OF_GRACE))) {
+        if (markOfGrace != null && markOfGraceTile != null && config.mogPickup() && (!inventory.isFull() || inventory.containsItem(ItemID.MARK_OF_GRACE))) {
             if (currentObstacle.getLocation().distanceTo(markOfGraceTile.getWorldLocation()) == 0) {
                 if (markOfGraceTile.getGroundItems().contains(markOfGrace)) //failsafe sometimes onItemDespawned doesn't capture mog despawn
                 {
@@ -628,7 +628,7 @@ public class iRooftopAgilityPlugin extends Plugin {
             log.debug("Mark of grace spawned");
             markOfGrace = item;
             markOfGraceTile = tile;
-            WidgetItem mogInventory = inventory.getInventoryWidgetItem(ItemID.MARK_OF_GRACE);
+            WidgetItem mogInventory = inventory.getWidgetItem(ItemID.MARK_OF_GRACE);
             mogInventoryCount = (mogInventory != null) ? mogInventory.getQuantity() : 0;
             mogSpawnCount++;
         }

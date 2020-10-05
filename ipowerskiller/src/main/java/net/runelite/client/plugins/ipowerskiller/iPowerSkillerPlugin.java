@@ -375,11 +375,11 @@ public class iPowerSkillerPlugin extends Plugin
 
 	private iPowerSkillerState getBankState()
 	{
-		if (!bank.isBankOpen() && !bank.isDepositBoxOpen())
+		if (!bank.isOpen() && !bank.isDepositBoxOpen())
 		{
 			return FIND_BANK;
 		}
-		if (config.dropInventory() && !inventory.inventoryEmpty())
+		if (config.dropInventory() && !inventory.isEmpty())
 		{
 			return DEPOSIT_ALL;
 		}
@@ -391,7 +391,7 @@ public class iPowerSkillerPlugin extends Plugin
 			}
 			return DEPOSIT_EXCEPT;
 		}
-		if (inventory.inventoryContains(itemIds))
+		if (inventory.containsItem(itemIds))
 		{
 			return DEPOSIT_ITEMS;
 		}
@@ -420,8 +420,8 @@ public class iPowerSkillerPlugin extends Plugin
     {
         if (config.customOpcode() && config.inventoryMenu())
         {
-            Collection<Integer> inventoryItems = inventory.getAllInventoryItemIDs();
-            inventory.inventoryItemsInteract(inventoryItems, config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
+            Collection<Integer> inventoryItems = inventory.getAllItemIDs();
+            inventory.itemsInteract(inventoryItems, config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
         }
         else
         {
@@ -433,11 +433,11 @@ public class iPowerSkillerPlugin extends Plugin
     {
         if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
         {
-            inventory.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
+            inventory.combineItems(itemIds, config.toolId(),config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
         }
         else if (config.customOpcode() && config.inventoryMenu())
         {
-            inventory.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
+            inventory.itemsInteract(itemIds, config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
         }
         else
         {
@@ -449,11 +449,11 @@ public class iPowerSkillerPlugin extends Plugin
     {
         if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
         {
-            inventory.inventoryItemsCombine(itemIds, config.toolId(),config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
+            inventory.combineItems(itemIds, config.toolId(),config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
         }
         else if (config.customOpcode() && config.inventoryMenu())
         {
-            inventory.inventoryItemsInteract(itemIds, config.inventoryOpcodeValue(), false,false, config.sleepMin(), config.sleepMax());
+            inventory.itemsInteract(itemIds, config.inventoryOpcodeValue(), false,false, config.sleepMin(), config.sleepMax());
         }
         else
         {
@@ -471,7 +471,7 @@ public class iPowerSkillerPlugin extends Plugin
 		{
 			return ITERATING;
 		}
-		if (!config.dropInventory() && !requiredIds.isEmpty() && !inventory.inventoryContainsAllOf(requiredIds) &&
+		if (!config.dropInventory() && !requiredIds.isEmpty() && !inventory.containsAllOf(requiredIds) &&
 			config.type() != iPowerSkillerType.DENSE_ESSENCE)
 		{
 			return MISSING_ITEMS;
@@ -492,13 +492,13 @@ public class iPowerSkillerPlugin extends Plugin
 			}
 		}
 		if(config.type() == iPowerSkillerType.SANDSTONE){
-			 if(inventory.inventoryFull()){
+			 if(inventory.isFull()){
 				return ADDING_SANDSTONE_TO_GRINDER;
 			} else if (player.getWorldLocation().equals(new WorldPoint(3152,2910,0))) {
 				return WALKING_BACK_TO_SANDSTONE;
 			}
 		}
-		if (inventory.inventoryFull())
+		if (inventory.isFull())
 		{
 			if (config.type() == iPowerSkillerType.DENSE_ESSENCE)
 			{
@@ -520,7 +520,7 @@ public class iPowerSkillerPlugin extends Plugin
 				}
 				return DROP_EXCEPT;
 			}
-			return (!inventory.inventoryContains(itemIds)) ? INVALID_DROP_IDS : DROP_ITEMS;
+			return (!inventory.containsItem(itemIds)) ? INVALID_DROP_IDS : DROP_ITEMS;
 		}
 		if (config.safeSpot() &&
 			skillLocation.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
@@ -581,7 +581,7 @@ public class iPowerSkillerPlugin extends Plugin
 					timeout=tickDelay();
 					break;
 				case WALKING_BACK_TO_SANDSTONE:
-					walk.walk(new WorldPoint(3166,2914,0),1,sleepDelay());
+					walk.sceneWalk(new WorldPoint(3166,2914,0),1,sleepDelay());
 					timeout=tickDelay();
 					break;
 				case DROP_ALL:
@@ -631,7 +631,7 @@ public class iPowerSkillerPlugin extends Plugin
 					timeout = tickDelay();
 					break;
 				case RETURN_SAFE_SPOT:
-					walk.walk(skillLocation, config.safeSpotRadius(), sleepDelay());
+					walk.sceneWalk(skillLocation, config.safeSpotRadius(), sleepDelay());
 					timeout = 2 + tickDelay();
 					break;
 				case MISSING_ITEMS:
@@ -774,20 +774,20 @@ public class iPowerSkillerPlugin extends Plugin
 
 	private void updateWaterskinsLeft(){
 		waterskinsLeft=0;
-		waterskinsLeft+=inventory.getInventoryItemCount(1823,false)*4; //4 dose waterskin
-		waterskinsLeft+=inventory.getInventoryItemCount(1825,false)*3; //3 dose waterskin
-		waterskinsLeft+=inventory.getInventoryItemCount(1827,false)*2; //2 dose waterskin
-		waterskinsLeft+=inventory.getInventoryItemCount(1829,false); //1 dose waterskin
+		waterskinsLeft+=inventory.getItemCount(1823,false)*4; //4 dose waterskin
+		waterskinsLeft+=inventory.getItemCount(1825,false)*3; //3 dose waterskin
+		waterskinsLeft+=inventory.getItemCount(1827,false)*2; //2 dose waterskin
+		waterskinsLeft+=inventory.getItemCount(1829,false); //1 dose waterskin
 
 		if(waterskinsLeft==0){
-			if(!inventory.inventoryContains(1831)){
+			if(!inventory.containsItem(1831)){
 				waterskinsLeft=-1; //no waterskins detected
 			}
 		}
 	}
 
 	private void castHumidify(){
-		if(!inventory.inventoryContains(9075) && !inventory.runePouchContains(9075)){
+		if(!inventory.containsItem(9075) && !inventory.runePouchContains(9075)){
 			utils.sendGameMessage("illu - out of astrals runes");
 			startPowerSkiller = false;
 		}

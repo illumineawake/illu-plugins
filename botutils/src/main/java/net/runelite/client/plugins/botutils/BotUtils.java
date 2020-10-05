@@ -173,13 +173,13 @@ public class BotUtils extends Plugin
 	@Override
 	protected void startUp()
 	{
-		executorService = Executors.newSingleThreadExecutor();
+		/*executorService = Executors.newSingleThreadExecutor();*/
 	}
 
 	@Override
 	protected void shutDown()
 	{
-		executorService.shutdown();
+		/*executorService.shutdown();*/
 	}
 
 	public void sendGameMessage(String message)

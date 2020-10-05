@@ -56,12 +56,12 @@ public class BankUtils {
         return client.getWidget(WidgetInfo.DEPOSIT_BOX_INVENTORY_ITEMS_CONTAINER) != null;
     }
 
-    public boolean isBankOpen() {
+    public boolean isOpen() {
         return client.getItemContainer(InventoryID.BANK) != null;
     }
 
-    public void closeBank() {
-        if (!isBankOpen()) {
+    public void close() {
+        if (!isOpen()) {
             return;
         }
         menu.setEntry(new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), 11, 786434, false)); //close bank
@@ -79,8 +79,8 @@ public class BankUtils {
     }
 
     //doesn't NPE
-    public boolean bankContains(String itemName) {
-        if (isBankOpen()) {
+    public boolean contains(String itemName) {
+        if (isOpen()) {
             ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
 
             for (Item item : bankItemContainer.getItems()) {
@@ -93,8 +93,8 @@ public class BankUtils {
     }
 
     //doesn't NPE
-    public boolean bankContainsAnyOf(int... ids) {
-        if (isBankOpen()) {
+    public boolean containsAnyOf(int... ids) {
+        if (isOpen()) {
             ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
 
             return new BankItemQuery().idEquals(ids).result(client).size() > 0;
@@ -102,8 +102,8 @@ public class BankUtils {
         return false;
     }
 
-    public boolean bankContainsAnyOf(Collection<Integer> ids) {
-        if (isBankOpen()) {
+    public boolean containsAnyOf(Collection<Integer> ids) {
+        if (isOpen()) {
             ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
             for (int id : ids) {
                 if (new BankItemQuery().idEquals(ids).result(client).size() > 0) {
@@ -116,8 +116,8 @@ public class BankUtils {
     }
 
     //Placeholders count as being found
-    public boolean bankContains(String itemName, int minStackAmount) {
-        if (isBankOpen()) {
+    public boolean contains(String itemName, int minStackAmount) {
+        if (isOpen()) {
             ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
 
             for (Item item : bankItemContainer.getItems()) {
@@ -129,8 +129,8 @@ public class BankUtils {
         return false;
     }
 
-    public boolean bankContains(int itemID, int minStackAmount) {
-        if (isBankOpen()) {
+    public boolean contains(int itemID, int minStackAmount) {
+        if (isOpen()) {
             ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
             final WidgetItem bankItem;
             if (bankItemContainer != null) {
@@ -144,26 +144,8 @@ public class BankUtils {
         return false;
     }
 
-    public boolean bankContains2(int itemID, int minStackAmount) {
-        if (isBankOpen()) {
-            clientThread.invokeLater(() -> {
-                ItemContainer bankItemContainer = client.getItemContainer(InventoryID.BANK);
-                final WidgetItem bankItem;
-                if (client.isClientThread()) {
-                    bankItem = new BankItemQuery().idEquals(itemID).result(client).first();
-                } else {
-                    bankItem = new BankItemQuery().idEquals(itemID).result(client).first();
-                }
-
-                return bankItem != null && bankItem.getQuantity() >= minStackAmount;
-            });
-        }
-        return false;
-    }
-
-    //doesn't NPE
     public Widget getBankItemWidget(int id) {
-        if (!isBankOpen()) {
+        if (!isOpen()) {
             return null;
         }
 
@@ -177,7 +159,7 @@ public class BankUtils {
 
     //doesn't NPE
     public Widget getBankItemWidgetAnyOf(int... ids) {
-        if (!isBankOpen()) {
+        if (!isOpen()) {
             return null;
         }
 
@@ -190,7 +172,7 @@ public class BankUtils {
     }
 
     public Widget getBankItemWidgetAnyOf(Collection<Integer> ids) {
-        if (!isBankOpen() && !isDepositBoxOpen()) {
+        if (!isOpen() && !isDepositBoxOpen()) {
             return null;
         }
 
@@ -203,7 +185,7 @@ public class BankUtils {
     }
 
     public void depositAll() {
-        if (!isBankOpen() && !isDepositBoxOpen()) {
+        if (!isOpen() && !isDepositBoxOpen()) {
             return;
         }
         executorService.submit(() ->
@@ -223,10 +205,10 @@ public class BankUtils {
     }
 
     public void depositAllExcept(Collection<Integer> ids) {
-        if (!isBankOpen() && !isDepositBoxOpen()) {
+        if (!isOpen() && !isDepositBoxOpen()) {
             return;
         }
-        Collection<WidgetItem> inventoryItems = inventory.getAllInventoryItems();
+        Collection<WidgetItem> inventoryItems = inventory.getAllItems();
         List<Integer> depositedItems = new ArrayList<>();
         executorService.submit(() ->
         {
@@ -253,7 +235,7 @@ public class BankUtils {
     public void depositAllOfItem(WidgetItem item) {
         assert !client.isClientThread();
 
-        if (!isBankOpen() && !isDepositBoxOpen()) {
+        if (!isOpen() && !isDepositBoxOpen()) {
             return;
         }
         boolean depositBox = isDepositBoxOpen();
@@ -263,17 +245,17 @@ public class BankUtils {
     }
 
     public void depositAllOfItem(int itemID) {
-        if (!isBankOpen() && !isDepositBoxOpen()) {
+        if (!isOpen() && !isDepositBoxOpen()) {
             return;
         }
-        depositAllOfItem(inventory.getInventoryWidgetItem(itemID));
+        depositAllOfItem(inventory.getWidgetItem(itemID));
     }
 
     public void depositAllOfItems(Collection<Integer> itemIDs) {
-        if (!isBankOpen() && !isDepositBoxOpen()) {
+        if (!isOpen() && !isDepositBoxOpen()) {
             return;
         }
-        Collection<WidgetItem> inventoryItems = inventory.getAllInventoryItems();
+        Collection<WidgetItem> inventoryItems = inventory.getAllItems();
         List<Integer> depositedItems = new ArrayList<>();
         executorService.submit(() ->
         {
@@ -298,7 +280,7 @@ public class BankUtils {
     }
 
     public void depositOneOfItem(WidgetItem item) {
-        if (!isBankOpen() && !isDepositBoxOpen() || item == null) {
+        if (!isOpen() && !isDepositBoxOpen() || item == null) {
             return;
         }
         boolean depositBox = isDepositBoxOpen();
@@ -309,10 +291,10 @@ public class BankUtils {
     }
 
     public void depositOneOfItem(int itemID) {
-        if (!isBankOpen() && !isDepositBoxOpen()) {
+        if (!isOpen() && !isDepositBoxOpen()) {
             return;
         }
-        depositOneOfItem(inventory.getInventoryWidgetItem(itemID));
+        depositOneOfItem(inventory.getWidgetItem(itemID));
     }
 
     public void withdrawAllItem(Widget bankItemWidget) {

@@ -61,17 +61,17 @@ public class InventoryUtils
 		client.runScript(915, 3); //open inventory
 	}
 
-	public boolean inventoryFull()
+	public boolean isFull()
 	{
-		return getInventorySpace() <= 0;
+		return getEmptySlots() <= 0;
 	}
 
-	public boolean inventoryEmpty()
+	public boolean isEmpty()
 	{
-		return getInventorySpace() >= 28;
+		return getEmptySlots() >= 28;
 	}
 
-	public int getInventorySpace()
+	public int getEmptySlots()
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		if (inventoryWidget != null)
@@ -84,7 +84,7 @@ public class InventoryUtils
 		}
 	}
 
-	public List<WidgetItem> getInventoryItems(Collection<Integer> ids)
+	public List<WidgetItem> getItems(Collection<Integer> ids)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		List<WidgetItem> matchedItems = new ArrayList<>();
@@ -105,7 +105,7 @@ public class InventoryUtils
 	}
 
 	//Requires Inventory visible or returns empty
-	public List<WidgetItem> getInventoryItems(String itemName)
+	public List<WidgetItem> getItems(String itemName)
 	{
 		return new InventoryWidgetItemQuery()
 				.filter(i -> client.getItemDefinition(i.getId())
@@ -116,7 +116,7 @@ public class InventoryUtils
 				.list;
 	}
 
-	public Collection<WidgetItem> getAllInventoryItems()
+	public Collection<WidgetItem> getAllItems()
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		if (inventoryWidget != null)
@@ -126,9 +126,9 @@ public class InventoryUtils
 		return null;
 	}
 
-	public Collection<Integer> getAllInventoryItemIDs()
+	public Collection<Integer> getAllItemIDs()
 	{
-		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
+		Collection<WidgetItem> inventoryItems = getAllItems();
 		if (inventoryItems != null)
 		{
 			Set<Integer> inventoryIDs = new HashSet<>();
@@ -145,7 +145,7 @@ public class InventoryUtils
 		return null;
 	}
 
-	public List<Item> getAllInventoryItemsExcept(List<Integer> exceptIDs)
+	public List<Item> getAllItemsExcept(List<Integer> exceptIDs)
 	{
 		exceptIDs.add(-1); //empty inventory slot
 		ItemContainer inventoryContainer = client.getItemContainer(InventoryID.INVENTORY);
@@ -159,7 +159,7 @@ public class InventoryUtils
 		return null;
 	}
 
-	public WidgetItem getInventoryWidgetItem(int id)
+	public WidgetItem getWidgetItem(int id)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		if (inventoryWidget != null)
@@ -176,7 +176,7 @@ public class InventoryUtils
 		return null;
 	}
 
-	public WidgetItem getInventoryWidgetItem(Collection<Integer> ids)
+	public WidgetItem getWidgetItem(Collection<Integer> ids)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		if (inventoryWidget != null)
@@ -193,7 +193,7 @@ public class InventoryUtils
 		return null;
 	}
 
-	public Item getInventoryItemExcept(List<Integer> exceptIDs)
+	public Item getItemExcept(List<Integer> exceptIDs)
 	{
 		exceptIDs.add(-1); //empty inventory slot
 		ItemContainer inventoryContainer = client.getItemContainer(InventoryID.INVENTORY);
@@ -207,7 +207,7 @@ public class InventoryUtils
 		return null;
 	}
 
-	public WidgetItem getInventoryItemMenu(ItemManager itemManager, String menuOption, int opcode, Collection<Integer> ignoreIDs)
+	public WidgetItem getItemMenu(ItemManager itemManager, String menuOption, int opcode, Collection<Integer> ignoreIDs)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		if (inventoryWidget != null)
@@ -232,7 +232,7 @@ public class InventoryUtils
 		return null;
 	}
 
-	public WidgetItem getInventoryItemMenu(Collection<String> menuOptions)
+	public WidgetItem getItemMenu(Collection<String> menuOptions)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		if (inventoryWidget != null)
@@ -253,7 +253,7 @@ public class InventoryUtils
 		return null;
 	}
 
-	public WidgetItem getInventoryWidgetItemMenu(ItemManager itemManager, String menuOption, int opcode)
+	public WidgetItem getWidgetItemMenu(ItemManager itemManager, String menuOption, int opcode)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		if (inventoryWidget != null)
@@ -274,7 +274,7 @@ public class InventoryUtils
 		return null;
 	}
 
-	public int getInventoryItemCount(int id, boolean stackable)
+	public int getItemCount(int id, boolean stackable)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		int total = 0;
@@ -296,25 +296,7 @@ public class InventoryUtils
 		return total;
 	}
 
-	public int getInventoryItemStackableQuantity(int id)
-	{
-		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
-		int total = 0;
-		if (inventoryWidget != null)
-		{
-			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
-			for (WidgetItem item : items)
-			{
-				if (item.getId() == id)
-				{
-					total++;
-				}
-			}
-		}
-		return total;
-	}
-
-	public boolean inventoryContains(int itemID)
+	public boolean containsItem(int itemID)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
 		{
@@ -327,7 +309,7 @@ public class InventoryUtils
 				.size() >= 1;
 	}
 
-	public boolean inventoryContains(String itemName)
+	public boolean containsItem(String itemName)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
 		{
@@ -345,7 +327,7 @@ public class InventoryUtils
 		return inventoryItem != null;
 	}
 
-	public boolean inventoryContainsStack(int itemID, int minStackAmount)
+	public boolean containsStackAmount(int itemID, int minStackAmount)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
 		{
@@ -359,7 +341,7 @@ public class InventoryUtils
 		return item != null && item.getQuantity() >= minStackAmount;
 	}
 
-	public boolean inventoryItemContainsAmount(int id, int amount, boolean stackable, boolean exactAmount)
+	public boolean containsItemAmount(int id, int amount, boolean stackable, boolean exactAmount)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		int total = 0;
@@ -379,14 +361,10 @@ public class InventoryUtils
 				}
 			}
 		}
-		if ((exactAmount && total != amount) || (total < amount))
-		{
-			return false;
-		}
-		return true;
+		return (!exactAmount || total == amount) && (total >= amount);
 	}
 
-	public boolean inventoryItemContainsAmount(Collection<Integer> ids, int amount, boolean stackable, boolean exactAmount)
+	public boolean containsItemAmount(Collection<Integer> ids, int amount, boolean stackable, boolean exactAmount)
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
 		int total = 0;
@@ -406,23 +384,19 @@ public class InventoryUtils
 				}
 			}
 		}
-		if ((exactAmount && total != amount) || (total < amount))
-		{
-			return false;
-		}
-		return true;
+		return (!exactAmount || total == amount) && (total >= amount);
 	}
 
-	public boolean inventoryContains(Collection<Integer> itemIds)
+	public boolean containsItem(Collection<Integer> itemIds)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
 		{
 			return false;
 		}
-		return getInventoryItems(itemIds).size() > 0;
+		return getItems(itemIds).size() > 0;
 	}
 
-	public boolean inventoryContainsAllOf(Collection<Integer> itemIds)
+	public boolean containsAllOf(Collection<Integer> itemIds)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
 		{
@@ -430,7 +404,7 @@ public class InventoryUtils
 		}
 		for (int item : itemIds)
 		{
-			if (!inventoryContains(item))
+			if (!containsItem(item))
 			{
 				return false;
 			}
@@ -438,13 +412,13 @@ public class InventoryUtils
 		return true;
 	}
 
-	public boolean inventoryContainsExcept(Collection<Integer> itemIds)
+	public boolean containsExcept(Collection<Integer> itemIds)
 	{
 		if (client.getItemContainer(InventoryID.INVENTORY) == null)
 		{
 			return false;
 		}
-		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
+		Collection<WidgetItem> inventoryItems = getAllItems();
 		List<Integer> depositedItems = new ArrayList<>();
 
 		for (WidgetItem item : inventoryItems)
@@ -467,12 +441,12 @@ public class InventoryUtils
 
 	public void dropItems(Collection<Integer> ids, boolean dropAll, int minDelayBetween, int maxDelayBetween)
 	{
-		if (bank.isBankOpen() || bank.isDepositBoxOpen())
+		if (bank.isOpen() || bank.isDepositBoxOpen())
 		{
 			log.info("can't drop item, bank is open");
 			return;
 		}
-		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
+		Collection<WidgetItem> inventoryItems = getAllItems();
 		executorService.submit(() ->
 		{
 			try
@@ -503,12 +477,12 @@ public class InventoryUtils
 
 	public void dropAllExcept(Collection<Integer> ids, boolean dropAll, int minDelayBetween, int maxDelayBetween)
 	{
-		if (bank.isBankOpen() || bank.isDepositBoxOpen())
+		if (bank.isOpen() || bank.isDepositBoxOpen())
 		{
 			log.info("can't drop item, bank is open");
 			return;
 		}
-		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
+		Collection<WidgetItem> inventoryItems = getAllItems();
 		executorService.submit(() ->
 		{
 			try
@@ -540,18 +514,18 @@ public class InventoryUtils
 
 	public void dropInventory(boolean dropAll, int minDelayBetween, int maxDelayBetween)
 	{
-		if (bank.isBankOpen() || bank.isDepositBoxOpen())
+		if (bank.isOpen() || bank.isDepositBoxOpen())
 		{
 			log.info("can't drop item, bank is open");
 			return;
 		}
-		Collection<Integer> inventoryItems = getAllInventoryItemIDs();
+		Collection<Integer> inventoryItems = getAllItemIDs();
 		dropItems(inventoryItems, dropAll, minDelayBetween, maxDelayBetween);
 	}
 
-	public void inventoryItemsInteract(Collection<Integer> ids, int opcode, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween)
+	public void itemsInteract(Collection<Integer> ids, int opcode, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween)
 	{
-		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
+		Collection<WidgetItem> inventoryItems = getAllItems();
 		executorService.submit(() ->
 		{
 			try
@@ -582,15 +556,15 @@ public class InventoryUtils
 		});
 	}
 
-	public void inventoryItemsCombine(Collection<Integer> ids, int item1ID, int opcode, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween)
+	public void combineItems(Collection<Integer> ids, int item1ID, int opcode, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween)
 	{
-		WidgetItem item1 = getInventoryWidgetItem(item1ID);
+		WidgetItem item1 = getWidgetItem(item1ID);
 		if (item1 == null)
 		{
 			log.info("combine item1 item not found in inventory");
 			return;
 		}
-		Collection<WidgetItem> inventoryItems = getAllInventoryItems();
+		Collection<WidgetItem> inventoryItems = getAllItems();
 		executorService.submit(() ->
 		{
 			try
