@@ -51,7 +51,7 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.botutils.BotUtils;
+import net.runelite.client.plugins.ibotutils.iBotUtils;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import org.pf4j.Extension;
 
@@ -64,7 +64,7 @@ import net.runelite.client.rsb.botLauncher.*;*/
 
 
 @Extension
-@PluginDependency(BotUtils.class)
+@PluginDependency(iBotUtils.class)
 @PluginDescriptor(
 	name = "Test",
 	enabledByDefault = false,
@@ -82,7 +82,7 @@ public class TestPlugin extends Plugin
 	private TestPluginConfiguration config;
 
 	@Inject
-	private BotUtils utils;
+	private iBotUtils utils;
 
 	@Inject
 	private ItemManager itemManager;
@@ -181,7 +181,7 @@ public class TestPlugin extends Plugin
 				//log.info("Bank widget" + (client.getWidget(WidgetInfo.DEPOSIT_BOX_INVENTORY_ITEMS_CONTAINER) != null));
 
 
-				/*OSBGrandExchangeResult runiteBarGX = utils.getOSBItem(ItemID.RUNITE_BAR);
+				/*OSBGrandExchangeResult runiteBarGX = grandExchange.getOSBItem(ItemID.RUNITE_BAR);
 
 				if (runiteBarGX != null)
 				{
@@ -189,11 +189,11 @@ public class TestPlugin extends Plugin
 					log.info(runiteBarGX.toString());
 				}*/
 				//Collection<WidgetItem> items = getAllInventoryItems();
-				//MenuEntry test = utils.getInventoryItemMenu(itemManager, "Check", 35);
+				//MenuEntry test = inventory.getInventoryItemMenu(itemManager, "Check", 35);
 				//log.info(String.valueOf(getBankItemWidgetAnyOf(ItemID.COAL_BAG_12019, ItemID.SWORDFISH)));
 				//handleRun(20,20);
-				//utils.depositAllExcept(ItemID.COAL_BAG_12019, ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
-				//utils.depositAllExcept(inventorySetup);
+				//bank.depositAllExcept(ItemID.COAL_BAG_12019, ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
+				//bank.depositAllExcept(inventorySetup);
 				//arrayParamTest(inventorySetup);
 			}
 			//final int coffer = client.getVar(BLAST_FURNACE_COFFER);

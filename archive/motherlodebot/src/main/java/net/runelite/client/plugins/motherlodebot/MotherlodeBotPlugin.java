@@ -49,13 +49,13 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.botutils.BotUtils;
+import net.runelite.client.plugins.ibotutils.iBotUtils;
 import static net.runelite.client.plugins.motherlodebot.MotherlodeBotState.*;
 import org.pf4j.Extension;
 
 
 @Extension
-@PluginDependency(BotUtils.class)
+@PluginDependency(iBotUtils.class)
 @PluginDescriptor(
 	name = "Motherlode Mine Bot",
 	enabledByDefault = false,
@@ -73,7 +73,7 @@ public class MotherlodeBotPlugin extends Plugin
 	private MotherlodeBotConfiguration config;
 
 	@Inject
-	private BotUtils utils;
+	private iBotUtils utils;
 
 	@Inject
 	private ConfigManager configManager;
@@ -139,7 +139,7 @@ public class MotherlodeBotPlugin extends Plugin
 		{
 			//targetObject = oreVein;
 			targetMenu = new MenuEntry("", "", oreVein.getId(), 3, oreVein.getLocalLocation().getSceneX(), oreVein.getLocalLocation().getSceneY(), false);
-			utils.clickRandomPointCenter(-100, 100);
+			mouse.clickRandomPointCenter(-100, 100);
 		}
 		else
 		{
@@ -172,18 +172,18 @@ public class MotherlodeBotPlugin extends Plugin
 	private void mineObstacle(GameObject obstacle)
 	{
 		targetMenu = new MenuEntry("", "", obstacle.getId(), 3, obstacle.getSceneMinLocation().getX(), obstacle.getSceneMinLocation().getY(), false);
-		utils.clickRandomPointCenter(-100, 100);
+		mouse.clickRandomPointCenter(-100, 100);
 	}
 
 	private void depositHopper()
 	{
-		GameObject hopper = utils.findNearestGameObject(26674);
+		GameObject hopper = object.findNearestGameObject(26674);
 		if (hopper != null)
 		{
 			predictedSackSize = getSackSize() + (28 - utils.getInventorySpace());
 			log.info("predicted sack size: " + predictedSackSize);
 			targetMenu = new MenuEntry("", "", hopper.getId(), 3, hopper.getSceneMinLocation().getX(), hopper.getSceneMinLocation().getY(), false);
-			utils.clickRandomPointCenter(-100, 100);
+			mouse.clickRandomPointCenter(-100, 100);
 		}
 	}
 
@@ -195,7 +195,7 @@ public class MotherlodeBotPlugin extends Plugin
 	private void collectOres()
 	{
 		collecting = true;
-		if (getSackSize() == 0 && utils.inventoryEmpty())
+		if (getSackSize() == 0 && inventory.inventoryEmpty())
 		{
 			log.info("uninitialising collect values");
 			collecting = false;
@@ -207,7 +207,7 @@ public class MotherlodeBotPlugin extends Plugin
 			log.info("need to collect ores but we're not in the bank area");
 			return;
 		}
-		if (utils.inventoryContains(ItemID.PAYDIRT))
+		if (inventory.inventoryContains(ItemID.PAYDIRT))
 		{
 			if (getSackSize() < 82)
 			{
@@ -220,39 +220,39 @@ public class MotherlodeBotPlugin extends Plugin
 				return;
 			}
 		}
-		if (utils.inventoryFull() || utils.inventoryContains(MLM_ORE_TYPES))
+		if (inventory.inventoryFull() || inventory.inventoryContains(MLM_ORE_TYPES))
 		{
 			banking = true;
-			if(utils.isDepositBoxOpen())
+			if(bank.isDepositBoxOpen())
 			{
-				utils.depositAll();
+				bank.depositAll();
 				timeout = 1;
 				return;
 			}
 			else
 			{
-				depositBox = utils.findNearestGameObject(ObjectID.BANK_DEPOSIT_BOX_25937);
+				depositBox = object.findNearestGameObject(ObjectID.BANK_DEPOSIT_BOX_25937);
 				if (depositBox != null)
 				{
 					targetMenu = new MenuEntry("", "", depositBox.getId(), 3, depositBox.getSceneMinLocation().getX(), depositBox.getSceneMinLocation().getY(), false);
-					utils.clickRandomPointCenter(-100, 100);
+					mouse.clickRandomPointCenter(-100, 100);
 					return;
 				} else
 					log.info("depositBox is null");
 			}
 		}
-		if (!banking && getSackSize() != predictedSackSize && (utils.getGameObjects(ObjectID.BROKEN_STRUT) != null))
+		if (!banking && getSackSize() != predictedSackSize && (object.getGameObjects(ObjectID.BROKEN_STRUT) != null))
 		{
 			log.info("Repair strut");
 			//repairStrut();
 		}
-		if(!utils.inventoryFull() && getSackSize() > 0)
+		if(!inventory.inventoryFull() && getSackSize() > 0)
 		{
 			sack = utils.findNearestGroundObject(26688);
 			if (sack != null)
 			{
 				targetMenu = new MenuEntry("", "", sack.getId(), 3, sack.getLocalLocation().getSceneX(), sack.getLocalLocation().getSceneY(), false);
-				utils.clickRandomPointCenter(-100, 100);
+				mouse.clickRandomPointCenter(-100, 100);
 				return;
 			}
 			else
@@ -272,16 +272,16 @@ public class MotherlodeBotPlugin extends Plugin
 		{
 			return OUT_OF_AREA;
 		}
-		if (utils.isMoving(beforeLoc) || utils.isAnimating())
+		if (playerUtils.isMoving(beforeLoc) || utils.isAnimating())
 		{
-			timeout = 2 + utils.getRandomIntBetweenRange(0, 3);
+			timeout = 2 + calc.getRandomIntBetweenRange(0, 3);
 			secondCheck = false;
 			return INTERACTING;
 		}
 		if (state == COLLECT_ORES || collecting || getSackSize() >= 78 || predictedSackSize >= 78)
 		{
 			log.info("COLLECT_ORES VAL: " + COLLECT_ORES + " collecting val: " + collecting + " getSackSize val: " + getSackSize() + " predictedSackSize val: " + predictedSackSize);
-			if (getSackSize() == 0 & utils.inventoryEmpty())
+			if (getSackSize() == 0 & inventory.inventoryEmpty())
 			{
 				predictedSackSize = 0;
 				collecting = false;
@@ -292,20 +292,20 @@ public class MotherlodeBotPlugin extends Plugin
 				return COLLECT_ORES;
 			}
 		}
-		if (utils.inventoryFull())
+		if (inventory.inventoryFull())
 		{
 			if (bankArea.distanceTo(client.getLocalPlayer().getWorldLocation()) != 0)
 				return WALK_TO_BANK;
 			else
 				return DEPOSIT_HOPPER;
 		}
-		if (!utils.inventoryFull() && (mineArea.distanceTo(client.getLocalPlayer().getWorldLocation()) != 0))
+		if (!inventory.inventoryFull() && (mineArea.distanceTo(client.getLocalPlayer().getWorldLocation()) != 0))
 		{
 			if(getSackSize() < 68)
 				return WALK_TO_MINE;
 			return WAITING;
 		}
-		if (!utils.isAnimating() && !utils.isMoving(beforeLoc) && !utils.inventoryFull() && mineArea.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0)
+		if (!utils.isAnimating() && !playerUtils.isMoving(beforeLoc) && !inventory.inventoryFull() && mineArea.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0)
 		{
 			if (!secondCheck)
 			{
@@ -327,7 +327,7 @@ public class MotherlodeBotPlugin extends Plugin
 			{
 				return;
 			}
-			utils.handleRun(40, 20);
+			playerUtils.handleRun(40, 20);
 			state = getState();
 			beforeLoc = client.getLocalPlayer().getLocalLocation();
 			log.info(state.toString() + " Predicted sack size: " + predictedSackSize);

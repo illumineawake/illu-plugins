@@ -29,7 +29,7 @@ project.extra["PluginName"] = "Test"
 project.extra["PluginDescription"] = "Illumine test plugin"
 
 dependencies {
-    compileOnly(project(":botutils"))
+    compileOnly(project(":ibotutils"))
 }
 
 tasks {
@@ -39,7 +39,7 @@ tasks {
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Dependencies" to nameToId("botutils"),
+                    "Plugin-Dependencies" to nameToId("ibotutils"),
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))
@@ -60,7 +60,7 @@ tasks {
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Dependencies" to nameToId("botutils"),
+                    "Plugin-Dependencies" to nameToId("ibotutils"),
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))

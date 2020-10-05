@@ -29,7 +29,7 @@ project.extra["PluginName"] = "Blast Furnace - Illumine"
 project.extra["PluginDescription"] = "Illumine bot for Blast Furnace minigame"
 
 dependencies {
-    compileOnly(project(":botutils"))
+    compileOnly(project(":ibotutils"))
 }
 
 tasks {
@@ -39,7 +39,7 @@ tasks {
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Dependencies" to nameToId("BotUtils"),
+                    "Plugin-Dependencies" to nameToId("iBotUtils"),
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))

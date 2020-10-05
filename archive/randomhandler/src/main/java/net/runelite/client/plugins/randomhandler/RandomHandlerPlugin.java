@@ -41,11 +41,11 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.botutils.BotUtils;
+import net.runelite.client.plugins.ibotutils.iBotUtils;
 import org.pf4j.Extension;
 
 @Extension
-@PluginDependency(BotUtils.class)
+@PluginDependency(iBotUtils.class)
 @PluginDescriptor(
 	name = "Random Handler",
 	enabledByDefault = false,
@@ -99,7 +99,7 @@ public class RandomHandlerPlugin extends Plugin
 	private RandomHandlerConfig config;
 
 	@Inject
-	private BotUtils utils;
+	private iBotUtils utils;
 
 	@Provides
 	RandomHandlerConfig getConfig(ConfigManager configManager)
