@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https:github.com/Owain94>
+ * Copyright (c) 2018, SomeoneWithAnInternetConnection
+ * Copyright (c) 2018, oplosthee <https://github.com/oplosthee>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,27 +23,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.botutils;
 
-rootProject.name = "Illumine Plugins"
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
 
-include(":botutils")
-include(":ibotutils")
-include(":icombinationrunecrafter")
-include(":imagiccaster")
-include(":imenudebugger")
-include(":ipowerfighter")
-include(":ipowerskiller")
-include(":iquickeater")
-include(":irandomhandler")
-include(":irooftopagility")
-include(":iworldwalker")
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
-
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
-    }
+@ConfigGroup("BotUtils")
+public interface BotUtilsConfig extends Config
+{
+	@ConfigItem(
+		keyName = "getMouse",
+		name = "Mouse",
+		description = "Choose a mouse movement style",
+		position = 0
+	)
+	default Mouse getMouse()
+	{
+		return Mouse.NO_MOVE;
+	}
 }
