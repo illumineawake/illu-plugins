@@ -27,28 +27,18 @@ package net.runelite.client.plugins.rooftopagility;
 
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
-
+import java.awt.Rectangle;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
-
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.DecorativeObject;
-import net.runelite.api.events.ConfigButtonClicked;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.ItemDespawned;
-import net.runelite.api.events.ItemSpawned;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.GameState;
 import net.runelite.api.GameObject;
+import net.runelite.api.GameState;
 import net.runelite.api.GroundObject;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
@@ -58,6 +48,15 @@ import net.runelite.api.Skill;
 import net.runelite.api.Tile;
 import net.runelite.api.TileItem;
 import net.runelite.api.Varbits;
+import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ConfigButtonClicked;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.ItemDespawned;
+import net.runelite.api.events.ItemSpawned;
+import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -71,10 +70,9 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.botutils.BotUtils;
+import static net.runelite.client.plugins.rooftopagility.RooftopAgilityState.*;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
-
-import static net.runelite.client.plugins.rooftopagility.RooftopAgilityState.*;
 
 
 @Extension
@@ -342,13 +340,14 @@ public class RooftopAgilityPlugin extends Plugin {
         RooftopAgilityObstacles obstacle = getCurrentObstacle();
         if (obstacle != null) {
             log.debug(String.valueOf(obstacle.getObstacleId()));
-
             if (obstacle.getObstacleType() == RooftopAgilityObstacleType.DECORATION) {
                 DecorativeObject decObstacle = utils.findNearestDecorObject(obstacle.getObstacleId());
                 if (decObstacle != null) {
                     targetMenu = new MenuEntry("", "", decObstacle.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
                     utils.setMenuEntry(targetMenu);
-                    utils.delayMouseClick(decObstacle.getConvexHull().getBounds(), sleepDelay());
+                    Rectangle clickPoint = (decObstacle.getConvexHull() != null) ? decObstacle.getConvexHull().getBounds() :
+                            new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
+                    utils.delayMouseClick(clickPoint, sleepDelay());
                     return;
                 }
             }
@@ -357,7 +356,9 @@ public class RooftopAgilityPlugin extends Plugin {
                 if (groundObstacle != null) {
                     targetMenu = new MenuEntry("", "", groundObstacle.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
                     utils.setMenuEntry(targetMenu);
-                    utils.delayMouseClick(groundObstacle.getConvexHull().getBounds(), sleepDelay());
+                    Rectangle clickPoint = (groundObstacle.getConvexHull() != null) ? groundObstacle.getConvexHull().getBounds() :
+                            new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
+                    utils.delayMouseClick(clickPoint, sleepDelay());
                     return;
                 }
             }
@@ -365,7 +366,9 @@ public class RooftopAgilityPlugin extends Plugin {
             if (objObstacle != null) {
                 targetMenu = new MenuEntry("", "", objObstacle.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
                 utils.setMenuEntry(targetMenu);
-                utils.delayMouseClick(objObstacle.getConvexHull().getBounds(), sleepDelay());
+                Rectangle clickPoint = (objObstacle.getConvexHull() != null) ? objObstacle.getConvexHull().getBounds() :
+                        new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
+                utils.delayMouseClick(clickPoint, sleepDelay());
                 return;
             }
         } else {

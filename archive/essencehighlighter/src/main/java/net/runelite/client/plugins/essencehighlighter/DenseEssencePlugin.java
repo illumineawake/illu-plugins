@@ -26,7 +26,6 @@ package net.runelite.client.plugins.essencehighlighter;
 
 import com.google.inject.Provides;
 import java.util.HashSet;
-
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.AccessLevel;
@@ -37,9 +36,8 @@ import net.runelite.api.DecorativeObject;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
+import static net.runelite.api.NullItemID.NULL_8975;
 import net.runelite.api.NullObjectID;
-import net.runelite.api.Varbits;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
@@ -48,12 +46,11 @@ import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.Notifier;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.ui.overlay.OverlayManager;
-
-import static net.runelite.api.NullItemID.NULL_8975;
 import org.pf4j.Extension;
 
 @Extension

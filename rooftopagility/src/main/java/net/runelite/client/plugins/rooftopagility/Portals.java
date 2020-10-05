@@ -2,8 +2,12 @@ package net.runelite.client.plugins.rooftopagility;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-
-import static net.runelite.api.NullObjectID.*;
+import static net.runelite.api.NullObjectID.NULL_36241;
+import static net.runelite.api.NullObjectID.NULL_36242;
+import static net.runelite.api.NullObjectID.NULL_36243;
+import static net.runelite.api.NullObjectID.NULL_36244;
+import static net.runelite.api.NullObjectID.NULL_36245;
+import static net.runelite.api.NullObjectID.NULL_36246;
 
 public enum Portals
 {
