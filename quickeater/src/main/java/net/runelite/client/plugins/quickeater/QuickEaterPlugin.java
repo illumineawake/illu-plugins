@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.InventoryID;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
@@ -189,6 +190,9 @@ public class QuickEaterPlugin extends Plugin
 			if (timeout > 0)
 			{
 				timeout--;
+				return;
+			}
+			if (client.getItemContainer(InventoryID.BANK) != null) {
 				return;
 			}
 			if (client.getBoostedSkillLevel(Skill.HITPOINTS) <= nextEatHP)
