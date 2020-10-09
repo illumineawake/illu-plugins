@@ -55,6 +55,7 @@ import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NpcDefinitionChanged;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -518,6 +519,11 @@ public class PowerSkillerPlugin extends Plugin
 			{
 				utils.sendGameMessage("illu - client must be set to resizable");
 				startPowerSkiller = false;
+				return;
+			}
+			if (client.getWidget(WidgetInfo.BANK_PIN_CONTAINER) != null) {
+				log.info("Enter bank pin manually");
+				utils.sendGameMessage("Enter bank pin manually");
 				return;
 			}
 			state = getState();
