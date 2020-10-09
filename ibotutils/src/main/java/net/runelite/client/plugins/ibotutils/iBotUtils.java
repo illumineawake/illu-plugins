@@ -7,7 +7,6 @@ package net.runelite.client.plugins.ibotutils;
 
 import com.google.inject.Provides;
 import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -16,11 +15,14 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
+import net.runelite.api.ChatMessageType;
+import net.runelite.api.Client;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.MenuOpcode;
+import net.runelite.api.Point;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
@@ -80,7 +82,7 @@ public class iBotUtils extends Plugin {
     private OSBGrandExchangeResult osbGrandExchangeResult;
 
     public boolean randomEvent;
-    public boolean iterating;
+    public static boolean iterating;
 
     @Provides
     OSBGrandExchangeClient provideOsbGrandExchangeClient(OkHttpClient okHttpClient)
@@ -175,48 +177,7 @@ public class iBotUtils extends Plugin {
                 && y > client.getViewportYOffset() && y < client.getViewportHeight();
     }
 
-    /**
-     * This method must be called on a new
-     * thread, if you try to call it on
-     * {@link ClientThread}
-     * it will result in a crash/desynced thread.
-     */
-    public void typeString(String string) {
-        assert !client.isClientThread();
 
-        for (char c : string.toCharArray()) {
-            pressKey(c);
-        }
-    }
-
-    public void pressKey(char key) {
-        keyEvent(401, key);
-        keyEvent(402, key);
-        keyEvent(400, key);
-    }
-
-    public void pressKey(int key) {
-        keyEvent(401, key);
-        keyEvent(402, key);
-        //keyEvent(400, key);
-    }
-
-    private void keyEvent(int id, char key) {
-        KeyEvent e = new KeyEvent(
-                client.getCanvas(), id, System.currentTimeMillis(),
-                0, KeyEvent.VK_UNDEFINED, key
-        );
-
-        client.getCanvas().dispatchEvent(e);
-    }
-
-    private void keyEvent(int id, int key) {
-        KeyEvent e = new KeyEvent(
-                client.getCanvas(), id, System.currentTimeMillis(),
-                0, key, KeyEvent.CHAR_UNDEFINED
-        );
-        client.getCanvas().dispatchEvent(e);
-    }
 
     /**
      * RANDOM EVENT FUNCTIONS
@@ -237,8 +198,8 @@ public class iBotUtils extends Plugin {
      * @see #sleep(int)
      */
 
-    public void sleep(int minSleep, int maxSleep) {
-        sleep(calc.random(minSleep, maxSleep));
+    public static void sleep(int minSleep, int maxSleep) {
+        sleep(CalculationUtils.random(minSleep, maxSleep));
     }
 
     /**
@@ -246,7 +207,7 @@ public class iBotUtils extends Plugin {
      *
      * @param toSleep The time to sleep in milliseconds.
      */
-    public void sleep(int toSleep) {
+    public static void sleep(int toSleep) {
         try {
             long start = System.currentTimeMillis();
             Thread.sleep(toSleep);
@@ -261,7 +222,7 @@ public class iBotUtils extends Plugin {
         }
     }
 
-    public void sleep(long toSleep) {
+    public static void sleep(long toSleep) {
         try {
             long start = System.currentTimeMillis();
             Thread.sleep(toSleep);

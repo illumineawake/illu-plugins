@@ -74,6 +74,7 @@ import net.runelite.client.plugins.ibotutils.ObjectUtils;
 import net.runelite.client.plugins.ibotutils.PlayerUtils;
 import net.runelite.client.plugins.ibotutils.WalkUtils;
 import net.runelite.client.plugins.ibotutils.iBotUtils;
+import static net.runelite.client.plugins.ibotutils.iBotUtils.iterating;
 import static net.runelite.client.plugins.ipowerskiller.iPowerSkillerState.*;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
@@ -467,7 +468,7 @@ public class iPowerSkillerPlugin extends Plugin
 		{
 			return TIMEOUT;
 		}
-		if (utils.iterating)
+		if (iterating)
 		{
 			return ITERATING;
 		}

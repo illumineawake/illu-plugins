@@ -26,6 +26,8 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.game.ItemManager;
+import static net.runelite.client.plugins.ibotutils.iBotUtils.iterating;
+import static net.runelite.client.plugins.ibotutils.iBotUtils.sleep;
 
 @Slf4j
 @Singleton
@@ -33,9 +35,6 @@ public class InventoryUtils
 {
 	@Inject
 	private Client client;
-
-	@Inject
-	private iBotUtils utils;
 
 	@Inject
 	private MouseUtils mouse;
@@ -451,13 +450,13 @@ public class InventoryUtils
 		{
 			try
 			{
-				utils.iterating = true;
+				iterating = true;
 				for (WidgetItem item : inventoryItems)
 				{
 					if (ids.contains(item.getId())) //6512 is empty widget slot
 					{
 						log.info("dropping item: " + item.getId());
-						utils.sleep(minDelayBetween, maxDelayBetween);
+						sleep(minDelayBetween, maxDelayBetween);
 						dropItem(item);
 						if (!dropAll)
 						{
@@ -465,11 +464,11 @@ public class InventoryUtils
 						}
 					}
 				}
-				utils.iterating = false;
+				iterating = false;
 			}
 			catch (Exception e)
 			{
-				utils.iterating = false;
+				iterating = false;
 				e.printStackTrace();
 			}
 		});
@@ -487,7 +486,7 @@ public class InventoryUtils
 		{
 			try
 			{
-				utils.iterating = true;
+				iterating = true;
 				for (WidgetItem item : inventoryItems)
 				{
 					if (ids.contains(item.getId()))
@@ -495,18 +494,18 @@ public class InventoryUtils
 						log.info("not dropping item: " + item.getId());
 						continue;
 					}
-					utils.sleep(minDelayBetween, maxDelayBetween);
+					sleep(minDelayBetween, maxDelayBetween);
 					dropItem(item);
 					if (!dropAll)
 					{
 						break;
 					}
 				}
-				utils.iterating = false;
+				iterating = false;
 			}
 			catch (Exception e)
 			{
-				utils.iterating = false;
+				iterating = false;
 				e.printStackTrace();
 			}
 		});
@@ -530,13 +529,13 @@ public class InventoryUtils
 		{
 			try
 			{
-				utils.iterating = true;
+				iterating = true;
 				for (WidgetItem item : inventoryItems)
 				{
 					if ((!exceptItems && ids.contains(item.getId()) || (exceptItems && !ids.contains(item.getId()))))
 					{
 						log.info("interacting inventory item: {}", item.getId());
-						utils.sleep(minDelayBetween, maxDelayBetween);
+						sleep(minDelayBetween, maxDelayBetween);
 						menu.setEntry(new MenuEntry("", "", item.getId(), opcode, item.getIndex(), WidgetInfo.INVENTORY.getId(),
 								false));
 						mouse.click(item.getCanvasBounds());
@@ -546,11 +545,11 @@ public class InventoryUtils
 						}
 					}
 				}
-				utils.iterating = false;
+				iterating = false;
 			}
 			catch (Exception e)
 			{
-				utils.iterating = false;
+				iterating = false;
 				e.printStackTrace();
 			}
 		});
@@ -569,13 +568,13 @@ public class InventoryUtils
 		{
 			try
 			{
-				utils.iterating = true;
+				iterating = true;
 				for (WidgetItem item : inventoryItems)
 				{
 					if ((!exceptItems && ids.contains(item.getId()) || (exceptItems && !ids.contains(item.getId()))))
 					{
 						log.info("interacting inventory item: {}", item.getId());
-						utils.sleep(minDelayBetween, maxDelayBetween);
+						sleep(minDelayBetween, maxDelayBetween);
 						menu.setModifiedEntry(new MenuEntry("", "", item1.getId(), opcode, item1.getIndex(), WidgetInfo.INVENTORY.getId(),
 								false), item.getId(), item.getIndex(),MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId());
 						mouse.click(item1.getCanvasBounds());
@@ -585,11 +584,11 @@ public class InventoryUtils
 						}
 					}
 				}
-				utils.iterating = false;
+				iterating = false;
 			}
 			catch (Exception e)
 			{
-				utils.iterating = false;
+				iterating = false;
 				e.printStackTrace();
 			}
 		});

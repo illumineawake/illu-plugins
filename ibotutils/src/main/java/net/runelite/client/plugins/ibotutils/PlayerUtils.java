@@ -8,11 +8,19 @@ import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.ItemID;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.MenuOpcode;
+import net.runelite.api.Varbits;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
+import static net.runelite.client.plugins.ibotutils.iBotUtils.sleep;
 
 @Slf4j
 @Singleton
@@ -20,9 +28,6 @@ public class PlayerUtils
 {
 	@Inject
 	private Client client;
-
-	@Inject
-	private iBotUtils utils;
 
 	@Inject
 	private MouseUtils mouse;
@@ -49,7 +54,7 @@ public class PlayerUtils
 	{
 		int camX = client.getCameraX2();
 		int camY = client.getCameraY2();
-		utils.sleep(25);
+		sleep(25);
 		return (camX != client.getCameraX() || camY != client.getCameraY()) && client.getLocalDestinationLocation() != null;
 	}
 
@@ -60,7 +65,7 @@ public class PlayerUtils
 
 	public boolean isInteracting()
 	{
-		utils.sleep(25);
+		sleep(25);
 		return isMoving() || client.getLocalPlayer().getAnimation() != -1;
 	}
 

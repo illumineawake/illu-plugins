@@ -51,6 +51,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.ibotutils.PlayerUtils;
 import net.runelite.client.plugins.ibotutils.iBotUtils;
+import static net.runelite.client.plugins.ibotutils.iBotUtils.iterating;
 import org.pf4j.Extension;
 
 
@@ -126,12 +127,10 @@ public class iMenuDebuggerPlugin extends Plugin
 				timeout--;
 				return;
 			}
-			if (!utils.iterating)
+			if (!iterating)
 			{
 				if (!playerUtils.isMoving())
 				{
-/*					testMenu = new MenuEntry("", "", 1511, 31, 3, 9764864, false);
-					mouse.delayMouseClick(new Point(0,0), 50);*/
 					timeout = 10;
 				}
 			}

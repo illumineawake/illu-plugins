@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Point;
 import net.runelite.client.callback.ClientThread;
+import static net.runelite.client.plugins.ibotutils.iBotUtils.sleep;
 import org.jetbrains.annotations.NotNull;
 
 @Slf4j
@@ -19,9 +20,6 @@ public class MouseUtils
 
 	@Inject
 	private Client client;
-
-	@Inject
-	private iBotUtils utils;
 
 	@Inject
 	private iBotUtilsConfig config;
@@ -152,7 +150,7 @@ public class MouseUtils
 		{
 			try
 			{
-				utils.sleep(delay);
+				sleep(delay);
 				clickRandomPointCenter(min, max);
 			}
 			catch (RuntimeException e)
@@ -216,7 +214,7 @@ public class MouseUtils
 		{
 			try
 			{
-				utils.sleep(delay);
+				sleep(delay);
 				handleMouseClick(point);
 			}
 			catch (RuntimeException e)

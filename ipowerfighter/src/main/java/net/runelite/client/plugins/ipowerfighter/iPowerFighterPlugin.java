@@ -80,6 +80,8 @@ import net.runelite.client.plugins.ibotutils.NPCUtils;
 import net.runelite.client.plugins.ibotutils.PlayerUtils;
 import net.runelite.client.plugins.ibotutils.WalkUtils;
 import net.runelite.client.plugins.ibotutils.iBotUtils;
+import static net.runelite.client.plugins.ibotutils.iBotUtils.iterating;
+import static net.runelite.client.plugins.ibotutils.iBotUtils.sleep;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
 import org.pf4j.Extension;
@@ -382,7 +384,7 @@ public class iPowerFighterPlugin extends Plugin
 		List<WidgetItem> bones = inventory.getItems("bones");
 		executorService.submit(() ->
 		{
-			utils.iterating = true;
+			iterating = true;
 			for (WidgetItem bone : bones)
 			{
 				if (BONE_BLACKLIST.contains(bone.getId()))
@@ -393,9 +395,9 @@ public class iPowerFighterPlugin extends Plugin
 					bone.getIndex(), WidgetInfo.INVENTORY.getId(), false);
 				menu.setEntry(targetMenu);
 				mouse.handleMouseClick(bone.getCanvasBounds());
-				utils.sleep(calc.getRandomIntBetweenRange(800, 2200));
+				sleep(calc.getRandomIntBetweenRange(800, 2200));
 			}
-			utils.iterating = false;
+			iterating = false;
 		});
 	}
 
@@ -437,7 +439,7 @@ public class iPowerFighterPlugin extends Plugin
 			playerUtils.handleRun(20, 20);
 			return iPowerFighterState.TIMEOUT;
 		}
-		if (utils.iterating)
+		if (iterating)
 		{
 			return iPowerFighterState.ITERATING;
 		}

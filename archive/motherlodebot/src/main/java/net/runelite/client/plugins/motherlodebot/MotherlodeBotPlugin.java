@@ -321,7 +321,7 @@ public class MotherlodeBotPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
-		if (client != null && client.getLocalPlayer() != null && client.getGameState() == GameState.LOGGED_IN && !utils.iterating)
+		if (client != null && client.getLocalPlayer() != null && client.getGameState() == GameState.LOGGED_IN && !iterating)
 		{
 			if (client.getLocalPlayer().getWorldLocation().getRegionID() != SE_MLM_REGEION)
 			{

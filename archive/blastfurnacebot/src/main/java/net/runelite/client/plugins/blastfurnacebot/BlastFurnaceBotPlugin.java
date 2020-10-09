@@ -766,7 +766,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 		if (client != null && client.getLocalPlayer() != null && client.getGameState() == GameState.LOGGED_IN)
 		{
 			updateCalc();
-			if (!utils.iterating)
+			if (!iterating)
 			{
 				state = getState();
 				beforeLoc = client.getLocalPlayer().getLocalLocation();

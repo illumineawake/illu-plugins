@@ -21,15 +21,14 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
+import static net.runelite.client.plugins.ibotutils.iBotUtils.iterating;
+import static net.runelite.client.plugins.ibotutils.iBotUtils.sleep;
 
 @Slf4j
 @Singleton
 public class BankUtils {
     @Inject
     private Client client;
-
-    @Inject
-    private iBotUtils utils;
 
     @Inject
     private MouseUtils mouse;
@@ -42,6 +41,9 @@ public class BankUtils {
 
     @Inject
     private CalculationUtils calc;
+
+    @Inject
+	private KeyboardUtils keyboard;
 
     @Inject
     private ExecutorService executorService;
@@ -213,20 +215,20 @@ public class BankUtils {
         executorService.submit(() ->
         {
             try {
-                utils.iterating = true;
+                iterating = true;
                 for (WidgetItem item : inventoryItems) {
                     if (!ids.contains(item.getId()) && item.getId() != 6512 && !depositedItems.contains(item.getId())) //6512 is empty widget slot
                     {
                         log.info("depositing item: " + item.getId());
                         depositAllOfItem(item);
-                        utils.sleep(80, 200);
+                        sleep(80, 200);
                         depositedItems.add(item.getId());
                     }
                 }
-                utils.iterating = false;
+                iterating = false;
                 depositedItems.clear();
             } catch (Exception e) {
-                utils.iterating = false;
+                iterating = false;
                 e.printStackTrace();
             }
         });
@@ -260,20 +262,20 @@ public class BankUtils {
         executorService.submit(() ->
         {
             try {
-                utils.iterating = true;
+                iterating = true;
                 for (WidgetItem item : inventoryItems) {
                     if (itemIDs.contains(item.getId()) && !depositedItems.contains(item.getId())) //6512 is empty widget slot
                     {
                         log.info("depositing item: " + item.getId());
                         depositAllOfItem(item);
-                        utils.sleep(80, 170);
+                        sleep(80, 170);
                         depositedItems.add(item.getId());
                     }
                 }
-                utils.iterating = false;
+                iterating = false;
                 depositedItems.clear();
             } catch (Exception e) {
-                utils.iterating = false;
+                iterating = false;
                 e.printStackTrace();
             }
         });
@@ -353,10 +355,10 @@ public class BankUtils {
                 mouse.delayClickRandomPointCenter(-200, 200, 50);
                 if (identifier == 6) {
                     executorService.submit(() -> {
-                        utils.sleep(calc.getRandomIntBetweenRange(1000, 1500));
-                        utils.typeString(String.valueOf(amount));
-                        utils.sleep(calc.getRandomIntBetweenRange(80, 250));
-                        utils.pressKey(VK_ENTER);
+                        sleep(calc.getRandomIntBetweenRange(1000, 1500));
+                        keyboard.typeString(String.valueOf(amount));
+                        sleep(calc.getRandomIntBetweenRange(80, 250));
+						keyboard.pressKey(VK_ENTER);
                     });
                 }
             }

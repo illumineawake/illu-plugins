@@ -1,7 +1,6 @@
 package net.runelite.client.plugins.ibotutils;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;

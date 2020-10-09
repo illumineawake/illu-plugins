@@ -68,6 +68,7 @@ import net.runelite.client.plugins.ibotutils.MouseUtils;
 import net.runelite.client.plugins.ibotutils.ObjectUtils;
 import net.runelite.client.plugins.ibotutils.PlayerUtils;
 import net.runelite.client.plugins.ibotutils.iBotUtils;
+import static net.runelite.client.plugins.ibotutils.iBotUtils.iterating;
 import static net.runelite.client.plugins.icombinationrunecrafter.iCombinationRunecrafterState.*;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
@@ -447,7 +448,7 @@ public class iCombinationRunecrafterPlugin extends Plugin
 			playerUtils.handleRun(20, 30);
 			return TIMEOUT;
 		}
-		if (utils.iterating)
+		if (iterating)
 		{
 			return ITERATING;
 		}
