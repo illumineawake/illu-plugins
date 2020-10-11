@@ -47,13 +47,13 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.ibotutils.CalculationUtils;
-import net.runelite.client.plugins.ibotutils.MenuUtils;
-import net.runelite.client.plugins.ibotutils.MouseUtils;
-import net.runelite.client.plugins.ibotutils.iBotUtils;
+import net.runelite.client.plugins.iutils.CalculationUtils;
+import net.runelite.client.plugins.iutils.MenuUtils;
+import net.runelite.client.plugins.iutils.MouseUtils;
+import net.runelite.client.plugins.iutils.iUtils;
 import org.pf4j.Extension;
 
-@PluginDependency(iBotUtils.class)
+@PluginDependency(iUtils.class)
 @Extension
 @PluginDescriptor(
 	name = "iRandom Handler",
@@ -107,7 +107,7 @@ public class iRandomHandlerPlugin extends Plugin
 	private Client client;
 
 	@Inject
-	private iBotUtils utils;
+	private iUtils utils;
 
 	@Inject
 	private MouseUtils mouse;

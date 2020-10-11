@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.InventoryID;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
@@ -51,17 +52,17 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.ibotutils.CalculationUtils;
-import net.runelite.client.plugins.ibotutils.InventoryUtils;
-import net.runelite.client.plugins.ibotutils.MenuUtils;
-import net.runelite.client.plugins.ibotutils.MouseUtils;
-import net.runelite.client.plugins.ibotutils.PlayerUtils;
-import net.runelite.client.plugins.ibotutils.iBotUtils;
+import net.runelite.client.plugins.iutils.CalculationUtils;
+import net.runelite.client.plugins.iutils.InventoryUtils;
+import net.runelite.client.plugins.iutils.MenuUtils;
+import net.runelite.client.plugins.iutils.MouseUtils;
+import net.runelite.client.plugins.iutils.PlayerUtils;
+import net.runelite.client.plugins.iutils.iUtils;
 import org.pf4j.Extension;
 
 
 @Extension
-@PluginDependency(iBotUtils.class)
+@PluginDependency(iUtils.class)
 @PluginDescriptor(
 	name = "iQuick Eater",
 	enabledByDefault = false,
@@ -79,7 +80,7 @@ public class iQuickEaterPlugin extends Plugin
 	private iQuickEaterConfiguration config;
 
 	@Inject
-	private iBotUtils utils;
+	private iUtils utils;
 
 	@Inject
 	private MouseUtils mouse;
@@ -209,6 +210,9 @@ public class iQuickEaterPlugin extends Plugin
 			if (timeout > 0)
 			{
 				timeout--;
+				return;
+			}
+			if (client.getItemContainer(InventoryID.BANK) != null) {
 				return;
 			}
 			if (client.getBoostedSkillLevel(Skill.HITPOINTS) <= nextEatHP)

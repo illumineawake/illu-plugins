@@ -29,7 +29,7 @@ project.extra["PluginName"] = "iMagic Caster"
 project.extra["PluginDescription"] = "Illumine automated magic caster"
 
 dependencies {
-    compileOnly(project(":ibotutils"))
+    compileOnly(project(":iutils"))
     compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.13+")
 }
 
@@ -42,7 +42,7 @@ tasks {
                     "Plugin-Provider" to project.extra["PluginProvider"],
                     "Plugin-Dependencies" to
                             arrayOf(
-                                    nameToId("iBotUtils"),
+                                    nameToId("iUtils"),
                                     "chinbreakhandler-plugin"
                             ).joinToString(),
                     "Plugin-Description" to project.extra["PluginDescription"],

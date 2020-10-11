@@ -71,24 +71,24 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.ibotutils.CalculationUtils;
-import net.runelite.client.plugins.ibotutils.InterfaceUtils;
-import net.runelite.client.plugins.ibotutils.InventoryUtils;
-import net.runelite.client.plugins.ibotutils.MenuUtils;
-import net.runelite.client.plugins.ibotutils.MouseUtils;
-import net.runelite.client.plugins.ibotutils.NPCUtils;
-import net.runelite.client.plugins.ibotutils.PlayerUtils;
-import net.runelite.client.plugins.ibotutils.WalkUtils;
-import net.runelite.client.plugins.ibotutils.iBotUtils;
-import static net.runelite.client.plugins.ibotutils.iBotUtils.iterating;
-import static net.runelite.client.plugins.ibotutils.iBotUtils.sleep;
+import net.runelite.client.plugins.iutils.CalculationUtils;
+import net.runelite.client.plugins.iutils.InterfaceUtils;
+import net.runelite.client.plugins.iutils.InventoryUtils;
+import net.runelite.client.plugins.iutils.MenuUtils;
+import net.runelite.client.plugins.iutils.MouseUtils;
+import net.runelite.client.plugins.iutils.NPCUtils;
+import net.runelite.client.plugins.iutils.PlayerUtils;
+import net.runelite.client.plugins.iutils.WalkUtils;
+import net.runelite.client.plugins.iutils.iUtils;
+import static net.runelite.client.plugins.iutils.iUtils.iterating;
+import static net.runelite.client.plugins.iutils.iUtils.sleep;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
 import org.pf4j.Extension;
 
 
 @Extension
-@PluginDependency(iBotUtils.class)
+@PluginDependency(iUtils.class)
 @PluginDescriptor(
 	name = "iPower Fighter",
 	enabledByDefault = false,
@@ -112,7 +112,7 @@ public class iPowerFighterPlugin extends Plugin
 	private iPowerFighterOverlay overlay;
 
 	@Inject
-	private iBotUtils utils;
+	private iUtils utils;
 
 	@Inject
 	private MouseUtils mouse;

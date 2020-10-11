@@ -49,14 +49,14 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.ibotutils.PlayerUtils;
-import net.runelite.client.plugins.ibotutils.iBotUtils;
-import static net.runelite.client.plugins.ibotutils.iBotUtils.iterating;
+import net.runelite.client.plugins.iutils.PlayerUtils;
+import net.runelite.client.plugins.iutils.iUtils;
+import static net.runelite.client.plugins.iutils.iUtils.iterating;
 import org.pf4j.Extension;
 
 
 @Extension
-@PluginDependency(iBotUtils.class)
+@PluginDependency(iUtils.class)
 @PluginDescriptor(
 	name = "iMenu Debugger Plugin",
 	enabledByDefault = false,
@@ -74,7 +74,7 @@ public class iMenuDebuggerPlugin extends Plugin
 	private iMenuDebuggerConfig config;
 
 	@Inject
-	private iBotUtils utils;
+	private iUtils utils;
 
 	@Inject
 	private PlayerUtils playerUtils;

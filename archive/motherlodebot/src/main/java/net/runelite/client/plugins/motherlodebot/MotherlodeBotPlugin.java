@@ -49,13 +49,13 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.ibotutils.iBotUtils;
+import net.runelite.client.plugins.iutils.iUtils;
 import static net.runelite.client.plugins.motherlodebot.MotherlodeBotState.*;
 import org.pf4j.Extension;
 
 
 @Extension
-@PluginDependency(iBotUtils.class)
+@PluginDependency(iUtils.class)
 @PluginDescriptor(
 	name = "Motherlode Mine Bot",
 	enabledByDefault = false,
@@ -73,7 +73,7 @@ public class MotherlodeBotPlugin extends Plugin
 	private MotherlodeBotConfiguration config;
 
 	@Inject
-	private iBotUtils utils;
+	private iUtils utils;
 
 	@Inject
 	private ConfigManager configManager;

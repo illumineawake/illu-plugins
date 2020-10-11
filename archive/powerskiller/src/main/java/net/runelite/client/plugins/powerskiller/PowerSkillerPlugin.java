@@ -43,13 +43,13 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.ibotutils.iBotUtils;
+import net.runelite.client.plugins.iutils.iUtils;
 import static net.runelite.client.plugins.powerskiller.PowerSkillerState.*;
 import org.pf4j.Extension;
 
 
 @Extension
-@PluginDependency(iBotUtils.class)
+@PluginDependency(iUtils.class)
 @PluginDescriptor(
 	name = "Power Skiller",
 	enabledByDefault = false,
@@ -67,7 +67,7 @@ public class PowerSkillerPlugin extends Plugin
 	private PowerSkillerConfiguration config;
 
 	@Inject
-	private iBotUtils utils;
+	private iUtils utils;
 
 	@Inject
 	private ConfigManager configManager;

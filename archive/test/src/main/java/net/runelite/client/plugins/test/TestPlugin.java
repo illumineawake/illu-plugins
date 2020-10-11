@@ -51,7 +51,7 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.ibotutils.iBotUtils;
+import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import org.pf4j.Extension;
 
@@ -64,7 +64,7 @@ import net.runelite.client.rsb.botLauncher.*;*/
 
 
 @Extension
-@PluginDependency(iBotUtils.class)
+@PluginDependency(iUtils.class)
 @PluginDescriptor(
 	name = "Test",
 	enabledByDefault = false,
@@ -82,7 +82,7 @@ public class TestPlugin extends Plugin
 	private TestPluginConfiguration config;
 
 	@Inject
-	private iBotUtils utils;
+	private iUtils utils;
 
 	@Inject
 	private ItemManager itemManager;

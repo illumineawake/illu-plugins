@@ -58,24 +58,23 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.ibotutils.BankUtils;
-import net.runelite.client.plugins.ibotutils.CalculationUtils;
-import net.runelite.client.plugins.ibotutils.GrandExchangeUtils;
-import net.runelite.client.plugins.ibotutils.InterfaceUtils;
-import net.runelite.client.plugins.ibotutils.InventoryUtils;
-import net.runelite.client.plugins.ibotutils.MenuUtils;
-import net.runelite.client.plugins.ibotutils.MouseUtils;
-import net.runelite.client.plugins.ibotutils.ObjectUtils;
-import net.runelite.client.plugins.ibotutils.PlayerUtils;
-import net.runelite.client.plugins.ibotutils.iBotUtils;
-import static net.runelite.client.plugins.ibotutils.iBotUtils.iterating;
+import net.runelite.client.plugins.iutils.BankUtils;
+import net.runelite.client.plugins.iutils.CalculationUtils;
+import net.runelite.client.plugins.iutils.InterfaceUtils;
+import net.runelite.client.plugins.iutils.InventoryUtils;
+import net.runelite.client.plugins.iutils.MenuUtils;
+import net.runelite.client.plugins.iutils.MouseUtils;
+import net.runelite.client.plugins.iutils.ObjectUtils;
+import net.runelite.client.plugins.iutils.PlayerUtils;
+import net.runelite.client.plugins.iutils.iUtils;
+import static net.runelite.client.plugins.iutils.iUtils.iterating;
 import static net.runelite.client.plugins.icombinationrunecrafter.iCombinationRunecrafterState.*;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
 
 @Extension
-@PluginDependency(iBotUtils.class)
+@PluginDependency(iUtils.class)
 @PluginDescriptor(
 	name = "iCombination Runecrafter Plugin",
 	enabledByDefault = false,
@@ -93,7 +92,7 @@ public class iCombinationRunecrafterPlugin extends Plugin
 	private iCombinationRunecrafterConfig config;
 
 	@Inject
-	private iBotUtils utils;
+	private iUtils utils;
 
 	@Inject
 	private MouseUtils mouse;
@@ -118,9 +117,6 @@ public class iCombinationRunecrafterPlugin extends Plugin
 
 	@Inject
 	private ObjectUtils object;
-
-	@Inject
-	private GrandExchangeUtils grandExchange;
 
 	@Inject
 	private ConfigManager configManager;

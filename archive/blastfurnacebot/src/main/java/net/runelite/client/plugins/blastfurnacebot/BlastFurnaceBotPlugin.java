@@ -53,13 +53,13 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import static net.runelite.client.plugins.blastfurnacebot.BlastFurnaceState.*;
-import net.runelite.client.plugins.ibotutils.iBotUtils;
+import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import org.pf4j.Extension;
 
 @Extension
-@PluginDependency(iBotUtils.class)
+@PluginDependency(iUtils.class)
 @PluginDescriptor(
 	name = "Blast Furnace - Illumine",
 	description = "Illumine bot for Blast Furnace minigame",
@@ -105,7 +105,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 	private BlastFurnaceBotConfig config;
 
 	@Inject
-	private iBotUtils utils;
+	private iUtils utils;
 
 	BlastFurnaceState state;
 	MenuEntry targetMenu;
@@ -401,7 +401,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				return FILL_COFFER;
 			}
 			playerUtils.handleRun(20, 20);
-			if(inventory.inventoryContains(bar.getItemID())) //TODO: update ibotutils to take a String contains, so can search if inventory has any Bars
+			if(inventory.inventoryContains(bar.getItemID())) //TODO: update iutils to take a String contains, so can search if inventory has any Bars
 			{ //INVENTORY CONTAINS BARS
 				openBank();
 				return OPENING_BANK;

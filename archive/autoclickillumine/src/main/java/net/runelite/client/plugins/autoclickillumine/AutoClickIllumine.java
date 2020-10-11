@@ -31,13 +31,13 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.ibotutils.iBotUtils;
+import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.HotkeyListener;
 import org.pf4j.Extension;
 
 @Extension
-@PluginDependency(iBotUtils.class)
+@PluginDependency(iUtils.class)
 @PluginDescriptor(
 	name = "Auto Clicker Illumine",
 	enabledByDefault = false,
@@ -62,7 +62,7 @@ public class AutoClickIllumine extends Plugin
 	private KeyManager keyManager;
 
 	@Inject
-	private iBotUtils extUtils;
+	private iUtils extUtils;
 
 	private ExecutorService executorService;
 	private Point point;

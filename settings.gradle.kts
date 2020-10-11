@@ -26,7 +26,7 @@
 rootProject.name = "Illumine Plugins"
 
 include(":botutils")
-include(":ibotutils")
+include(":iutils")
 include(":icombinationrunecrafter")
 include(":imagiccaster")
 include(":imenudebugger")
@@ -36,6 +36,7 @@ include(":iquickeater")
 include(":irandomhandler")
 include(":irooftopagility")
 include(":iworldwalker")
+include("testplugin")
 
 for (project in rootProject.children) {
     project.apply {

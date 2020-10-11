@@ -55,6 +55,7 @@ import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NpcDefinitionChanged;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -63,25 +64,25 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.ibotutils.BankUtils;
-import net.runelite.client.plugins.ibotutils.CalculationUtils;
-import net.runelite.client.plugins.ibotutils.InterfaceUtils;
-import net.runelite.client.plugins.ibotutils.InventoryUtils;
-import net.runelite.client.plugins.ibotutils.MenuUtils;
-import net.runelite.client.plugins.ibotutils.MouseUtils;
-import net.runelite.client.plugins.ibotutils.NPCUtils;
-import net.runelite.client.plugins.ibotutils.ObjectUtils;
-import net.runelite.client.plugins.ibotutils.PlayerUtils;
-import net.runelite.client.plugins.ibotutils.WalkUtils;
-import net.runelite.client.plugins.ibotutils.iBotUtils;
-import static net.runelite.client.plugins.ibotutils.iBotUtils.iterating;
+import net.runelite.client.plugins.iutils.BankUtils;
+import net.runelite.client.plugins.iutils.CalculationUtils;
+import net.runelite.client.plugins.iutils.InterfaceUtils;
+import net.runelite.client.plugins.iutils.InventoryUtils;
+import net.runelite.client.plugins.iutils.MenuUtils;
+import net.runelite.client.plugins.iutils.MouseUtils;
+import net.runelite.client.plugins.iutils.NPCUtils;
+import net.runelite.client.plugins.iutils.ObjectUtils;
+import net.runelite.client.plugins.iutils.PlayerUtils;
+import net.runelite.client.plugins.iutils.WalkUtils;
+import net.runelite.client.plugins.iutils.iUtils;
+import static net.runelite.client.plugins.iutils.iUtils.iterating;
 import static net.runelite.client.plugins.ipowerskiller.iPowerSkillerState.*;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
 
 @Extension
-@PluginDependency(iBotUtils.class)
+@PluginDependency(iUtils.class)
 @PluginDescriptor(
 	name = "iPower Skiller",
 	enabledByDefault = false,
@@ -99,7 +100,7 @@ public class iPowerSkillerPlugin extends Plugin
 	private iPowerSkillerConfiguration config;
 
 	@Inject
-	private iBotUtils utils;
+	private iUtils utils;
 
 	@Inject
 	private MouseUtils mouse;
@@ -559,6 +560,11 @@ public class iPowerSkillerPlugin extends Plugin
 			{
 				utils.sendGameMessage("illu - client must be set to resizable");
 				startPowerSkiller = false;
+				return;
+			}
+			if (client.getWidget(WidgetInfo.BANK_PIN_CONTAINER) != null) {
+				log.info("Enter bank pin manually");
+				utils.sendGameMessage("Enter bank pin manually");
 				return;
 			}
 			state = getState();

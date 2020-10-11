@@ -55,13 +55,13 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.ibotutils.CalculationUtils;
-import net.runelite.client.plugins.ibotutils.InterfaceUtils;
-import net.runelite.client.plugins.ibotutils.InventoryUtils;
-import net.runelite.client.plugins.ibotutils.MenuUtils;
-import net.runelite.client.plugins.ibotutils.MouseUtils;
-import net.runelite.client.plugins.ibotutils.PlayerUtils;
-import net.runelite.client.plugins.ibotutils.iBotUtils;
+import net.runelite.client.plugins.iutils.CalculationUtils;
+import net.runelite.client.plugins.iutils.InterfaceUtils;
+import net.runelite.client.plugins.iutils.InventoryUtils;
+import net.runelite.client.plugins.iutils.MenuUtils;
+import net.runelite.client.plugins.iutils.MouseUtils;
+import net.runelite.client.plugins.iutils.PlayerUtils;
+import net.runelite.client.plugins.iutils.iUtils;
 import static net.runelite.client.plugins.imagiccaster.iMagicCasterState.FIND_ITEM;
 import static net.runelite.client.plugins.imagiccaster.iMagicCasterState.FIND_NPC;
 import static net.runelite.client.plugins.imagiccaster.iMagicCasterState.HANDLE_BREAK;
@@ -74,7 +74,7 @@ import org.pf4j.Extension;
 
 
 @Extension
-@PluginDependency(iBotUtils.class)
+@PluginDependency(iUtils.class)
 @PluginDescriptor(
 	name = "iMagic Caster",
 	enabledByDefault = false,
@@ -89,7 +89,7 @@ public class iMagicCasterPlugin extends Plugin
 	private Client client;
 
 	@Inject
-	private iBotUtils utils;
+	private iUtils utils;
 
 	@Inject
 	private MouseUtils mouse;
