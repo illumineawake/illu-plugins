@@ -32,9 +32,13 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.WidgetItem;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
@@ -42,6 +46,9 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import net.runelite.client.plugins.iutils.ActionQueue;
+import net.runelite.client.plugins.iutils.CalculationUtils;
+import net.runelite.client.plugins.iutils.InventoryUtils;
 import net.runelite.client.plugins.iutils.MouseUtils;
 import net.runelite.client.plugins.iutils.iUtils;
 import org.pf4j.Extension;
@@ -63,10 +70,22 @@ public class TestPlugin extends Plugin
 	private Client client;
 
 	@Inject
+	private ClientThread clientThread;
+
+	@Inject
 	private TestConfig config;
 
 	@Inject
 	private iUtils utils;
+
+	@Inject
+	private ActionQueue action;
+
+	@Inject
+	private InventoryUtils inventory;
+
+	@Inject
+	private CalculationUtils calc;
 
 	@Inject
 	private MouseUtils mouse;
@@ -81,6 +100,8 @@ public class TestPlugin extends Plugin
 	LocalPoint beforeLoc;
 
 	int timeout;
+	int tickCount;
+	boolean done;
 	Timer timer;
 
 	@Provides
@@ -92,33 +113,13 @@ public class TestPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-
+		timeout = 2;
 	}
 
 	@Override
 	protected void shutDown()
 	{
-
-	}
-
-	@Subscribe
-	public void onGameTick(GameTick event)
-	{
-		player = client.getLocalPlayer();
-		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
-		{
-			if (timeout > 0)
-			{
-				timeout--;
-				return;
-			}
-			if (!iUtils.iterating)
-			{
-				mouse.handleMouseClick(new Point(client.getCenterX(), client.getCenterY()));
-				timeout = 10;
-			}
-			beforeLoc = player.getLocalLocation();
-		}
+		timeout = 0;
 	}
 
 	@Subscribe
@@ -136,13 +137,57 @@ public class TestPlugin extends Plugin
 		}
 	}
 
+	@Subscribe
+	public void onClientTick(ClientTick event)
+	{
+		if (client != null && client.getLocalPlayer() != null && client.getGameState() == GameState.LOGGED_IN)
+		{
+
+		}
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick event)
+	{
+		player = client.getLocalPlayer();
+		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
+		{
+			if (timeout > 0)
+			{
+				timeout--;
+				return;
+			}
+			if (!iUtils.iterating)
+			{
+				if (action.delayedActions.isEmpty() && !inventory.isEmpty())
+				{
+					log.info("Executing on game tick");
+					Collection<WidgetItem> inventoryItems = inventory.getAllItems();
+					if (!inventoryItems.isEmpty())
+					{
+						int i = 1;
+						for (WidgetItem item : inventoryItems)
+						{
+							MenuEntry entry = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(), item.getIndex(),
+								WidgetInfo.INVENTORY.getId(), false);
+							utils.doActionClientTick(entry, item.getCanvasBounds(), (3 * i) + calc.getRandomIntBetweenRange(0, 2));
+							i++;
+						}
+						done = true;
+					}
+				}
+			}
+			beforeLoc = player.getLocalLocation();
+		}
+	}
+
 	/*@Subscribe
 	public void onChatMessage(ChatMessage event)
 	{
 		log.info("message type {}, message {}", event.getType(), event.getMessage());
 	}*/
 
-	@Subscribe
+	/*@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		log.info("Menu Entry before override: {}", event.toString());
@@ -160,5 +205,5 @@ public class TestPlugin extends Plugin
 			event.setMenuEntry(testMenu);
 			testMenu = null; //this allow the player to interact with the client without their clicks being overridden
 		}
-	}
+	}*/
 }

@@ -222,7 +222,7 @@ public class MouseUtils
 
 	public void handleMouseClick(Rectangle rectangle)
 	{
-		assert !client.isClientThread();
+		//assert !client.isClientThread();
 
 		Point point = getClickPoint(rectangle);
 		handleMouseClick(point);

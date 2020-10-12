@@ -7,6 +7,7 @@ package net.runelite.client.plugins.iutils;
 
 import com.google.inject.Provides;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -20,9 +21,12 @@ import net.runelite.api.Client;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.Point;
+import net.runelite.api.events.ClientTick;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
@@ -55,11 +59,17 @@ public class iUtils extends Plugin {
     @Inject
     private Client client;
 
+	@Inject
+	private ClientThread clientThread;
+
     @Inject
     private iUtilsConfig config;
 
     @Inject
     private MouseUtils mouse;
+
+    @Inject
+	private ActionQueue action;
 
     @Inject
     private MenuUtils menu;
@@ -83,6 +93,10 @@ public class iUtils extends Plugin {
 
     public boolean randomEvent;
     public static boolean iterating;
+	private final List<ActionQueue.DelayedAction> delayedActions = new ArrayList<>();
+	private int clientTick = 0;
+	private int gameTick = 0;
+	int tickActions;
 
     @Provides
     OSBGrandExchangeClient provideOsbGrandExchangeClient(OkHttpClient okHttpClient)
@@ -111,7 +125,68 @@ public class iUtils extends Plugin {
         executorService.shutdown();
     }
 
+	public void doActionClientTick(MenuEntry entry, Rectangle rect, int ticksToDelay)
+	{
+		Runnable runnable =	() -> {
+			menu.setEntry(entry);
+			mouse.handleMouseClick(rect);
+		};
+		log.info("Delaying action for: {} ticks", ticksToDelay);
+		action.delayClientTicks(ticksToDelay, runnable);
+	}
 
+	public void doActionClientTick(MenuEntry entry, Point point, int ticksToDelay)
+	{
+
+		Runnable runnable =	() -> {
+			menu.setEntry(entry);
+			mouse.handleMouseClick(point);
+		};
+
+		action.delayClientTicks(ticksToDelay, runnable);
+	}
+
+	public void doActionGameTick(MenuEntry entry, Rectangle rect, int ticksToDelay)
+	{
+		Runnable runnable =	() -> {
+			menu.setEntry(entry);
+			mouse.handleMouseClick(rect);
+		};
+
+		action.delayGameTicks(ticksToDelay, runnable);
+	}
+
+	public void doActionGameTick(MenuEntry entry, Point point, int ticksToDelay)
+	{
+
+		Runnable runnable =	() -> {
+			menu.setEntry(entry);
+			mouse.handleMouseClick(point);
+		};
+
+		action.delayGameTicks(ticksToDelay, runnable);
+	}
+
+	public void doActionMillisTime(MenuEntry entry, Rectangle rect, int timeToDelay)
+	{
+		Runnable runnable =	() -> {
+			menu.setEntry(entry);
+			mouse.handleMouseClick(rect);
+		};
+
+		action.delayTime(timeToDelay, runnable);
+	}
+
+	public void doActionMillisTime(MenuEntry entry, Point point, int timeToDelay)
+	{
+
+		Runnable runnable =	() -> {
+			menu.setEntry(entry);
+			mouse.handleMouseClick(point);
+		};
+
+		action.delayTime(timeToDelay, runnable);
+	}
 
     public void oneClickCastSpell(WidgetInfo spellWidget, MenuEntry targetMenu, long sleepLength) {
         menu.setEntry(targetMenu, true);
@@ -239,6 +314,19 @@ public class iUtils extends Plugin {
         }
     }
 
+	@Subscribe
+	public void onClientTick(ClientTick event)
+	{
+		action.onClientTick(event);
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick event)
+	{
+		tickActions = 0;
+		action.onGameTick(event);
+	}
+
     @Subscribe
     private void onMenuEntryAdded(MenuEntryAdded event)
     {
@@ -260,6 +348,10 @@ public class iUtils extends Plugin {
     @Subscribe
     private void onMenuOptionClicked(MenuOptionClicked event)
     {
+		if (menu.entry != null)
+		{
+			log.info("Received MOC event: {}", menu.entry);
+		}
         if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
                 event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
         {
@@ -270,7 +362,9 @@ public class iUtils extends Plugin {
         }
         if (menu.entry != null)
         {
+			tickActions++;
             event.consume();
+            log.info("Actions this game tick: {}", tickActions);
             if (menu.consumeClick)
             {
                 log.info("Consuming a click and not sending anything else");
@@ -302,5 +396,13 @@ public class iUtils extends Plugin {
             }
             menu.entry = null;
         }
+        else
+		{
+			if (!event.isConsumed() && !action.delayedActions.isEmpty() && event.getOption().equals("Walk here"))
+			{
+				log.info("Consuming a NULL MOC event");
+				event.consume();
+			}
+		}
     }
 }
