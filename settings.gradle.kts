@@ -36,7 +36,6 @@ include(":iquickeater")
 include(":irandomhandler")
 include(":irooftopagility")
 include(":iworldwalker")
-include("testplugin")
 
 for (project in rootProject.children) {
     project.apply {
