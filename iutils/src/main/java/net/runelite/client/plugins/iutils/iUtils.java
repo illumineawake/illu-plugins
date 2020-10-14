@@ -117,22 +117,18 @@ public class iUtils extends Plugin {
 
     @Override
     protected void startUp() {
-        executorService = Executors.newSingleThreadExecutor();
+//        executorService = Executors.newSingleThreadExecutor();
     }
 
     @Override
     protected void shutDown() {
-        executorService.shutdown();
+//        executorService.shutdown();
     }
 
 	public void doActionClientTick(MenuEntry entry, Rectangle rect, int ticksToDelay)
 	{
-		Runnable runnable =	() -> {
-			menu.setEntry(entry);
-			mouse.handleMouseClick(rect);
-		};
-		log.info("Delaying action for: {} ticks", ticksToDelay);
-		action.delayClientTicks(ticksToDelay, runnable);
+		Point point = mouse.getClickPoint(rect);
+		doActionClientTick(entry, point, ticksToDelay);
 	}
 
 	public void doActionClientTick(MenuEntry entry, Point point, int ticksToDelay)
@@ -148,12 +144,8 @@ public class iUtils extends Plugin {
 
 	public void doActionGameTick(MenuEntry entry, Rectangle rect, int ticksToDelay)
 	{
-		Runnable runnable =	() -> {
-			menu.setEntry(entry);
-			mouse.handleMouseClick(rect);
-		};
-
-		action.delayGameTicks(ticksToDelay, runnable);
+		Point point = mouse.getClickPoint(rect);
+		doActionGameTick(entry, point, ticksToDelay);
 	}
 
 	public void doActionGameTick(MenuEntry entry, Point point, int ticksToDelay)
@@ -167,17 +159,13 @@ public class iUtils extends Plugin {
 		action.delayGameTicks(ticksToDelay, runnable);
 	}
 
-	public void doActionMillisTime(MenuEntry entry, Rectangle rect, int timeToDelay)
+	public void doActionMsTime(MenuEntry entry, Rectangle rect, int timeToDelay)
 	{
-		Runnable runnable =	() -> {
-			menu.setEntry(entry);
-			mouse.handleMouseClick(rect);
-		};
-
-		action.delayTime(timeToDelay, runnable);
+		Point point = mouse.getClickPoint(rect);
+		doActionMsTime(entry, point, timeToDelay);
 	}
 
-	public void doActionMillisTime(MenuEntry entry, Point point, int timeToDelay)
+	public void doActionMsTime(MenuEntry entry, Point point, int timeToDelay)
 	{
 
 		Runnable runnable =	() -> {
@@ -371,11 +359,12 @@ public class iUtils extends Plugin {
                 menu.consumeClick = false;
                 return;
             }
-            if (event.getOption().equals("Walk here") && walk.walkAction)
+            if (menu.entry.getOption().equals("Walk here"))
             {
-                log.debug("Walk action");
+                log.info("Walk action: {} {}", walk.coordX, walk.coordY);
                 walk.walkTile(walk.coordX, walk.coordY);
                 walk.walkAction = false;
+				menu.entry = null;
                 return;
             }
             if (menu.modifiedMenu)

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -38,12 +39,15 @@ public class WalkUtils
 	@Inject
 	private MenuUtils menu;
 
+	@Inject
+	private ExecutorService executorService;
+
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 	private final String DAX_API_URL = "https://api.dax.cloud/walker/generatePath";
 	private List<WorldPoint> currentPath = new ArrayList<>();
 	WorldPoint nextPoint;
 
-	public boolean webWalking;
+	public boolean retrievingPath;
 	private int nextFlagDist = -1;
 	public int coordX;
 	public int coordY;
@@ -66,9 +70,10 @@ public class WalkUtils
 	{
 		coordX = localPoint.getSceneX() + calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
 		coordY = localPoint.getSceneY() + calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
+		log.info("Coord values: {}, {}", coordX, coordY);
 		walkAction = true;
 		menu.setEntry(new MenuEntry("Walk here", "", 0, MenuOpcode.WALK.getId(),
-				0, 0, false));
+			0, 0, false));
 		mouse.delayMouseClick(new Point(0, 0), delay);
 	}
 
@@ -86,23 +91,20 @@ public class WalkUtils
 	}
 
 	/**
-	 *
 	 * Web-Walking functions
-	 *
 	 **/
 	public static String post(String url, String json) throws IOException
 	{
-
 		OkHttpClient okHttpClient = new OkHttpClient();
 		RequestBody body = RequestBody.create(json, JSON); // new
 		log.info("Sending POST request: {}", body);
 		Request request = new Request.Builder()
-				.url(url)
-				.addHeader("Content-Type", "application/json")
-				.addHeader("key", "sub_DPjXXzL5DeSiPf")
-				.addHeader("secret", "PUBLIC-KEY")
-				.post(body)
-				.build();
+			.url(url)
+			.addHeader("Content-Type", "application/json")
+			.addHeader("key", "sub_DPjXXzL5DeSiPf")
+			.addHeader("secret", "PUBLIC-KEY")
+			.post(body)
+			.build();
 		Response response = okHttpClient.newCall(request).execute();
 		return response.body().string();
 	}
@@ -130,7 +132,7 @@ public class WalkUtils
 		return null;
 	}
 
-	public List<WorldPoint> getDaxPath(WorldPoint start, WorldPoint destination)
+	public String getDaxPath(WorldPoint start, WorldPoint destination)
 	{
 		Player player = client.getLocalPlayer();
 		Path path = new Path(start, destination, player);
@@ -139,13 +141,16 @@ public class WalkUtils
 		String result = "";
 		try
 		{
+			retrievingPath = true;
 			result = post(DAX_API_URL, jsonString);
 		}
 		catch (IOException e)
 		{
+			retrievingPath = false;
 			e.printStackTrace();
 		}
-		return jsonToObject(result);
+		retrievingPath = false;
+		return result;
 	}
 
 	//Calculates tiles that surround the source tile and returns a random viable tile
@@ -157,8 +162,8 @@ public class WalkUtils
 		}
 		WorldArea sourceArea = new WorldArea(sourcePoint, 1, 1);
 		WorldArea possibleArea = new WorldArea(
-				new WorldPoint(sourcePoint.getX() - randRadius, sourcePoint.getY() - randRadius, sourcePoint.getPlane()),
-				new WorldPoint(sourcePoint.getX() + randRadius, sourcePoint.getY() + randRadius, sourcePoint.getPlane())
+			new WorldPoint(sourcePoint.getX() - randRadius, sourcePoint.getY() - randRadius, sourcePoint.getPlane()),
+			new WorldPoint(sourcePoint.getX() + randRadius, sourcePoint.getY() + randRadius, sourcePoint.getPlane())
 		);
 		List<WorldPoint> possiblePoints = possibleArea.toWorldPointList();
 		List<WorldPoint> losPoints = new ArrayList<>();
@@ -177,31 +182,45 @@ public class WalkUtils
 
 	public boolean webWalk(WorldPoint destination, int randRadius, boolean isMoving, long sleepDelay)
 	{
+		if (retrievingPath)
+		{
+			log.info("Waiting for path retrieval");
+			return true;
+		}
 		Player player = client.getLocalPlayer();
 		if (player != null)
 		{
 			if (player.getWorldLocation().distanceTo(destination) <= randRadius)
 			{
-				//log.info("Arrived at destination");
 				currentPath.clear();
-				webWalking = false;
 				nextPoint = null;
 				return true;
 			}
-			webWalking = true;
 			if (currentPath.isEmpty() || !currentPath.get(currentPath.size() - 1).equals(destination)) //no current path or destination doesn't match destination param
 			{
-				currentPath = getDaxPath(player.getWorldLocation(), destination); //get a new path
-			}
-			if (currentPath.isEmpty())
-			{
-				log.info("Current path is empty, failed to retrieve path");
-				return false;
+				String daxResult = getDaxPath(player.getWorldLocation(), destination);
+				log.info("daxResult: {}", daxResult);
+				if (daxResult.contains("Too Many Requests"))
+				{
+					log.info("Too many dax requests, trying agian");
+					return true;
+				}
+				if (daxResult.contains("NO_WEB_PATH"))
+				{
+					log.info("Dax path not found");
+					return false;
+				}
+				if (daxResult.isEmpty())
+				{
+					log.info("Dax path is empty, failed to retrieve path");
+					return false;
+				}
+				currentPath = jsonToObject(daxResult); //get a new path
+				log.info("Path found: {}", currentPath);
 			}
 			if (nextFlagDist == -1)
 			{
 				nextFlagDist = calc.getRandomIntBetweenRange(0, 10);
-				//log.info("Next flag distance: {}", nextFlagDist);
 			}
 			if (!isMoving || (nextPoint != null && nextPoint.distanceTo(player.getWorldLocation()) < nextFlagDist))
 			{
@@ -211,15 +230,17 @@ public class WalkUtils
 					log.info("Walking to next tile: {}", nextPoint);
 					sceneWalk(nextPoint, 0, sleepDelay);
 					nextFlagDist = nextPoint.equals(destination) ? 0 : calc.getRandomIntBetweenRange(0, 10);
-					//log.info("Next flag distance: {}", nextFlagDist);
+					return true;
 				}
 				else
 				{
-					log.info("nextPoint is null");
+					log.debug("nextPoint is null");
 					return false;
 				}
 			}
+			return true;
 		}
-		return false;
+		log.info("End of method");
+		return retrievingPath;
 	}
 }

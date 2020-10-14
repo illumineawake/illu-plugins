@@ -32,11 +32,9 @@ public class ActionQueue
 		Iterator<DelayedAction> it = delayedActions.iterator();
 		while (it.hasNext())
 		{
-			//log.info("Action found");
 			DelayedAction action = it.next();
 			if (action.shouldRun.get())
 			{
-				log.info("Action running");
 				action.runnable.run();
 				it.remove();
 			}
@@ -51,7 +49,6 @@ public class ActionQueue
 
 	public void onGameTick(GameTick e)
 	{
-		//log.info("Game tick");
 		gameTick++;
 		runDelayedActions();
 	}
@@ -74,7 +71,6 @@ public class ActionQueue
 	public void delayGameTicks(long delay, Runnable runnable)
 	{
 		long when = gameTick + delay;
-		log.info("Received runnable, sending at {} game ticks. Current game ticks: {}", when, gameTick);
 		runLater(() -> gameTick >= when, runnable);
 	}
 

@@ -136,6 +136,7 @@ public class iWorldWalkerPlugin extends Plugin
 				{
 					log.debug("starting World Walker plugin");
 					startBot = true;
+					beforeLoc = player.getLocalLocation();
 					timeout = 0;
 					state = null;
 					botTimer = Instant.now();
@@ -258,8 +259,16 @@ public class iWorldWalkerPlugin extends Plugin
 			{
 				if (player.getWorldLocation().distanceTo(getLocation()) >= config.rand())
 				{
-					walk.webWalk(getLocation(), config.rand(), playerUtils.isMoving(beforeLoc), sleepDelay());
-					timeout = tickDelay();
+					if (walk.webWalk(getLocation(), config.rand(), playerUtils.isMoving(beforeLoc), sleepDelay()))
+					{
+						timeout = tickDelay();
+					}
+					else
+					{
+						log.info("Path not found");
+						utils.sendGameMessage("Path not found, stopping");
+						resetVals();
+					}
 				}
 				else
 				{

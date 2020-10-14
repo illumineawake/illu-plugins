@@ -161,15 +161,14 @@ public class TestPlugin extends Plugin
 			{
 				if (action.delayedActions.isEmpty() && !inventory.isEmpty())
 				{
-					log.info("Executing on game tick");
 					Collection<WidgetItem> inventoryItems = inventory.getAllItems();
 					if (!inventoryItems.isEmpty())
 					{
 						int i = 1;
 						for (WidgetItem item : inventoryItems)
 						{
-							MenuEntry entry = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(), item.getIndex(),
-								WidgetInfo.INVENTORY.getId(), false);
+							MenuEntry entry = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(),
+								item.getIndex(), WidgetInfo.INVENTORY.getId(), false);
 							utils.doActionClientTick(entry, item.getCanvasBounds(), (3 * i) + calc.getRandomIntBetweenRange(0, 2));
 							i++;
 						}
