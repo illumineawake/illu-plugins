@@ -179,30 +179,4 @@ public class TestPlugin extends Plugin
 			beforeLoc = player.getLocalLocation();
 		}
 	}
-
-	/*@Subscribe
-	public void onChatMessage(ChatMessage event)
-	{
-		log.info("message type {}, message {}", event.getType(), event.getMessage());
-	}*/
-
-	/*@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event)
-	{
-		log.info("Menu Entry before override: {}", event.toString());
-		if (testMenu == null)
-		{
-			return;
-		}
-		if (utils.getRandomEvent()) //for random events
-		{
-			log.debug("Test plugin not overriding due to random event");
-			return;
-		}
-		else
-		{
-			event.setMenuEntry(testMenu);
-			testMenu = null; //this allow the player to interact with the client without their clicks being overridden
-		}
-	}*/
 }
