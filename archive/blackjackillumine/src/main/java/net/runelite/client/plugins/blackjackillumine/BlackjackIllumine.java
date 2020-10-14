@@ -50,7 +50,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.botutils.BotUtils;
+import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.util.HotkeyListener;
 import org.apache.commons.lang3.RandomUtils;
 import org.pf4j.Extension;
@@ -59,7 +59,7 @@ import org.pf4j.Extension;
  * Authors gazivodag longstreet
  */
 @Extension
-@PluginDependency(BotUtils.class)
+@PluginDependency(iUtils.class)
 @PluginDescriptor(
 	name = "BlackjackIllumine",
 	enabledByDefault = false,
@@ -103,7 +103,7 @@ public class BlackjackIllumine extends Plugin
 	private KeyManager keyManager;
 
 	@Inject
-	private BotUtils extUtils;
+	private iUtils extUtils;
 
 	@Inject
 	private Notifier notifier;
