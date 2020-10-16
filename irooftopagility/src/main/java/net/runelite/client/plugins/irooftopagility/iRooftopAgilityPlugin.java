@@ -69,6 +69,7 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.PluginType;
+import static net.runelite.client.plugins.irooftopagility.iRooftopAgilityState.*;
 import net.runelite.client.plugins.iutils.BankUtils;
 import net.runelite.client.plugins.iutils.CalculationUtils;
 import net.runelite.client.plugins.iutils.InventoryUtils;
@@ -77,7 +78,6 @@ import net.runelite.client.plugins.iutils.MouseUtils;
 import net.runelite.client.plugins.iutils.ObjectUtils;
 import net.runelite.client.plugins.iutils.PlayerUtils;
 import net.runelite.client.plugins.iutils.iUtils;
-import static net.runelite.client.plugins.irooftopagility.iRooftopAgilityState.*;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 

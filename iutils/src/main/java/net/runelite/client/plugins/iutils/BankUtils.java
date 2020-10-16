@@ -21,8 +21,6 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
-import net.runelite.client.plugins.iutils.InventoryUtils;
-import net.runelite.client.plugins.iutils.MenuUtils;
 import static net.runelite.client.plugins.iutils.iUtils.iterating;
 import static net.runelite.client.plugins.iutils.iUtils.sleep;
 

@@ -58,6 +58,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import static net.runelite.client.plugins.icombinationrunecrafter.iCombinationRunecrafterState.*;
 import net.runelite.client.plugins.iutils.BankUtils;
 import net.runelite.client.plugins.iutils.CalculationUtils;
 import net.runelite.client.plugins.iutils.InterfaceUtils;
@@ -68,7 +69,6 @@ import net.runelite.client.plugins.iutils.ObjectUtils;
 import net.runelite.client.plugins.iutils.PlayerUtils;
 import net.runelite.client.plugins.iutils.iUtils;
 import static net.runelite.client.plugins.iutils.iUtils.iterating;
-import static net.runelite.client.plugins.icombinationrunecrafter.iCombinationRunecrafterState.*;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
