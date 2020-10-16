@@ -95,6 +95,7 @@ public class iWorldWalkerPlugin extends Plugin
 	iWorldWalkerState state;
 	LocalPoint beforeLoc = new LocalPoint(0, 0);
 	WorldPoint customLocation;
+	WorldPoint catLocation;
 
 	boolean startBot;
 	long sleepLength;
@@ -141,7 +142,7 @@ public class iWorldWalkerPlugin extends Plugin
 					state = null;
 					botTimer = Instant.now();
 					overlayManager.add(overlay);
-					if (config.location().equals(Location.CUSTOM))
+					if (config.category().equals(Category.CUSTOM))
 					{
 						customLocation = getCustomLoc();
 						if (customLocation != null)
@@ -171,7 +172,7 @@ public class iWorldWalkerPlugin extends Plugin
 
 	private WorldPoint getCustomLoc()
 	{
-		if (config.location().equals(Location.CUSTOM))
+		if (config.category().equals(Category.CUSTOM))
 		{
 			int[] customTemp = utils.stringToIntArray(config.customLocation());
 			if (customTemp.length != 3)
@@ -196,7 +197,7 @@ public class iWorldWalkerPlugin extends Plugin
 		switch (event.getKey())
 		{
 			case "location":
-				if (config.location().equals(Location.CUSTOM))
+				if (config.category().equals(Category.CUSTOM))
 				{
 					customLocation = getCustomLoc();
 					if (customLocation != null)
@@ -237,13 +238,28 @@ public class iWorldWalkerPlugin extends Plugin
 
 	private WorldPoint getLocation()
 	{
-		return (config.location().equals(Location.CUSTOM)) ? customLocation : config.location().getWorldPoint();
+		switch (config.category())
+		{
+			case BANKS:
+				return catLocation = config.catBanks().getWorldPoint();
+			case CITIES:
+				return catLocation = config.catCities().getWorldPoint();
+			case GUILDS:
+				return catLocation = config.catGuilds().getWorldPoint();
+			case SKILLING:
+				return catLocation = config.catSkilling().getWorldPoint();
+			case SLAYER:
+				return catLocation = config.catSlayer().getWorldPoint();
+			case MISC:
+				return catLocation = config.catMisc().getWorldPoint();
+		}
+		return (config.category().equals(Category.CUSTOM)) ? customLocation : catLocation;
 	}
 
 	@Subscribe
 	private void onGameTick(GameTick event)
 	{
-		if (!startBot || config.location().equals(Location.NONE))
+		if (!startBot || (config.catBanks().equals(Banks.NONE) && config.category().equals(Category.BANKS)) || (config.catCities().equals(Cities.NONE) && config.category().equals(Category.CITIES)) || (config.catGuilds().equals(Guilds.NONE) && config.category().equals(Category.GUILDS)) || (config.catSkilling().equals(Skilling.NONE) && config.category().equals(Category.SKILLING)) || (config.catSlayer().equals(Slayer.NONE) && config.category().equals(Category.SLAYER)) || (config.catMisc().equals(Misc.NONE) && config.category().equals(Category.MISC) || (config.category().equals(Category.CUSTOM) && config.customLocation().equalsIgnoreCase("0,0,0"))))
 		{
 			return;
 		}
@@ -272,8 +288,33 @@ public class iWorldWalkerPlugin extends Plugin
 				}
 				else
 				{
-					utils.sendGameMessage("Arrived at " + config.location().getName()+ ", stopping World Walker");
-					resetVals();
+					switch (config.category())
+					{
+						case BANKS:
+							utils.sendGameMessage("Arrived at " + config.catBanks().getName()+ ", stopping World Walker");
+							resetVals();
+							return;
+						case CITIES:
+							utils.sendGameMessage("Arrived at " + config.catCities().getName()+ ", stopping World Walker");
+							resetVals();
+							return;
+						case GUILDS:
+							utils.sendGameMessage("Arrived at " + config.catGuilds().getName()+ ", stopping World Walker");
+							resetVals();
+							return;
+						case SKILLING:
+							utils.sendGameMessage("Arrived at " + config.catSkilling().getName()+ ", stopping World Walker");
+							resetVals();
+							return;
+						case SLAYER:
+							utils.sendGameMessage("Arrived at " + config.catSlayer().getName()+ ", stopping World Walker");
+							resetVals();
+							return;
+						case MISC:
+							utils.sendGameMessage("Arrived at " + config.catMisc().getName()+ ", stopping World Walker");
+							resetVals();
+							return;
+					}
 				}
 			}
 			beforeLoc = player.getLocalLocation();
