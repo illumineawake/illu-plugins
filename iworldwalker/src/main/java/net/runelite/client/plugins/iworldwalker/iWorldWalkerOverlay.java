@@ -43,10 +43,8 @@ class iWorldWalkerOverlay extends OverlayPanel
 	}
 
 	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		if (plugin.botTimer == null || !config.enableUI())
-		{
+	public Dimension render(Graphics2D graphics) {
+		if (plugin.botTimer == null || !config.enableUI()) {
 			return null;
 		}
 		TableComponent tableComponent = new TableComponent();
@@ -54,9 +52,28 @@ class iWorldWalkerOverlay extends OverlayPanel
 
 		Duration duration = Duration.between(plugin.botTimer, Instant.now());
 		timeFormat = (duration.toHours() < 1) ? "mm:ss" : "HH:mm:ss";
-		tableComponent.addRow("Time running:", formatDuration(duration.toMillis(),timeFormat));
+		tableComponent.addRow("Time running:", formatDuration(duration.toMillis(), timeFormat));
 
-		tableComponent.addRow("Walking to:", config.location().getName());
+		if(config.category().equals(Category.BANKS))
+		{
+			tableComponent.addRow("Walking to:", config.catBanks().getName());
+		}else if(config.category().equals(Category.CITIES))
+		{
+			tableComponent.addRow("Walking to:", config.catCities().getName());
+		} else if(config.category().equals(Category.GUILDS))
+		{
+			tableComponent.addRow("Walking to:", config.catGuilds().getName());
+		}else if(config.category().equals(Category.SKILLING))
+		{
+			tableComponent.addRow("Walking to:", config.catSkilling().getName());
+		}else if(config.category().equals(Category.SLAYER))
+		{
+			tableComponent.addRow("Walking to:", config.catSlayer().getName());
+		}else
+			{
+				tableComponent.addRow("Walking to:", config.catMisc().getName());
+		}
+
 
 		TableComponent tableDelayComponent = new TableComponent();
 		tableDelayComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);

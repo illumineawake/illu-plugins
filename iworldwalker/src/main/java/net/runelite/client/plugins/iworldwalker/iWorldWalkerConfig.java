@@ -42,7 +42,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "delayConfig",
 		name = "Sleep Delay Configuration",
 		description = "Configure how the bot handles sleep delays",
-		position = 0
+		position = 1
 	)
 	default boolean delayConfig()
 	{
@@ -57,7 +57,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "sleepMin",
 		name = "Sleep Min",
 		description = "",
-		position = 1,
+		position = 2,
 		section = "delayConfig"
 	)
 	default int sleepMin()
@@ -73,7 +73,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "sleepMax",
 		name = "Sleep Max",
 		description = "",
-		position = 2,
+		position = 3,
 		section = "delayConfig"
 	)
 	default int sleepMax()
@@ -89,7 +89,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "sleepTarget",
 		name = "Sleep Target",
 		description = "",
-		position = 3,
+		position = 4,
 		section = "delayConfig"
 	)
 	default int sleepTarget()
@@ -105,7 +105,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "sleepDeviation",
 		name = "Sleep Deviation",
 		description = "",
-		position = 4,
+		position = 5,
 		section = "delayConfig"
 	)
 	default int sleepDeviation()
@@ -117,7 +117,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "sleepWeightedDistribution",
 		name = "Sleep Weighted Distribution",
 		description = "Shifts the random distribution towards the lower end at the target, otherwise it will be an even distribution",
-		position = 5,
+		position = 6,
 		section = "delayConfig"
 	)
 	default boolean sleepWeightedDistribution()
@@ -129,7 +129,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "delayTickConfig",
 		name = "Game Tick Configuration",
 		description = "Configure how the bot handles game tick delays, 1 game tick equates to roughly 600ms",
-		position = 10
+		position = 7
 	)
 	default boolean delayTickConfig()
 	{
@@ -144,7 +144,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "tickDelayMin",
 		name = "Game Tick Min",
 		description = "",
-		position = 11,
+		position = 8,
 		section = "delayTickConfig"
 	)
 	default int tickDelayMin()
@@ -160,7 +160,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "tickDelayMax",
 		name = "Game Tick Max",
 		description = "",
-		position = 12,
+		position = 9,
 		section = "delayTickConfig"
 	)
 	default int tickDelayMax()
@@ -176,7 +176,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "tickDelayTarget",
 		name = "Game Tick Target",
 		description = "",
-		position = 13,
+		position = 10,
 		section = "delayTickConfig"
 	)
 	default int tickDelayTarget()
@@ -192,7 +192,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "tickDelayDeviation",
 		name = "Game Tick Deviation",
 		description = "",
-		position = 14,
+		position = 11,
 		section = "delayTickConfig"
 	)
 	default int tickDelayDeviation()
@@ -204,7 +204,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "tickDelayWeightedDistribution",
 		name = "Game Tick Weighted Distribution",
 		description = "Shifts the random distribution towards the lower end at the target, otherwise it will be an even distribution",
-		position = 15,
+		position = 12,
 		section = "delayTickConfig"
 	)
 	default boolean tickDelayWeightedDistribution()
@@ -212,69 +212,45 @@ public interface iWorldWalkerConfig extends Config
 		return false;
 	}
 
-	@ConfigTitleSection(
-			keyName = "instructionsTitle",
-			name = "Instructions",
-			description = "",
-			position = 16
+	@ConfigSection(
+		keyName = "instructionsTitle",
+		name = "Instructions",
+		description = "Instructions Title",
+		position = 15
 	)
-	default Title instructionsTitle()
+	default boolean instructionsTitle()
 	{
-		return new Title();
+		return false;
 	}
 
 	@ConfigItem(
-			keyName = "instructions",
-			name = "",
-			description = "Instructions. Don't enter anything into this field",
-			position = 17,
-			titleSection = "instructionsTitle"
+		keyName = "instructions",
+		name = "",
+		description = "Instructions. Don't enter anything into this field",
+		position = 18,
+		section = "instructionsTitle"
 	)
 	default String instructions()
 	{
 		return "Select your location from the drop-down or enter a custom location using x,y,z format. Use Location/Tile Location in Developer Tools to obtain a custom coordinate.";
 	}
 
-	@ConfigItem(
-		keyName = "location",
-		name = "Location",
-		description = "Select the location to walk to",
-		position = 20
+	@ConfigSection(
+			keyName = "notesTitle",
+			name = "Custom Notes",
+			description = "Notes Title",
+			position = 29
 	)
-	default Location location()
+	default boolean notesTitle()
 	{
-		return Location.NONE;
-	}
-
-	@ConfigItem(
-		keyName = "customLocation",
-		name = "Custom Location",
-		description = "Enter a Coordinate to walk to. Co-ordinate format should be x,y,z. Turn on Location or Tile Location in Developer Tools to obtain coordinates.",
-		position = 21,
-		hidden = true,
-		unhide = "location",
-		unhideValue = "CUSTOM"
-	)
-	default String customLocation()
-	{
-		return "0,0,0";
-	}
-
-	@ConfigItem(
-		keyName = "rand",
-		name = "Random Tile radius",
-		description = "A random radius value applied to tiles",
-		position = 22
-	)
-	default int rand()
-	{
-		return 3;
+		return false;
 	}
 
 	@ConfigItem(
 		keyName = "notepad",
-		name = "Notepad for coords",
+		name = "",
 		description = "Paste custom coords that you want to save for frequent use",
+		section = "notesTitle",
 		position = 30
 	)
 	default String notepad()
@@ -282,11 +258,171 @@ public interface iWorldWalkerConfig extends Config
 		return "Paste custom co-ords that you want to save for frequent use";
 	}
 
+	@ConfigSection(
+			keyName = "showQuestNotes",
+			name = "Show Quest Notes",
+			description = "Unhide the quest notes section, containing notes on supported quests",
+			position = 31
+	)
+	default boolean showQuestNotes()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "supportedQuests",
+			name = "Quests",
+			description = "Dropdown of supported quests",
+			position = 32,
+			section = "showQuestNotes"
+	)
+	default Quest quest()
+	{
+		return Quest.CLIENT_OF_KOUREND;
+	}
+
+	@ConfigItem(
+			keyName = "questNotesCOK",
+			name = "Quest Notes",
+			description = "Notes for supported quests",
+			position = 33,
+			hidden = true,
+			unhide = "supportedQuests",
+			unhideValue = "CLIENT_OF_KOUREND",
+			section = "showQuestNotes"
+	)
+	default String questNotesCOK()
+	{
+		return Quest.CLIENT_OF_KOUREND.getNotes();
+	}
+
+	@ConfigItem(
+			keyName = "category",
+			name = "Category",
+			description = "Select the category of destinations",
+			position = 41
+	)
+	default Category category()
+	{
+		return Category.NONE;
+	}
+
+	@ConfigItem(
+			keyName = "catBanks",
+			name = "Location",
+			description = "Select the location to walk to",
+			position = 42,
+			hidden = true,
+			unhide = "category",
+			unhideValue = "BANKS"
+	)
+	default Banks catBanks()
+	{
+		return Banks.NONE;
+	}
+
+	@ConfigItem(
+			keyName = "catCities",
+			name = "Location",
+			description = "Select the location to walk to",
+			position = 43,
+			hidden = true,
+			unhide = "category",
+			unhideValue = "CITIES"
+	)
+	default Cities catCities()
+	{
+		return Cities.NONE;
+	}
+
+	@ConfigItem(
+			keyName = "catGuilds",
+			name = "Location",
+			description = "Select the location to walk to",
+			position = 44,
+			hidden = true,
+			unhide = "category",
+			unhideValue = "GUILDS"
+	)
+	default Guilds catGuilds()
+	{
+		return Guilds.NONE;
+	}
+
+	@ConfigItem(
+			keyName = "catSkilling",
+			name = "Location",
+			description = "Select the location to walk to",
+			position = 45,
+			hidden = true,
+			unhide = "category",
+			unhideValue = "SKILLING"
+	)
+	default Skilling catSkilling()
+	{
+		return Skilling.NONE;
+	}
+
+	@ConfigItem(
+			keyName = "catSlayer",
+			name = "Location",
+			description = "Select the location to walk to",
+			position = 46,
+			hidden = true,
+			unhide = "category",
+			unhideValue = "SLAYER"
+	)
+	default Slayer catSlayer()
+	{
+		return Slayer.NONE;
+	}
+
+	@ConfigItem(
+			keyName = "catMisc",
+			name = "Location",
+			description = "Select the location to walk to",
+			position = 47,
+			hidden = true,
+			unhide = "category",
+			unhideValue = "MISC"
+	)
+	default Misc catMisc()
+	{
+		return Misc.NONE;
+	}
+
+	@ConfigItem(
+			keyName = "customLocation",
+			name = "Custom Location",
+			description = "Enter a Coordinate to walk to. Co-ordinate format should be x,y,z. Turn on Location or Tile Location in Developer Tools to obtain coordinates.",
+			position = 48,
+			hidden = true,
+			unhide = "category",
+			unhideValue = "CUSTOM"
+	)
+	default String customLocation()
+	{
+		return "0,0,0";
+	}
+
+	@ConfigItem(
+			keyName = "rand",
+			name = "Random Tile radius",
+			description = "A random radius value applied to tiles",
+			position = 49
+	)
+	default int rand()
+	{
+		return 3;
+	}
+
+
+
 	@ConfigItem(
 			keyName = "enableUI",
 			name = "Enable UI",
 			description = "Enable to turn on in game UI",
-			position = 45
+			position = 50
 	)
 	default boolean enableUI()
 	{
@@ -297,7 +433,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "startButton",
 		name = "Start/Stop",
 		description = "Start/Stop plugin",
-		position = 50
+		position = 51
 	)
 	default Button startButton()
 	{
