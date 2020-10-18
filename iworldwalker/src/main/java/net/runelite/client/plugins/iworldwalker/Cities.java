@@ -16,7 +16,7 @@ public enum Cities
 	PORT_SARIM("Port Sarim", new WorldPoint(3041, 3236, 0)),
 	RELLEKKA("Rellekka", new WorldPoint(2644, 3677, 0)),
 	RIMMINGTON_MINE("Rimmington Mine", new WorldPoint(2977, 3240, 0)),
-	WIZARD_TOWER("Wizard Tower", new WorldPoint(3109,3164,0));
+	WIZARD_TOWER("Wizard Tower", new WorldPoint(3109, 3164, 0));
 
 	private final String name;
 	private WorldPoint worldPoint;

@@ -43,8 +43,10 @@ class iWorldWalkerOverlay extends OverlayPanel
 	}
 
 	@Override
-	public Dimension render(Graphics2D graphics) {
-		if (plugin.botTimer == null || !config.enableUI()) {
+	public Dimension render(Graphics2D graphics)
+	{
+		if (plugin.botTimer == null || !config.enableUI())
+		{
 			return null;
 		}
 		TableComponent tableComponent = new TableComponent();
@@ -54,24 +56,29 @@ class iWorldWalkerOverlay extends OverlayPanel
 		timeFormat = (duration.toHours() < 1) ? "mm:ss" : "HH:mm:ss";
 		tableComponent.addRow("Time running:", formatDuration(duration.toMillis(), timeFormat));
 
-		if(config.category().equals(Category.BANKS))
+		if (config.category().equals(Category.BANKS))
 		{
 			tableComponent.addRow("Walking to:", config.catBanks().getName());
-		}else if(config.category().equals(Category.CITIES))
+		}
+		else if (config.category().equals(Category.CITIES))
 		{
 			tableComponent.addRow("Walking to:", config.catCities().getName());
-		} else if(config.category().equals(Category.GUILDS))
+		}
+		else if (config.category().equals(Category.GUILDS))
 		{
 			tableComponent.addRow("Walking to:", config.catGuilds().getName());
-		}else if(config.category().equals(Category.SKILLING))
+		}
+		else if (config.category().equals(Category.SKILLING))
 		{
 			tableComponent.addRow("Walking to:", config.catSkilling().getName());
-		}else if(config.category().equals(Category.SLAYER))
+		}
+		else if (config.category().equals(Category.SLAYER))
 		{
 			tableComponent.addRow("Walking to:", config.catSlayer().getName());
-		}else
-			{
-				tableComponent.addRow("Walking to:", config.catMisc().getName());
+		}
+		else
+		{
+			tableComponent.addRow("Walking to:", config.catMisc().getName());
 		}
 
 
@@ -84,8 +91,8 @@ class iWorldWalkerOverlay extends OverlayPanel
 		if (!tableComponent.isEmpty())
 		{
 			panelComponent.setBackgroundColor(ColorUtil.fromHex("#121212")); //Material Dark default
-			panelComponent.setPreferredSize(new Dimension(200,200));
-			panelComponent.setBorder(new Rectangle(5,5,5,5));
+			panelComponent.setPreferredSize(new Dimension(200, 200));
+			panelComponent.setBorder(new Rectangle(5, 5, 5, 5));
 			panelComponent.getChildren().add(TitleComponent.builder()
 				.text("Illumine World Walker")
 				.color(ColorUtil.fromHex("#40C4FF"))

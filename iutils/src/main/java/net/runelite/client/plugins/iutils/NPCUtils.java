@@ -9,6 +9,7 @@ import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
+import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.queries.NPCQuery;
 
@@ -49,6 +50,28 @@ public class NPCUtils
 				.nameContains(names)
 				.result(client)
 				.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
+	public NPC findNearestNpcIndex(int index, int...ids)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		List<NPC> npcs = new ArrayList<>(new NPCQuery()
+			.idEquals(ids)
+			.result(client));
+
+		for (NPC npc : npcs)
+		{
+			if (npc.getIndex() == index)
+				return npc;
+		}
+		return null;
 	}
 
 	@Nullable

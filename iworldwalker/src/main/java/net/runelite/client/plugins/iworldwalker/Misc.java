@@ -15,7 +15,7 @@ public enum Misc
 	GOBLIN_VILLAGE("Goblin Village", new WorldPoint(2956, 3505, 0)),
 	RIMMINGTON_MINE("Rimmington Mine", new WorldPoint(2977, 3240, 0)),
 	WINTERTODT_BANK("Wintertodt Bank", new WorldPoint(1639, 3943, 0)),
-	WIZARD_TOWER("Wizard Tower", new WorldPoint(3109,3164,0));
+	WIZARD_TOWER("Wizard Tower", new WorldPoint(3109, 3164, 0));
 
 	private final String name;
 	private WorldPoint worldPoint;

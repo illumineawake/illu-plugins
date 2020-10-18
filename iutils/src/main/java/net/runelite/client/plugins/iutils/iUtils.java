@@ -335,10 +335,6 @@ public class iUtils extends Plugin {
     @Subscribe
     private void onMenuOptionClicked(MenuOptionClicked event)
     {
-		if (menu.entry != null)
-		{
-			log.info("Received MOC event: {}", menu.entry);
-		}
         if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
                 event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
         {

@@ -35,7 +35,7 @@ include(":ipowerskiller")
 include(":iquickeater")
 include(":irandomhandler")
 include(":irooftopagility")
-include("iTaskTemplate")
+include("itasktemplate")
 include(":iworldwalker")
 
 for (project in rootProject.children) {

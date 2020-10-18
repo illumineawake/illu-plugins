@@ -236,10 +236,10 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigSection(
-			keyName = "notesTitle",
-			name = "Custom Notes",
-			description = "Notes Title",
-			position = 29
+		keyName = "notesTitle",
+		name = "Custom Notes",
+		description = "Notes Title",
+		position = 29
 	)
 	default boolean notesTitle()
 	{
@@ -259,10 +259,10 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigSection(
-			keyName = "showQuestNotes",
-			name = "Show Quest Notes",
-			description = "Unhide the quest notes section, containing notes on supported quests",
-			position = 31
+		keyName = "showQuestNotes",
+		name = "Show Quest Notes",
+		description = "Unhide the quest notes section, containing notes on supported quests",
+		position = 31
 	)
 	default boolean showQuestNotes()
 	{
@@ -270,11 +270,11 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "supportedQuests",
-			name = "Quests",
-			description = "Dropdown of supported quests",
-			position = 32,
-			section = "showQuestNotes"
+		keyName = "supportedQuests",
+		name = "Quests",
+		description = "Dropdown of supported quests",
+		position = 32,
+		section = "showQuestNotes"
 	)
 	default Quest quest()
 	{
@@ -282,14 +282,14 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "questNotesCOK",
-			name = "Quest Notes",
-			description = "Notes for supported quests",
-			position = 33,
-			hidden = true,
-			unhide = "supportedQuests",
-			unhideValue = "CLIENT_OF_KOUREND",
-			section = "showQuestNotes"
+		keyName = "questNotesCOK",
+		name = "Quest Notes",
+		description = "Notes for supported quests",
+		position = 33,
+		hidden = true,
+		unhide = "supportedQuests",
+		unhideValue = "CLIENT_OF_KOUREND",
+		section = "showQuestNotes"
 	)
 	default String questNotesCOK()
 	{
@@ -297,10 +297,10 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "category",
-			name = "Category",
-			description = "Select the category of destinations",
-			position = 41
+		keyName = "category",
+		name = "Category",
+		description = "Select the category of destinations",
+		position = 41
 	)
 	default Category category()
 	{
@@ -308,13 +308,13 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "catBanks",
-			name = "Location",
-			description = "Select the location to walk to",
-			position = 42,
-			hidden = true,
-			unhide = "category",
-			unhideValue = "BANKS"
+		keyName = "catBanks",
+		name = "Location",
+		description = "Select the location to walk to",
+		position = 42,
+		hidden = true,
+		unhide = "category",
+		unhideValue = "BANKS"
 	)
 	default Banks catBanks()
 	{
@@ -322,13 +322,13 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "catCities",
-			name = "Location",
-			description = "Select the location to walk to",
-			position = 43,
-			hidden = true,
-			unhide = "category",
-			unhideValue = "CITIES"
+		keyName = "catCities",
+		name = "Location",
+		description = "Select the location to walk to",
+		position = 43,
+		hidden = true,
+		unhide = "category",
+		unhideValue = "CITIES"
 	)
 	default Cities catCities()
 	{
@@ -336,13 +336,13 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "catGuilds",
-			name = "Location",
-			description = "Select the location to walk to",
-			position = 44,
-			hidden = true,
-			unhide = "category",
-			unhideValue = "GUILDS"
+		keyName = "catGuilds",
+		name = "Location",
+		description = "Select the location to walk to",
+		position = 44,
+		hidden = true,
+		unhide = "category",
+		unhideValue = "GUILDS"
 	)
 	default Guilds catGuilds()
 	{
@@ -350,13 +350,13 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "catSkilling",
-			name = "Location",
-			description = "Select the location to walk to",
-			position = 45,
-			hidden = true,
-			unhide = "category",
-			unhideValue = "SKILLING"
+		keyName = "catSkilling",
+		name = "Location",
+		description = "Select the location to walk to",
+		position = 45,
+		hidden = true,
+		unhide = "category",
+		unhideValue = "SKILLING"
 	)
 	default Skilling catSkilling()
 	{
@@ -364,13 +364,13 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "catSlayer",
-			name = "Location",
-			description = "Select the location to walk to",
-			position = 46,
-			hidden = true,
-			unhide = "category",
-			unhideValue = "SLAYER"
+		keyName = "catSlayer",
+		name = "Location",
+		description = "Select the location to walk to",
+		position = 46,
+		hidden = true,
+		unhide = "category",
+		unhideValue = "SLAYER"
 	)
 	default Slayer catSlayer()
 	{
@@ -378,13 +378,13 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "catMisc",
-			name = "Location",
-			description = "Select the location to walk to",
-			position = 47,
-			hidden = true,
-			unhide = "category",
-			unhideValue = "MISC"
+		keyName = "catMisc",
+		name = "Location",
+		description = "Select the location to walk to",
+		position = 47,
+		hidden = true,
+		unhide = "category",
+		unhideValue = "MISC"
 	)
 	default Misc catMisc()
 	{
@@ -392,13 +392,13 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "customLocation",
-			name = "Custom Location",
-			description = "Enter a Coordinate to walk to. Co-ordinate format should be x,y,z. Turn on Location or Tile Location in Developer Tools to obtain coordinates.",
-			position = 48,
-			hidden = true,
-			unhide = "category",
-			unhideValue = "CUSTOM"
+		keyName = "customLocation",
+		name = "Custom Location",
+		description = "Enter a Coordinate to walk to. Co-ordinate format should be x,y,z. Turn on Location or Tile Location in Developer Tools to obtain coordinates.",
+		position = 48,
+		hidden = true,
+		unhide = "category",
+		unhideValue = "CUSTOM"
 	)
 	default String customLocation()
 	{
@@ -406,10 +406,10 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "rand",
-			name = "Random Tile radius",
-			description = "A random radius value applied to tiles",
-			position = 49
+		keyName = "rand",
+		name = "Random Tile radius",
+		description = "A random radius value applied to tiles",
+		position = 49
 	)
 	default int rand()
 	{
@@ -417,12 +417,11 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 
-
 	@ConfigItem(
-			keyName = "enableUI",
-			name = "Enable UI",
-			description = "Enable to turn on in game UI",
-			position = 50
+		keyName = "enableUI",
+		name = "Enable UI",
+		description = "Enable to turn on in game UI",
+		position = 50
 	)
 	default boolean enableUI()
 	{

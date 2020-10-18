@@ -12,7 +12,7 @@ import net.runelite.api.coords.WorldPoint;
 public enum Guilds
 {
 	NONE(""),
-	FISHING_GUILD("Fishing Guild", new WorldPoint(2611,3393,0));
+	FISHING_GUILD("Fishing Guild", new WorldPoint(2611, 3393, 0));
 
 	private final String name;
 	private WorldPoint worldPoint;

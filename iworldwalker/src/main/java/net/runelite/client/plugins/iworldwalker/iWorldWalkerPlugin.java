@@ -291,27 +291,27 @@ public class iWorldWalkerPlugin extends Plugin
 					switch (config.category())
 					{
 						case BANKS:
-							utils.sendGameMessage("Arrived at " + config.catBanks().getName()+ ", stopping World Walker");
+							utils.sendGameMessage("Arrived at " + config.catBanks().getName() + ", stopping World Walker");
 							resetVals();
 							return;
 						case CITIES:
-							utils.sendGameMessage("Arrived at " + config.catCities().getName()+ ", stopping World Walker");
+							utils.sendGameMessage("Arrived at " + config.catCities().getName() + ", stopping World Walker");
 							resetVals();
 							return;
 						case GUILDS:
-							utils.sendGameMessage("Arrived at " + config.catGuilds().getName()+ ", stopping World Walker");
+							utils.sendGameMessage("Arrived at " + config.catGuilds().getName() + ", stopping World Walker");
 							resetVals();
 							return;
 						case SKILLING:
-							utils.sendGameMessage("Arrived at " + config.catSkilling().getName()+ ", stopping World Walker");
+							utils.sendGameMessage("Arrived at " + config.catSkilling().getName() + ", stopping World Walker");
 							resetVals();
 							return;
 						case SLAYER:
-							utils.sendGameMessage("Arrived at " + config.catSlayer().getName()+ ", stopping World Walker");
+							utils.sendGameMessage("Arrived at " + config.catSlayer().getName() + ", stopping World Walker");
 							resetVals();
 							return;
 						case MISC:
-							utils.sendGameMessage("Arrived at " + config.catMisc().getName()+ ", stopping World Walker");
+							utils.sendGameMessage("Arrived at " + config.catMisc().getName() + ", stopping World Walker");
 							resetVals();
 							return;
 					}
