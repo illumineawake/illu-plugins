@@ -208,7 +208,7 @@ public class MouseUtils
 		else
 		{
 			Point finalClickPoint = point;
-			log.info("Clicking on new thread");
+			log.debug("Clicking on new thread");
 			if (config.getMouse().equals(MouseType.MOVE))
 			{
 				executorService.submit(() -> moveClick(finalClickPoint));

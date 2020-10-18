@@ -99,7 +99,7 @@ public class iTaskTemplatePlugin extends Plugin
 	public static long sleepLength;
 	public static int tickLength;
 	public static int timeout;
-	public String status = "starting...";
+	public static String status = "starting...";
 
 	@Provides
 	iTaskTemplateConfig provideConfig(ConfigManager configManager)

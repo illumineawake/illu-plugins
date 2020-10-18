@@ -347,7 +347,7 @@ public class iUtils extends Plugin {
         {
 			tickActions++;
             event.consume();
-            log.info("Actions this game tick: {}", tickActions);
+            log.debug("Actions this game tick: {}", tickActions);
             if (menu.consumeClick)
             {
                 log.info("Consuming a click and not sending anything else");
