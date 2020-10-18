@@ -4,7 +4,7 @@ External plugins for OpenOSRS that focus on automation, this is a seperate entit
 
 The purpose of this repository is primarily for my own learning but also to provide open-source examples of automation using plugins. 
 
-My development skills are novice at best so please take all of this with a grain of salt, feel free to join the discord: https://discord.gg/9uguASn or message me illumine#0083 to provide feedback or talk OSRS automation.
+My development skills are novice at best so please take all of this with a grain of salt, feel free to join the discord: https://discord.com/invite/9fGzEDR or message me illumine#0083 to provide feedback or talk OSRS automation.
 
 # Use
 
