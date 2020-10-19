@@ -21,6 +21,8 @@ public enum Banks
 	FALADOR_EAST_BANK("Fally East Bank", new WorldPoint(3012, 3356, 0)),
 	FALADOR_WEST_BANK("Fally West Bank", new WorldPoint(2945, 3369, 0)),
 	GRAND_EXCHANGE("Grand Exchange", new WorldPoint(3163, 3485, 0)),
+	MOUNT_KARUULM("Mount Karuulm", new WorldPoint(1324, 3823, 0)),
+	MOUNT_QUIDAMORTEM("Mount Quidamortem", new WorldPoint(1254, 3566, 0)),
 	SEERS_BANK("Seers Bank", new WorldPoint(2725, 3491, 0)),
 	SHANTAY_PASS("Shantay Pass", new WorldPoint(3303, 3121, 0)),
 	VARROCK_EAST_BANK("Varrock East Bank", new WorldPoint(3253, 3421, 0)),

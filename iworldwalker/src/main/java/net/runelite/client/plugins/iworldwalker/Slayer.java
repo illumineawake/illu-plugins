@@ -12,8 +12,12 @@ import net.runelite.api.coords.WorldPoint;
 public enum Slayer
 {
 	NONE(""),
-	BURTHORPE_SLAYER("Burthorpe Slayer", new WorldPoint(2931, 3536, 0)),
-	TREE_GNOME_NIEVE("Tree Gnome Nieve", new WorldPoint(2611, 3092, 0));
+	BURTHORPE_SLAYER("Turael", new WorldPoint(2931, 3536, 0)),
+	FREMENNIK_CAVE("Fremennik Cave", new WorldPoint(2794, 3615, 0)),
+	KARUULM_KONAR("Konar", new WorldPoint(1308, 3786, 0)),
+	LUMBRIDGE_SWAMP_CAVE("Lumby Swamp Cave", new WorldPoint(3169, 3172, 0)),
+	SLAYER_TOWER("Slayer Tower", new WorldPoint(3429, 3530, 0)),
+	TREE_GNOME_NIEVE("Nieve", new WorldPoint(2611, 3092, 0));
 
 	private final String name;
 	private WorldPoint worldPoint;
