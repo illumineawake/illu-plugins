@@ -297,6 +297,21 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "questNotesBIO",
+		name = "Quest Notes",
+		description = "Notes for supported quests",
+		position = 34,
+		hidden = true,
+		unhide = "supportedQuests",
+		unhideValue = "BIOHAZARD",
+		section = "showQuestNotes"
+	)
+	default String questNotesBIO()
+	{
+		return Quest.BIOHAZARD.getNotes();
+	}
+
+	@ConfigItem(
 		keyName = "category",
 		name = "Category",
 		description = "Select the category of destinations",
