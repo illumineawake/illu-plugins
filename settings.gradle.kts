@@ -26,15 +26,17 @@
 rootProject.name = "Illumine Plugins"
 
 include(":botutils")
-include("combinationrunecrafter")
-include(":magiccaster")
-include(":menudebugger")
-include("powerfighter")
-include("powerskiller")
-include(":quickeater")
-include("randomhandler")
-include(":rooftopagility")
-include(":worldwalker")
+include(":iutils")
+include(":icombinationrunecrafter")
+include(":imagiccaster")
+include(":imenudebugger")
+include(":ipowerfighter")
+include(":ipowerskiller")
+include(":iquickeater")
+include(":irandomhandler")
+include(":irooftopagility")
+include("itasktemplate")
+include(":iworldwalker")
 
 for (project in rootProject.children) {
     project.apply {

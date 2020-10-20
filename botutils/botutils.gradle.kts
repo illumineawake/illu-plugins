@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "4.9.0"
+version = "4.9.1"
 
 project.extra["PluginName"] = "BotUtils"
 project.extra["PluginDescription"] = "Illumine - Utils required for plugins to function with added automation"
