@@ -6,25 +6,21 @@
 package net.runelite.client.plugins.iworldwalker;
 
 import lombok.Getter;
-import net.runelite.api.coords.WorldPoint;
 
 @Getter
-public enum Category
+public enum Farming
 {
 	NONE("None"),
-	BANKS("Banks"),
-	BARCRAWL("Barcrawl"),
-	CITIES("Cities"),
-	FARMING("Farming"),
-	GUILDS("Guilds"),
-	SKILLING("Skilling"),
-	SLAYER("Slayer"),
-	MISC("Misc"),
-	CUSTOM("Custom");
+	ALLOTMENTS("Allotments"),
+	BUSHES("Bushes"),
+	FRUIT_TREES("Fruit Trees"),
+	HERBS("Herbs"),
+	HOPS("Hops"),
+	TREES("Trees");
 
 	private final String name;
 
-	Category(String name)
+	Farming(String name)
 	{
 		this.name = name;
 	}

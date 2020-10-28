@@ -9,24 +9,24 @@ import lombok.Getter;
 import net.runelite.api.coords.WorldPoint;
 
 @Getter
-public enum Category
+public enum Hops
 {
 	NONE("None"),
-	BANKS("Banks"),
-	BARCRAWL("Barcrawl"),
-	CITIES("Cities"),
-	FARMING("Farming"),
-	GUILDS("Guilds"),
-	SKILLING("Skilling"),
-	SLAYER("Slayer"),
-	MISC("Misc"),
-	CUSTOM("Custom");
+	LUMBRIDGE("Lumbridge", new WorldPoint(3231, 3312, 0)),
+	SEERS_VILLAGE("Seers' Village", new WorldPoint(2670, 3522, 0)),
+	YANILLE("Yanille", new WorldPoint(2578, 3102, 0));
 
 	private final String name;
+	private WorldPoint worldPoint;
 
-	Category(String name)
+	Hops(String name, WorldPoint worldPoint)
+	{
+		this.name = name;
+		this.worldPoint = worldPoint;
+	}
+
+	Hops(String name)
 	{
 		this.name = name;
 	}
-
 }

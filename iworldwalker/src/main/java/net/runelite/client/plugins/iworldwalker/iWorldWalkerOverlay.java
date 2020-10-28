@@ -29,6 +29,7 @@ class iWorldWalkerOverlay extends OverlayPanel
 	private final iWorldWalkerConfig config;
 
 	String timeFormat;
+	String farmLocation;
 	private String infoStatus = "Starting...";
 
 	@Inject
@@ -60,9 +61,17 @@ class iWorldWalkerOverlay extends OverlayPanel
 		{
 			tableComponent.addRow("Walking to:", config.catBanks().getName());
 		}
+		else if (config.category().equals(Category.BARCRAWL))
+		{
+			tableComponent.addRow("Walking to:", config.catBarcrawl().getName());
+		}
 		else if (config.category().equals(Category.CITIES))
 		{
 			tableComponent.addRow("Walking to:", config.catCities().getName());
+		}
+		else if (config.category().equals(Category.FARMING))
+		{
+			tableComponent.addRow("Walking to:", getFarmName());
 		}
 		else if (config.category().equals(Category.GUILDS))
 		{
@@ -105,5 +114,28 @@ class iWorldWalkerOverlay extends OverlayPanel
 			panelComponent.getChildren().add(tableDelayComponent);
 		}
 		return super.render(graphics);
+	}
+
+	private String getFarmName()
+	{
+		if (config.category().equals(Category.FARMING) && !config.catFarming().equals(Farming.NONE))
+		{
+			switch (config.catFarming())
+			{
+				case ALLOTMENTS:
+					return farmLocation = config.catFarmAllotments().getName();
+				case BUSHES:
+					return farmLocation = config.catFarmBushes().getName();
+				case FRUIT_TREES:
+					return farmLocation = config.catFarmFruitTrees().getName();
+				case HERBS:
+					return farmLocation = config.catFarmHerbs().getName();
+				case HOPS:
+					return farmLocation = config.catFarmHops().getName();
+				case TREES:
+					return farmLocation = config.catFarmTrees().getName();
+			}
+		}
+		return null;
 	}
 }

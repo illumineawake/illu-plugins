@@ -96,6 +96,7 @@ public class iWorldWalkerPlugin extends Plugin
 	LocalPoint beforeLoc = new LocalPoint(0, 0);
 	WorldPoint customLocation;
 	WorldPoint catLocation;
+	String farmLocation;
 
 	boolean startBot;
 	long sleepLength;
@@ -187,6 +188,52 @@ public class iWorldWalkerPlugin extends Plugin
 		return null;
 	}
 
+	private WorldPoint getFarmLocation()
+	{
+		if (config.category().equals(Category.FARMING))
+		{
+			switch (config.catFarming())
+			{
+				case ALLOTMENTS:
+					return catLocation = config.catFarmAllotments().getWorldPoint();
+				case BUSHES:
+					return catLocation = config.catFarmBushes().getWorldPoint();
+				case FRUIT_TREES:
+					return catLocation = config.catFarmFruitTrees().getWorldPoint();
+				case HERBS:
+					return catLocation = config.catFarmHerbs().getWorldPoint();
+				case HOPS:
+					return catLocation = config.catFarmHops().getWorldPoint();
+				case TREES:
+					return catLocation = config.catFarmTrees().getWorldPoint();
+			}
+		}
+		return null;
+	}
+
+	private String getFarmName()
+	{
+		if (config.category().equals(Category.FARMING) && !config.catFarming().equals(Farming.NONE))
+		{
+			switch (config.catFarming())
+			{
+				case ALLOTMENTS:
+					return farmLocation = config.catFarmAllotments().getName();
+				case BUSHES:
+					return farmLocation = config.catFarmBushes().getName();
+				case FRUIT_TREES:
+					return farmLocation = config.catFarmFruitTrees().getName();
+				case HERBS:
+					return farmLocation = config.catFarmHerbs().getName();
+				case HOPS:
+					return farmLocation = config.catFarmHops().getName();
+				case TREES:
+					return farmLocation = config.catFarmTrees().getName();
+			}
+		}
+		return null;
+	}
+
 	@Subscribe
 	private void onConfigChange(ConfigChanged event)
 	{
@@ -242,8 +289,12 @@ public class iWorldWalkerPlugin extends Plugin
 		{
 			case BANKS:
 				return catLocation = config.catBanks().getWorldPoint();
+			case BARCRAWL:
+				return catLocation = config.catBarcrawl().getWorldPoint();
 			case CITIES:
 				return catLocation = config.catCities().getWorldPoint();
+			case FARMING:
+				return getFarmLocation();
 			case GUILDS:
 				return catLocation = config.catGuilds().getWorldPoint();
 			case SKILLING:
@@ -259,7 +310,11 @@ public class iWorldWalkerPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick event)
 	{
-		if (!startBot || (config.catBanks().equals(Banks.NONE) && config.category().equals(Category.BANKS)) || (config.catCities().equals(Cities.NONE) && config.category().equals(Category.CITIES)) || (config.catGuilds().equals(Guilds.NONE) && config.category().equals(Category.GUILDS)) || (config.catSkilling().equals(Skilling.NONE) && config.category().equals(Category.SKILLING)) || (config.catSlayer().equals(Slayer.NONE) && config.category().equals(Category.SLAYER)) || (config.catMisc().equals(Misc.NONE) && config.category().equals(Category.MISC) || (config.category().equals(Category.CUSTOM) && config.customLocation().equalsIgnoreCase("0,0,0"))))
+		if (!startBot || (config.catBanks().equals(Banks.NONE) && config.category().equals(Category.BANKS)) ||
+			(config.catBarcrawl().equals(Barcrawl.NONE) && config.category().equals(Category.BARCRAWL)) || (config.catCities().equals(Cities.NONE) && config.category().equals(Category.CITIES)) ||
+			(config.catGuilds().equals(Guilds.NONE) && config.category().equals(Category.GUILDS)) || (config.catSkilling().equals(Skilling.NONE) && config.category().equals(Category.SKILLING)) ||
+			(config.catSlayer().equals(Slayer.NONE) && config.category().equals(Category.SLAYER)) ||
+			(config.catMisc().equals(Misc.NONE) && config.category().equals(Category.MISC) || (config.category().equals(Category.CUSTOM) && config.customLocation().equalsIgnoreCase("0,0,0"))))
 		{
 			return;
 		}
@@ -294,8 +349,16 @@ public class iWorldWalkerPlugin extends Plugin
 							utils.sendGameMessage("Arrived at " + config.catBanks().getName() + ", stopping World Walker");
 							resetVals();
 							return;
+						case BARCRAWL:
+							utils.sendGameMessage("Arrived at " + config.catBarcrawl().getName() + ", stopping World Walker");
+							resetVals();
+							return;
 						case CITIES:
 							utils.sendGameMessage("Arrived at " + config.catCities().getName() + ", stopping World Walker");
+							resetVals();
+							return;
+						case FARMING:
+							utils.sendGameMessage("Arrived at " + getFarmName() + ", stopping World Walker");
 							resetVals();
 							return;
 						case GUILDS:
