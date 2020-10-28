@@ -30,9 +30,13 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
-import net.runelite.client.config.ConfigTitleSection;
 import net.runelite.client.config.Range;
-import net.runelite.client.config.Title;
+import net.runelite.client.plugins.iworldwalker.farming.Allotments;
+import net.runelite.client.plugins.iworldwalker.farming.Bushes;
+import net.runelite.client.plugins.iworldwalker.farming.FruitTrees;
+import net.runelite.client.plugins.iworldwalker.farming.Herbs;
+import net.runelite.client.plugins.iworldwalker.farming.Hops;
+import net.runelite.client.plugins.iworldwalker.farming.Trees;
 
 @ConfigGroup("iWorldWalker")
 public interface iWorldWalkerConfig extends Config

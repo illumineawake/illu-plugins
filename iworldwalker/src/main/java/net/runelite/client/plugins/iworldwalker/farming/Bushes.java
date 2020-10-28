@@ -3,7 +3,7 @@
  * All rights reserved.
  * Licensed under GPL3, see LICENSE for the full scope.
  */
-package net.runelite.client.plugins.iworldwalker;
+package net.runelite.client.plugins.iworldwalker.farming;
 
 import lombok.Getter;
 import net.runelite.api.coords.WorldPoint;
