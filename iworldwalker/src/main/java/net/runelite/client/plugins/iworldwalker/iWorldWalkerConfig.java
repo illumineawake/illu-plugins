@@ -312,10 +312,25 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "questNotesGCat",
+		name = "Quest Notes",
+		description = "Notes for supported quests",
+		position = 35,
+		hidden = true,
+		unhide = "supportedQuests",
+		unhideValue = "GERTRUDES_CAT",
+		section = "showQuestNotes"
+	)
+	default String questNotesGCat()
+	{
+		return Quest.GERTRUDES_CAT.getNotes();
+	}
+
+	@ConfigItem(
 		keyName = "category",
 		name = "Category",
 		description = "Select the category of destinations",
-		position = 41
+		position = 100
 	)
 	default Category category()
 	{
@@ -326,7 +341,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "catBanks",
 		name = "Location",
 		description = "Select the location to walk to",
-		position = 42,
+		position = 101,
 		hidden = true,
 		unhide = "category",
 		unhideValue = "BANKS"
@@ -337,10 +352,24 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "catBarcrawl",
+		name = "Location",
+		description = "Select the location to walk to",
+		position = 102,
+		hidden = true,
+		unhide = "category",
+		unhideValue = "BARCRAWL"
+	)
+	default Barcrawl catBarcrawl()
+	{
+		return Barcrawl.NONE;
+	}
+
+	@ConfigItem(
 		keyName = "catCities",
 		name = "Location",
 		description = "Select the location to walk to",
-		position = 43,
+		position = 103,
 		hidden = true,
 		unhide = "category",
 		unhideValue = "CITIES"
@@ -351,10 +380,108 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "catFarming",
+		name = "Patch Type",
+		description = "Select the Farming category you want",
+		position = 110,
+		hidden = true,
+		unhide = "category",
+		unhideValue = "FARMING"
+	)
+	default Farming catFarming()
+	{
+		return Farming.NONE;
+	}
+
+	@ConfigItem(
+		keyName = "catFarmAllotments",
+		name = "Patch",
+		description = "Select the location to walk to",
+		position = 111,
+		hidden = true,
+		unhide = "catFarming",
+		unhideValue = "ALLOTMENTS"
+	)
+	default Allotments catFarmAllotments()
+	{
+		return Allotments.NONE;
+	}
+
+	@ConfigItem(
+		keyName = "catFarmBushes",
+		name = "Patch",
+		description = "Select the location to walk to",
+		position = 112,
+		hidden = true,
+		unhide = "catFarming",
+		unhideValue = "BUSHES"
+	)
+	default Bushes catFarmBushes()
+	{
+		return Bushes.NONE;
+	}
+
+	@ConfigItem(
+		keyName = "catFarmFruitTrees",
+		name = "Patch",
+		description = "Select the location to walk to",
+		position = 113,
+		hidden = true,
+		unhide = "catFarming",
+		unhideValue = "FRUIT_TREES"
+	)
+	default FruitTrees catFarmFruitTrees()
+	{
+		return FruitTrees.NONE;
+	}
+
+	@ConfigItem(
+		keyName = "catFarmHerbs",
+		name = "Patch",
+		description = "Select the location to walk to",
+		position = 114,
+		hidden = true,
+		unhide = "catFarming",
+		unhideValue = "HERBS"
+	)
+	default Herbs catFarmHerbs()
+	{
+		return Herbs.NONE;
+	}
+
+	@ConfigItem(
+		keyName = "catFarmHops",
+		name = "Patch",
+		description = "Select the location to walk to",
+		position = 115,
+		hidden = true,
+		unhide = "catFarming",
+		unhideValue = "HOPS"
+	)
+	default Hops catFarmHops()
+	{
+		return Hops.NONE;
+	}
+
+	@ConfigItem(
+		keyName = "catFarmTrees",
+		name = "Patch",
+		description = "Select the location to walk to",
+		position = 116,
+		hidden = true,
+		unhide = "catFarming",
+		unhideValue = "TREES"
+	)
+	default Trees catFarmTrees()
+	{
+		return Trees.NONE;
+	}
+
+	@ConfigItem(
 		keyName = "catGuilds",
 		name = "Location",
 		description = "Select the location to walk to",
-		position = 44,
+		position = 103,
 		hidden = true,
 		unhide = "category",
 		unhideValue = "GUILDS"
@@ -368,7 +495,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "catSkilling",
 		name = "Location",
 		description = "Select the location to walk to",
-		position = 45,
+		position = 104,
 		hidden = true,
 		unhide = "category",
 		unhideValue = "SKILLING"
@@ -382,7 +509,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "catSlayer",
 		name = "Location",
 		description = "Select the location to walk to",
-		position = 46,
+		position = 105,
 		hidden = true,
 		unhide = "category",
 		unhideValue = "SLAYER"
@@ -396,7 +523,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "catMisc",
 		name = "Location",
 		description = "Select the location to walk to",
-		position = 47,
+		position = 106,
 		hidden = true,
 		unhide = "category",
 		unhideValue = "MISC"
@@ -410,7 +537,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "customLocation",
 		name = "Custom Location",
 		description = "Enter a Coordinate to walk to. Co-ordinate format should be x,y,z. Turn on Location or Tile Location in Developer Tools to obtain coordinates.",
-		position = 48,
+		position = 135,
 		hidden = true,
 		unhide = "category",
 		unhideValue = "CUSTOM"
@@ -424,7 +551,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "rand",
 		name = "Random Tile radius",
 		description = "A random radius value applied to tiles",
-		position = 49
+		position = 149
 	)
 	default int rand()
 	{
@@ -436,7 +563,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "enableUI",
 		name = "Enable UI",
 		description = "Enable to turn on in game UI",
-		position = 50
+		position = 150
 	)
 	default boolean enableUI()
 	{
@@ -447,7 +574,7 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "startButton",
 		name = "Start/Stop",
 		description = "Start/Stop plugin",
-		position = 51
+		position = 151
 	)
 	default Button startButton()
 	{
