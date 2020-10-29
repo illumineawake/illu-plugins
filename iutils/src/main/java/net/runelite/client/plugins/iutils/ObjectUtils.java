@@ -297,6 +297,20 @@ public class ObjectUtils
 		return localGameObjects;
 	}
 
+	public GameObject getGameObjectAtLocation(WorldPoint worldPoint)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new GameObjectQuery()
+				.atWorldLocation(worldPoint)
+				.result(client).first();
+	}
+
 	@Nullable
 	public GameObject findNearestBank()
 	{
