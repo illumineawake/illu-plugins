@@ -244,7 +244,10 @@ public class iPowerFighterPlugin extends Plugin
 				botTimer = Instant.now();
 				overlayManager.add(overlay);
 				updateConfigValues();
-				highAlchCost = utils.getOSBItem(ItemID.NATURE_RUNE).getOverall_average() + (utils.getOSBItem(ItemID.FIRE_RUNE).getOverall_average() * 5);
+				if (config.alchItems())
+				{
+					highAlchCost = utils.getOSBItem(ItemID.NATURE_RUNE).getOverall_average() + (utils.getOSBItem(ItemID.FIRE_RUNE).getOverall_average() * 5);
+				}
 				startLoc = client.getLocalPlayer().getWorldLocation();
 				if (config.safeSpot())
 				{
