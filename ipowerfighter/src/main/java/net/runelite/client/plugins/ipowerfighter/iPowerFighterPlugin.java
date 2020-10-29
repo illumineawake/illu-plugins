@@ -53,6 +53,7 @@ import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.TileItem;
+import net.runelite.api.VarPlayer;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ActorDeath;
@@ -432,6 +433,58 @@ public class iPowerFighterPlugin extends Plugin
 		return !playerUtils.isItemEquipped(BRACELETS) && inventory.containsItem(BRACELETS) && config.equipBracelet();
 	}
 
+	private combatType getEligibleAttackStyle()
+	{
+
+		int attackLevel = client.getBoostedSkillLevel(Skill.ATTACK);
+		int strengthLevel = client.getBoostedSkillLevel(Skill.STRENGTH);
+		int defenceLevel = client.getBoostedSkillLevel(Skill.DEFENCE);
+
+		if ((attackLevel >= config.attackLvl() && strengthLevel >= config.strengthLvl() && defenceLevel >= config.defenceLvl()))
+		{
+			return config.continueType();
+		}
+		int highestDiff = config.attackLvl() - attackLevel;
+		combatType type = combatType.ATTACK;
+
+		if ((config.strengthLvl() - strengthLevel) > highestDiff)
+		{
+			type = combatType.STRENGTH;
+		}
+		if ((config.defenceLvl() - defenceLevel) > highestDiff)
+		{
+			type = combatType.DEFENCE;
+		}
+		return type;
+	}
+
+	private int getCombatStyle()
+	{
+		if (!config.combatLevels())
+		{
+			return -1;
+		}
+		combatType attackStyle = getEligibleAttackStyle();
+		if (attackStyle.equals(combatType.STOP))
+		{
+			resetVals();
+		}
+		else
+		{
+			switch (client.getVarpValue(VarPlayer.ATTACK_STYLE.getId()))
+			{
+				case 0:
+					return (attackStyle.equals(combatType.ATTACK)) ? -1 : attackStyle.index;
+				case 1:
+				case 2:
+					return (attackStyle.equals(combatType.STRENGTH)) ? -1 : attackStyle.index;
+				case 3:
+					return (attackStyle.equals(combatType.DEFENCE)) ? -1 : attackStyle.index;
+			}
+		}
+		return -1;
+	}
+
 	private iPowerFighterState getState()
 	{
 		if (timeout > 0)
@@ -450,6 +503,13 @@ public class iPowerFighterPlugin extends Plugin
 		if (shouldEquipBracelet())
 		{
 			return iPowerFighterState.EQUIP_BRACELET;
+		}
+		int combatStyle = getCombatStyle();
+		if (config.combatLevels() && combatStyle != -1)
+		{
+			log.info("Changing combat style to: {}", combatStyle);
+			utils.setCombatStyle(combatStyle);
+			return iPowerFighterState.TIMEOUT;
 		}
 		if (config.lootAmmo() && !playerUtils.isItemEquipped(List.of(config.ammoID())))
 		{

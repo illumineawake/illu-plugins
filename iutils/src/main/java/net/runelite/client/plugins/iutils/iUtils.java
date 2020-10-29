@@ -79,6 +79,9 @@ public class iUtils extends Plugin {
     @Inject
     private CalculationUtils calc;
 
+	@Inject
+	private InterfaceUtils interfaceUtils;
+
     @Inject
     private ChatMessageManager chatMessageManager;
 
@@ -187,6 +190,12 @@ public class iUtils extends Plugin {
         menu.setSelectedSpell(spellWidget);
         mouse.delayMouseClick(targetBounds, sleepLength);
     }
+
+	public void setCombatStyle(int index)
+	{
+		MenuEntry entry = interfaceUtils.getAttackStyleMenuEntry(index);
+		doActionClientTick(entry, new Point(0,0), 0);
+	}
 
     public void sendGameMessage(String message) {
         String chatMessage = new ChatMessageBuilder()

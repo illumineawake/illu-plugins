@@ -591,6 +591,70 @@ public interface iPowerFighterConfig extends Config
 	)
 	default String alchNames() { return "Steel platebody,Rune scimitar"; }
 
+	@ConfigTitleSection(
+		keyName = "combatTitle",
+		name = "Combat Settings",
+		description = "",
+		position = 90
+	)
+	default Title combatTitle()
+	{
+		return new Title();
+	}
+
+	@ConfigItem(
+		keyName = "combatLevels",
+		name = "Combat Levels",
+		description = "Enable to set levels for the bot to reach and change between",
+		position = 120,
+		titleSection = "combatTitle"
+	)
+	default boolean combatLevels() { return false; }
+
+	@ConfigItem(
+		keyName = "attackLvl",
+		name = "Attack level",
+		description = "Attack level to level to",
+		position = 125,
+		hidden = true,
+		unhide = "combatLevels",
+		titleSection = "combatTitle"
+	)
+	default int attackLvl() { return 60; }
+
+	@ConfigItem(
+		keyName = "strengthLvl",
+		name = "Strength level",
+		description = "Strength level to level to",
+		position = 130,
+		hidden = true,
+		unhide = "combatLevels",
+		titleSection = "combatTitle"
+	)
+	default int strengthLvl() { return 60; }
+
+	@ConfigItem(
+		keyName = "defenceLvl",
+		name = "Defence level",
+		description = "Defence level to level to",
+		position = 135,
+		hidden = true,
+		unhide = "combatLevels",
+		titleSection = "combatTitle"
+	)
+	default int defenceLvl() { return 60; }
+
+	@ConfigItem(
+		keyName = "continueType",
+		name = "Continue after levels",
+		description = "Select action ",
+		position = 140,
+		hidden = true,
+		unhide = "combatLevels",
+		titleSection = "combatTitle"
+	)
+	default combatType continueType() { return combatType.STRENGTH; }
+
 	@ConfigItem(
 		keyName = "stopSlayer",
 		name = "Stop on Slayer task completion",

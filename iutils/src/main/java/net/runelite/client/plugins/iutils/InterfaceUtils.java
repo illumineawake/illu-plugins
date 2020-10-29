@@ -44,6 +44,23 @@ public class InterfaceUtils
 		client.runScript(915, index); //open inventory
 	}
 
+	/**
+	 * @param index is position based on order including styles that might not be visible. Starting from 0.
+	 *                 e.g. Stab = 0, Lunge = 1, Slash 2, Block = 3
+	 */
+	public MenuEntry getAttackStyleMenuEntry(int index)
+	{
+		if (client == null || client.getGameState() != GameState.LOGGED_IN || index < 0)
+		{
+			return null;
+		}
+		final int BASE_PARAM = 38862852;
+		final int INCREMENT = 4;
+		int styleParam = BASE_PARAM + (index * INCREMENT);
+
+		return new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, styleParam, false);
+	}
+
 	public void logout()
 	{
 		int param1 = (client.getWidget(WidgetInfo.LOGOUT_BUTTON) != null) ? 11927560 : 4522007;
