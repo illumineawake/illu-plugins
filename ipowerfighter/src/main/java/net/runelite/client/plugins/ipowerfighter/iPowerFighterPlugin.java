@@ -450,11 +450,13 @@ public class iPowerFighterPlugin extends Plugin
 		int highestDiff = config.attackLvl() - attackLevel;
 		combatType type = combatType.ATTACK;
 
-		if ((config.strengthLvl() - strengthLevel) > highestDiff)
+		if ((config.strengthLvl() - strengthLevel) > highestDiff ||
+			(strengthLevel < config.strengthLvl() && strengthLevel < attackLevel && strengthLevel < defenceLevel))
 		{
 			type = combatType.STRENGTH;
 		}
-		if ((config.defenceLvl() - defenceLevel) > highestDiff)
+		if ((config.defenceLvl() - defenceLevel) > highestDiff ||
+			(defenceLevel < config.defenceLvl() && defenceLevel < attackLevel && defenceLevel < strengthLevel))
 		{
 			type = combatType.DEFENCE;
 		}

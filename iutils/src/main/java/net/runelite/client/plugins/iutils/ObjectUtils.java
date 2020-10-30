@@ -15,6 +15,7 @@ import net.runelite.api.Tile;
 import net.runelite.api.TileItem;
 import net.runelite.api.TileObject;
 import net.runelite.api.WallObject;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.queries.DecorativeObjectQuery;
 import net.runelite.api.queries.GameObjectQuery;
@@ -297,7 +298,7 @@ public class ObjectUtils
 		return localGameObjects;
 	}
 
-	public GameObject getGameObjectAtLocation(WorldPoint worldPoint)
+	public GameObject getGameObjectAtWorldPoint(WorldPoint worldPoint)
 	{
 		assert client.isClientThread();
 
@@ -309,6 +310,20 @@ public class ObjectUtils
 		return new GameObjectQuery()
 				.atWorldLocation(worldPoint)
 				.result(client).first();
+	}
+
+	public GameObject getGameObjectAtLocalPoint(LocalPoint localPoint)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new GameObjectQuery()
+			.atLocalLocation(localPoint)
+			.result(client).first();
 	}
 
 	@Nullable
