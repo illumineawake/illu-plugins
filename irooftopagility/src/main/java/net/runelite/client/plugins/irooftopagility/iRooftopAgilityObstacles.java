@@ -58,7 +58,7 @@ public enum iRooftopAgilityObstacles
 	APE_TROPTREE1(new WorldPoint(2753,2742,0), new WorldPoint(2751,2739,0), TROPICAL_TREE_15414),
 	APE_MONKEYBARS(new WorldPoint(2753,2742,2), new WorldPoint(2752,2741,2), MONKEYBARS_15417),
 	APE_SKULLSLOPE(new WorldPoint(2747,2741,0), new WorldPoint(2746,2741,0), SKULL_SLOPE_15483, iRooftopAgilityObstacleType.GROUND_OBJECT),
-	APE_ROPE(new WorldPoint(2735,2741,0), new WorldPoint(2754,2726,0), ROPE_15487),
+	APE_ROPE(new WorldPoint(2735,2726,0), new WorldPoint(2754,2742,0), ROPE_15487),
 	APE_TROPTREE2(new WorldPoint(2755,2726,0), new WorldPoint(2760,2737,0), TROPICAL_TREE_16062),
 	//FALADOR
 	FAL_GROUND(new WorldPoint(3008, 3328, 0), new WorldPoint(3071, 3391, 0), ROUGH_WALL_14898, iRooftopAgilityObstacleType.DECORATION, ObjectID.BANK_BOOTH_24101),
