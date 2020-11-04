@@ -100,23 +100,29 @@ public class NPCUtils
 		{
 			return null;
 		}
-
-		if (exactnpcname)
+		for(String npcName : name.split(","))
 		{
-			return new NPCQuery()
-					.isWithinDistance(worldPoint, dist)
-					.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().equals(name.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
-					.result(client)
-					.nearestTo(client.getLocalPlayer());
+			NPC query;
+			if (exactnpcname)
+			{
+				query = new NPCQuery()
+						.isWithinDistance(worldPoint, dist)
+						.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().equals(npcName.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
+						.result(client)
+						.nearestTo(client.getLocalPlayer());
+			} else {
+				query = new NPCQuery()
+						.isWithinDistance(worldPoint, dist)
+						.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(npcName.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
+						.result(client)
+						.nearestTo(client.getLocalPlayer());
+			}
+			if(query!=null)
+			{
+				return query;
+			}
 		}
-		else
-		{
-			return new NPCQuery()
-					.isWithinDistance(worldPoint, dist)
-					.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
-					.result(client)
-					.nearestTo(client.getLocalPlayer());
-		}
+		return null;
 	}
 
 	@Nullable
