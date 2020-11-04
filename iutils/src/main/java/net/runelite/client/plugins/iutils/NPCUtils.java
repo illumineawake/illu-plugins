@@ -31,9 +31,9 @@ public class NPCUtils
 		}
 
 		return new NPCQuery()
-				.idEquals(ids)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -47,13 +47,13 @@ public class NPCUtils
 		}
 
 		return new NPCQuery()
-				.nameContains(names)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
+			.nameContains(names)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
-	public NPC findNearestNpcIndex(int index, int...ids)
+	public NPC findNearestNpcIndex(int index, int... ids)
 	{
 		assert client.isClientThread();
 
@@ -69,7 +69,9 @@ public class NPCUtils
 		for (NPC npc : npcs)
 		{
 			if (npc.getIndex() == index)
+			{
 				return npc;
+			}
 		}
 		return null;
 	}
@@ -85,10 +87,10 @@ public class NPCUtils
 		}
 
 		return new NPCQuery()
-				.isWithinDistance(worldPoint, dist)
-				.idEquals(ids)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
+			.isWithinDistance(worldPoint, dist)
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -100,24 +102,26 @@ public class NPCUtils
 		{
 			return null;
 		}
-		for(String npcName : name.split(","))
+		for (String npcName : name.split(","))
 		{
 			NPC query;
 			if (exactnpcname)
 			{
 				query = new NPCQuery()
-						.isWithinDistance(worldPoint, dist)
-						.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().equals(npcName.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
-						.result(client)
-						.nearestTo(client.getLocalPlayer());
-			} else {
-				query = new NPCQuery()
-						.isWithinDistance(worldPoint, dist)
-						.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(npcName.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
-						.result(client)
-						.nearestTo(client.getLocalPlayer());
+					.isWithinDistance(worldPoint, dist)
+					.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().equals(npcName.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
+					.result(client)
+					.nearestTo(client.getLocalPlayer());
 			}
-			if(query!=null)
+			else
+			{
+				query = new NPCQuery()
+					.isWithinDistance(worldPoint, dist)
+					.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(npcName.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
+					.result(client)
+					.nearestTo(client.getLocalPlayer());
+			}
+			if (query != null)
 			{
 				return query;
 			}
@@ -135,21 +139,29 @@ public class NPCUtils
 			return null;
 		}
 
-		if (exactnpcname)
+		for (String npcName : name.split(","))
 		{
-			return new NPCQuery()
-					.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().equals(name.toLowerCase()) && npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
+			NPC query;
+			if (exactnpcname)
+			{
+				query = new NPCQuery()
+					.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().equals(npcName.toLowerCase()) && npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
 					.result(client)
 					.nearestTo(client.getLocalPlayer());
-		}
-		else
-		{
-			return new NPCQuery()
-					.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name.toLowerCase()) && npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
+			}
+			else
+			{
+				query = new NPCQuery()
+					.filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(npcName.toLowerCase()) && npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)
 					.result(client)
 					.nearestTo(client.getLocalPlayer());
+			}
+			if (query != null)
+			{
+				return query;
+			}
 		}
-
+		return null;
 	}
 
 	public List<NPC> getNPCs(int... ids)
@@ -162,9 +174,9 @@ public class NPCUtils
 		}
 
 		return new NPCQuery()
-				.idEquals(ids)
-				.result(client)
-				.list;
+			.idEquals(ids)
+			.result(client)
+			.list;
 	}
 
 	public List<NPC> getNPCs(String... names)
@@ -177,9 +189,9 @@ public class NPCUtils
 		}
 
 		return new NPCQuery()
-				.nameContains(names)
-				.result(client)
-				.list;
+			.nameContains(names)
+			.result(client)
+			.list;
 	}
 
 	public NPC getFirstNPCWithLocalTarget()

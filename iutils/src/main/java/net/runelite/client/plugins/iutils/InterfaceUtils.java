@@ -76,7 +76,7 @@ public class InterfaceUtils
 		}
 	}
 
-	static void resumePauseWidget(int widgetId, int arg){
+	public static void resumePauseWidget(int widgetId, int arg){
 		final int garbageValue = 1292618906;
 		final String className = "ln";
 		final String methodName = "hs";

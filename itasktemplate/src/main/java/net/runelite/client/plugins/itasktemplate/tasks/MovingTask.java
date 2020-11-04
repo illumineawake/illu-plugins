@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Player;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.itasktemplate.Task;
+import net.runelite.client.plugins.itasktemplate.iTaskTemplatePlugin;
 import static net.runelite.client.plugins.itasktemplate.iTaskTemplatePlugin.beforeLoc;
 import static net.runelite.client.plugins.itasktemplate.iTaskTemplatePlugin.timeout;
 
@@ -20,7 +21,7 @@ public class MovingTask extends Task
 	@Override
 	public String getTaskDescription()
 	{
-		return status;
+		return iTaskTemplatePlugin.status;
 	}
 
 	@Override

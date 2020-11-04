@@ -46,7 +46,6 @@ public abstract class Task
 	public ObjectUtils object;
 
 	public MenuEntry entry;
-	public String status = "";
 
 	public abstract boolean validate();
 
