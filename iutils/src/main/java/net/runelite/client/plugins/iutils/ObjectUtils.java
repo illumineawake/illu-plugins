@@ -81,6 +81,19 @@ public class ObjectUtils
 				.nearestTo(client.getLocalPlayer());
 	}
 
+	@Nullable
+	public GameObject findNearestGameObjectWithin(LocalPoint localPoint, int dist, int... ids)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+		WorldPoint worldPoint = WorldPoint.fromLocal(client, localPoint);
+		return findNearestGameObjectWithin(worldPoint, dist, ids);
+	}
+
 	public List<WallObject> getWallObjects(int... ids)
 	{
 		assert client.isClientThread();
