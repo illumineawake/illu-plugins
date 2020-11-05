@@ -169,9 +169,24 @@ public class iUtils extends Plugin {
 
 	public void doActionMsTime(MenuEntry entry, Point point, int timeToDelay)
 	{
-
 		Runnable runnable =	() -> {
 			menu.setEntry(entry);
+			mouse.handleMouseClick(point);
+		};
+
+		action.delayTime(timeToDelay, runnable);
+	}
+
+	public void doModifiedActionMsTime(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Rectangle rect, int timeToDelay)
+	{
+		Point point = mouse.getClickPoint(rect);
+		doModifiedActionMsTime(entry, modifiedID, modifiedIndex, modifiedOpcode, point, timeToDelay);
+	}
+
+	public void doModifiedActionMsTime(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Point point, int timeToDelay)
+	{
+		Runnable runnable =	() -> {
+			menu.setModifiedEntry(entry, modifiedID, modifiedIndex, modifiedOpcode);
 			mouse.handleMouseClick(point);
 		};
 
