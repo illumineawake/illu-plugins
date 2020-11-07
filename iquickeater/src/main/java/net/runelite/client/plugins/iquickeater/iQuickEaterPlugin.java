@@ -277,9 +277,10 @@ public class iQuickEaterPlugin extends Plugin
 	private void onChatMessage(ChatMessage event)
 	{
 		String BURN_MESSAGE = ("You're horribly burnt by the dragon fire!");
+		String BURN_EXPIRE = ("antifire potion is about to expire.");
 		String IMB_HEART_MESSAGE = ("Your imbued heart has regained its magical power.");
 
-		if (event.getMessage().equals(BURN_MESSAGE) && config.drinkAntiFire())
+		if (event.getMessage().equals(BURN_MESSAGE) || event.getMessage().contains(BURN_EXPIRE) && config.drinkAntiFire())
 		{
 			if (inventory.containsItem(ANTI_FIRE_SET))
 			{
