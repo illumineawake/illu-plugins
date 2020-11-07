@@ -177,7 +177,8 @@ public class iPowerFighterPlugin extends Plugin
 	int nextItemLootTime;
 	int killcount;
 
-	String SLAYER_MESSAGE = "return to a Slayer master";
+	String SLAYER_MSG = "return to a Slayer master";
+	String SLAYER_BOOST_MSG = "You'll be eligible to earn reward points if you complete tasks";
 	Set<Integer> BONE_BLACKLIST = Set.of(ItemID.CURVED_BONE, ItemID.LONG_BONE);
 	Set<Integer> BRACELETS = Set.of(ItemID.BRACELET_OF_SLAUGHTER, ItemID.EXPEDITIOUS_BRACELET);
 
@@ -840,7 +841,8 @@ public class iPowerFighterPlugin extends Plugin
 				timeout = 10;
 				return;
 			}
-			if (event.getMessage().contains(SLAYER_MESSAGE) && event.getType() == ChatMessageType.GAMEMESSAGE)
+			if (event.getMessage().contains(SLAYER_MSG) || event.getMessage().contains(SLAYER_BOOST_MSG) &&
+					event.getType() == ChatMessageType.GAMEMESSAGE)
 			{
 				log.debug("Slayer task completed");
 				slayerCompleted = true;
