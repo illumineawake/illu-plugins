@@ -55,7 +55,7 @@ public enum iRooftopAgilityObstacles
 	CAN_ROOFTOP_SEVEN(new WorldPoint(3508, 3474, 2), new WorldPoint(3517, 3484, 2), GAP_14897),
 	//APE ATOLL
 	APE_STEPSTONE(new WorldPoint(2754,2741,0), new WorldPoint(2784,2751,0), STEPPING_STONE_15412, iRooftopAgilityObstacleType.GROUND_OBJECT),
-	APE_TROPTREE1(new WorldPoint(2754,2742,0), new WorldPoint(2751,2739,0), TROPICAL_TREE_15414),
+	APE_TROPTREE1(new WorldPoint(2753,2742,0), new WorldPoint(2751,2739,0), TROPICAL_TREE_15414),
 	APE_MONKEYBARS(new WorldPoint(2753,2742,2), new WorldPoint(2752,2741,2), MONKEYBARS_15417),
 	APE_SKULLSLOPE(new WorldPoint(2747,2741,0), new WorldPoint(2746,2741,0), SKULL_SLOPE_15483, iRooftopAgilityObstacleType.GROUND_OBJECT),
 	APE_ROPE(new WorldPoint(2735,2726,0), new WorldPoint(2754,2742,0), ROPE_15487),
