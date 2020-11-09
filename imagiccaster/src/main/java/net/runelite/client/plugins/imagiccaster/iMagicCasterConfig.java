@@ -41,7 +41,7 @@ public interface iMagicCasterConfig extends Config
 		keyName = "npcID",
 		name = "NPC ID",
 		description = "Provide ID of the NPC to target",
-		position = 0
+		position = -1
 	)
 	default int npcID()	{ return 0;	}
 
@@ -49,7 +49,7 @@ public interface iMagicCasterConfig extends Config
 		keyName = "itemID",
 		name = "Item ID",
 		description = "Provide ID of the item to High Alc",
-		position = 1
+		position = 0
 	)
 	default int itemID()	{ return 0;	}
 
@@ -57,7 +57,7 @@ public interface iMagicCasterConfig extends Config
 		keyName = "getSpellType",
 		name = "Spell type",
 		description = "Select the type of spell.",
-		position = 2
+		position = 1
 	)
 	default CastType getSpellType()
 	{
@@ -68,11 +68,22 @@ public interface iMagicCasterConfig extends Config
 		keyName = "getSpell",
 		name = "Spell",
 		description = "Choose a spell, only required for single casting",
-		position = 3
+		position = 2
 	)
 	default Spells getSpell()
 	{
 		return Spells.CURSE;
+	}
+
+	@ConfigItem(
+		keyName = "moveCast",
+		name = "Cast while moving",
+		description = "Enable to allow casting while moving",
+		position = 3
+	)
+	default boolean moveCast()
+	{
+		return false;
 	}
 
 	@ConfigItem(

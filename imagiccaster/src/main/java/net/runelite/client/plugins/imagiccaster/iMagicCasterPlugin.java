@@ -304,7 +304,7 @@ public class iMagicCasterPlugin extends Plugin
 		{
 			return IDLING;
 		}
-		if (playerUtils.isMoving(beforeLoc)) //could also test with just isMoving
+		if (playerUtils.isMoving(beforeLoc) && !config.moveCast())
 		{
 			return MOVING;
 		}

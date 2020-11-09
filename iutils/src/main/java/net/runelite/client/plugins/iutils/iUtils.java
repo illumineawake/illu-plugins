@@ -391,7 +391,7 @@ public class iUtils extends Plugin {
                 client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
                 client.setSelectedItemSlot(menu.modifiedItemIndex);
                 client.setSelectedItemID(menu.modifiedItemID);
-                log.info("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", menu.modifiedItemID,
+                log.debug("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", menu.modifiedItemID,
                         menu.modifiedItemIndex, menu.entry.getParam1());
                 client.invokeMenuAction(menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
                         menu.modifiedOpCode, menu.entry.getParam0(), menu.entry.getParam1());
