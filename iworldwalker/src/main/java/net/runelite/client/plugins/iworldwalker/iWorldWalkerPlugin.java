@@ -321,7 +321,10 @@ public class iWorldWalkerPlugin extends Plugin
 		player = client.getLocalPlayer();
 		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
 		{
-			playerUtils.handleRun(20, 30);
+			if (!config.disableRun())
+			{
+				playerUtils.handleRun(20, 30);
+			}
 			if (timeout > 0)
 			{
 				timeout--;

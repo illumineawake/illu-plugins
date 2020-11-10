@@ -555,13 +555,23 @@ public interface iWorldWalkerConfig extends Config
 		keyName = "rand",
 		name = "Random Tile radius",
 		description = "A random radius value applied to tiles",
-		position = 149
+		position = 140
 	)
 	default int rand()
 	{
 		return 3;
 	}
 
+	@ConfigItem(
+		keyName = "disableRun",
+		name = "Disable Running",
+		description = "Disable running to arrive at your destination with 100% energy.",
+		position = 145
+	)
+	default boolean disableRun()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 		keyName = "enableUI",
