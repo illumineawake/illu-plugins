@@ -70,6 +70,15 @@ public class InventoryUtils
 		return getEmptySlots() >= 28;
 	}
 
+	public boolean isOpen()
+	{
+		if (client.getWidget(WidgetInfo.INVENTORY) == null)
+		{
+			return false;
+		}
+		return !client.getWidget(WidgetInfo.INVENTORY).isHidden();
+	}
+
 	public int getEmptySlots()
 	{
 		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
