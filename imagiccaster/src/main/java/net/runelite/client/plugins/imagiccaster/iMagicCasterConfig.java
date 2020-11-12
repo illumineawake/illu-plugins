@@ -38,26 +38,10 @@ public interface iMagicCasterConfig extends Config
 {
 
 	@ConfigItem(
-		keyName = "npcID",
-		name = "NPC ID",
-		description = "Provide ID of the NPC to target",
-		position = -1
-	)
-	default int npcID()	{ return 0;	}
-
-	@ConfigItem(
-		keyName = "itemID",
-		name = "Item ID",
-		description = "Provide ID of the item to High Alc",
-		position = 0
-	)
-	default int itemID()	{ return 0;	}
-
-	@ConfigItem(
 		keyName = "getSpellType",
 		name = "Spell type",
 		description = "Select the type of spell.",
-		position = 1
+		position = 0
 	)
 	default CastType getSpellType()
 	{
@@ -68,7 +52,10 @@ public interface iMagicCasterConfig extends Config
 		keyName = "getSpell",
 		name = "Spell",
 		description = "Choose a spell, only required for single casting",
-		position = 2
+		position = 5,
+		hidden = true,
+		unhide = "getSpellType",
+		unhideValue = "SINGLE_CAST"
 	)
 	default Spells getSpell()
 	{
@@ -76,10 +63,41 @@ public interface iMagicCasterConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "npcID",
+		name = "NPC ID",
+		description = "Provide ID of the NPC to target",
+		position = 10
+	)
+	default int npcID()	{ return 0;	}
+
+	@ConfigItem(
+		keyName = "itemID",
+		name = "Item ID",
+		description = "Provide ID of the item to High Alc",
+		position = 15,
+		hidden = true,
+		unhide = "getSpellType",
+		unhideValue = "HIGH_ALCHEMY"
+	)
+	default int itemID() { return 0; }
+
+	@ConfigItem(
+		keyName = "groundItemID",
+		name = "Ground Item ID",
+		description = "Provide ID of the Ground Item to Tele grab",
+		position = 20,
+		hidden = true,
+		unhide = "getSpellType",
+		unhideValue = "TELE_GRAB"
+
+	)
+	default int groundItemID() { return 0; }
+
+	@ConfigItem(
 		keyName = "moveCast",
 		name = "Cast while moving",
 		description = "Enable to allow casting while moving",
-		position = 3
+		position = 40
 	)
 	default boolean moveCast()
 	{
@@ -90,7 +108,7 @@ public interface iMagicCasterConfig extends Config
 		keyName = "logout",
 		name = "Logout when out of runes",
 		description = "Enable to logout when out of runes. Won't work if you are attacking an npc that attacks you",
-		position = 4
+		position = 45
 	)
 	default boolean logout() { return true; }
 

@@ -13,7 +13,8 @@ public enum CastType
 
 	AUTO_CAST("Auto-cast"),
 	SINGLE_CAST("Single cast", "Cast"),
-	HIGH_ALCHEMY("High Alchemy", "Cast");
+	HIGH_ALCHEMY("High Alchemy", "Cast"),
+	TELE_GRAB("Tele Grab", "Cast");
 
 	private final String name;
 	private String menuOption = "";

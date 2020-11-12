@@ -27,17 +27,26 @@ package net.runelite.client.plugins.imagiccaster;
 
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.time.Instant;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.AnimationID;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.Constants;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.NPC;
+import net.runelite.api.Node;
 import net.runelite.api.Player;
+import net.runelite.api.Point;
+import net.runelite.api.Scene;
+import net.runelite.api.Tile;
+import net.runelite.api.TileItem;
+import net.runelite.api.TileItemPile;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
@@ -67,9 +76,11 @@ import net.runelite.client.plugins.iutils.InterfaceUtils;
 import net.runelite.client.plugins.iutils.InventoryUtils;
 import net.runelite.client.plugins.iutils.MenuUtils;
 import net.runelite.client.plugins.iutils.MouseUtils;
+import net.runelite.client.plugins.iutils.ObjectUtils;
 import net.runelite.client.plugins.iutils.PlayerUtils;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.ui.overlay.OverlayUtil;
 import org.pf4j.Extension;
 
 
@@ -107,6 +118,9 @@ public class iMagicCasterPlugin extends Plugin
 	private CalculationUtils calc;
 
 	@Inject
+	private ObjectUtils object;
+
+	@Inject
 	private MenuUtils menu;
 
 	@Inject
@@ -133,6 +147,7 @@ public class iMagicCasterPlugin extends Plugin
 	Player player;
 	NPC targetNPC;
 	WidgetItem targetItem;
+	TileItem groundItem;
 
 	int npcID = -1;
 	int itemID = -1;
@@ -280,7 +295,7 @@ public class iMagicCasterPlugin extends Plugin
 		{
 			case "Single cast":
 				targetMenu = new MenuEntry("Cast", "", targetNPC.getIndex(), MenuOpcode.SPELL_CAST_ON_NPC.getId(),
-						0, 0, false);
+					0, 0, false);
 				utils.oneClickCastSpell(selectedSpell.getSpell(), targetMenu, targetNPC.getConvexHull().getBounds(), sleepDelay());
 				timeout = 4 + tickDelay();
 				return;
@@ -294,6 +309,11 @@ public class iMagicCasterPlugin extends Plugin
 				targetMenu = new MenuEntry("Cast", "", targetItem.getId(), MenuOpcode.ITEM_USE_ON_WIDGET.getId(), targetItem.getIndex(), 9764864, true);
 				timeout = 5 + tickDelay();
 				utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, targetItem.getCanvasBounds().getBounds(), sleepDelay());
+				return;
+			case "Tele Grab":
+				targetMenu = new MenuEntry("Cast", "", groundItem.getId(), MenuOpcode.SPELL_CAST_ON_GROUND_ITEM.getId(), groundItem.getTile().getSceneLocation().getX(), groundItem.getTile().getSceneLocation().getY(), true);
+				timeout = 5 + tickDelay();
+				utils.oneClickCastSpell(WidgetInfo.SPELL_TELEKINETIC_GRAB, targetMenu, new Rectangle(0,0, 0, 0), sleepDelay());
 				return;
 		}
 	}
@@ -316,6 +336,11 @@ public class iMagicCasterPlugin extends Plugin
 		{
 			targetItem = getItem();
 			return (targetItem != null && targetItem.getQuantity() > 0) ? FIND_ITEM : ITEM_NOT_FOUND;
+		}
+		if (castType.getName().equals("Tele Grab"))
+		{
+			groundItem = object.getGroundItem(config.groundItemID());
+			return (groundItem != null) ? FIND_ITEM : ITEM_NOT_FOUND;
 		}
 		targetNPC = findNPC();
 		return (targetNPC != null) ? FIND_NPC : NPC_NOT_FOUND;
@@ -354,8 +379,7 @@ public class iMagicCasterPlugin extends Plugin
 					timeout = tickDelay();
 					break;
 				case ITEM_NOT_FOUND:
-					log.info("Item not found, config: {}", config.itemID());
-					utils.sendGameMessage("Item not found");
+					log.info("Item not found, config: {}", config.groundItemID());
 					if (config.logout())
 					{
 						interfaceUtils.logout();
