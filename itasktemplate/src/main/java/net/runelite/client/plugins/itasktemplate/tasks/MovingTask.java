@@ -5,8 +5,6 @@ import net.runelite.api.Player;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.itasktemplate.Task;
 import net.runelite.client.plugins.itasktemplate.iTaskTemplatePlugin;
-import static net.runelite.client.plugins.itasktemplate.iTaskTemplatePlugin.beforeLoc;
-import static net.runelite.client.plugins.itasktemplate.iTaskTemplatePlugin.timeout;
 
 @Slf4j
 public class MovingTask extends Task
@@ -15,7 +13,7 @@ public class MovingTask extends Task
 	@Override
 	public boolean validate()
 	{
-		return playerUtils.isMoving(beforeLoc);
+		return playerUtils.isMoving(iTaskTemplatePlugin.beforeLoc);
 	}
 
 	@Override
@@ -31,7 +29,7 @@ public class MovingTask extends Task
 		if (player != null)
 		{
 			playerUtils.handleRun(20, 30);
-			timeout = tickDelay();
+			iTaskTemplatePlugin.timeout = tickDelay();
 		}
 	}
 }

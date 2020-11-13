@@ -1,10 +1,12 @@
-package net.runelite.client.plugins.itasktemplate;
+package net.runelite.client.plugins.iherbcleaner;
 
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.events.GameTick;
+import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.sleepLength;
+import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.tickLength;
 import net.runelite.client.plugins.iutils.CalculationUtils;
 import net.runelite.client.plugins.iutils.MenuUtils;
 import net.runelite.client.plugins.iutils.MouseUtils;
@@ -23,7 +25,7 @@ public abstract class Task
 	public Client client;
 
 	@Inject
-	public iTaskTemplateConfig config;
+	public iHerbCleanerConfig config;
 
 	@Inject
 	public iUtils utils;
@@ -49,14 +51,14 @@ public abstract class Task
 
 	public long sleepDelay()
 	{
-		iTaskTemplatePlugin.sleepLength = calc.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
-		return iTaskTemplatePlugin.sleepLength;
+		sleepLength = calc.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
+		return sleepLength;
 	}
 
 	public int tickDelay()
 	{
-		iTaskTemplatePlugin.tickLength = (int) calc.randomDelay(config.tickDelayWeightedDistribution(), config.tickDelayMin(), config.tickDelayMax(), config.tickDelayDeviation(), config.tickDelayTarget());
-		return iTaskTemplatePlugin.tickLength;
+		tickLength = (int) calc.randomDelay(config.tickDelayWeightedDistribution(), config.tickDelayMin(), config.tickDelayMax(), config.tickDelayDeviation(), config.tickDelayTarget());
+		return tickLength;
 	}
 
 	public String getTaskDescription()
