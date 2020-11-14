@@ -177,6 +177,22 @@ public class iUtils extends Plugin {
 		action.delayTime(timeToDelay, runnable);
 	}
 
+    public void doModifiedActionGameTick(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Rectangle rect, int ticksToDelay)
+    {
+        Point point = mouse.getClickPoint(rect);
+        doModifiedActionGameTick(entry, modifiedID, modifiedIndex, modifiedOpcode, point, ticksToDelay);
+    }
+
+    public void doModifiedActionGameTick(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Point point, int ticksToDelay)
+    {
+        Runnable runnable =	() -> {
+            menu.setModifiedEntry(entry, modifiedID, modifiedIndex, modifiedOpcode);
+            mouse.handleMouseClick(point);
+        };
+
+        action.delayGameTicks(ticksToDelay, runnable);
+    }
+
 	public void doModifiedActionMsTime(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Rectangle rect, int timeToDelay)
 	{
 		Point point = mouse.getClickPoint(rect);

@@ -209,13 +209,8 @@ public class iTaskTemplatePlugin extends Plugin
 				chinBreakHandler.startBreak(this);
 				timeout = 5;
 			}
-			if (timeout > 0)
-			{
-				timeout--;
-				return;
-			}
-			Task task = tasks.getValidTask();
 
+			Task task = tasks.getValidTask();
 			if (task != null)
 			{
 				status = task.getTaskDescription();
