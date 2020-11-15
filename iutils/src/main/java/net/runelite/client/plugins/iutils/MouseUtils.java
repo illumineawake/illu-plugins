@@ -9,6 +9,7 @@ import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Point;
+import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 import static net.runelite.client.plugins.iutils.iUtils.sleep;
 import org.jetbrains.annotations.NotNull;
@@ -169,6 +170,12 @@ public class MouseUtils
 		final int viewportHeight = client.getViewportHeight();
 		final int viewportWidth = client.getViewportWidth();
 		log.debug("Performing mouse click: {}", config.getMouse());
+		Widget minimapWidget = client.getWidget(164,20);
+		if (minimapWidget != null && minimapWidget.getBounds().contains(point.getX(), point.getY()))
+		{
+			log.info("Avoiding minimap click");
+			point = new Point(0, 0);
+		}
 		switch (config.getMouse())
 		{
 			case MOVE:

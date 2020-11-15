@@ -14,6 +14,7 @@ public enum Skilling
 	NONE(""),
 	ARCEUUS_ESS_MINE("Arceuus Ess Mine", new WorldPoint(2533, 3572, 0)),
 	BARB_ASSAULT("Barb Assault", new WorldPoint(2533, 3572, 0)),
+	BARB_FISHING("Barbarian Fishing", new WorldPoint(2498, 3508, 0)),
 	CRABCLAW_ISLE_BOAT("Crabclaw Isle", new WorldPoint(2533, 3572, 0)),
 	HOS_FRUIT_SAFESPOT("HOS Fruit stalls", new WorldPoint(1798, 3605, 0)),
 	HOS_KITCHEN("HOS Kitchen", new WorldPoint(1679, 3614, 0)),
