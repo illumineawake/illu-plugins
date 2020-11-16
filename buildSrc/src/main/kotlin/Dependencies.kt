@@ -24,8 +24,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import
+
 object ProjectVersions {
-    const val openosrsVersion = "3.4.5"
+    const val openosrsVersion = "3.5.2"
     const val apiVersion = "0.0.1"
 }
 
