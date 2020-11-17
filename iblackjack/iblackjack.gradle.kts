@@ -23,14 +23,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.2.0"
+version = "1.3.0"
 
 project.extra["PluginName"] = "iBlackjack"
 project.extra["PluginDescription"] = "Illumine - Blackjack plugin"
 
 dependencies {
-    //compileOnly(project(":iutils"))
-    compileOnly(group = "com.openosrs.externals", name = "iutils", version = "1.1.0+")
+    compileOnly(project(":iutils"))
+    //compileOnly(group = "com.openosrs.externals", name = "iutils", version = "1.1.0+")
     compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.13+")
 }
 
