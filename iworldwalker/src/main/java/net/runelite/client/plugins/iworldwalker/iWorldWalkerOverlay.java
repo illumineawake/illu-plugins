@@ -57,7 +57,12 @@ class iWorldWalkerOverlay extends OverlayPanel
 		timeFormat = (duration.toHours() < 1) ? "mm:ss" : "HH:mm:ss";
 		tableComponent.addRow("Time running:", formatDuration(duration.toMillis(), timeFormat));
 
-		if (config.category().equals(Category.BANKS))
+		if (plugin.mapPoint != null)
+		{
+			tableComponent.addRow("Walking to Map Point:", + plugin.mapPoint.getX() + ", " +
+				plugin.mapPoint.getY() + ", " + plugin.mapPoint.getPlane());
+		}
+		else if (config.category().equals(Category.BANKS))
 		{
 			tableComponent.addRow("Walking to:", config.catBanks().getName());
 		}
@@ -89,7 +94,6 @@ class iWorldWalkerOverlay extends OverlayPanel
 		{
 			tableComponent.addRow("Walking to:", config.catMisc().getName());
 		}
-
 
 		TableComponent tableDelayComponent = new TableComponent();
 		tableDelayComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);

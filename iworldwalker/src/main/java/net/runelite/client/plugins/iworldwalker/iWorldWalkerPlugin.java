@@ -27,15 +27,27 @@ package net.runelite.client.plugins.iworldwalker;
 
 import com.google.inject.Provides;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.MenuOpcode;
 import net.runelite.api.Player;
+import net.runelite.api.Point;
+import net.runelite.api.RenderOverview;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.MenuEntryAdded;
+import net.runelite.api.events.MenuOpened;
+import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -48,6 +60,8 @@ import net.runelite.client.plugins.iutils.PlayerUtils;
 import net.runelite.client.plugins.iutils.WalkUtils;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.ui.overlay.worldmap.WorldMapOverlay;
+import net.runelite.client.ui.overlay.worldmap.WorldMapPoint;
 import org.pf4j.Extension;
 
 
@@ -90,13 +104,18 @@ public class iWorldWalkerPlugin extends Plugin
 	@Inject
 	private ConfigManager configManager;
 
+	@Inject
+	private WorldMapOverlay worldMapOverlay;
+
 	Instant botTimer;
 	Player player;
 	iWorldWalkerState state;
 	LocalPoint beforeLoc = new LocalPoint(0, 0);
 	WorldPoint customLocation;
 	WorldPoint catLocation;
+	WorldPoint mapPoint;
 	String farmLocation;
+	private Point lastMenuOpenedPoint;
 
 	boolean startBot;
 	long sleepLength;
@@ -136,13 +155,7 @@ public class iWorldWalkerPlugin extends Plugin
 				player = client.getLocalPlayer();
 				if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
 				{
-					log.debug("starting World Walker plugin");
-					startBot = true;
-					beforeLoc = player.getLocalLocation();
-					timeout = 0;
-					state = null;
-					botTimer = Instant.now();
-					overlayManager.add(overlay);
+					startVals();
 					if (config.category().equals(Category.CUSTOM))
 					{
 						customLocation = getCustomLoc();
@@ -169,6 +182,17 @@ public class iWorldWalkerPlugin extends Plugin
 				resetVals();
 			}
 		}
+	}
+
+	private void startVals()
+	{
+		log.debug("starting World Walker plugin");
+		startBot = true;
+		beforeLoc = client.getLocalPlayer().getLocalLocation();
+		timeout = 0;
+		state = null;
+		botTimer = Instant.now();
+		overlayManager.add(overlay);
 	}
 
 	private WorldPoint getCustomLoc()
@@ -268,6 +292,7 @@ public class iWorldWalkerPlugin extends Plugin
 		startBot = false;
 		botTimer = null;
 		customLocation = null;
+		mapPoint = null;
 		state = null;
 	}
 
@@ -285,6 +310,11 @@ public class iWorldWalkerPlugin extends Plugin
 
 	private WorldPoint getLocation()
 	{
+		if (mapPoint != null)
+		{
+			return mapPoint;
+		}
+
 		switch (config.category())
 		{
 			case BANKS:
@@ -346,6 +376,13 @@ public class iWorldWalkerPlugin extends Plugin
 				}
 				else
 				{
+					if (mapPoint != null)
+					{
+						utils.sendGameMessage("Arrived at Map destination: " + mapPoint.getX() + ", " +
+							mapPoint.getY() + ", " + mapPoint.getPlane() + " - stopping World Walker");
+						resetVals();
+						return;
+					}
 					switch (config.category())
 					{
 						case BANKS:
@@ -385,5 +422,69 @@ public class iWorldWalkerPlugin extends Plugin
 			}
 			beforeLoc = player.getLocalLocation();
 		}
+	}
+
+	@Subscribe
+	public void onMenuOpened(MenuOpened event)
+	{
+		lastMenuOpenedPoint = client.getMouseCanvasPosition();
+	}
+
+	@Subscribe
+	public void onMenuEntryAdded(MenuEntryAdded event)
+	{
+		final Widget map = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
+
+		if (map == null)
+		{
+			return;
+		}
+
+		if (map.getBounds().contains(client.getMouseCanvasPosition().getX(), client.getMouseCanvasPosition().getY()))
+		{
+			addMenuEntry(event, "illu-Walk here");
+			addMenuEntry(event, "illu-Clear Destination");
+		}
+	}
+
+	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked event)
+	{
+		if (event.getOption().equals("illu-Walk here"))
+		{
+			mapPoint = calculateMapPoint(client.isMenuOpen() ? lastMenuOpenedPoint : client.getMouseCanvasPosition());
+			startVals();
+		}
+		if (event.getOption().equals("illu-Clear Destination"))
+		{
+			mapPoint = null;
+			resetVals();
+		}
+	}
+
+	private WorldPoint calculateMapPoint(Point point)
+	{
+		float zoom = client.getRenderOverview().getWorldMapZoom();
+		RenderOverview renderOverview = client.getRenderOverview();
+		final WorldPoint mapPoint = new WorldPoint(renderOverview.getWorldMapPosition().getX(), renderOverview.getWorldMapPosition().getY(), 0);
+		final Point middle = worldMapOverlay.mapWorldPointToGraphicsPoint(mapPoint);
+
+		final int dx = (int) ((point.getX() - middle.getX()) / zoom);
+		final int dy = (int) ((-(point.getY() - middle.getY())) / zoom);
+
+		return mapPoint.dx(dx).dy(dy);
+	}
+
+	private void addMenuEntry(MenuEntryAdded event, String option)
+	{
+		List<MenuEntry> entries = new LinkedList<>(Arrays.asList(client.getMenuEntries()));
+
+		MenuEntry entry = new MenuEntry();
+		entry.setOption(option);
+		entry.setTarget(event.getTarget());
+		entry.setOpcode(MenuOpcode.RUNELITE.getId());
+		entries.add(0, entry);
+
+		client.setMenuEntries(entries.toArray(new MenuEntry[0]));
 	}
 }
