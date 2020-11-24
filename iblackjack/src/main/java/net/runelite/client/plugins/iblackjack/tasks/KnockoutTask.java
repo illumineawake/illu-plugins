@@ -37,6 +37,6 @@ public class KnockoutTask extends Task
 	public void onGameTick(GameTick event)
 	{
 		entry = new MenuEntry("", "", selectedNPCIndex, MenuOpcode.NPC_FIFTH_OPTION.getId(), 0, 0, false);
-		utils.doActionMsTime(entry, bandit.getConvexHull().getBounds(), (int) sleepDelay());
+		utils.doActionMsTime(entry, bandit.getConvexHull().getBounds(), sleepDelay());
 	}
 }

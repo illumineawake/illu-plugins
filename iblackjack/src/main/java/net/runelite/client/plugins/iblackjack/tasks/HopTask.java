@@ -168,7 +168,7 @@ public class HopTask extends Task
 		{
 			status = "Close shop and hop";
 			entry = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), 11, 19660801, false);
-			utils.doActionMsTime(entry, new Point(0, 0), (int) sleepDelay());
+			utils.doActionMsTime(entry, new Point(0, 0), sleepDelay());
 			shouldHop = true;
 		}
 		else if (client.getWidget(WidgetInfo.WORLD_SWITCHER_LIST) == null)

@@ -42,12 +42,12 @@ public class DropTask extends Task
 		nextKnockoutTick = 0;
 
 		List<WidgetItem> jugs = inventory.getItems(List.of(ItemID.JUG));
-		int sleep = 0;
+		long sleep = 0;
 		for (WidgetItem jug : jugs)
 		{
 			entry = new MenuEntry("", "", jug.getId(), MenuOpcode.ITEM_DROP.getId(), jug.getIndex(),
 				WidgetInfo.INVENTORY.getId(), false);
-			sleep += (int) sleepDelay();
+			sleep += sleepDelay();
 			log.info("Adding jug: {}, delay time: {}", jug.getIndex(), sleep);
 			utils.doActionMsTime(entry, jug.getCanvasBounds(), sleep);
 		}

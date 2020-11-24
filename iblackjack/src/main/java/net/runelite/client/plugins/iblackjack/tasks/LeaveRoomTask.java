@@ -53,7 +53,7 @@ public class LeaveRoomTask extends Task
 			{
 				entry = new MenuEntry("", "", ladder.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
 					ladder.getSceneMinLocation().getX(), ladder.getSceneMinLocation().getY(), false);
-				utils.doActionMsTime(entry, ladder.getConvexHull().getBounds(), (int) sleepDelay());
+				utils.doActionMsTime(entry, ladder.getConvexHull().getBounds(), sleepDelay());
 				timeout = tickDelay();
 			}
 		}
@@ -65,7 +65,7 @@ public class LeaveRoomTask extends Task
 				status = "Opening curtain";
 				entry = new MenuEntry("", "", closedCurtain.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
 					closedCurtain.getLocalLocation().getSceneX(), closedCurtain.getLocalLocation().getSceneY(), false);
-				utils.doActionMsTime(entry, closedCurtain.getConvexHull().getBounds(), (int) sleepDelay());
+				utils.doActionMsTime(entry, closedCurtain.getConvexHull().getBounds(), sleepDelay());
 				log.debug(status);
 				timeout = tickDelay();
 			}

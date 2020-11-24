@@ -35,7 +35,7 @@ public class PickpocketTask extends Task
 	public void onGameTick(GameTick event)
 	{
 		entry = new MenuEntry("", "", selectedNPCIndex, MenuOpcode.NPC_THIRD_OPTION.getId(), 0, 0, false);
-		utils.doActionMsTime(entry, bandit.getConvexHull().getBounds(), (int) sleepDelay());
+		utils.doActionMsTime(entry, bandit.getConvexHull().getBounds(), sleepDelay());
 		if (config.random() && calc.getRandomIntBetweenRange(0, 10) == 0)
 		{
 			//timeout = calc.getRandomIntBetweenRange(1,2);

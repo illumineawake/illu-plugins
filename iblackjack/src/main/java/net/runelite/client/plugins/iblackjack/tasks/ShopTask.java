@@ -36,7 +36,7 @@ public class ShopTask extends Task
 			{
 				status = "Buying Jug of Wine";
 				entry = new MenuEntry("", "", 5, MenuOpcode.CC_OP.getId(), 3, 19660816, false);
-				utils.doActionMsTime(entry, jugWidget.getBounds(), (int) sleepDelay());
+				utils.doActionMsTime(entry, jugWidget.getBounds(), sleepDelay());
 			}
 		}
 		else
@@ -46,7 +46,7 @@ public class ShopTask extends Task
 			{
 				status = "Opening shop";
 				entry = new MenuEntry("", "", barman.getIndex(), MenuOpcode.NPC_THIRD_OPTION.getId(), 0, 0, false);
-				utils.doActionMsTime(entry, new Point(0, 0), (int) sleepDelay());
+				utils.doActionMsTime(entry, new Point(0, 0), sleepDelay());
 			}
 		}
 		log.info(status);

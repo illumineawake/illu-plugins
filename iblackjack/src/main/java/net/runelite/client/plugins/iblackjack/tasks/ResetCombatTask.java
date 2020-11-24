@@ -62,7 +62,7 @@ public class ResetCombatTask extends Task
 				status = "Closing curtain";
 				entry = new MenuEntry("", "", openCurtain.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
 					openCurtain.getLocalLocation().getSceneX(), openCurtain.getLocalLocation().getSceneY(), false);
-				utils.doActionMsTime(entry, openCurtain.getConvexHull().getBounds(), (int) sleepDelay());
+				utils.doActionMsTime(entry, openCurtain.getConvexHull().getBounds(), sleepDelay());
 				log.debug(status);
 				timeout = tickDelay();
 				return;
@@ -79,7 +79,7 @@ public class ResetCombatTask extends Task
 			{
 				entry = new MenuEntry("", "", staircase.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
 					staircase.getSceneMinLocation().getX(), staircase.getSceneMinLocation().getY(), false);
-				utils.doActionMsTime(entry, staircase.getConvexHull().getBounds(), (int) sleepDelay());
+				utils.doActionMsTime(entry, staircase.getConvexHull().getBounds(), sleepDelay());
 				status = "Climbing staircase";
 			}
 			else
@@ -95,7 +95,7 @@ public class ResetCombatTask extends Task
 			{
 				status = "Opening shop";
 				entry = new MenuEntry("", "", barman.getIndex(), MenuOpcode.NPC_THIRD_OPTION.getId(), 0, 0, false);
-				utils.doActionMsTime(entry, new Point(0, 0), (int) sleepDelay());
+				utils.doActionMsTime(entry, new Point(0, 0), sleepDelay());
 			}
 			else
 			{

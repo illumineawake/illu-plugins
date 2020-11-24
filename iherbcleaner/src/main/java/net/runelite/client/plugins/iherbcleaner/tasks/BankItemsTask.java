@@ -40,7 +40,7 @@ public class BankItemsTask extends Task
 	@Override
 	public void onGameTick(GameTick event)
 	{
-		int sleep = 0;
+		long sleep = 0;
 		if (!inventory.isEmpty())
 		{
 			status = "Depositing items";

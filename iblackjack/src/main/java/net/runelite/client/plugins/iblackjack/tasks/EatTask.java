@@ -39,7 +39,7 @@ public class EatTask extends Task
 		{
 			entry = new MenuEntry("", "", food.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(),
 				food.getIndex(), WidgetInfo.INVENTORY.getId(), false);
-			utils.doActionMsTime(entry, food.getCanvasBounds(), (int) sleepDelay());
+			utils.doActionMsTime(entry, food.getCanvasBounds(), sleepDelay());
 			eatHP = calc.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
 			timeout = tickDelay();
 		}

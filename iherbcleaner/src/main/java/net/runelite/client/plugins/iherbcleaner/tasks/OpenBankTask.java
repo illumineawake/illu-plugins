@@ -52,7 +52,7 @@ public class OpenBankTask extends Task
 			Rectangle rectangle = (bank.getConvexHull() != null) ? bank.getConvexHull().getBounds() :
 				new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
 			;
-			utils.doActionMsTime(entry, rectangle, (int) sleepDelay());
+			utils.doActionMsTime(entry, rectangle, sleepDelay());
 		}
 		else
 		{

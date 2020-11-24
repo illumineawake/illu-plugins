@@ -385,13 +385,13 @@ public class iUtils extends Plugin
 		action.delayGameTicks(ticksToDelay, runnable);
 	}
 
-	public void doModifiedActionMsTime(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Rectangle rect, int timeToDelay)
+	public void doModifiedActionMsTime(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Rectangle rect, long timeToDelay)
 	{
 		Point point = mouse.getClickPoint(rect);
 		doModifiedActionMsTime(entry, modifiedID, modifiedIndex, modifiedOpcode, point, timeToDelay);
 	}
 
-	public void doModifiedActionMsTime(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Point point, int timeToDelay)
+	public void doModifiedActionMsTime(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Point point, long timeToDelay)
 	{
 		Runnable runnable = () -> {
 			menu.setModifiedEntry(entry, modifiedID, modifiedIndex, modifiedOpcode);
@@ -402,7 +402,7 @@ public class iUtils extends Plugin
 	}
 
 	//Use with caution, does not pair with mouse click and is potentially detectable
-	public void doModifiedInvokeMsTime(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, int timeToDelay)
+	public void doModifiedInvokeMsTime(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, long timeToDelay)
 	{
 		Runnable runnable = () -> {
 			client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());

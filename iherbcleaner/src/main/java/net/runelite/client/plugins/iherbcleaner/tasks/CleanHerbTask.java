@@ -42,13 +42,13 @@ public class CleanHerbTask extends Task
 	{
 		status = "Starting herb cleaning";
 		List<WidgetItem> herbs = inventory.getItems(List.of(config.herbID()));
-		int sleep = 0;
+		long sleep = 0;
 		for (WidgetItem herb : herbs)
 		{
 			log.info("Adding herb: {}, delay time: {}", herb.getIndex(), sleep);
 			entry = new MenuEntry("", "", herb.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(),
 				herb.getIndex(), WidgetInfo.INVENTORY.getId(), true);
-			sleep += (int) sleepDelay();
+			sleep += sleepDelay();
 			herb.getCanvasBounds().getBounds();
 			Rectangle rectangle = herb.getCanvasBounds().getBounds();
 			utils.doActionMsTime(entry, rectangle, sleep);
