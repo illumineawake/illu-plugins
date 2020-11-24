@@ -7,7 +7,10 @@ import static net.runelite.client.plugins.iblackjack.iBlackjackPlugin.selectedNP
 public class SelectNPCTask extends Task
 {
 	@Override
-	public boolean validate() { return selectedNPCIndex == 0;	}
+	public boolean validate()
+	{
+		return selectedNPCIndex == 0;
+	}
 
 	@Override
 	public String getTaskDescription()

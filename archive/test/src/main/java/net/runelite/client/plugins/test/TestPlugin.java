@@ -175,7 +175,7 @@ public class TestPlugin extends Plugin
 		//object = new GameObjectQuery().idEquals(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280).filter(o -> rsAreaOutsideTest.contains(o.getWorldLocation())).result(client).nearestTo(client.getLocalPlayer());
 		if (client != null && client.getLocalPlayer() != null)
 		{
-			if(!iterating)
+			if (!iterating)
 			{
 
 				//log.info("Bank widget" + (client.getWidget(WidgetInfo.DEPOSIT_BOX_INVENTORY_ITEMS_CONTAINER) != null));
@@ -252,7 +252,7 @@ public class TestPlugin extends Plugin
 	@Subscribe
 	public void onItemContainerChanged(ItemContainerChanged event)
 	{
-		log.info("Event container ID: {}, inventory container ID: {} ", event.getContainerId(),WidgetInfo.INVENTORY);
+		log.info("Event container ID: {}, inventory container ID: {} ", event.getContainerId(), WidgetInfo.INVENTORY);
 		log.info(String.valueOf(event.getItemContainer().count(ItemID.MARK_OF_GRACE)));
 	}
 

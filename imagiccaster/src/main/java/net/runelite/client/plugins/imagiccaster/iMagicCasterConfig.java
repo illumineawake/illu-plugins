@@ -68,7 +68,10 @@ public interface iMagicCasterConfig extends Config
 		description = "Provide ID of the NPC to target",
 		position = 10
 	)
-	default int npcID()	{ return 0;	}
+	default int npcID()
+	{
+		return 0;
+	}
 
 	@ConfigItem(
 		keyName = "itemID",
@@ -79,7 +82,10 @@ public interface iMagicCasterConfig extends Config
 		unhide = "getSpellType",
 		unhideValue = "HIGH_ALCHEMY"
 	)
-	default int itemID() { return 0; }
+	default int itemID()
+	{
+		return 0;
+	}
 
 	@ConfigItem(
 		keyName = "groundItemID",
@@ -91,7 +97,10 @@ public interface iMagicCasterConfig extends Config
 		unhideValue = "TELE_GRAB"
 
 	)
-	default int groundItemID() { return 0; }
+	default int groundItemID()
+	{
+		return 0;
+	}
 
 	@ConfigItem(
 		keyName = "moveCast",
@@ -110,7 +119,10 @@ public interface iMagicCasterConfig extends Config
 		description = "Enable to logout when out of runes. Won't work if you are attacking an npc that attacks you",
 		position = 45
 	)
-	default boolean logout() { return true; }
+	default boolean logout()
+	{
+		return true;
+	}
 
 	@ConfigSection(
 		keyName = "delayConfig",

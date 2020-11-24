@@ -318,10 +318,14 @@ public class PowerSkillerPlugin extends Plugin
 	@Subscribe
 	public void onGameObjectDespawned(GameObjectDespawned event)
 	{
-		if (nextTree == null || event.getGameObject() != nextTree) {
+		if (nextTree == null || event.getGameObject() != nextTree)
+		{
 			return;
-		} else {
-			if (client.getLocalDestinationLocation() != null) {
+		}
+		else
+		{
+			if (client.getLocalDestinationLocation() != null)
+			{
 				interactTree(); //This is a failsafe, Player can get stuck with a destination on object despawn and be "forever moving".
 			}
 		}

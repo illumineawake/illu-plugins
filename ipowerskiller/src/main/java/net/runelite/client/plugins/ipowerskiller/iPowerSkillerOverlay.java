@@ -53,12 +53,14 @@ class iPowerSkillerOverlay extends OverlayPanel
 			log.debug("Overlay conditions not met, not starting overlay");
 			return null;
 		}
-		if(config.drawlocationRadius())
+		if (config.drawlocationRadius())
 		{
 			try
 			{
-				OverlayUtil.renderPolygon(graphics, Perspective.getCanvasTileAreaPoly(client, LocalPoint.fromWorld(client, plugin.skillLocation) /* client.getLocalPlayer().getLocalLocation()*/,config.locationRadius()), ColorUtil.fromHex("#121212"));
-			} catch (Exception ignored) {
+				OverlayUtil.renderPolygon(graphics, Perspective.getCanvasTileAreaPoly(client, LocalPoint.fromWorld(client, plugin.skillLocation) /* client.getLocalPlayer().getLocalLocation()*/, config.locationRadius()), ColorUtil.fromHex("#121212"));
+			}
+			catch (Exception ignored)
+			{
 				//Perspective can not find the Polygon to draw on the map.
 			}
 		}
@@ -76,7 +78,8 @@ class iPowerSkillerOverlay extends OverlayPanel
 			}
 		}
 		tableComponent.addRow("Status:", infoStatus);
-		if(config.type().equals(iPowerSkillerType.SANDSTONE) && plugin.waterskinsLeft!=-1){
+		if (config.type().equals(iPowerSkillerType.SANDSTONE) && plugin.waterskinsLeft != -1)
+		{
 			tableComponent.addRow("Waterskins left:", plugin.waterskinsLeft + " sips");
 		}
 

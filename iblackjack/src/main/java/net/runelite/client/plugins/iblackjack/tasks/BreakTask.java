@@ -16,7 +16,10 @@ public class BreakTask extends Task
 	public ChinBreakHandler chinBreakHandler;
 
 	@Override
-	public boolean validate() { return iBlackjackPlugin.timeout > 0;	}
+	public boolean validate()
+	{
+		return iBlackjackPlugin.timeout > 0;
+	}
 
 	@Override
 	public String getTaskDescription()

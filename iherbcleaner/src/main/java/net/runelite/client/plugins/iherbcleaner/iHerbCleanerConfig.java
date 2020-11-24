@@ -213,10 +213,10 @@ public interface iHerbCleanerConfig extends Config
 	}
 
 	@ConfigTitleSection(
-			keyName = "instructionsTitle",
-			name = "Instructions",
-			description = "",
-			position = 16
+		keyName = "instructionsTitle",
+		name = "Instructions",
+		description = "",
+		position = 16
 	)
 	default Title instructionsTitle()
 	{
@@ -224,11 +224,11 @@ public interface iHerbCleanerConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "instructions",
-			name = "",
-			description = "Instructions. Don't enter anything into this field",
-			position = 17,
-			titleSection = "instructionsTitle"
+		keyName = "instructions",
+		name = "",
+		description = "Instructions. Don't enter anything into this field",
+		position = 17,
+		titleSection = "instructionsTitle"
 	)
 	default String instructions()
 	{
@@ -259,10 +259,10 @@ public interface iHerbCleanerConfig extends Config
 
 
 	@ConfigItem(
-			keyName = "enableUI",
-			name = "Enable UI",
-			description = "Enable to turn on in game UI",
-			position = 95
+		keyName = "enableUI",
+		name = "Enable UI",
+		description = "Enable to turn on in game UI",
+		position = 95
 	)
 	default boolean enableUI()
 	{

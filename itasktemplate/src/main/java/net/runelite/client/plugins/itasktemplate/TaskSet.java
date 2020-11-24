@@ -26,6 +26,7 @@ public class TaskSet
 	/**
 	 * Iterates through all the tasks in the set and returns
 	 * the highest priority valid task.
+	 *
 	 * @return The first valid task from the task list or null if no valid task.
 	 */
 	public Task getValidTask()

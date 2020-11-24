@@ -7,7 +7,10 @@ import net.runelite.client.plugins.iblackjack.iBlackjackPlugin;
 public class TimeoutTask extends Task
 {
 	@Override
-	public boolean validate() { return iBlackjackPlugin.timeout > 0;	}
+	public boolean validate()
+	{
+		return iBlackjackPlugin.timeout > 0;
+	}
 
 	@Override
 	public String getTaskDescription()

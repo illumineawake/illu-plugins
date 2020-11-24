@@ -328,7 +328,7 @@ public interface iRandomHandlerConfig extends Config
 	{
 		return false;
 	}
-	
+
 	@ConfigItem(
 		keyName = "dismissJekyll",
 		name = "dismiss on Jekyll & Hyde",

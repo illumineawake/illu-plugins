@@ -15,7 +15,8 @@ public class PickpocketTask extends Task
 	NPC bandit;
 
 	@Override
-	public boolean validate() {
+	public boolean validate()
+	{
 		if (selectedNPCIndex == 0)
 		{
 			return false;
@@ -35,7 +36,7 @@ public class PickpocketTask extends Task
 	{
 		entry = new MenuEntry("", "", selectedNPCIndex, MenuOpcode.NPC_THIRD_OPTION.getId(), 0, 0, false);
 		utils.doActionMsTime(entry, bandit.getConvexHull().getBounds(), (int) sleepDelay());
-		if (config.random() && calc.getRandomIntBetweenRange(0,10) == 0)
+		if (config.random() && calc.getRandomIntBetweenRange(0, 10) == 0)
 		{
 			//timeout = calc.getRandomIntBetweenRange(1,2);
 			timeout = tickDelay();

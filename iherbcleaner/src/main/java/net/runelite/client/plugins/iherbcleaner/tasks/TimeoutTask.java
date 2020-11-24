@@ -7,7 +7,10 @@ import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.timeou
 public class TimeoutTask extends Task
 {
 	@Override
-	public boolean validate() { return timeout > 0;	}
+	public boolean validate()
+	{
+		return timeout > 0;
+	}
 
 	@Override
 	public String getTaskDescription()

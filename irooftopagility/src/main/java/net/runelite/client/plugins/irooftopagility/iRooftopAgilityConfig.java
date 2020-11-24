@@ -223,11 +223,11 @@ public interface iRooftopAgilityConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "highAlch",
-			name = "High Alch",
-			description = "Enable to High Alch while running",
-			position = 14,
-			titleSection = "agilityTitle"
+		keyName = "highAlch",
+		name = "High Alch",
+		description = "Enable to High Alch while running",
+		position = 14,
+		titleSection = "agilityTitle"
 	)
 	default boolean highAlch()
 	{
@@ -235,14 +235,14 @@ public interface iRooftopAgilityConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "Course",
-			name = "Course",
-			description = "Supported agility courses",
-			position = 15,
-			titleSection = "agilityTitle",
-			hidden = false,
-			hide = "highAlch",
-			hideValue = "true"
+		keyName = "Course",
+		name = "Course",
+		description = "Supported agility courses",
+		position = 15,
+		titleSection = "agilityTitle",
+		hidden = false,
+		hide = "highAlch",
+		hideValue = "true"
 	)
 	default Course course()
 	{
@@ -250,16 +250,15 @@ public interface iRooftopAgilityConfig extends Config
 	}
 
 
-
 	@ConfigItem(
-			keyName = "alchCourse",
-			name = "Banking Courses",
-			description = "Agility courses that support bank restocking",
-			position = 16,
-			titleSection = "agilityTitle",
-			hidden = true,
-			unhide = "highAlch",
-			unhideValue = "true"
+		keyName = "alchCourse",
+		name = "Banking Courses",
+		description = "Agility courses that support bank restocking",
+		position = 16,
+		titleSection = "agilityTitle",
+		hidden = true,
+		unhide = "highAlch",
+		unhideValue = "true"
 	)
 	default AlchCourse alchcourse()
 	{
@@ -267,13 +266,13 @@ public interface iRooftopAgilityConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "alchItemID",
-			name = "Alch Item ID (un-noted)",
-			description = "Item ID (un-noted) of item you wish to high alch.",
-			position = 17,
-			titleSection = "agilityTitle",
-			hidden = true,
-			unhide = "highAlch"
+		keyName = "alchItemID",
+		name = "Alch Item ID (un-noted)",
+		description = "Item ID (un-noted) of item you wish to high alch.",
+		position = 17,
+		titleSection = "agilityTitle",
+		hidden = true,
+		unhide = "highAlch"
 	)
 	default int alchItemID()
 	{
@@ -281,13 +280,13 @@ public interface iRooftopAgilityConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "bankRestock",
-			name = "Bank to restock items",
-			description = "Go to bank to restock items for high alch. Auto-disables at unsupported locations or bank doesn't contain item.",
-			position = 18,
-			titleSection = "agilityTitle",
-			hidden = true,
-			unhide = "highAlch"
+		keyName = "bankRestock",
+		name = "Bank to restock items",
+		description = "Go to bank to restock items for high alch. Auto-disables at unsupported locations or bank doesn't contain item.",
+		position = 18,
+		titleSection = "agilityTitle",
+		hidden = true,
+		unhide = "highAlch"
 	)
 	default boolean bankRestock()
 	{
@@ -331,11 +330,11 @@ public interface iRooftopAgilityConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "camelotTeleport",
-			name = "Use Camelot Teleport",
-			description = "Use Camelot Teleport if you have hard diaries completed. Requires Air Runes or (Air Staff equipped) and Law Runes in inventory",
-			position = 22,
-			titleSection = "agilityTitle"
+		keyName = "camelotTeleport",
+		name = "Use Camelot Teleport",
+		description = "Use Camelot Teleport if you have hard diaries completed. Requires Air Runes or (Air Staff equipped) and Law Runes in inventory",
+		position = 22,
+		titleSection = "agilityTitle"
 	)
 	default boolean camelotTeleport()
 	{

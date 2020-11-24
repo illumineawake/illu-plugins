@@ -55,11 +55,13 @@ class iMagicCasterOverlay extends OverlayPanel
 
 		Duration duration = Duration.between(plugin.botTimer, Instant.now());
 		timeFormat = (duration.toHours() < 1) ? "mm:ss" : "HH:mm:ss";
-		tableComponent.addRow("Time running:", formatDuration(duration.toMillis(),timeFormat));
+		tableComponent.addRow("Time running:", formatDuration(duration.toMillis(), timeFormat));
 		if (plugin.state != null)
 		{
 			if (!plugin.state.name().equals("TIMEOUT"))
+			{
 				infoStatus = plugin.state.name();
+			}
 		}
 		tableComponent.addRow("Status:", infoStatus);
 
@@ -71,8 +73,8 @@ class iMagicCasterOverlay extends OverlayPanel
 		if (!tableComponent.isEmpty())
 		{
 			panelComponent.setBackgroundColor(ColorUtil.fromHex("#121212")); //Material Dark default
-			panelComponent.setPreferredSize(new Dimension(200,200));
-			panelComponent.setBorder(new Rectangle(5,5,5,5));
+			panelComponent.setPreferredSize(new Dimension(200, 200));
+			panelComponent.setBorder(new Rectangle(5, 5, 5, 5));
 			panelComponent.getChildren().add(TitleComponent.builder()
 				.text("Illumine Magic Caster")
 				.color(ColorUtil.fromHex("#40C4FF"))

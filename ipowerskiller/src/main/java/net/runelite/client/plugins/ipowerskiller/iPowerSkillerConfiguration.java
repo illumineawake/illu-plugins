@@ -273,10 +273,10 @@ public interface iPowerSkillerConfiguration extends Config
 	}
 
 	@ConfigTitleSection(
-			keyName = "opcodeTitle",
-			name = "Menu Opcodes",
-			description = "",
-			position = 85
+		keyName = "opcodeTitle",
+		name = "Menu Opcodes",
+		description = "",
+		position = 85
 	)
 	default Title opcodeTitle()
 	{
@@ -403,10 +403,10 @@ public interface iPowerSkillerConfiguration extends Config
 	}
 
 	@ConfigTitleSection(
-			keyName = "dropTitle",
-			name = "Dropping & Banking",
-			description = "",
-			position = 89
+		keyName = "dropTitle",
+		name = "Dropping & Banking",
+		description = "",
+		position = 89
 	)
 	default Title dropTitle()
 	{
@@ -490,11 +490,11 @@ public interface iPowerSkillerConfiguration extends Config
 	}
 
 	@ConfigItem(
-			keyName = "dropOne",
-			name = "Get 1 Drop 1",
-			description = "Tick manipulation",
-			position = 121,
-			titleSection = "dropTitle"
+		keyName = "dropOne",
+		name = "Get 1 Drop 1",
+		description = "Tick manipulation",
+		position = 121,
+		titleSection = "dropTitle"
 	)
 	default boolean dropOne()
 	{
@@ -516,13 +516,13 @@ public interface iPowerSkillerConfiguration extends Config
 	{
 		return 10;
 	}
-	
+
 	@ConfigItem(
-			keyName = "drawLocationRadius",
-			name = "Draw Location Radius",
-			description = "Draw location Radius on screen.",
-			position = 131,
-			titleSection = "skillerTitle"
+		keyName = "drawLocationRadius",
+		name = "Draw Location Radius",
+		description = "Draw location Radius on screen.",
+		position = 131,
+		titleSection = "skillerTitle"
 	)
 	default boolean drawlocationRadius()
 	{
@@ -536,7 +536,10 @@ public interface iPowerSkillerConfiguration extends Config
 		position = 135,
 		titleSection = "skillerTitle"
 	)
-	default boolean safeSpot() { return false; }
+	default boolean safeSpot()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 		keyName = "safeSpotRadius",
@@ -547,7 +550,10 @@ public interface iPowerSkillerConfiguration extends Config
 		unhide = "safeSpot",
 		titleSection = "skillerTitle"
 	)
-	default int safeSpotRadius() { return 1; }
+	default int safeSpotRadius()
+	{
+		return 1;
+	}
 
 	@ConfigItem(
 		keyName = "enableUI",

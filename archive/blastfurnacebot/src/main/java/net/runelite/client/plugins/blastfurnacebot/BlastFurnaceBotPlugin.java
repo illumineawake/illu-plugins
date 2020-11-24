@@ -263,7 +263,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 		{
 			targetMenu = new MenuEntry("", "", bankObject.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), bankObject.getSceneMinLocation().getX(), bankObject.getSceneMinLocation().getY(), true);
 			mouse.clickRandomPointCenter(-100, 100);
-			timeout = calc.getRandomIntBetweenRange(1,tickDelay);
+			timeout = calc.getRandomIntBetweenRange(1, tickDelay);
 		}
 	}
 
@@ -272,7 +272,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 		targetMenu = new MenuEntry("", "", conveyorBelt.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), conveyorBelt.getSceneMinLocation().getX(), conveyorBelt.getSceneMinLocation().getY(), false);
 		utils.sleep(10, 100);
 		mouse.clickRandomPointCenter(-100, 100);
-		timeout = calc.getRandomIntBetweenRange(1,tickDelay);
+		timeout = calc.getRandomIntBetweenRange(1, tickDelay);
 	}
 
 	private void collectFurnace()
@@ -283,7 +283,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 			: new MenuEntry("", "", barDispenser.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), barDispenser.getSceneMinLocation().getX(), barDispenser.getSceneMinLocation().getY(), false);
 
 		mouse.clickRandomPointCenter(-100, 100);
-		timeout = calc.getRandomIntBetweenRange(1,tickDelay);
+		timeout = calc.getRandomIntBetweenRange(1, tickDelay);
 	}
 
 	private void fillCoalBag(WidgetItem coalBag)
@@ -351,7 +351,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 		}
 		if (playerUtils.isMoving(beforeLoc))
 		{
-			timeout = calc.getRandomIntBetweenRange(1,tickDelay);
+			timeout = calc.getRandomIntBetweenRange(1, tickDelay);
 			return MOVING;
 		}
 		if (!bank.isBankOpen())
@@ -366,7 +366,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				Widget payDialog = client.getWidget(WidgetInfo.DIALOG_OPTION_OPTION1);
 				if (payDialog != null)
 				{
-					targetMenu = new MenuEntry("", "", 0,MenuOpcode.WIDGET_TYPE_6.getId(), 1, 14352385,false );
+					targetMenu = new MenuEntry("", "", 0, MenuOpcode.WIDGET_TYPE_6.getId(), 1, 14352385, false);
 					mouse.clickRandomPointCenter(-100, 100);
 					return PAY_FOREMAN;
 				}
@@ -401,7 +401,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 				return FILL_COFFER;
 			}
 			playerUtils.handleRun(20, 20);
-			if(inventory.inventoryContains(bar.getItemID())) //TODO: update iutils to take a String contains, so can search if inventory has any Bars
+			if (inventory.inventoryContains(bar.getItemID())) //TODO: update iutils to take a String contains, so can search if inventory has any Bars
 			{ //INVENTORY CONTAINS BARS
 				openBank();
 				return OPENING_BANK;
@@ -427,7 +427,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 						targetMenu = new MenuEntry("", "", coffer.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), coffer.getSceneMinLocation().getX(), coffer.getSceneMinLocation().getY(), false);
 						utils.sleep(50, 250);
 						mouse.clickRandomPointCenter(-100, 100);
-						timeout = calc.getRandomIntBetweenRange(1,tickDelay);
+						timeout = calc.getRandomIntBetweenRange(1, tickDelay);
 					}
 					else
 					{
@@ -504,7 +504,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 						putConveyorBelt();
 						if (!coalBagFull || coalBag == null)
 						{
-							timeout = calc.getRandomIntBetweenRange(1,tickDelay);
+							timeout = calc.getRandomIntBetweenRange(1, tickDelay);
 							return PUT_CONVEYOR_BELT;
 						}
 					}
@@ -643,7 +643,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 					bank.depositAllExcept(inventorySetup);
 					log.info("withdrawing ore");
 					bank.withdrawAllItem(bankOre);
-					timeout = calc.getRandomIntBetweenRange(1,tickDelay);
+					timeout = calc.getRandomIntBetweenRange(1, tickDelay);
 					return WITHDRAWING;
 				}
 				else
@@ -683,7 +683,7 @@ public class BlastFurnaceBotPlugin extends Plugin
 		}
 		log.info("inserting menu at MOC event: " + targetMenu.toString());
 		event.setMenuEntry(targetMenu);
-		timeout = calc.getRandomIntBetweenRange(1,tickDelay);
+		timeout = calc.getRandomIntBetweenRange(1, tickDelay);
 		targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
 	}
 

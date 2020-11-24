@@ -247,32 +247,41 @@ public interface iPowerFighterConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "lootOnly",
-			name = "Loot only mode",
-			description = "Loot only mode, will loot items and not fight NPCs",
-			position = 29,
-			titleSection = "generalTitle"
+		keyName = "lootOnly",
+		name = "Loot only mode",
+		description = "Loot only mode, will loot items and not fight NPCs",
+		position = 29,
+		titleSection = "generalTitle"
 	)
-	default boolean lootOnly() { return false; }
+	default boolean lootOnly()
+	{
+		return false;
+	}
 
 	@ConfigItem(
-			keyName = "exactNpcOnly",
-			name = "Exact NPC only mode",
-			description = "Exact NPC only mode, will fight exact NPC names only",
-			position = 29,
-			titleSection = "generalTitle"
+		keyName = "exactNpcOnly",
+		name = "Exact NPC only mode",
+		description = "Exact NPC only mode, will fight exact NPC names only",
+		position = 29,
+		titleSection = "generalTitle"
 	)
-	default boolean exactNpcOnly() { return false; }
+	default boolean exactNpcOnly()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 		keyName = "npcName",
 		name = "NPC Name",
 		description = "Name of NPC. Will attack any NPC containing given name.",
 		position = 30,
-			hide = "dropInventory",
+		hide = "dropInventory",
 		titleSection = "generalTitle"
 	)
-	default String npcName() { return "chicken"; }
+	default String npcName()
+	{
+		return "chicken";
+	}
 
 	@Range(
 		min = 1,
@@ -283,20 +292,26 @@ public interface iPowerFighterConfig extends Config
 		name = "Search radius NPC",
 		description = "The distance (in tiles) to search for target NPC. Center search point is set when you click start.",
 		position = 31,
-			hide = "dropInventory",
+		hide = "dropInventory",
 		titleSection = "generalTitle"
 	)
-	default int searchRadius() { return 20; }
+	default int searchRadius()
+	{
+		return 20;
+	}
 
 	@ConfigItem(
 		keyName = "safeSpot",
 		name = "Safe spot",
 		description = "Safe spot will force your character to always return to the tile you started the plugin on",
 		position = 32,
-			hide = "dropInventory",
+		hide = "dropInventory",
 		titleSection = "generalTitle"
 	)
-	default boolean safeSpot() { return false; }
+	default boolean safeSpot()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 		keyName = "safeSpotRadius",
@@ -307,7 +322,10 @@ public interface iPowerFighterConfig extends Config
 		unhide = "safeSpot",
 		titleSection = "generalTitle"
 	)
-	default int safeSpotRadius() { return 1; }
+	default int safeSpotRadius()
+	{
+		return 1;
+	}
 
 	@ConfigTitleSection(
 		keyName = "ammoTitle",
@@ -410,7 +428,10 @@ public interface iPowerFighterConfig extends Config
 		unhide = "lootItems",
 		titleSection = "lootItems"
 	)
-	default int lootRadius() { return 20; }
+	default int lootRadius()
+	{
+		return 20;
+	}
 
 	@ConfigItem(
 		keyName = "lootGEValue",
@@ -556,7 +577,10 @@ public interface iPowerFighterConfig extends Config
 		unhide = "alchItems",
 		titleSection = "alchTitle"
 	)
-	default boolean alchByValue() { return false; }
+	default boolean alchByValue()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 		keyName = "maxAlchValue",
@@ -567,7 +591,10 @@ public interface iPowerFighterConfig extends Config
 		unhide = "alchByValue",
 		titleSection = "alchTitle"
 	)
-	default int maxAlchValue() { return 100000; }
+	default int maxAlchValue()
+	{
+		return 100000;
+	}
 
 	@ConfigItem(
 		keyName = "alchByName",
@@ -578,7 +605,10 @@ public interface iPowerFighterConfig extends Config
 		unhide = "alchItems",
 		titleSection = "alchTitle"
 	)
-	default boolean alchByName() { return false; }
+	default boolean alchByName()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 		keyName = "alchNames",
@@ -589,7 +619,10 @@ public interface iPowerFighterConfig extends Config
 		unhide = "alchByName",
 		titleSection = "alchTitle"
 	)
-	default String alchNames() { return "Steel platebody,Rune scimitar"; }
+	default String alchNames()
+	{
+		return "Steel platebody,Rune scimitar";
+	}
 
 	@ConfigTitleSection(
 		keyName = "combatTitle",
@@ -609,7 +642,10 @@ public interface iPowerFighterConfig extends Config
 		position = 120,
 		titleSection = "combatTitle"
 	)
-	default boolean combatLevels() { return false; }
+	default boolean combatLevels()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 		keyName = "attackLvl",
@@ -620,7 +656,10 @@ public interface iPowerFighterConfig extends Config
 		unhide = "combatLevels",
 		titleSection = "combatTitle"
 	)
-	default int attackLvl() { return 60; }
+	default int attackLvl()
+	{
+		return 60;
+	}
 
 	@ConfigItem(
 		keyName = "strengthLvl",
@@ -631,7 +670,10 @@ public interface iPowerFighterConfig extends Config
 		unhide = "combatLevels",
 		titleSection = "combatTitle"
 	)
-	default int strengthLvl() { return 60; }
+	default int strengthLvl()
+	{
+		return 60;
+	}
 
 	@ConfigItem(
 		keyName = "defenceLvl",
@@ -642,7 +684,10 @@ public interface iPowerFighterConfig extends Config
 		unhide = "combatLevels",
 		titleSection = "combatTitle"
 	)
-	default int defenceLvl() { return 60; }
+	default int defenceLvl()
+	{
+		return 60;
+	}
 
 	@ConfigItem(
 		keyName = "continueType",
@@ -653,7 +698,10 @@ public interface iPowerFighterConfig extends Config
 		unhide = "combatLevels",
 		titleSection = "combatTitle"
 	)
-	default combatType continueType() { return combatType.STRENGTH; }
+	default combatType continueType()
+	{
+		return combatType.STRENGTH;
+	}
 
 	@ConfigItem(
 		keyName = "stopSlayer",

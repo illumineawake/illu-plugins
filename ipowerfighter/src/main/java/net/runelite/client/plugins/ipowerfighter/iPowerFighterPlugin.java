@@ -842,7 +842,7 @@ public class iPowerFighterPlugin extends Plugin
 				return;
 			}
 			if (event.getMessage().contains(SLAYER_MSG) || event.getMessage().contains(SLAYER_BOOST_MSG) &&
-					event.getType() == ChatMessageType.GAMEMESSAGE)
+				event.getType() == ChatMessageType.GAMEMESSAGE)
 			{
 				log.debug("Slayer task completed");
 				slayerCompleted = true;

@@ -39,7 +39,10 @@ public interface iQuickEaterConfiguration extends Config
 		description = "Minimum HP to eat at. i.e. will always eat",
 		position = 0
 	)
-	default int minEatHP()	{ return 10; }
+	default int minEatHP()
+	{
+		return 10;
+	}
 
 	@ConfigItem(
 		keyName = "maxEatHP",
@@ -47,7 +50,10 @@ public interface iQuickEaterConfiguration extends Config
 		description = "Highest HP to consider eating. Value MUST be higher than minimum HP config. If HP drops below this value bot may randomly decide to eat.",
 		position = 1
 	)
-	default int maxEatHP()	{ return 20; }
+	default int maxEatHP()
+	{
+		return 20;
+	}
 
 	@ConfigItem(
 		keyName = "drinkAntiPoison",
@@ -55,7 +61,10 @@ public interface iQuickEaterConfiguration extends Config
 		description = "Enable to drink Anti-Poisons or Antidotes when poisoned",
 		position = 2
 	)
-	default boolean drinkAntiPoison() { return true; }
+	default boolean drinkAntiPoison()
+	{
+		return true;
+	}
 
 	@ConfigItem(
 		keyName = "drinkPrayer",
@@ -63,7 +72,10 @@ public interface iQuickEaterConfiguration extends Config
 		description = "Enable to drink Prayer/Super Restore pots below given Prayer levels",
 		position = 3
 	)
-	default boolean drinkPrayer() { return false; }
+	default boolean drinkPrayer()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 		keyName = "minPrayerPoints",
@@ -73,7 +85,10 @@ public interface iQuickEaterConfiguration extends Config
 		unhide = "drinkPrayer",
 		position = 4
 	)
-	default int minPrayerPoints()	{ return 10; }
+	default int minPrayerPoints()
+	{
+		return 10;
+	}
 
 	@ConfigItem(
 		keyName = "maxPrayerPoints",
@@ -83,7 +98,10 @@ public interface iQuickEaterConfiguration extends Config
 		unhide = "drinkPrayer",
 		position = 5
 	)
-	default int maxPrayerPoints()	{ return 20; }
+	default int maxPrayerPoints()
+	{
+		return 20;
+	}
 
 	@ConfigItem(
 		keyName = "drinkStrength",
@@ -108,7 +126,7 @@ public interface iQuickEaterConfiguration extends Config
 	{
 		return 100;
 	}
-	
+
 	@ConfigItem(
 		keyName = "drinkAttack",
 		name = "Enable Drink Attack Pots",
@@ -211,7 +229,10 @@ public interface iQuickEaterConfiguration extends Config
 		description = "Enable to drink Stamina Potions below given energy level",
 		position = 16
 	)
-	default boolean drinkStamina() { return false; }
+	default boolean drinkStamina()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 		keyName = "maxDrinkEnergy",
@@ -221,7 +242,10 @@ public interface iQuickEaterConfiguration extends Config
 		hidden = true,
 		unhide = "drinkStamina"
 	)
-	default int maxDrinkEnergy() { return 60; }
+	default int maxDrinkEnergy()
+	{
+		return 60;
+	}
 
 	@ConfigItem(
 		keyName = "randEnergy",
@@ -232,7 +256,10 @@ public interface iQuickEaterConfiguration extends Config
 		hidden = true,
 		unhide = "drinkStamina"
 	)
-	default int randEnergy() { return 20; }
+	default int randEnergy()
+	{
+		return 20;
+	}
 
 	@ConfigItem(
 		keyName = "drinkAntiFire",
@@ -240,21 +267,30 @@ public interface iQuickEaterConfiguration extends Config
 		description = "Enable to drink Anti-Fire when burnt",
 		position = 2
 	)
-	default boolean drinkAntiFire() { return true; }
-	
-	@ConfigItem(
-			keyName = "keepPNeckEquipped",
-			name = "Keep Phoenix Neck Equipped",
-			description = "This will keep a phoenix necklace equipped.",
-			position = 40
-	)
-	default boolean keepPNeckEquipped() { return false; }
+	default boolean drinkAntiFire()
+	{
+		return true;
+	}
 
 	@ConfigItem(
-			keyName = "activateImbHeart",
-			name = "Reactivate Imbued Heart",
-			description = "Enable to automatically reactivate the imbued heart - activate heart once manually. ",
-			position = 41
+		keyName = "keepPNeckEquipped",
+		name = "Keep Phoenix Neck Equipped",
+		description = "This will keep a phoenix necklace equipped.",
+		position = 40
 	)
-	default boolean activateImbHeart() { return false; }
+	default boolean keepPNeckEquipped()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "activateImbHeart",
+		name = "Reactivate Imbued Heart",
+		description = "Enable to automatically reactivate the imbued heart - activate heart once manually. ",
+		position = 41
+	)
+	default boolean activateImbHeart()
+	{
+		return false;
+	}
 }

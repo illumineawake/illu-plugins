@@ -49,7 +49,7 @@ public class DropTask extends Task
 				WidgetInfo.INVENTORY.getId(), false);
 			sleep += (int) sleepDelay();
 			log.info("Adding jug: {}, delay time: {}", jug.getIndex(), sleep);
-			utils.doActionMsTime(entry,jug.getCanvasBounds(),sleep);
+			utils.doActionMsTime(entry, jug.getCanvasBounds(), sleep);
 		}
 	}
 }

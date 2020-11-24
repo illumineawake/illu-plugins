@@ -6,16 +6,14 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
-import net.runelite.api.Player;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.iherbcleaner.Task;
 import net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin;
-import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.timeout;
+import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.status;
 import net.runelite.client.plugins.iutils.ActionQueue;
 import net.runelite.client.plugins.iutils.InventoryUtils;
-import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.status;
 
 @Slf4j
 public class CleanHerbTask extends Task

@@ -15,7 +15,7 @@ public class MovingTask extends Task
 	public boolean validate()
 	{
 		Location currentRoom = Location.getRoom(client.getLocalPlayer().getWorldLocation());
-		return playerUtils.isMoving(iBlackjackPlugin.beforeLoc) && currentRoom ==  null;
+		return playerUtils.isMoving(iBlackjackPlugin.beforeLoc) && currentRoom == null;
 		//return false;
 	}
 

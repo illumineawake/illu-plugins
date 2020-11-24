@@ -6,7 +6,6 @@
 package net.runelite.client.plugins.iworldwalker;
 
 import lombok.Getter;
-import net.runelite.api.coords.WorldPoint;
 
 @Getter
 public enum Category

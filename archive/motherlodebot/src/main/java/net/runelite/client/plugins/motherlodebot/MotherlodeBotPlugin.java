@@ -151,12 +151,14 @@ public class MotherlodeBotPlugin extends Plugin
 	{
 		if (state == WALK_TO_MINE)
 		{
-			if(stuckArea.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0)
+			if (stuckArea.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0)
 			{
 				log.info("trying to mine the 'STUCK' obstacle");
 				GameObject rockObstacleToMineArea = new GameObjectQuery().idEquals(ROCK_OBSTACLES).filter(o -> (stuckArea.distanceTo(o.getWorldLocation()) == 0)).result(client).nearestTo(client.getLocalPlayer());
 				if (rockObstacleToMineArea != null)
+				{
 					return rockObstacleToMineArea;
+				}
 			}
 			GameObject rockObstacleToMineArea = new GameObjectQuery().idEquals(ROCK_OBSTACLES).filter(o -> (obstacleArea.distanceTo(o.getWorldLocation()) == 0) && (client.getLocalPlayer().getWorldLocation().getX() <= o.getWorldLocation().getX()) && client.getLocalPlayer().getWorldLocation().getY() >= o.getWorldLocation().getY()).result(client).nearestTo(client.getLocalPlayer());
 			return rockObstacleToMineArea;
@@ -203,7 +205,8 @@ public class MotherlodeBotPlugin extends Plugin
 			predictedSackSize = 0;
 			return;
 		}
-		if (bankArea.distanceTo(client.getLocalPlayer().getWorldLocation()) != 0) {
+		if (bankArea.distanceTo(client.getLocalPlayer().getWorldLocation()) != 0)
+		{
 			log.info("need to collect ores but we're not in the bank area");
 			return;
 		}
@@ -213,7 +216,8 @@ public class MotherlodeBotPlugin extends Plugin
 			{
 				depositHopper();
 				return;
-			} else
+			}
+			else
 			{
 				log.info("Sack is full and pay dirt in inventory. Need to drop paydirt");
 				utils.dropAll(List.of(ItemID.PAYDIRT));
@@ -223,7 +227,7 @@ public class MotherlodeBotPlugin extends Plugin
 		if (inventory.inventoryFull() || inventory.inventoryContains(MLM_ORE_TYPES))
 		{
 			banking = true;
-			if(bank.isDepositBoxOpen())
+			if (bank.isDepositBoxOpen())
 			{
 				bank.depositAll();
 				timeout = 1;
@@ -237,8 +241,11 @@ public class MotherlodeBotPlugin extends Plugin
 					targetMenu = new MenuEntry("", "", depositBox.getId(), 3, depositBox.getSceneMinLocation().getX(), depositBox.getSceneMinLocation().getY(), false);
 					mouse.clickRandomPointCenter(-100, 100);
 					return;
-				} else
+				}
+				else
+				{
 					log.info("depositBox is null");
+				}
 			}
 		}
 		if (!banking && getSackSize() != predictedSackSize && (object.getGameObjects(ObjectID.BROKEN_STRUT) != null))
@@ -246,7 +253,7 @@ public class MotherlodeBotPlugin extends Plugin
 			log.info("Repair strut");
 			//repairStrut();
 		}
-		if(!inventory.inventoryFull() && getSackSize() > 0)
+		if (!inventory.inventoryFull() && getSackSize() > 0)
 		{
 			sack = utils.findNearestGroundObject(26688);
 			if (sack != null)
@@ -295,14 +302,20 @@ public class MotherlodeBotPlugin extends Plugin
 		if (inventory.inventoryFull())
 		{
 			if (bankArea.distanceTo(client.getLocalPlayer().getWorldLocation()) != 0)
+			{
 				return WALK_TO_BANK;
+			}
 			else
+			{
 				return DEPOSIT_HOPPER;
+			}
 		}
 		if (!inventory.inventoryFull() && (mineArea.distanceTo(client.getLocalPlayer().getWorldLocation()) != 0))
 		{
-			if(getSackSize() < 68)
+			if (getSackSize() < 68)
+			{
 				return WALK_TO_MINE;
+			}
 			return WAITING;
 		}
 		if (!utils.isAnimating() && !playerUtils.isMoving(beforeLoc) && !inventory.inventoryFull() && mineArea.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0)
@@ -350,7 +363,7 @@ public class MotherlodeBotPlugin extends Plugin
 					return;
 				case WALK_TO_BANK:
 					rockObstacle = getNearestObstacle();
-					if(rockObstacle != null)
+					if (rockObstacle != null)
 					{
 						mineObstacle(rockObstacle);
 					}
@@ -361,7 +374,7 @@ public class MotherlodeBotPlugin extends Plugin
 					return;
 				case WALK_TO_MINE:
 					rockObstacle = getNearestObstacle();
-					if(rockObstacle != null)
+					if (rockObstacle != null)
 					{
 						mineObstacle(rockObstacle);
 					}
@@ -414,7 +427,7 @@ public class MotherlodeBotPlugin extends Plugin
 	@Subscribe
 	public void onGameObjectSpawned(GameObjectSpawned event)
 	{
-		if(obstacleArea.distanceTo(event.getTile().getWorldLocation()) != 0 || !ROCK_OBSTACLES.contains(event.getGameObject().getId()))
+		if (obstacleArea.distanceTo(event.getTile().getWorldLocation()) != 0 || !ROCK_OBSTACLES.contains(event.getGameObject().getId()))
 		{
 			return;
 		}
@@ -424,9 +437,13 @@ public class MotherlodeBotPlugin extends Plugin
 			mineObstacle(rockObstacle);
 		}
 		if (rockObstacle != null)
+		{
 			log.info("Rock Obstacle spawned: " + event.getGameObject().getId() + " " + event.getGameObject().getWorldLocation() + " object = " + rockObstacle.toString());
+		}
 		else
+		{
 			log.info("Rock Obstacle spawned: " + event.getGameObject().getId() + " " + event.getGameObject().getWorldLocation() + " our object is NULL");
+		}
 	}
 
 	/*@Subscribe

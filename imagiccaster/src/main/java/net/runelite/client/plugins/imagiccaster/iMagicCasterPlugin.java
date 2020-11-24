@@ -27,7 +27,6 @@ package net.runelite.client.plugins.imagiccaster;
 
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.time.Instant;
 import javax.inject.Inject;
@@ -35,18 +34,12 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.AnimationID;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
-import net.runelite.api.Constants;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.NPC;
-import net.runelite.api.Node;
 import net.runelite.api.Player;
-import net.runelite.api.Point;
-import net.runelite.api.Scene;
-import net.runelite.api.Tile;
 import net.runelite.api.TileItem;
-import net.runelite.api.TileItemPile;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
@@ -80,7 +73,6 @@ import net.runelite.client.plugins.iutils.ObjectUtils;
 import net.runelite.client.plugins.iutils.PlayerUtils;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.client.ui.overlay.OverlayUtil;
 import org.pf4j.Extension;
 
 
@@ -313,7 +305,7 @@ public class iMagicCasterPlugin extends Plugin
 			case "Tele Grab":
 				targetMenu = new MenuEntry("Cast", "", groundItem.getId(), MenuOpcode.SPELL_CAST_ON_GROUND_ITEM.getId(), groundItem.getTile().getSceneLocation().getX(), groundItem.getTile().getSceneLocation().getY(), true);
 				timeout = 5 + tickDelay();
-				utils.oneClickCastSpell(WidgetInfo.SPELL_TELEKINETIC_GRAB, targetMenu, new Rectangle(0,0, 0, 0), sleepDelay());
+				utils.oneClickCastSpell(WidgetInfo.SPELL_TELEKINETIC_GRAB, targetMenu, new Rectangle(0, 0, 0, 0), sleepDelay());
 				return;
 		}
 	}

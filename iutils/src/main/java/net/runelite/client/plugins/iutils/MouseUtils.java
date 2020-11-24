@@ -162,15 +162,15 @@ public class MouseUtils
 
 	/**
 	 * Ensures click is performed off the client thread and uses the mouse method selected in config
-	 *If given Point is in the viewport, click on the Point otherwise click a random point in the centre of the screen
-	 * */
+	 * If given Point is in the viewport, click on the Point otherwise click a random point in the centre of the screen
+	 */
 	public void handleMouseClick(Point point)
 	{
 		//assert !client.isClientThread();
 		final int viewportHeight = client.getViewportHeight();
 		final int viewportWidth = client.getViewportWidth();
 		log.debug("Performing mouse click: {}", config.getMouse());
-		Widget minimapWidget = client.getWidget(164,20);
+		Widget minimapWidget = client.getWidget(164, 20);
 		if (minimapWidget != null && minimapWidget.getBounds().contains(point.getX(), point.getY()))
 		{
 			log.info("Avoiding minimap click");
@@ -186,7 +186,7 @@ public class MouseUtils
 				}
 				break;
 			case ZERO_MOUSE:
-				point = new Point(0,0);
+				point = new Point(0, 0);
 				break;
 			case NO_MOVE:
 				if (point.getX() > viewportWidth || point.getY() > viewportHeight || point.getX() < 0 || point.getY() < 0)

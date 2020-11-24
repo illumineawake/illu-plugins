@@ -32,7 +32,7 @@ public class ResetCombatTask extends Task
 	@Override
 	public boolean validate()
 	{
-		return inCombat || (!inventory.containsItem(ItemID.JUG_OF_WINE) && !inventory.containsItem(ItemID.JUG) && !inShopArea()) ;
+		return inCombat || (!inventory.containsItem(ItemID.JUG_OF_WINE) && !inventory.containsItem(ItemID.JUG) && !inShopArea());
 	}
 
 	@Override

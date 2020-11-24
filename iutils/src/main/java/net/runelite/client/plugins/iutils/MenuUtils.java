@@ -27,7 +27,8 @@ public class MenuUtils
 	{
 		final Widget widget = client.getWidget(info);
 
-		if (widget != null) {
+		if (widget != null)
+		{
 			client.setSelectedSpellWidget(widget.getId());
 			client.setSelectedSpellChildIndex(-1);
 		}

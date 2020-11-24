@@ -93,7 +93,8 @@ public class Banks
 		ObjectID.BANK_DEPOSIT_BOX_32665,
 		ObjectID.BANK_DEPOSIT_BOX_34344,
 		ObjectID.BANK_DEPOSIT_BOX_36086,
-		ObjectID.BANK_DEPOSIT_BOX_39239);
+		ObjectID.BANK_DEPOSIT_BOX_39239,
+		ObjectID.MINE_CART_36219);
 
 	public static final Set<Integer> BANK_SET = ImmutableSet.of(
 		ObjectID.BANK_BOOTH,
@@ -149,7 +150,7 @@ public class Banks
 		ObjectID.BANK_BOOTH_36559,
 		ObjectID.BANK_BOOTH_37959,
 		ObjectID.BANK_BOOTH_39238
-		);
+	);
 
 	public static final Set<Integer> BANK_CHECK_BOX = ImmutableSet.of(
 		ObjectID.BANK_CHEST,
@@ -185,6 +186,7 @@ public class Banks
 		ObjectID.BANK_DEPOSIT_BOX_32665,
 		ObjectID.BANK_DEPOSIT_BOX_34344,
 		ObjectID.BANK_DEPOSIT_BOX_36086,
-		ObjectID.BANK_DEPOSIT_BOX_39239
+		ObjectID.BANK_DEPOSIT_BOX_39239,
+		ObjectID.MINE_CART_36219
 	);
 }

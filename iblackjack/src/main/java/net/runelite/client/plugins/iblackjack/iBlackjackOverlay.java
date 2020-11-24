@@ -54,7 +54,7 @@ class iBlackjackOverlay extends OverlayPanel
 
 		Duration duration = Duration.between(plugin.botTimer, Instant.now());
 		timeFormat = (duration.toHours() < 1) ? "mm:ss" : "HH:mm:ss";
-		tableComponent.addRow("Time running:", formatDuration(duration.toMillis(),timeFormat));
+		tableComponent.addRow("Time running:", formatDuration(duration.toMillis(), timeFormat));
 		tableComponent.addRow("Status:", plugin.status);
 
 		TableComponent tableStatsComponent = new TableComponent();
@@ -71,8 +71,8 @@ class iBlackjackOverlay extends OverlayPanel
 		if (!tableComponent.isEmpty())
 		{
 			panelComponent.setBackgroundColor(ColorUtil.fromHex("#121212")); //Material Dark default
-			panelComponent.setPreferredSize(new Dimension(270,200));
-			panelComponent.setBorder(new Rectangle(5,5,5,5));
+			panelComponent.setPreferredSize(new Dimension(270, 200));
+			panelComponent.setBorder(new Rectangle(5, 5, 5, 5));
 			panelComponent.getChildren().add(TitleComponent.builder()
 				.text("Illumine Blackjack Helper")
 				.color(ColorUtil.fromHex("#40C4FF"))

@@ -391,7 +391,7 @@ public class iCombinationRunecrafterPlugin extends Plugin
 		else
 		{
 			menu.setEntry(targetMenu);
-			mouse.delayMouseClick(new Point(0,0), sleepDelay());
+			mouse.delayMouseClick(new Point(0, 0), sleepDelay());
 		}
 	}
 

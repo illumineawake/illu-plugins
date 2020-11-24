@@ -116,12 +116,12 @@ public class InventoryUtils
 	public List<WidgetItem> getItems(String itemName)
 	{
 		return new InventoryWidgetItemQuery()
-				.filter(i -> client.getItemDefinition(i.getId())
-						.getName()
-						.toLowerCase()
-						.contains(itemName))
-				.result(client)
-				.list;
+			.filter(i -> client.getItemDefinition(i.getId())
+				.getName()
+				.toLowerCase()
+				.contains(itemName))
+			.result(client)
+			.list;
 	}
 
 	public Collection<WidgetItem> getAllItems()
@@ -312,9 +312,9 @@ public class InventoryUtils
 		}
 
 		return new InventoryItemQuery(InventoryID.INVENTORY)
-				.idEquals(itemID)
-				.result(client)
-				.size() >= 1;
+			.idEquals(itemID)
+			.result(client)
+			.size() >= 1;
 	}
 
 	public boolean containsItem(String itemName)
@@ -325,12 +325,12 @@ public class InventoryUtils
 		}
 
 		WidgetItem inventoryItem = new InventoryWidgetItemQuery()
-				.filter(i -> client.getItemDefinition(i.getId())
-						.getName()
-						.toLowerCase()
-						.contains(itemName))
-				.result(client)
-				.first();
+			.filter(i -> client.getItemDefinition(i.getId())
+				.getName()
+				.toLowerCase()
+				.contains(itemName))
+			.result(client)
+			.first();
 
 		return inventoryItem != null;
 	}
@@ -342,9 +342,9 @@ public class InventoryUtils
 			return false;
 		}
 		Item item = new InventoryItemQuery(InventoryID.INVENTORY)
-				.idEquals(itemID)
-				.result(client)
-				.first();
+			.idEquals(itemID)
+			.result(client)
+			.first();
 
 		return item != null && item.getQuantity() >= minStackAmount;
 	}
@@ -546,7 +546,7 @@ public class InventoryUtils
 						log.info("interacting inventory item: {}", item.getId());
 						sleep(minDelayBetween, maxDelayBetween);
 						menu.setEntry(new MenuEntry("", "", item.getId(), opcode, item.getIndex(), WidgetInfo.INVENTORY.getId(),
-								false));
+							false));
 						mouse.click(item.getCanvasBounds());
 						if (!interactAll)
 						{
@@ -585,7 +585,7 @@ public class InventoryUtils
 						log.info("interacting inventory item: {}", item.getId());
 						sleep(minDelayBetween, maxDelayBetween);
 						menu.setModifiedEntry(new MenuEntry("", "", item1.getId(), opcode, item1.getIndex(), WidgetInfo.INVENTORY.getId(),
-								false), item.getId(), item.getIndex(),MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId());
+							false), item.getId(), item.getIndex(), MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId());
 						mouse.click(item1.getCanvasBounds());
 						if (!interactAll)
 						{

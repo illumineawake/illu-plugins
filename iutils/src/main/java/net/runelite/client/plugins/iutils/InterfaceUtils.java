@@ -32,8 +32,7 @@ public class InterfaceUtils
 	 * Opens the container interface using the given index.
 	 *
 	 * @param index the index of the interface to open. Interface index's are in order of how they appear in game by default
-	 *                 e.g. inventory is 3, logout is 10
-	 *
+	 *              e.g. inventory is 3, logout is 10
 	 */
 	public void openInterface(int index)
 	{
@@ -46,7 +45,7 @@ public class InterfaceUtils
 
 	/**
 	 * @param index is position based on order including styles that might not be visible. Starting from 0.
-	 *                 e.g. Stab = 0, Lunge = 1, Slash 2, Block = 3
+	 *              e.g. Stab = 0, Lunge = 1, Slash 2, Block = 3
 	 */
 	public MenuEntry getAttackStyleMenuEntry(int index)
 	{
@@ -76,18 +75,22 @@ public class InterfaceUtils
 		}
 	}
 
-	public static void resumePauseWidget(int widgetId, int arg){
+	public static void resumePauseWidget(int widgetId, int arg)
+	{
 		final int garbageValue = 1292618906;
 		final String className = "ln";
 		final String methodName = "hs";
 
-		try {
+		try
+		{
 
 			Class clazz = Class.forName(className);
 			Method method = clazz.getDeclaredMethod(methodName, int.class, int.class, int.class);
 			method.setAccessible(true);
 			method.invoke(null, widgetId, arg, garbageValue);
-		} catch (Exception ignored) {
+		}
+		catch (Exception ignored)
+		{
 			return;
 		}
 	}

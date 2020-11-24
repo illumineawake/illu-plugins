@@ -7,7 +7,10 @@ import net.runelite.client.plugins.itasktemplate.iTaskTemplatePlugin;
 public class TimeoutTask extends Task
 {
 	@Override
-	public boolean validate() { return iTaskTemplatePlugin.timeout > 0;	}
+	public boolean validate()
+	{
+		return iTaskTemplatePlugin.timeout > 0;
+	}
 
 	@Override
 	public String getTaskDescription()

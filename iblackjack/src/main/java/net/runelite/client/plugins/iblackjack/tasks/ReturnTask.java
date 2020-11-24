@@ -7,7 +7,10 @@ import net.runelite.client.plugins.iblackjack.iBlackjackPlugin;
 public class ReturnTask extends Task
 {
 	@Override
-	public boolean validate() { return false; }
+	public boolean validate()
+	{
+		return false;
+	}
 
 	@Override
 	public String getTaskDescription()

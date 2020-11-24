@@ -38,7 +38,10 @@ public interface RandomHandlerConfig extends Config
 		description = "Automatically dismisses all random events for your player",
 		position = 0
 	)
-	default boolean autoDismiss() { return false; }
+	default boolean autoDismiss()
+	{
+		return false;
+	}
 
 	@ConfigItem(
 		keyName = "removeMenuOptions",
@@ -149,7 +152,7 @@ public interface RandomHandlerConfig extends Config
 	{
 		return false;
 	}
-	
+
 	@ConfigItem(
 		keyName = "notifyDrJekyll",
 		name = "Notify on Dr Jekyll",

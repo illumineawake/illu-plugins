@@ -156,12 +156,12 @@ public class iPowerSkillerPlugin extends Plugin
 	Instant botTimer;
 	LocalPoint beforeLoc;
 	Player player;
-	Rectangle altRect = new Rectangle(-100,-100, 10, 10);
+	Rectangle altRect = new Rectangle(-100, -100, 10, 10);
 	WorldArea DENSE_ESSENCE_AREA = new WorldArea(new WorldPoint(1754, 3845, 0), new WorldPoint(1770, 3862, 0));
 	private final WorldPoint WEST_ROCK = new WorldPoint(3164, 2914, 0);
 	private final WorldPoint SW_ROCK = new WorldPoint(3166, 2913, 0);
 	private final WorldPoint SE_ROCK = new WorldPoint(3167, 2913, 0);
-	private final WorldArea DESERT_QUARRY = new WorldArea(new WorldPoint(3148,2896,0),new WorldPoint(3186,2926,0));
+	private final WorldArea DESERT_QUARRY = new WorldArea(new WorldPoint(3148, 2896, 0), new WorldPoint(3186, 2926, 0));
 	int waterskinsLeft;
 
 	int timeout = 0;
@@ -365,7 +365,7 @@ public class iPowerSkillerPlugin extends Plugin
 		if (targetWall != null)
 		{
 			targetMenu = new MenuEntry("", "", targetWall.getId(), opcode,
-					targetWall.getLocalLocation().getSceneX(), targetWall.getLocalLocation().getSceneY(), false);
+				targetWall.getLocalLocation().getSceneX(), targetWall.getLocalLocation().getSceneY(), false);
 			menu.setEntry(targetMenu);
 			mouse.delayMouseClick(targetWall.getConvexHull().getBounds(), sleepDelay());
 		}
@@ -419,49 +419,49 @@ public class iPowerSkillerPlugin extends Plugin
 	}
 
 	private void handleDropAll()
-    {
-        if (config.customOpcode() && config.inventoryMenu())
-        {
-            Collection<Integer> inventoryItems = inventory.getAllItemIDs();
-            inventory.itemsInteract(inventoryItems, config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
-        }
-        else
-        {
-            inventory.dropInventory(true, config.sleepMin(), config.sleepMax());
-        }
-    }
+	{
+		if (config.customOpcode() && config.inventoryMenu())
+		{
+			Collection<Integer> inventoryItems = inventory.getAllItemIDs();
+			inventory.itemsInteract(inventoryItems, config.inventoryOpcodeValue(), false, true, config.sleepMin(), config.sleepMax());
+		}
+		else
+		{
+			inventory.dropInventory(true, config.sleepMin(), config.sleepMax());
+		}
+	}
 
-    private void handleDropExcept()
-    {
-        if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
-        {
-            inventory.combineItems(itemIds, config.toolId(),config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
-        }
-        else if (config.customOpcode() && config.inventoryMenu())
-        {
-            inventory.itemsInteract(itemIds, config.inventoryOpcodeValue(), true,true, config.sleepMin(), config.sleepMax());
-        }
-        else
-        {
+	private void handleDropExcept()
+	{
+		if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
+		{
+			inventory.combineItems(itemIds, config.toolId(), config.inventoryOpcodeValue(), true, true, config.sleepMin(), config.sleepMax());
+		}
+		else if (config.customOpcode() && config.inventoryMenu())
+		{
+			inventory.itemsInteract(itemIds, config.inventoryOpcodeValue(), true, true, config.sleepMin(), config.sleepMax());
+		}
+		else
+		{
 			inventory.dropAllExcept(itemIds, true, config.sleepMin(), config.sleepMax());
-        }
-    }
+		}
+	}
 
-    private void handleDropItems()
-    {
-        if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
-        {
-            inventory.combineItems(itemIds, config.toolId(),config.inventoryOpcodeValue(), false,true, config.sleepMin(), config.sleepMax());
-        }
-        else if (config.customOpcode() && config.inventoryMenu())
-        {
-            inventory.itemsInteract(itemIds, config.inventoryOpcodeValue(), false,false, config.sleepMin(), config.sleepMax());
-        }
-        else
-        {
-            inventory.dropItems(itemIds, true, config.sleepMin(), config.sleepMax());
-        }
-    }
+	private void handleDropItems()
+	{
+		if (config.customOpcode() && config.inventoryMenu() && config.combineItems())
+		{
+			inventory.combineItems(itemIds, config.toolId(), config.inventoryOpcodeValue(), false, true, config.sleepMin(), config.sleepMax());
+		}
+		else if (config.customOpcode() && config.inventoryMenu())
+		{
+			inventory.itemsInteract(itemIds, config.inventoryOpcodeValue(), false, false, config.sleepMin(), config.sleepMax());
+		}
+		else
+		{
+			inventory.dropItems(itemIds, true, config.sleepMin(), config.sleepMax());
+		}
+	}
 
 	public iPowerSkillerState getState()
 	{
@@ -487,16 +487,22 @@ public class iPowerSkillerPlugin extends Plugin
 		{
 			return HANDLE_BREAK;
 		}
-		if(DESERT_QUARRY.intersectsWith(player.getWorldArea())){
+		if (DESERT_QUARRY.intersectsWith(player.getWorldArea()))
+		{
 			updateWaterskinsLeft();
-			if(waterskinsLeft==0){
+			if (waterskinsLeft == 0)
+			{
 				return CASTING_HUMIDIFY;
 			}
 		}
-		if(config.type() == iPowerSkillerType.SANDSTONE){
-			 if(inventory.isFull()){
+		if (config.type() == iPowerSkillerType.SANDSTONE)
+		{
+			if (inventory.isFull())
+			{
 				return ADDING_SANDSTONE_TO_GRINDER;
-			} else if (player.getWorldLocation().equals(new WorldPoint(3152,2910,0))) {
+			}
+			else if (player.getWorldLocation().equals(new WorldPoint(3152, 2910, 0)))
+			{
 				return WALKING_BACK_TO_SANDSTONE;
 			}
 		}
@@ -531,10 +537,11 @@ public class iPowerSkillerPlugin extends Plugin
 		}
 		if (client.getLocalPlayer().getAnimation() == -1 || npcMoved)
 		{
-			switch (config.type()) {
+			switch (config.type())
+			{
 				case DENSE_ESSENCE:
 					return (DENSE_ESSENCE_AREA.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) ?
-							FIND_GAME_OBJECT : WAIT_DENSE_ESSENCE;
+						FIND_GAME_OBJECT : WAIT_DENSE_ESSENCE;
 				case WALL_OBJECT:
 					return FIND_WALL;
 				case NPC:
@@ -562,7 +569,8 @@ public class iPowerSkillerPlugin extends Plugin
 				startPowerSkiller = false;
 				return;
 			}
-			if (client.getWidget(WidgetInfo.BANK_PIN_CONTAINER) != null) {
+			if (client.getWidget(WidgetInfo.BANK_PIN_CONTAINER) != null)
+			{
 				log.info("Enter bank pin manually");
 				utils.sendGameMessage("Enter bank pin manually");
 				return;
@@ -577,7 +585,7 @@ public class iPowerSkillerPlugin extends Plugin
 					break;
 				case CASTING_HUMIDIFY:
 					castHumidify();
-					timeout=tickDelay();
+					timeout = tickDelay();
 					break;
 				case ADDING_SANDSTONE_TO_GRINDER:
 					objectIds.clear();
@@ -585,11 +593,11 @@ public class iPowerSkillerPlugin extends Plugin
 					interactSandstoneObject();
 					objectIds.clear();
 					objectIds.add(ObjectID.ROCKS_11386); //sandstone id
-					timeout=tickDelay();
+					timeout = tickDelay();
 					break;
 				case WALKING_BACK_TO_SANDSTONE:
-					walk.sceneWalk(new WorldPoint(3166,2914,0),1,sleepDelay());
-					timeout=tickDelay();
+					walk.sceneWalk(new WorldPoint(3166, 2914, 0), 1, sleepDelay());
+					timeout = tickDelay();
 					break;
 				case DROP_ALL:
 					handleDropAll();
@@ -600,11 +608,12 @@ public class iPowerSkillerPlugin extends Plugin
 					timeout = tickDelay();
 					break;
 				case DROP_ITEMS:
-                    handleDropItems();
+					handleDropItems();
 					timeout = tickDelay();
 					break;
 				case FIND_GAME_OBJECT:
-					if(config.type() == iPowerSkillerType.SANDSTONE){
+					if (config.type() == iPowerSkillerType.SANDSTONE)
+					{
 						interactSandstoneObject();
 						timeout = tickDelay();
 						return;
@@ -713,7 +722,8 @@ public class iPowerSkillerPlugin extends Plugin
 		{
 			return;
 		}
-		if(config.type() == iPowerSkillerType.SANDSTONE){
+		if (config.type() == iPowerSkillerType.SANDSTONE)
+		{
 			return;
 		}
 		if (config.dropInventory())
@@ -747,21 +757,30 @@ public class iPowerSkillerPlugin extends Plugin
 	{
 		//a custom function that looks for a grinder outside of the players usual location radius
 		//it also only interacts with the three most efficient sandstone rocks
-		if(!objectIds.contains(ObjectID.GRINDER)){ //if not looking for the grinder
+		if (!objectIds.contains(ObjectID.GRINDER))
+		{ //if not looking for the grinder
 			//look for sandstone in the radius set by the player
-			for(GameObject gameObject : object.getGameObjects(ObjectID.ROCKS_11386)){
-				if(gameObject.getWorldLocation().equals(WEST_ROCK)){
-					targetObject=gameObject; //west rock
+			for (GameObject gameObject : object.getGameObjects(ObjectID.ROCKS_11386))
+			{
+				if (gameObject.getWorldLocation().equals(WEST_ROCK))
+				{
+					targetObject = gameObject; //west rock
 					break;
-				} else if(gameObject.getWorldLocation().equals(SW_ROCK)){
-					targetObject=gameObject; //south west rock
+				}
+				else if (gameObject.getWorldLocation().equals(SW_ROCK))
+				{
+					targetObject = gameObject; //south west rock
 					break;
-				} else if(gameObject.getWorldLocation().equals(SE_ROCK)){
-					targetObject=gameObject; //south east rock
+				}
+				else if (gameObject.getWorldLocation().equals(SE_ROCK))
+				{
+					targetObject = gameObject; //south east rock
 					break;
 				}
 			}
-		} else { //looking for the grinder
+		}
+		else
+		{ //looking for the grinder
 			//extend search outside the players set radius
 			targetObject = object.getGameObjects(ObjectID.GRINDER).get(0);
 		}
@@ -769,7 +788,7 @@ public class iPowerSkillerPlugin extends Plugin
 		if (targetObject != null)
 		{
 			targetMenu = new MenuEntry("", "", targetObject.getId(), opcode,
-					targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
+				targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
 			menu.setEntry(targetMenu);
 			mouse.delayMouseClick(targetObject.getConvexHull().getBounds(), sleepDelay());
 		}
@@ -779,31 +798,37 @@ public class iPowerSkillerPlugin extends Plugin
 		}
 	}
 
-	private void updateWaterskinsLeft(){
-		waterskinsLeft=0;
-		waterskinsLeft+=inventory.getItemCount(1823,false)*4; //4 dose waterskin
-		waterskinsLeft+=inventory.getItemCount(1825,false)*3; //3 dose waterskin
-		waterskinsLeft+=inventory.getItemCount(1827,false)*2; //2 dose waterskin
-		waterskinsLeft+=inventory.getItemCount(1829,false); //1 dose waterskin
+	private void updateWaterskinsLeft()
+	{
+		waterskinsLeft = 0;
+		waterskinsLeft += inventory.getItemCount(1823, false) * 4; //4 dose waterskin
+		waterskinsLeft += inventory.getItemCount(1825, false) * 3; //3 dose waterskin
+		waterskinsLeft += inventory.getItemCount(1827, false) * 2; //2 dose waterskin
+		waterskinsLeft += inventory.getItemCount(1829, false); //1 dose waterskin
 
-		if(waterskinsLeft==0){
-			if(!inventory.containsItem(1831)){
-				waterskinsLeft=-1; //no waterskins detected
+		if (waterskinsLeft == 0)
+		{
+			if (!inventory.containsItem(1831))
+			{
+				waterskinsLeft = -1; //no waterskins detected
 			}
 		}
 	}
 
-	private void castHumidify(){
-		if(!inventory.containsItem(9075) && !inventory.runePouchContains(9075)){
+	private void castHumidify()
+	{
+		if (!inventory.containsItem(9075) && !inventory.runePouchContains(9075))
+		{
 			utils.sendGameMessage("illu - out of astrals runes");
 			startPowerSkiller = false;
 		}
-		targetMenu = new MenuEntry("Cast","<col=00ff00>Humidify</col>",1,57,-1,14286954,false);
+		targetMenu = new MenuEntry("Cast", "<col=00ff00>Humidify</col>", 1, 57, -1, 14286954, false);
 		Widget spellWidget = interfaceUtils.getSpellWidget("Humidify");
-		if(spellWidget==null){
+		if (spellWidget == null)
+		{
 			utils.sendGameMessage("illu - unable to find humidify widget");
 			startPowerSkiller = false;
 		}
-		utils.oneClickCastSpell(interfaceUtils.getSpellWidgetInfo("Humidify"),targetMenu,sleepDelay());
+		utils.oneClickCastSpell(interfaceUtils.getSpellWidgetInfo("Humidify"), targetMenu, sleepDelay());
 	}
 }
