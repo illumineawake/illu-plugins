@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "5.0.4"
+version = "5.0.5"
 
 project.extra["PluginName"] = "iRooftop Agility"
 project.extra["PluginDescription"] = "Illumine automated rooftop agility plugin"
