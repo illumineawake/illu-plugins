@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Seth <Sethtroll3@gmail.com>
+ * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,57 +22,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.blastfurnacebot;
 
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
+version = "4.3.2"
 
-@ConfigGroup("blastfurnacebot")
-public interface BlastFurnaceBotConfig extends Config
-{
-	@ConfigItem(
-		keyName = "cofferThreshold",
-		name = "Minimum Coffer amount",
-		description = "Minimum amount of GP to have in coffer before refilling",
-		position = 1
-	)
-	default int cofferThreshold()
-	{
-		return 5000;
-	}
+project.extra["PluginName"] = "iQuick Eater"
+project.extra["PluginDescription"] = "Illumine - auto eat food, consume potions and equip items"
 
-	@ConfigItem(
-		keyName = "cofferAmount",
-		name = "GP into Coffer",
-		description = "How much GP to put into coffer when refilling",
-		position = 2
-	)
-	default int cofferAmount()
-	{
-		return 50000;
-	}
+dependencies {
+    compileOnly(project(":iutils"))
+}
 
-	@ConfigItem(
-		keyName = "delayAmount",
-		name = "Random delay amount",
-		description = "(in game ticks) higher is slower",
-		position = 3
-	)
-	default int delayAmount()
-	{
-		return 3;
-	}
-
-	@ConfigItem(
-		keyName = "bar",
-		name = "Bar to smelt",
-		description = "Select the type of bar to smelt",
-		position = 4
-	)
-	default Bars getBar()
-	{
-		return Bars.RUNITE_BAR;
-	}
-
+tasks {
+    jar {
+        manifest {
+            attributes(mapOf(
+                    "Plugin-Version" to project.version,
+                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+                    "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Dependencies" to nameToId("iUtils"),
+                    "Plugin-Description" to project.extra["PluginDescription"],
+                    "Plugin-License" to project.extra["PluginLicense"]
+            ))
+        }
+    }
 }

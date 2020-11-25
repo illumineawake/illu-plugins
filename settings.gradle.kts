@@ -39,6 +39,8 @@ include(":irandomhandler")
 include(":irooftopagility")
 include("itasktemplate")
 include(":iworldwalker")
+include(":blastfurnacebot")
+include(":lewdblast")
 
 for (project in rootProject.children) {
     project.apply {

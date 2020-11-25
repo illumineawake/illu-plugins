@@ -400,7 +400,7 @@ public class BankUtils
 		});
 	}
 
-	public void withdrawItem(int bankItemID)
+	public void withdrawItem(int coalBag12019, int bankItemID)
 	{
 		Widget item = getBankItemWidget(bankItemID);
 		if (item != null)
