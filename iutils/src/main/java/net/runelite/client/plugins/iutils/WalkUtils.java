@@ -13,6 +13,7 @@ import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.Player;
 import net.runelite.api.Point;
+import net.runelite.api.TileObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
@@ -37,15 +38,212 @@ public class WalkUtils
 	private CalculationUtils calc;
 
 	@Inject
-	private MenuUtils menu;
+	private ObjectUtils object;
 
 	@Inject
-	private ExecutorService executorService;
+	private MenuUtils menu;
 
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 	private final String DAX_API_URL = "https://api.dax.cloud/walker/generatePath";
 	private List<WorldPoint> currentPath = new ArrayList<>();
 	WorldPoint nextPoint;
+	private final List<String> priorityActions = List.of("Pay-toll(10gp)", "Slash", "Pay-fare");
+	private final List<String> actions = List.of("Activate",
+		"Ascend",
+		"Attack",
+		"Balance",
+		"Balance-across",
+		"Bank",
+		"Board",
+		"Build",
+		"Build mode",
+		"Capture",
+		"Channel",
+		"Chop",
+		"Chop down",
+		"Chop-down",
+		"Claim-staves",
+		"Clamber",
+		"Clear",
+		"Climb",
+		"Climb down",
+		"Climb over",
+		"Climb through",
+		"Climb up",
+		"Climb-down",
+		"Climb-into",
+		"Climb-off",
+		"Climb-on",
+		"Climb-over",
+		"Climb-through",
+		"Climb-under",
+		"Climb-up",
+		"Commune",
+		"Configure",
+		"Continue-trek",
+		"Cook",
+		"Crawl",
+		"Crawl through",
+		"Crawl-down",
+		"Crawl-through",
+		"Cross",
+		"Cross-to",
+		"Cut",
+		"Deposit",
+		"Descend",
+		"Dig",
+		"Disarm",
+		"Dispel",
+		"Distract",
+		"Dive",
+		"Dive in",
+		"Drink",
+		"Drink-from",
+		"Edgeville",
+		"Empty",
+		"Enter",
+		"Enter-corrupted",
+		"Escape",
+		"Evade-event",
+		"Exit",
+		"Exit-through",
+		"Feel",
+		"Fire!",
+		"Fish",
+		"Forfeit",
+		"Free",
+		"Friend's house",
+		"Fuel",
+		"Get in",
+		"Go-down",
+		"Go-through",
+		"Go-up",
+		"Grapple",
+		"Harvest",
+		"Hide-behind",
+		"Hide-in",
+		"Home",
+		"Hurdle",
+		"Iceberg",
+		"Inspect",
+		"Interact",
+		"Investigate",
+		"Join",
+		"Jump",
+		"Jump off",
+		"Jump on",
+		"Jump-across",
+		"Jump-down",
+		"Jump-in",
+		"Jump-off",
+		"Jump-on",
+		"Jump-Over",
+		"Jump-to",
+		"Jump-up",
+		"Leap",
+		"Leave",
+		"Leave platform",
+		"Leave-area",
+		"Light",
+		"Listen",
+		"Load",
+		"Look-in",
+		"Look-inside",
+		"Look-through",
+		"Look-up",
+		"menuOption",
+		"Mine",
+		"Move",
+		"Navigate",
+		"Observe",
+		"Open",
+		"Operate",
+		"Paddle Canoe",
+		"Pass",
+		"Pass-through",
+		"Pay",
+		"Pay-fare",
+		"Pay-toll(2-Ecto)",
+		"Peek",
+		"Pick",
+		"Pick-Fruit",
+		"Pick-lock",
+		"Pick-up",
+		"Picklock",
+		"Pray",
+		"Pray-at",
+		"Press",
+		"Private",
+		"Pull",
+		"Push",
+		"Push-through",
+		"Quick-board",
+		"Quick-enter",
+		"Quick-escape",
+		"Quick-exit",
+		"Quick-open",
+		"Quick-pass",
+		"Quick-start",
+		"Rake",
+		"Reach",
+		"Read",
+		"Reminisce",
+		"Remove",
+		"Repair",
+		"Ride",
+		"Ring",
+		"Roll",
+		"Scale",
+		"Search",
+		"Search for traps",
+		"Set up",
+		"Set-trap",
+		"Shoot",
+		"Slash",
+		"Slayer",
+		"Smash-to-bits",
+		"Squeeze-past",
+		"Squeeze-through",
+		"Standard",
+		"Step-into",
+		"Step-on",
+		"Stock-Up",
+		"Swing",
+		"Swing Across",
+		"Swing-across",
+		"Swing-on",
+		"Take",
+		"Take-concoction",
+		"Take-powder",
+		"Talk-to",
+		"Teeth-grip",
+		"Teleport",
+		"Teleport to Destination",
+		"Touch",
+		"Travel",
+		"Travel to platform",
+		"Turn",
+		"Unblock",
+		"Unlock",
+		"Use",
+		"Use-Lift",
+		"Vault",
+		"View",
+		"Walk on",
+		"Walk through",
+		"Walk-across",
+		"Walk-down",
+		"Walk-on",
+		"Walk-over",
+		"Walk-through",
+		"Walk-up",
+		"Weiss",
+		"Worship",
+		"Zanaris",
+		"Smelt",
+		"Steal-from",
+		"Take treasure",
+		"Visit-Last");
 
 	public boolean retrievingPath;
 	private int nextFlagDist = -1;
@@ -117,7 +315,7 @@ public class WalkUtils
 		return outer.path;
 	}
 
-	public WorldPoint getNextPoint(List<WorldPoint> worldPoints, int randomRadius)
+	public WorldPoint getNextPointFromEnd(List<WorldPoint> worldPoints, int randomRadius)
 	{
 		int listSize = worldPoints.size();
 		for (int i = listSize - 1; i > 0; i--)
@@ -130,6 +328,47 @@ public class WalkUtils
 			}
 		}
 		return null;
+	}
+
+	public WorldPoint getNextPointFromStart(List<WorldPoint> worldPoints, int randomRadius)
+	{
+		WorldArea previousArea = client.getLocalPlayer().getWorldArea();
+		int listSize = worldPoints.size();
+		for (int i = 0; i < listSize - 1; i++)
+		{
+			WorldPoint currentPoint = worldPoints.get(i);
+			if (currentPoint.isInScene(client))
+			{
+				if (!previousArea.hasLineOfSightTo(client, currentPoint))
+				{
+					TileObject obstacleObject = object.findNearestObjectWithin(currentPoint, 1);
+					if (obstacleObject != null)
+					{
+						if (handleObstacle(obstacleObject))
+						{
+							return obstacleObject.getWorldLocation();
+						}
+						else
+						{
+							log.info("Obstacle found while walking but we couldn't handle it!");
+							return null;
+						}
+					}
+					//find object and interact with it
+				}
+				WorldPoint scenePoint = worldPoints.get((i >= listSize - 1) ? i : (i - calc.getRandomIntBetweenRange(2, 4))); //returns a few tiles into the scene unless it's the destination tile
+				return getRandPoint(scenePoint, randomRadius);
+			}
+			previousArea = worldPoints.get(i).toWorldArea();
+		}
+		return null;
+	}
+
+	private boolean handleObstacle(TileObject object)
+	{
+		List<String> obstacleActions = List.of(client.getObjectDefinition(object.getId()).getActions());
+//		list1.stream().anyMatch(list2::contains);
+		return false;
 	}
 
 	public String getDaxPath(WorldPoint start, WorldPoint destination)
@@ -202,7 +441,7 @@ public class WalkUtils
 				log.info("daxResult: {}", daxResult);
 				if (daxResult.contains("Too Many Requests"))
 				{
-					log.info("Too many dax requests, trying agian");
+					log.info("Too many dax requests, trying again");
 					return true;
 				}
 				if (daxResult.contains("NO_WEB_PATH"))
@@ -224,7 +463,7 @@ public class WalkUtils
 			}
 			if (!isMoving || (nextPoint != null && nextPoint.distanceTo(player.getWorldLocation()) < nextFlagDist))
 			{
-				nextPoint = getNextPoint(currentPath, randRadius);
+				nextPoint = getNextPointFromStart(currentPath, randRadius);
 				if (nextPoint != null)
 				{
 					log.info("Walking to next tile: {}", nextPoint);
@@ -240,7 +479,6 @@ public class WalkUtils
 			}
 			return true;
 		}
-		log.info("End of method");
 		return retrievingPath;
 	}
 }

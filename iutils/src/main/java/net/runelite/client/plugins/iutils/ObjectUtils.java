@@ -69,6 +69,22 @@ public class ObjectUtils
 	}
 
 	@Nullable
+	public GameObject findNearestGameObjectWithin(WorldPoint worldPoint, int dist)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new GameObjectQuery()
+			.isWithinDistance(worldPoint, dist)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
 	public GameObject findNearestGameObjectWithin(WorldPoint worldPoint, int dist, Collection<Integer> ids)
 	{
 		assert client.isClientThread();
@@ -229,6 +245,58 @@ public class ObjectUtils
 	}
 
 	@Nullable
+	public TileObject findNearestObjectWithin(WorldPoint worldPoint, int dist, int... ids)
+	{
+		GameObject gameObject = findNearestGameObjectWithin(worldPoint, dist, ids);
+
+		if (gameObject != null)
+		{
+			return gameObject;
+		}
+
+		WallObject wallObject = findWallObjectWithin(worldPoint, dist, ids);
+
+		if (wallObject != null)
+		{
+			return wallObject;
+		}
+		DecorativeObject decorativeObject = findNearestDecorObjectWithin(worldPoint, dist, ids);
+
+		if (decorativeObject != null)
+		{
+			return decorativeObject;
+		}
+
+		return findNearestGroundObjectWithin(worldPoint, dist, ids);
+	}
+
+	@Nullable
+	public TileObject findNearestObjectWithin(WorldPoint worldPoint, int dist)
+	{
+		GameObject gameObject = findNearestGameObjectWithin(worldPoint, dist);
+
+		if (gameObject != null)
+		{
+			return gameObject;
+		}
+
+		WallObject wallObject = findWallObjectWithin(worldPoint, dist);
+
+		if (wallObject != null)
+		{
+			return wallObject;
+		}
+		DecorativeObject decorativeObject = findNearestDecorObjectWithin(worldPoint, dist);
+
+		if (decorativeObject != null)
+		{
+			return decorativeObject;
+		}
+
+		return findNearestGroundObjectWithin(worldPoint, dist);
+	}
+
+	@Nullable
 	public List<TileItem> getTileItemsWithin(int distance)
 	{
 		assert client.isClientThread();
@@ -294,6 +362,22 @@ public class ObjectUtils
 	}
 
 	@Nullable
+	public WallObject findWallObjectWithin(WorldPoint worldPoint, int radius)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new WallObjectQuery()
+			.isWithinDistance(worldPoint, radius)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
 	public WallObject findWallObjectWithin(WorldPoint worldPoint, int radius, Collection<Integer> ids)
 	{
 		assert client.isClientThread();
@@ -327,6 +411,39 @@ public class ObjectUtils
 	}
 
 	@Nullable
+	public DecorativeObject findNearestDecorObjectWithin(WorldPoint worldPoint, int dist, int... ids)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new DecorativeObjectQuery()
+			.isWithinDistance(worldPoint, dist)
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
+	public DecorativeObject findNearestDecorObjectWithin(WorldPoint worldPoint, int dist)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new DecorativeObjectQuery()
+			.isWithinDistance(worldPoint, dist)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
 	public GroundObject findNearestGroundObject(int... ids)
 	{
 		assert client.isClientThread();
@@ -338,6 +455,39 @@ public class ObjectUtils
 
 		return new GroundObjectQuery()
 			.idEquals(ids)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
+	public GroundObject findNearestGroundObjectWithin(WorldPoint worldPoint, int dist, int... ids)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new GroundObjectQuery()
+			.isWithinDistance(worldPoint, dist)
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
+	public GroundObject findNearestGroundObjectWithin(WorldPoint worldPoint, int dist)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new GroundObjectQuery()
+			.isWithinDistance(worldPoint, dist)
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}

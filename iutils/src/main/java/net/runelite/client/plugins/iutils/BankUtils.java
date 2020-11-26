@@ -291,8 +291,6 @@ public class BankUtils
 
 	public void depositAllOfItem(WidgetItem item)
 	{
-		assert !client.isClientThread();
-
 		if (!isOpen() && !isDepositBoxOpen())
 		{
 			return;
@@ -300,7 +298,7 @@ public class BankUtils
 		boolean depositBox = isDepositBoxOpen();
 		menu.setEntry(new MenuEntry("", "", (depositBox) ? 1 : 8, MenuOpcode.CC_OP.getId(), item.getIndex(),
 			(depositBox) ? 12582914 : 983043, false));
-		mouse.click(item.getCanvasBounds());
+		mouse.handleMouseClick(item.getCanvasBounds());
 	}
 
 	public void depositAllOfItem(int itemID)
