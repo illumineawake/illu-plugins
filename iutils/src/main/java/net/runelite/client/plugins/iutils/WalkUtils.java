@@ -3,17 +3,14 @@ package net.runelite.client.plugins.iutils;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
-import net.runelite.api.Player;
-import net.runelite.api.Point;
-import net.runelite.api.TileObject;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
@@ -45,6 +42,9 @@ public class WalkUtils
 
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 	private final String DAX_API_URL = "https://api.dax.cloud/walker/generatePath";
+	//To make entry into Map
+	Map<String, Integer[]> priorityActionMap = new HashMap<String, Integer[]>();
+
 	private List<WorldPoint> currentPath = new ArrayList<>();
 	WorldPoint nextPoint;
 	private final List<String> priorityActions = List.of("Pay-toll(10gp)", "Slash", "Pay-fare");
@@ -328,6 +328,18 @@ public class WalkUtils
 			}
 		}
 		return null;
+	}
+
+	private void buildPriorityMap()
+	{
+//		"Slash", "Pay-fare"
+		Integer[] priorityReqs = new Integer[]{ItemID.COINS_995,10};
+		priorityActionMap.put("Pay-toll(10gp)", new Integer[]{ItemID.COINS_995,10});
+
+//		//To retrieve values from Map
+//		String name = studenMap.get(studenId)[1];
+//		String address = studenMap.get(studenId)[2];
+//		String email = studenMap.get(studenId)[3];
 	}
 
 	public WorldPoint getNextPointFromStart(List<WorldPoint> worldPoints, int randomRadius)
