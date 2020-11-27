@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +39,11 @@ public class WalkUtils
 	@Inject
 	private MenuUtils menu;
 
+	@Inject
+	private iUtils utils;
+
+	private int obstacleAttempts;
+	private boolean handlingObstacle;
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 	private final String DAX_API_URL = "https://api.dax.cloud/walker/generatePath";
 	//To make entry into Map
@@ -47,20 +51,9 @@ public class WalkUtils
 
 	private List<WorldPoint> currentPath = new ArrayList<>();
 	WorldPoint nextPoint;
-	private final List<String> priorityActions = List.of("Pay-toll(10gp)", "Slash", "Pay-fare");
-	private final List<String> actions = List.of("Activate",
-		"Ascend",
-		"Attack",
-		"Balance",
-		"Balance-across",
-		"Bank",
-		"Board",
-		"Build",
-		"Build mode",
-		"Capture",
-		"Channel",
-		"Chop",
-		"Chop down",
+	//private final List<String> priorityActions = List.of("Pay-toll(10gp)", "Slash", "Pay-fare");
+	private final List<String> actions = List.of("Pay-toll(10gp)", "Activate", "Ascend", "Attack", "Balance", "Balance-across",	"Bank",
+		"Board", "Build", "Build mode",	"Capture", "Channel", "Chop", "Chop down",
 		"Chop-down",
 		"Claim-staves",
 		"Clamber",
@@ -330,20 +323,21 @@ public class WalkUtils
 		return null;
 	}
 
-	private void buildPriorityMap()
-	{
-//		"Slash", "Pay-fare"
-		Integer[] priorityReqs = new Integer[]{ItemID.COINS_995,10};
-		priorityActionMap.put("Pay-toll(10gp)", new Integer[]{ItemID.COINS_995,10});
-
-//		//To retrieve values from Map
-//		String name = studenMap.get(studenId)[1];
-//		String address = studenMap.get(studenId)[2];
-//		String email = studenMap.get(studenId)[3];
-	}
+//	private void buildPriorityMap()
+//	{
+////		"Slash", "Pay-fare"
+//		Integer[] priorityReqs = new Integer[]{ItemID.COINS_995,10};
+//		priorityActionMap.put("Pay-toll(10gp)", new Integer[]{ItemID.COINS_995,10});
+//
+////		//To retrieve values from Map
+////		String name = studenMap.get(studenId)[1];
+////		String address = studenMap.get(studenId)[2];
+////		String email = studenMap.get(studenId)[3];
+//	}
 
 	public WorldPoint getNextPointFromStart(List<WorldPoint> worldPoints, int randomRadius)
 	{
+		handlingObstacle = false;
 		WorldArea previousArea = client.getLocalPlayer().getWorldArea();
 		int listSize = worldPoints.size();
 		for (int i = 0; i < listSize - 1; i++)
@@ -351,8 +345,11 @@ public class WalkUtils
 			WorldPoint currentPoint = worldPoints.get(i);
 			if (currentPoint.isInScene(client))
 			{
-				if (!previousArea.hasLineOfSightTo(client, currentPoint))
+				if (!previousArea.canTravelInDirection(client, currentPoint.getX() - previousArea.toWorldPoint().getX(),
+					currentPoint.getY() - previousArea.toWorldPoint().getY()))
 				{
+					log.info("Missing LOS. Previous: {}, current: {}", previousArea.toWorldPoint().toString(), currentPoint.toString());
+					handlingObstacle = true;
 					TileObject obstacleObject = object.findNearestObjectWithin(currentPoint, 1);
 					if (obstacleObject != null)
 					{
@@ -366,20 +363,49 @@ public class WalkUtils
 							return null;
 						}
 					}
-					//find object and interact with it
+					else
+					{
+						log.info("LOS to next tile not acheived but can't find obstacle");
+						return null;
+					}
 				}
+				if (i >= listSize - 1) //destination tile
+				{
+					return getRandPoint(worldPoints.get(i), randomRadius);
+				}
+				else
+				{
+					obstacleAttempts = 0;
+					previousArea = worldPoints.get(i).toWorldArea();
+				}
+			}
+			else
+			{
 				WorldPoint scenePoint = worldPoints.get((i >= listSize - 1) ? i : (i - calc.getRandomIntBetweenRange(2, 4))); //returns a few tiles into the scene unless it's the destination tile
 				return getRandPoint(scenePoint, randomRadius);
 			}
-			previousArea = worldPoints.get(i).toWorldArea();
 		}
 		return null;
 	}
 
 	private boolean handleObstacle(TileObject object)
 	{
+		final int BASE_OPCODE = MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId();
 		List<String> obstacleActions = List.of(client.getObjectDefinition(object.getId()).getActions());
-//		list1.stream().anyMatch(list2::contains);
+
+		String matchingAction = actions.stream()
+			.filter(obstacleActions::contains)
+			.findFirst()
+			.orElse(null);
+
+		if (matchingAction != null)
+		{
+			int opcode = obstacleActions.indexOf(matchingAction);
+			log.info("Traversal obstacle found. Action: {}, Opcode: {}", matchingAction, opcode);
+			utils.doTileObjectActionGameTick(object, opcode, 0);
+			obstacleAttempts++;
+			return true;
+		}
 		return false;
 	}
 
@@ -473,9 +499,14 @@ public class WalkUtils
 			{
 				nextFlagDist = calc.getRandomIntBetweenRange(0, 10);
 			}
-			if (!isMoving || (nextPoint != null && nextPoint.distanceTo(player.getWorldLocation()) < nextFlagDist))
+			if (!isMoving || (nextPoint != null && nextPoint.distanceTo(player.getWorldLocation()) < nextFlagDist && !handlingObstacle))
 			{
 				nextPoint = getNextPointFromStart(currentPath, randRadius);
+				if (handlingObstacle && nextPoint != null)
+				{
+					log.info("Handling walk obstacle");
+					return true;
+				}
 				if (nextPoint != null)
 				{
 					log.info("Walking to next tile: {}", nextPoint);
@@ -485,7 +516,7 @@ public class WalkUtils
 				}
 				else
 				{
-					log.debug("nextPoint is null");
+					log.info("nextPoint is null");
 					return false;
 				}
 			}
