@@ -2,10 +2,8 @@ package net.runelite.client.plugins.iutils;
 
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -388,10 +386,11 @@ public class WalkUtils
 		return null;
 	}
 
-	private boolean handleObstacle(TileObject object)
+	private boolean handleObstacle(TileObject obstacleObject)
 	{
 		final int BASE_OPCODE = MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId();
-		List<String> obstacleActions = List.of(client.getObjectDefinition(object.getId()).getActions());
+		List<String> obstacleActions = new ArrayList<>(Arrays.asList(client.getObjectDefinition(obstacleObject.getId()).getActions()));
+		log.info("Actions: {}", obstacleActions.toString());
 
 		String matchingAction = actions.stream()
 			.filter(obstacleActions::contains)
@@ -402,7 +401,7 @@ public class WalkUtils
 		{
 			int opcode = obstacleActions.indexOf(matchingAction);
 			log.info("Traversal obstacle found. Action: {}, Opcode: {}", matchingAction, opcode);
-			utils.doTileObjectActionGameTick(object, opcode, 0);
+			utils.doTileObjectActionGameTick(obstacleObject, opcode, 0);
 			obstacleAttempts++;
 			return true;
 		}
