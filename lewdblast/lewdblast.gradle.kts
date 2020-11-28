@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, SomeoneWithAnInternetConnection
- * Copyright (c) 2018, oplosthee <https://github.com/oplosthee>
+ * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,26 +22,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.lewdblast;
 
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
+version = "1.0.0"
 
-@ConfigGroup("lewdblast")
-public interface lewdblastConfiguration extends Config
-{
+project.extra["PluginName"] = "Lewd Blastfurnace"
+project.extra["PluginDescription"] = "Illumine - auto eat food, consume potions and equip items"
 
-	@ConfigItem(
-		keyName = "startBot",
-		name = "Start",
-		description = "Starts the bot",
-		position = 0
-	)
-	default boolean startBot()
-	{
-		return false;
-	}
+dependencies {
+    compileOnly(project(":iutils"))
+}
 
-
+tasks {
+    jar {
+        manifest {
+            attributes(mapOf(
+                    "Plugin-Version" to project.version,
+                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+                    "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Dependencies" to nameToId("iUtils"),
+                    "Plugin-Description" to project.extra["PluginDescription"],
+                    "Plugin-License" to project.extra["PluginLicense"]
+            ))
+        }
+    }
 }

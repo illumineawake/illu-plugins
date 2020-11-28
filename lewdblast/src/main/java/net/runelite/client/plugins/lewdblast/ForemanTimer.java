@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2019, Brandon White <bmwqg@live.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,27 +22,21 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package net.runelite.client.plugins.lewdblast;
 
-version = "4.3.2"
+import java.time.temporal.ChronoUnit;
+import net.runelite.api.ItemID;
+import net.runelite.client.game.ItemManager;
+import net.runelite.client.ui.overlay.infobox.Timer;
 
-project.extra["PluginName"] = "iQuick Eater"
-project.extra["PluginDescription"] = "Illumine - auto eat food, consume potions and equip items"
+class ForemanTimer extends Timer
+{
+    private static final String TOOLTIP_TEXT = "Foreman Fee";
 
-dependencies {
-    compileOnly(project(":iutils"))
-}
+    ForemanTimer(lewdblastPlugin plugin, ItemManager itemManager)
+    {
+        super(10, ChronoUnit.MINUTES, itemManager.getImage(ItemID.COAL_BAG), plugin);
 
-tasks {
-    jar {
-        manifest {
-            attributes(mapOf(
-                    "Plugin-Version" to project.version,
-                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
-                    "Plugin-Provider" to project.extra["PluginProvider"],
-                    "Plugin-Dependencies" to nameToId("iUtils"),
-                    "Plugin-Description" to project.extra["PluginDescription"],
-                    "Plugin-License" to project.extra["PluginLicense"]
-            ))
-        }
+        setTooltip(TOOLTIP_TEXT);
     }
 }
