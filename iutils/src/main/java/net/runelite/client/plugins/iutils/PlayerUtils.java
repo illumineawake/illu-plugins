@@ -15,6 +15,7 @@ import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
+import net.runelite.api.Player;
 import net.runelite.api.Varbits;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.widgets.Widget;
@@ -49,13 +50,14 @@ public class PlayerUtils
 
 	private int nextRunEnergy;
 
-	//Not very accurate, recommend using isMoving(LocalPoint lastTickLocalPoint)
 	public boolean isMoving()
 	{
-		int camX = client.getCameraX2();
-		int camY = client.getCameraY2();
-		sleep(25);
-		return (camX != client.getCameraX() || camY != client.getCameraY()) && client.getLocalDestinationLocation() != null;
+		Player player = client.getLocalPlayer();
+		if (player == null)
+		{
+			return false;
+		}
+		return player.getIdlePoseAnimation() != player.getPoseAnimation();
 	}
 
 	public boolean isMoving(LocalPoint lastTickLocalPoint)
