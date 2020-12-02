@@ -32,6 +32,9 @@ public class BankUtils
 	private Client client;
 
 	@Inject
+	private iUtils utils;
+
+	@Inject
 	private MouseUtils mouse;
 
 	@Inject
@@ -390,12 +393,9 @@ public class BankUtils
 
 	public void withdrawItem(Widget bankItemWidget)
 	{
-		executorService.submit(() ->
-		{
-			menu.setEntry(new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 1 : 2, MenuOpcode.CC_OP.getId(),
-				bankItemWidget.getIndex(), 786444, false));
-			mouse.clickRandomPointCenter(-200, 200);
-		});
+		MenuEntry entry = new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 1 : 2, MenuOpcode.CC_OP.getId(),
+			bankItemWidget.getIndex(), 786444, false);
+		utils.doActionClientTick(entry, bankItemWidget.getBounds(), 0);
 	}
 
 	public void withdrawItem(int bankItemID)

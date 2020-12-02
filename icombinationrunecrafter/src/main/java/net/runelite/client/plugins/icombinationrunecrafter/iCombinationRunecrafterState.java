@@ -12,7 +12,6 @@ public enum iCombinationRunecrafterState
 	OPEN_BANK,
 	OUT_OF_AREA,
 	OUT_OF_ITEM,
-	SET_TALISMAN,
 	TELEPORT_CASTLE_WARS,
 	TELEPORT_DUEL_ARENA,
 	TIMEOUT,
