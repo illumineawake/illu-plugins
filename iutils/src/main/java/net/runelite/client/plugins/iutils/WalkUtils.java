@@ -44,12 +44,10 @@ public class WalkUtils
 	private boolean handlingObstacle;
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 	private final String DAX_API_URL = "https://api.dax.cloud/walker/generatePath";
-	//To make entry into Map
-	Map<String, Integer[]> priorityActionMap = new HashMap<String, Integer[]>();
 
 	private List<WorldPoint> currentPath = new ArrayList<>();
 	WorldPoint nextPoint;
-	//private final List<String> priorityActions = List.of("Pay-toll(10gp)", "Slash", "Pay-fare");
+	WorldArea previousArea;
 	private final List<String> actions = List.of("Pay-toll(10gp)", "Activate", "Ascend", "Attack", "Balance", "Balance-across",	"Bank",
 		"Board", "Build", "Build mode",	"Capture", "Channel", "Chop", "Chop down",
 		"Chop-down",
@@ -321,22 +319,10 @@ public class WalkUtils
 		return null;
 	}
 
-//	private void buildPriorityMap()
-//	{
-////		"Slash", "Pay-fare"
-//		Integer[] priorityReqs = new Integer[]{ItemID.COINS_995,10};
-//		priorityActionMap.put("Pay-toll(10gp)", new Integer[]{ItemID.COINS_995,10});
-//
-////		//To retrieve values from Map
-////		String name = studenMap.get(studenId)[1];
-////		String address = studenMap.get(studenId)[2];
-////		String email = studenMap.get(studenId)[3];
-//	}
-
 	public WorldPoint getNextPointFromStart(List<WorldPoint> worldPoints, int randomRadius)
 	{
+		int maxDistance = calc.getRandomIntBetweenRange(45, 60);
 		handlingObstacle = false;
-		WorldArea previousArea = client.getLocalPlayer().getWorldArea();
 		log.info("Previous area: {}", previousArea.toWorldPoint().toString());
 		int listSize = worldPoints.size();
 		if (currentIndex >= worldPoints.size())
@@ -344,17 +330,26 @@ public class WalkUtils
 			log.info("Resetting current walk index");
 			currentIndex = 0;
 		}
-		for (int i = currentIndex; i < listSize - 1; i++)
+		for (currentIndex = currentIndex; currentIndex <= listSize; currentIndex++)
 		{
-			currentIndex = i;
-			WorldPoint currentPoint = worldPoints.get(i);
-			log.info("Distance: {}", client.getLocalPlayer().getWorldLocation().distanceTo(currentPoint));
-			if (currentPoint.isInScene(client) && client.getLocalPlayer().getWorldLocation().distanceTo(currentPoint) < 30)
+			WorldPoint currentPoint = worldPoints.get(currentIndex);
+			log.info("InScene: {}, Loc: {}", currentPoint.isInScene(client),currentPoint);
+			if (currentPoint.isInScene(client) && client.getLocalPlayer().getWorldLocation().distanceTo(currentPoint) < maxDistance)
 			{
 				if (!previousArea.canTravelInDirection(client, currentPoint.getX() - previousArea.toWorldPoint().getX(),
-					currentPoint.getY() - previousArea.toWorldPoint().getY()))
+					currentPoint.getY() - previousArea.toWorldPoint().getY()) &&
+					object.findNearestWallObjectMenuWithin(currentPoint, 1, "Close") == null)
 				{
-					log.info("Missing LOS. Previous: {}, current: {}", previousArea.toWorldPoint().toString(), currentPoint.toString());
+					log.info("Missing LOS. Previous: {}, current: {}, region: {}", previousArea.toWorldPoint().toString(), currentPoint.toString(), currentPoint.getRegionID());
+					/*if (client.getLocalPlayer().getWorldLocation().distanceTo(currentPoint) > 10 &&
+					previousArea != client.getLocalPlayer().getWorldArea())
+					{
+						log.info("No LOS but distance is >10 so walking closer"); //LOS sometimes triggered by scene not being loaded
+						currentIndex -= 9;
+						previousArea = worldPoints.get(currentIndex).toWorldArea();
+						handlingObstacle = false;
+						return getRandPoint(worldPoints.get(currentIndex), 1);
+					}*/
 					handlingObstacle = true;
 					TileObject obstacleObject = object.findNearestObjectWithin(currentPoint, 0);
 					if (obstacleObject == null)
@@ -364,7 +359,6 @@ public class WalkUtils
 					}
 					if (obstacleObject != null)
 					{
-						//TODO: Check if obstacle has the "close" menu if it does, ignore it and increment
 						if (handleObstacle(obstacleObject))
 						{
 							previousArea = obstacleObject.getWorldLocation().toWorldArea();
@@ -372,33 +366,55 @@ public class WalkUtils
 						}
 						else
 						{
-							log.info("Obstacle found while walking but we couldn't handle it!");
-							return (obstacleAttempts < 5) ? client.getLocalPlayer().getWorldLocation() : null;
+							log.info("Obstacle found while walking but we couldn't handle it! Trying walk");
+							if (obstacleAttempts < 5)
+							{
+								handlingObstacle = false;
+								previousArea = worldPoints.get(currentIndex).toWorldArea();
+								return getRandPoint(worldPoints.get(currentIndex - 1), 1);
+							}
+							else
+								return null;
+//							return (obstacleAttempts < 5) ? client.getLocalPlayer().getWorldLocation() : null;
 						}
 					}
 					else
 					{
-						log.info("LOS to next tile not acheived but can't find obstacle");
-						return (obstacleAttempts < 5) ? client.getLocalPlayer().getWorldLocation() : null;
+						log.info("LOS to next tile not achieved but can't find obstacle, trying walk");
+						if (obstacleAttempts < 5)
+						{
+							handlingObstacle = false;
+							previousArea = worldPoints.get(currentIndex).toWorldArea();
+							return getRandPoint(worldPoints.get(currentIndex - 1), 1);
+						}
+						else
+							return null;
+//						return (obstacleAttempts < 5) ? client.getLocalPlayer().getWorldLocation() : null;
 					}
 				}
-				if (i >= listSize - 1) //destination tile
-				{
-					log.info("Found destination tile");
-					return getRandPoint(worldPoints.get(i), randomRadius);
-				}
-				else
+				if (currentIndex < listSize - 1) //destination tile
 				{
 					log.info("Incrementing");
 					obstacleAttempts = 0;
-					previousArea = worldPoints.get(i).toWorldArea();
+					handlingObstacle = false;
+					previousArea = worldPoints.get(currentIndex).toWorldArea();
+				}
+				else
+				{
+					log.info("Found destination tile");
+					obstacleAttempts = 0;
+					handlingObstacle = false;
+					previousArea = worldPoints.get(currentIndex).toWorldArea();
+					return getRandPoint(worldPoints.get(currentIndex), randomRadius);
 				}
 			}
 			else
 			{
-				WorldPoint scenePoint = worldPoints.get((i >= listSize - 1) ? i : (i - calc.getRandomIntBetweenRange(2, 4))); //returns a few tiles into the scene unless it's the destination tile
+				log.info("Found non-scene tile, returning previous: {}", previousArea.toWorldPoint());
+				WorldPoint scenePoint = worldPoints.get((currentIndex >= listSize - 1) ? currentIndex : (currentIndex - calc.getRandomIntBetweenRange(2, 4))); //returns a few tiles into the scene unless it's the destination tile
 				return getRandPoint(scenePoint, randomRadius);
 			}
+			log.info("currentIndex {}, current list size: {}", currentIndex, listSize);
 		}
 		return null;
 	}
@@ -407,7 +423,7 @@ public class WalkUtils
 	{
 		final int BASE_OPCODE = MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId();
 		List<String> obstacleActions = new ArrayList<>(Arrays.asList(client.getObjectDefinition(obstacleObject.getId()).getActions()));
-		log.info("Obstacle: {}, {} - Actions: {}", obstacleObject.getId(), obstacleObject.getWorldLocation(), obstacleActions.toString());
+		log.info("Obstacle: {} - {}, {} - Actions: {}", obstacleObject.getId(), client.getObjectDefinition(obstacleObject.getId()).getName(), obstacleObject.getWorldLocation(), obstacleActions.toString());
 		String matchingAction = actions.stream()
 			.filter(obstacleActions::contains)
 			.findFirst()
@@ -418,14 +434,14 @@ public class WalkUtils
 		if (matchingAction != null)
 		{
 			int opcode = BASE_OPCODE + obstacleActions.indexOf(matchingAction);
-			log.info("Traversal obstacle found. Action: {}, Opcode: {}", matchingAction, opcode);
+			log.info("Traversal obstacle found. ID: {}, Loc: {} Action: {}, Opcode: {}",obstacleObject.getId(), obstacleObject.getWorldLocation(), matchingAction, opcode);
 			utils.doTileObjectActionGameTick(obstacleObject, opcode, 0);
 			return true;
 		}
-		return (obstacleAttempts < 5);
+		return false;
 	}
 
-	public String getDaxPath(WorldPoint start, WorldPoint destination)
+	public String getDaxResult(WorldPoint start, WorldPoint destination)
 	{
 		Player player = client.getLocalPlayer();
 		Path path = new Path(start, destination, player);
@@ -489,10 +505,11 @@ public class WalkUtils
 				nextPoint = null;
 				return true;
 			}
-			if (currentPath.isEmpty() || !currentPath.get(currentPath.size() - 1).equals(destination)) //no current path or destination doesn't match destination param
+			if (currentPath.isEmpty() || currentPath.get(currentPath.size() - 1).distanceTo(destination) > 5) //no current path or destination doesn't match destination param
 			{
-				String daxResult = getDaxPath(player.getWorldLocation(), destination);
 				currentIndex = 0;
+				log.info("Empty path: {}, size = destination: {}", currentPath.isEmpty(), currentPath.size());
+				String daxResult = getDaxResult(player.getWorldLocation(), destination);
 				log.info("daxResult: {}", daxResult);
 				if (daxResult.contains("Too Many Requests"))
 				{
@@ -511,6 +528,7 @@ public class WalkUtils
 				}
 				currentPath = jsonToObject(daxResult); //get a new path
 				log.info("Path found: {}", currentPath);
+				previousArea = player.getWorldArea();
 			}
 			if (nextFlagDist == -1)
 			{

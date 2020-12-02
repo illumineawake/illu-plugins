@@ -24,9 +24,11 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.queries.DecorativeObjectQuery;
 import net.runelite.api.queries.GameObjectQuery;
 import net.runelite.api.queries.GroundObjectQuery;
+import net.runelite.api.queries.TileObjectQuery;
 import net.runelite.api.queries.TileQuery;
 import net.runelite.api.queries.WallObjectQuery;
 import static net.runelite.client.plugins.iutils.Banks.ALL_BANKS;
+import org.apache.commons.lang3.ArrayUtils;
 
 @Slf4j
 @Singleton
@@ -60,7 +62,6 @@ public class ObjectUtils
 		{
 			return null;
 		}
-
 		return new GameObjectQuery()
 			.isWithinDistance(worldPoint, dist)
 			.idEquals(ids)
@@ -125,6 +126,23 @@ public class ObjectUtils
 		}
 		WorldPoint worldPoint = WorldPoint.fromLocal(client, localPoint);
 		return findNearestGameObjectWithin(worldPoint, dist, ids);
+	}
+
+	@Nullable
+	public GameObject findNearestGameObjectMenuWithin(WorldPoint worldPoint, int dist, String menuAction)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new GameObjectQuery()
+			.isWithinDistance(worldPoint, dist)
+			.filter(w -> ArrayUtils.contains(client.getObjectDefinition(w.getId()).getActions(), menuAction))
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
 	}
 
 	public List<WallObject> getWallObjects(int... ids)
@@ -297,6 +315,32 @@ public class ObjectUtils
 	}
 
 	@Nullable
+	public TileObject findNearestObjectMenuWithin(WorldPoint worldPoint, int dist, String menuAction)
+	{
+		GameObject gameObject = findNearestGameObjectMenuWithin(worldPoint, dist, menuAction);
+
+		if (gameObject != null)
+		{
+			return gameObject;
+		}
+
+		WallObject wallObject = findNearestWallObjectMenuWithin(worldPoint, dist, menuAction);
+
+		if (wallObject != null)
+		{
+			return wallObject;
+		}
+		DecorativeObject decorativeObject = findNearestDecorObjectMenuWithin(worldPoint, dist, menuAction);
+
+		if (decorativeObject != null)
+		{
+			return decorativeObject;
+		}
+
+		return findNearestGroundObjectMenuWithin(worldPoint, dist, menuAction);
+	}
+
+	@Nullable
 	public List<TileItem> getTileItemsWithin(int distance)
 	{
 		assert client.isClientThread();
@@ -395,6 +439,23 @@ public class ObjectUtils
 	}
 
 	@Nullable
+	public WallObject findNearestWallObjectMenuWithin(WorldPoint worldPoint, int dist, String menuAction)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new WallObjectQuery()
+			.isWithinDistance(worldPoint, dist)
+			.filter(w -> ArrayUtils.contains(client.getObjectDefinition(w.getId()).getActions(), menuAction))
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
 	public DecorativeObject findNearestDecorObject(int... ids)
 	{
 		assert client.isClientThread();
@@ -444,6 +505,23 @@ public class ObjectUtils
 	}
 
 	@Nullable
+	public DecorativeObject findNearestDecorObjectMenuWithin(WorldPoint worldPoint, int dist, String menuAction)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new DecorativeObjectQuery()
+			.isWithinDistance(worldPoint, dist)
+			.filter(w -> ArrayUtils.contains(client.getObjectDefinition(w.getId()).getActions(), menuAction))
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
 	public GroundObject findNearestGroundObject(int... ids)
 	{
 		assert client.isClientThread();
@@ -488,6 +566,23 @@ public class ObjectUtils
 
 		return new GroundObjectQuery()
 			.isWithinDistance(worldPoint, dist)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
+	}
+
+	@Nullable
+	public GroundObject findNearestGroundObjectMenuWithin(WorldPoint worldPoint, int dist, String menuAction)
+	{
+		assert client.isClientThread();
+
+		if (client.getLocalPlayer() == null)
+		{
+			return null;
+		}
+
+		return new GroundObjectQuery()
+			.isWithinDistance(worldPoint, dist)
+			.filter(w -> ArrayUtils.contains(client.getObjectDefinition(w.getId()).getActions(), menuAction))
 			.result(client)
 			.nearestTo(client.getLocalPlayer());
 	}
