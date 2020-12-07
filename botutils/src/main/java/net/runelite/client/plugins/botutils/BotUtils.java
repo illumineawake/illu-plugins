@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -173,13 +172,13 @@ public class BotUtils extends Plugin
 	@Override
 	protected void startUp()
 	{
-		executorService = Executors.newSingleThreadExecutor();
+		/*executorService = Executors.newSingleThreadExecutor();*/
 	}
 
 	@Override
 	protected void shutDown()
 	{
-		executorService.shutdown();
+		/*executorService.shutdown();*/
 	}
 
 	public void sendGameMessage(String message)
@@ -407,10 +406,10 @@ public class BotUtils extends Plugin
 		}
 
 		return new WallObjectQuery()
-				.isWithinDistance(worldPoint, radius)
-				.idEquals(ids)
-				.result(client)
-				.nearestTo(client.getLocalPlayer());
+			.isWithinDistance(worldPoint, radius)
+			.idEquals(ids)
+			.result(client)
+			.nearestTo(client.getLocalPlayer());
 	}
 
 	@Nullable
@@ -459,7 +458,7 @@ public class BotUtils extends Plugin
 			.result(client)
 			.list;
 	}
-	
+
 	public List<GameObject> getLocalGameObjects(int distanceAway, int... ids)
 	{
 		if (client.getLocalPlayer() == null)
@@ -467,9 +466,9 @@ public class BotUtils extends Plugin
 			return new ArrayList<>();
 		}
 		List<GameObject> localGameObjects = new ArrayList<>();
-		for(GameObject gameObject : getGameObjects(ids))
-			{
-			if(gameObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation())<distanceAway)
+		for (GameObject gameObject : getGameObjects(ids))
+		{
+			if (gameObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) < distanceAway)
 			{
 				localGameObjects.add(gameObject);
 			}
@@ -957,7 +956,7 @@ public class BotUtils extends Plugin
 		final int viewportWidth = client.getViewportWidth();
 		log.debug("Performing mouse click: {}", config.getMouse());
 
-		switch(config.getMouse())
+		switch (config.getMouse())
 		{
 			case ZERO_MOUSE:
 				click(new Point(0, 0));
@@ -1879,7 +1878,7 @@ public class BotUtils extends Plugin
 						log.info("interacting inventory item: {}", item.getId());
 						sleep(minDelayBetween, maxDelayBetween);
 						setModifiedMenuEntry(new MenuEntry("", "", item1.getId(), opcode, item1.getIndex(), WidgetInfo.INVENTORY.getId(),
-							false), item.getId(), item.getIndex(),MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId());
+							false), item.getId(), item.getIndex(), MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId());
 						click(item1.getCanvasBounds());
 						if (!interactAll)
 						{
@@ -1983,7 +1982,7 @@ public class BotUtils extends Plugin
 			executorService.submit(() -> handleMouseClick(bankCloseWidget.getBounds()));
 			return;
 		}
-		delayMouseClick(new Point(0,0), getRandomIntBetweenRange(10, 100));
+		delayMouseClick(new Point(0, 0), getRandomIntBetweenRange(10, 100));
 	}
 
 	public int getBankMenuOpcode(int bankID)
@@ -2284,7 +2283,7 @@ public class BotUtils extends Plugin
 
 		targetMenu = new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 2 : 3, MenuOpcode.CC_OP.getId(), item.getIndex(),
 			(depositBox) ? 12582914 : 983043, false);
-		delayMouseClick(item.getCanvasBounds(), getRandomIntBetweenRange(0,50));
+		delayMouseClick(item.getCanvasBounds(), getRandomIntBetweenRange(0, 50));
 	}
 
 	public void depositOneOfItem(int itemID)
@@ -2531,18 +2530,22 @@ public class BotUtils extends Plugin
 		return Math.min(min, max) + (n == 0 ? 0 : random.nextInt(n));
 	}
 
-	static void resumePauseWidget(int widgetId, int arg){
+	static void resumePauseWidget(int widgetId, int arg)
+	{
 		final int garbageValue = 1292618906;
 		final String className = "ln";
 		final String methodName = "hs";
 
-		try {
+		try
+		{
 
 			Class clazz = Class.forName(className);
 			Method method = clazz.getDeclaredMethod(methodName, int.class, int.class, int.class);
 			method.setAccessible(true);
 			method.invoke(null, widgetId, arg, garbageValue);
-		} catch (Exception ignored) {
+		}
+		catch (Exception ignored)
+		{
 			return;
 		}
 	}

@@ -32,10 +32,10 @@ import net.runelite.client.config.ConfigItem;
 public interface BlastFurnaceBotConfig extends Config
 {
 	@ConfigItem(
-			keyName = "cofferThreshold",
-			name = "Minimum Coffer amount",
-			description = "Minimum amount of GP to have in coffer before refilling",
-			position = 1
+		keyName = "cofferThreshold",
+		name = "Minimum Coffer amount",
+		description = "Minimum amount of GP to have in coffer before refilling",
+		position = 1
 	)
 	default int cofferThreshold()
 	{
@@ -43,10 +43,10 @@ public interface BlastFurnaceBotConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "cofferAmount",
-			name = "GP into Coffer",
-			description = "How much GP to put into coffer when refilling",
-			position = 2
+		keyName = "cofferAmount",
+		name = "GP into Coffer",
+		description = "How much GP to put into coffer when refilling",
+		position = 2
 	)
 	default int cofferAmount()
 	{
@@ -70,6 +70,9 @@ public interface BlastFurnaceBotConfig extends Config
 		description = "Select the type of bar to smelt",
 		position = 4
 	)
-	default Bars getBar() { return Bars.RUNITE_BAR; }
+	default Bars getBar()
+	{
+		return Bars.RUNITE_BAR;
+	}
 
 }

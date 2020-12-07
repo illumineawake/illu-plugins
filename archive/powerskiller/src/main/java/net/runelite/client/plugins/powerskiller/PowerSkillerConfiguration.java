@@ -61,7 +61,10 @@ public interface PowerSkillerConfiguration extends Config
 		description = "Radius to search for GameObjects.",
 		position = 2
 	)
-	default int locationRadius() { return 10; }
+	default int locationRadius()
+	{
+		return 10;
+	}
 
 	@ConfigItem(
 		keyName = "randLow",

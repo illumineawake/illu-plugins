@@ -43,13 +43,13 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.botutils.BotUtils;
+import net.runelite.client.plugins.iutils.iUtils;
 import static net.runelite.client.plugins.powerskiller.PowerSkillerState.*;
 import org.pf4j.Extension;
 
 
 @Extension
-@PluginDependency(BotUtils.class)
+@PluginDependency(iUtils.class)
 @PluginDescriptor(
 	name = "Power Skiller",
 	enabledByDefault = false,
@@ -67,7 +67,7 @@ public class PowerSkillerPlugin extends Plugin
 	private PowerSkillerConfiguration config;
 
 	@Inject
-	private BotUtils utils;
+	private iUtils utils;
 
 	@Inject
 	private ConfigManager configManager;
@@ -162,22 +162,22 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			return;
 		}
-		else if (client.getEnergy() > (minEnergy + utils.getRandomIntBetweenRange(0, randMax)))
+		else if (client.getEnergy() > (minEnergy + calc.getRandomIntBetweenRange(0, randMax)))
 		{
 			log.info("enabling run");
 			targetMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
-			utils.clickRandomPointCenter(-100, 100);
+			mouse.clickRandomPointCenter(-100, 100);
 		}
 	}
 
 	private void interactTree()
 	{
-		nextTree = utils.findNearestGameObjectWithin(skillLocation, config.locationRadius(), gameObjIds);
+		nextTree = object.findNearestGameObjectWithin(skillLocation, config.locationRadius(), gameObjIds);
 		if (nextTree != null)
 		{
 			targetObject = nextTree;
 			targetMenu = new MenuEntry("", "", nextTree.getId(), 3, targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
-			utils.clickRandomPointCenter(-100, 100);
+			mouse.clickRandomPointCenter(-100, 100);
 		}
 		else
 		{
@@ -202,10 +202,10 @@ public class PowerSkillerPlugin extends Plugin
 						.filter(item -> itemIds.contains(item.getId()))
 						.forEach((item) -> {
 							targetMenu = new MenuEntry("", "", item.getId(), 37, item.getIndex(), 9764864, false);
-							utils.clickRandomPointCenter(-100, 100);
+							mouse.clickRandomPointCenter(-100, 100);
 							try
 							{
-								Thread.sleep(utils.getRandomIntBetweenRange(config.randLow(), config.randHigh()));
+								Thread.sleep(calc.getRandomIntBetweenRange(config.randLow(), config.randHigh()));
 							}
 							catch (InterruptedException e)
 							{
@@ -232,20 +232,20 @@ public class PowerSkillerPlugin extends Plugin
 		{
 			return TIMEOUT;
 		}
-		if (state == ITERATING && !utils.inventoryEmpty())
+		if (state == ITERATING && !inventory.inventoryEmpty())
 		{
 			return ITERATING;
 		}
-		if (utils.inventoryFull())
+		if (inventory.inventoryFull())
 		{
 			return DROPPING;
 		}
-		if (utils.isMoving())
+		if (playerUtils.isMoving())
 		{
 			timeout = 2;
 			return MOVING;
 		}
-		if (!utils.isInteracting() && !utils.inventoryFull())
+		if (!utils.isInteracting() && !inventory.inventoryFull())
 		{
 			return FIND_OBJECT;
 		}
@@ -318,10 +318,14 @@ public class PowerSkillerPlugin extends Plugin
 	@Subscribe
 	public void onGameObjectDespawned(GameObjectDespawned event)
 	{
-		if (nextTree == null || event.getGameObject() != nextTree) {
+		if (nextTree == null || event.getGameObject() != nextTree)
+		{
 			return;
-		} else {
-			if (client.getLocalDestinationLocation() != null) {
+		}
+		else
+		{
+			if (client.getLocalDestinationLocation() != null)
+			{
 				interactTree(); //This is a failsafe, Player can get stuck with a destination on object despawn and be "forever moving".
 			}
 		}

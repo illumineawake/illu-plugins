@@ -34,10 +34,10 @@ public interface EssenceConfig extends Config
 {
 
 	@ConfigItem(
-			keyName = "showDenseRunestoneIndicator",
-			name = "Show icon on Dense Runestone",
-			description = "Configures whether to display an indicator when dense runestone is ready to be mined",
-			position = 0
+		keyName = "showDenseRunestoneIndicator",
+		name = "Show icon on Dense Runestone",
+		description = "Configures whether to display an indicator when dense runestone is ready to be mined",
+		position = 0
 	)
 	default boolean showDenseRunestoneIndicator()
 	{
@@ -45,26 +45,35 @@ public interface EssenceConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "showDenseRunestoneClickbox",
-			name = "Highlight Dense Runestone",
-			description = "Configures whether to display a click box when dense runestone is ready to be mined",
-			position = 1
+		keyName = "showDenseRunestoneClickbox",
+		name = "Highlight Dense Runestone",
+		description = "Configures whether to display a click box when dense runestone is ready to be mined",
+		position = 1
 	)
-	default boolean showDenseRunestoneClickbox() { return true; }
+	default boolean showDenseRunestoneClickbox()
+	{
+		return true;
+	}
 
 	@ConfigItem(
-			keyName = "showDenseBloodALTARicon",
-			name = "Show RC Icon on blood altar",
-			description = "Configures whether to display a rc icon on blood altar",
-			position = 2
+		keyName = "showDenseBloodALTARicon",
+		name = "Show RC Icon on blood altar",
+		description = "Configures whether to display a rc icon on blood altar",
+		position = 2
 	)
-	default boolean showDenseBloodALTARicon() { return true; }
+	default boolean showDenseBloodALTARicon()
+	{
+		return true;
+	}
 
 	@ConfigItem(
-			keyName = "highlightDenseBloodALTAR",
-			name = "Color Code blood altar",
-			description = "Color coding the blood altar",
-			position = 3
+		keyName = "highlightDenseBloodALTAR",
+		name = "Color Code blood altar",
+		description = "Color coding the blood altar",
+		position = 3
 	)
-	default boolean highlightDenseBloodALTAR() { return true; }
+	default boolean highlightDenseBloodALTAR()
+	{
+		return true;
+	}
 }
