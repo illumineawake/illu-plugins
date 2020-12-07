@@ -574,6 +574,17 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "sendMsg",
+			name = "Send message on destination",
+			description = "Enables or Disables the message when you arrive at your destination",
+			position = 145
+	)
+	default boolean sendMsg()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "enableUI",
 		name = "Enable UI",
 		description = "Enable to turn on in game UI",

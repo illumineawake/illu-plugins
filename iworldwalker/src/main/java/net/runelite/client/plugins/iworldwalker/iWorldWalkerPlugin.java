@@ -378,8 +378,10 @@ public class iWorldWalkerPlugin extends Plugin
 				{
 					if (mapPoint != null)
 					{
-						utils.sendGameMessage("Arrived at Map destination: " + mapPoint.getX() + ", " +
-							mapPoint.getY() + ", " + mapPoint.getPlane() + " - stopping World Walker");
+						if (config.sendMsg()) {
+							utils.sendGameMessage("Arrived at Map destination: " + mapPoint.getX() + ", " +
+									mapPoint.getY() + ", " + mapPoint.getPlane() + " - stopping World Walker");
+						}
 						resetVals();
 						return;
 					}
