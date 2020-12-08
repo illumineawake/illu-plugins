@@ -615,7 +615,9 @@ public class iCombinationRunecrafterPlugin extends Plugin
 						{
 							totalStaminaPots++;
 						}
-						utils.doItemActionMsTime(useableItem, MenuOpcode.CC_OP_LOW_PRIORITY.getId(), WidgetInfo.INVENTORY.getId(), sleepDelay());
+						MenuEntry targetMenu = new MenuEntry("", "", 9, MenuOpcode.CC_OP_LOW_PRIORITY.getId(),
+							useableItem.getIndex(), 983043, true);
+						utils.doActionMsTime(targetMenu, new Point(0, 0), sleepDelay());
 					}
 					break;
 				case WITHDRAW_ITEM:
