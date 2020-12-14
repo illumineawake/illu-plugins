@@ -357,10 +357,12 @@ public class iPowerFighterPlugin extends Plugin
 			itemGeValue = utils.getOSBItem(itemID);
 		}
 		ItemDefinition itemDef = client.getItemDefinition(itemID);
-		if (!itemDef.isTradeable()) {
-			log.debug("Tried to alch untradeable item {}, adding to blacklist", itemDef.getName());
-			alchBlacklist.add(itemID);
-			return false;
+		if (itemDef != null) {
+			if (!itemDef.isTradeable()) {
+				log.debug("Tried to alch untradeable item {}, adding to blacklist", itemDef.getName());
+				alchBlacklist.add(itemID);
+				return false;
+			}
 		}
 		log.debug("Checking alch value of item: {}", itemDef.getName());
 		return config.alchItems() &&
