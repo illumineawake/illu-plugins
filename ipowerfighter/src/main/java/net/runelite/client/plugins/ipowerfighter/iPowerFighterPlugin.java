@@ -406,7 +406,6 @@ public class iPowerFighterPlugin extends Plugin
 				targetMenu = new MenuEntry("", "", bone.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(),
 					bone.getIndex(), WidgetInfo.INVENTORY.getId(), false);
 				menu.setEntry(targetMenu);
-				//targetMenu = new MenuEntry("Kandarin Monastery", "<col=ff9040>Ardougne cloak 2</col>", 2, MenuOpcode.CC_OP.getId(), -1, 25362447, false);
 				mouse.handleMouseClick(bone.getCanvasBounds());
 				sleep(calc.getRandomIntBetweenRange(800, 2200));
 			}
