@@ -357,10 +357,12 @@ public class iPowerFighterPlugin extends Plugin
 			itemGeValue = utils.getOSBItem(itemID);
 		}
 		ItemDefinition itemDef = client.getItemDefinition(itemID);
-		if (!itemDef.isTradeable()) {
-			log.debug("Tried to alch untradeable item {}, adding to blacklist", itemDef.getName());
-			alchBlacklist.add(itemID);
-			return false;
+		if (itemDef != null) {
+			if (!itemDef.isTradeable()) {
+				log.debug("Tried to alch untradeable item {}, adding to blacklist", itemDef.getName());
+				alchBlacklist.add(itemID);
+				return false;
+			}
 		}
 		log.debug("Checking alch value of item: {}", itemDef.getName());
 		return config.alchItems() &&
@@ -404,6 +406,7 @@ public class iPowerFighterPlugin extends Plugin
 				targetMenu = new MenuEntry("", "", bone.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(),
 					bone.getIndex(), WidgetInfo.INVENTORY.getId(), false);
 				menu.setEntry(targetMenu);
+				//targetMenu = new MenuEntry("Kandarin Monastery", "<col=ff9040>Ardougne cloak 2</col>", 2, MenuOpcode.CC_OP.getId(), -1, 25362447, false);
 				mouse.handleMouseClick(bone.getCanvasBounds());
 				sleep(calc.getRandomIntBetweenRange(800, 2200));
 			}
