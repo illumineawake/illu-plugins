@@ -154,7 +154,7 @@ public class iPowerFighterPlugin extends Plugin
 	List<TileItem> ammoLoot = new ArrayList<>();
 	List<String> lootableItems = new ArrayList<>();
 	Set<String> alchableItems = new HashSet<>();
-	Set<Integer> alchBlacklist = Set.of(ItemID.NATURE_RUNE, ItemID.FIRE_RUNE, ItemID.COINS_995);
+	Set<Integer> alchBlacklist = Set.of(ItemID.NATURE_RUNE, ItemID.FIRE_RUNE, ItemID.COINS_995, ItemID.RUNE_POUCH, ItemID.HERB_SACK, ItemID.OPEN_HERB_SACK, ItemID.XERICS_TALISMAN, ItemID.HOLY_WRENCH); //Temp fix until isTradeable is fixed
 	List<Item> alchLoot = new ArrayList<>();
 	;
 	MenuEntry targetMenu;
@@ -357,13 +357,13 @@ public class iPowerFighterPlugin extends Plugin
 			itemGeValue = utils.getOSBItem(itemID);
 		}
 		ItemDefinition itemDef = client.getItemDefinition(itemID);
-		if (itemDef != null) {
+	/*	if (itemDef != null) { //Currently bugged (https://discord.com/channels/734831848173338684/744402742839345182/788226017978220544)
 			if (!itemDef.isTradeable()) {
 				log.debug("Tried to alch untradeable item {}, adding to blacklist", itemDef.getName());
 				alchBlacklist.add(itemID);
 				return false;
 			}
-		}
+		}*/
 		log.debug("Checking alch value of item: {}", itemDef.getName());
 		return config.alchItems() &&
 			(config.alchByValue() && itemDef.getHaPrice() > highAlchCost &&
