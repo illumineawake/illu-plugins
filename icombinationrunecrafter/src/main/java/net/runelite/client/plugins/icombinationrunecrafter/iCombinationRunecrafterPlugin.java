@@ -577,10 +577,7 @@ public class iCombinationRunecrafterPlugin extends Plugin
 					timeout = tickDelay();
 					break;
 				case ENTER_MYSTERIOUS_RUINS:
-					targetMenu = new MenuEntry("", "", 34817, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
-						mysteriousRuins.getSceneMinLocation().getX(), mysteriousRuins.getSceneMinLocation().getY(), false);
-					menu.setEntry(targetMenu);
-					mouse.delayMouseClick(mysteriousRuins.getConvexHull().getBounds(), sleepDelay());
+					utils.doGameObjectActionMsTime(mysteriousRuins, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), sleepDelay());
 					timeout = tickDelay();
 					break;
 				case TELEPORT_CASTLE_WARS:
@@ -593,16 +590,12 @@ public class iCombinationRunecrafterPlugin extends Plugin
 					{
 						targetMenu = new MenuEntry("", "", fireAltar.getId(), ITEM_USE_ON_GAME_OBJECT.getId(),
 							fireAltar.getSceneMinLocation().getX(), fireAltar.getSceneMinLocation().getY(), false);
-						mouse.delayMouseClick(fireAltar.getConvexHull().getBounds(), sleepDelay());
 						utils.doModifiedActionMsTime(targetMenu, airTalisman.getId(), airTalisman.getIndex(), ITEM_USE_ON_GAME_OBJECT.getId(), fireAltar.getConvexHull().getBounds(), sleepDelay());
 						timeout = tickDelay();
 					}
 					break;
 				case OPEN_BANK:
-					targetMenu = new MenuEntry("", "", bankChest.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
-						bankChest.getSceneMinLocation().getX(), bankChest.getSceneMinLocation().getY(), false);
-					menu.setEntry(targetMenu);
-					mouse.delayMouseClick(bankChest.getConvexHull().getBounds(), sleepDelay());
+					utils.doGameObjectActionMsTime(bankChest, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), sleepDelay());
 					timeout = tickDelay();
 					break;
 				case TELEPORT_DUEL_ARENA:
@@ -622,10 +615,9 @@ public class iCombinationRunecrafterPlugin extends Plugin
 						{
 							totalStaminaPots++;
 						}
-						targetMenu = new MenuEntry("", "", 9, MenuOpcode.CC_OP_LOW_PRIORITY.getId(),
+						MenuEntry targetMenu = new MenuEntry("", "", 9, MenuOpcode.CC_OP_LOW_PRIORITY.getId(),
 							useableItem.getIndex(), 983043, true);
-						menu.setEntry(targetMenu);
-						mouse.delayMouseClick(useableItem.getCanvasBounds(), sleepDelay());
+						utils.doActionMsTime(targetMenu, new Point(0, 0), sleepDelay());
 					}
 					break;
 				case WITHDRAW_ITEM:

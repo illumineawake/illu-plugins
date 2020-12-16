@@ -204,7 +204,7 @@ public class iUtils extends Plugin
 			return;
 		}
 		MenuEntry entry = new MenuEntry("", "", item.getId(), menuOpcodeID,
-			item.getIndex(), menuParam1ID, false);
+			item.getIndex(), menuParam1ID, true);
 		doActionClientTick(entry, item.getCanvasBounds().getBounds(), ticksToDelay);
 	}
 
@@ -278,7 +278,7 @@ public class iUtils extends Plugin
 			return;
 		}
 		MenuEntry entry = new MenuEntry("", "", item.getId(), menuOpcodeID,
-			item.getIndex(), menuParam1ID, false);
+			item.getIndex(), menuParam1ID, true);
 		doActionGameTick(entry, item.getCanvasBounds().getBounds(), ticksToDelay);
 	}
 
@@ -351,7 +351,7 @@ public class iUtils extends Plugin
 			return;
 		}
 		MenuEntry entry = new MenuEntry("", "", item.getId(), menuOpcodeID,
-			item.getIndex(), menuParam1ID, false);
+			item.getIndex(), menuParam1ID, true);
 		doActionMsTime(entry, item.getCanvasBounds().getBounds(), timeToDelay);
 	}
 
