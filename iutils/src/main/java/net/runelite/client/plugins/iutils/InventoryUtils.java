@@ -546,7 +546,7 @@ public class InventoryUtils
 						log.info("interacting inventory item: {}", item.getId());
 						sleep(minDelayBetween, maxDelayBetween);
 						menu.setEntry(new MenuEntry("", "", item.getId(), opcode, item.getIndex(), WidgetInfo.INVENTORY.getId(),
-							false));
+							true));
 						mouse.click(item.getCanvasBounds());
 						if (!interactAll)
 						{
