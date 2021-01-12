@@ -26,25 +26,17 @@
 package net.runelite.client.plugins.imenudebugger;
 
 import com.google.inject.Provides;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
-import net.runelite.api.Item;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.Player;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -82,18 +74,9 @@ public class iMenuDebuggerPlugin extends Plugin
 	@Inject
 	private ConfigManager configManager;
 
-	@Inject
-	private ItemManager itemManager;
-
-	@Inject
-	private ExecutorService executorService;
 
 	MenuEntry testMenu;
-	MenuEntry testMenu2;
 	Player player;
-	GameObject testGameObject;
-	Instant lootTimer;
-	List<Item> inventorySnapshot = new ArrayList<>();
 	LocalPoint beforeLoc;
 
 	int timeout;
@@ -105,15 +88,13 @@ public class iMenuDebuggerPlugin extends Plugin
 	}
 
 	@Override
-	protected void startUp()
-	{
+	protected void startUp() {
 
 	}
 
 	@Override
-	protected void shutDown()
-	{
-		inventorySnapshot.clear();
+	protected void shutDown() {
+
 	}
 
 	@Subscribe
@@ -135,21 +116,6 @@ public class iMenuDebuggerPlugin extends Plugin
 				}
 			}
 			beforeLoc = player.getLocalLocation();
-		}
-	}
-
-	@Subscribe
-	private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked)
-	{
-		if (!configButtonClicked.getGroup().equalsIgnoreCase("Test"))
-		{
-			return;
-		}
-		log.debug("button {} pressed!", configButtonClicked.getKey());
-		switch (configButtonClicked.getKey())
-		{
-			case "startButton":
-				log.info("button clicked");
 		}
 	}
 
