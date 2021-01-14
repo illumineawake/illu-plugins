@@ -343,7 +343,7 @@ public class iPowerFighterPlugin extends Plugin
 		return config.alchItems() &&
 			client.getBoostedSkillLevel(Skill.MAGIC) >= 55 &&
 			((inventory.containsItem(ItemID.NATURE_RUNE) && inventory.containsStackAmount(ItemID.FIRE_RUNE, 5))
-				|| (inventory.runePouchQuanitity(554) >= 5 && inventory.runePouchContains(561) && inventory.containsItem(ItemID.RUNE_POUCH)));
+				|| (inventory.runePouchQuanitity(ItemID.FIRE_RUNE) >= 5 && inventory.runePouchContains(ItemID.NATURE_RUNE) && inventory.containsItem(ItemID.RUNE_POUCH)));
 	}
 
 	private boolean alchableItem(int itemID)
