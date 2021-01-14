@@ -299,6 +299,17 @@ public interface iMagicCasterConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "enableRun",
+			name = "Automatically enable run (energy)",
+			description = "If enabled, this will toggle your run on when you're above 40%",
+			position = 17
+	)
+	default boolean enableRun()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "enableUI",
 		name = "Enable UI",
 		description = "Enable to turn on in game UI",

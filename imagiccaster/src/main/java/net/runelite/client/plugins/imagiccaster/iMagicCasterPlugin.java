@@ -354,7 +354,9 @@ public class iMagicCasterPlugin extends Plugin
 				startBot = false;
 				return;
 			}
-			playerUtils.handleRun(40, 20);
+			if (config.enableRun()) {
+				playerUtils.handleRun(40, 20);
+			}
 			state = getState();
 			beforeLoc = player.getLocalLocation();
 			switch (state)
