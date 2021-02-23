@@ -34,7 +34,7 @@ import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
@@ -51,7 +51,6 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.iutils.CalculationUtils;
 import net.runelite.client.plugins.iutils.InventoryUtils;
 import net.runelite.client.plugins.iutils.MenuUtils;
@@ -67,8 +66,7 @@ import org.pf4j.Extension;
 	name = "iQuick Eater",
 	enabledByDefault = false,
 	description = "Illumine - auto eat food and drink some potions below configured values",
-	tags = {"illumine", "auto", "bot", "eat", "food", "potions", "stamina", "prayer"},
-	type = PluginType.UTILITY
+	tags = {"illumine", "auto", "bot", "eat", "food", "potions", "stamina", "prayer"}
 )
 @Slf4j
 public class iQuickEaterPlugin extends Plugin
@@ -173,7 +171,7 @@ public class iQuickEaterPlugin extends Plugin
 	{
 		if (item != null)
 		{
-			targetMenu = new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), item.getIndex(),
+			targetMenu = new MenuEntry("", "", item.getId(), MenuAction.ITEM_FIRST_OPTION.getId(), item.getIndex(),
 				WidgetInfo.INVENTORY.getId(), false);
 			menu.setEntry(targetMenu);
 			mouse.delayMouseClick(item.getCanvasBounds(), calc.getRandomIntBetweenRange(25, 200));
@@ -260,7 +258,7 @@ public class iQuickEaterPlugin extends Plugin
 				{
 					if (playerUtils.getEquippedItems() != null && playerUtils.getEquippedItems().get(2).getId() != 11090)
 					{
-						targetMenu = new MenuEntry("Wear", "Wear", 11090, MenuOpcode.ITEM_SECOND_OPTION.getId(), inventory.getWidgetItem(11090).getIndex(),
+						targetMenu = new MenuEntry("Wear", "Wear", 11090, MenuAction.ITEM_SECOND_OPTION.getId(), inventory.getWidgetItem(11090).getIndex(),
 							WidgetInfo.INVENTORY.getId(), false);
 						menu.setEntry(targetMenu);
 						mouse.delayMouseClick(inventory.getWidgetItem(11090).getCanvasBounds(), calc.getRandomIntBetweenRange(25, 200));

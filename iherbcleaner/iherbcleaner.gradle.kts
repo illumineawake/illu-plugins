@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.2"
+version = "2.0.0"
 
 project.extra["PluginName"] = "iHerbCleaner"
 project.extra["PluginDescription"] = "Illumine - Herb Cleaner"

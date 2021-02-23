@@ -5,7 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -46,7 +46,7 @@ public class CleanHerbTask extends Task
 		for (WidgetItem herb : herbs)
 		{
 			log.info("Adding herb: {}, delay time: {}", herb.getIndex(), sleep);
-			entry = new MenuEntry("", "", herb.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(),
+			entry = new MenuEntry("", "", herb.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
 				herb.getIndex(), WidgetInfo.INVENTORY.getId(), true);
 			sleep += sleepDelay();
 			herb.getCanvasBounds().getBounds();

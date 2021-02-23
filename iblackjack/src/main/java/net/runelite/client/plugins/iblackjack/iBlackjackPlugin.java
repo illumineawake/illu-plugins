@@ -49,7 +49,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.iblackjack.tasks.BreakTask;
 import net.runelite.client.plugins.iblackjack.tasks.DropTask;
 import net.runelite.client.plugins.iblackjack.tasks.EatTask;
@@ -77,8 +76,7 @@ import org.pf4j.Extension;
 	name = "iBlackjack Helper",
 	enabledByDefault = false,
 	description = "Illumine - Blackjack helper plugin. Handles knocking out and pickpocketing bandits",
-	tags = {"illumine", "thieving", "blackjack", "helper", "bot"},
-	type = PluginType.MISCELLANEOUS
+	tags = {"illumine", "thieving", "blackjack", "helper", "bot"}
 )
 @Slf4j
 public class iBlackjackPlugin extends Plugin
@@ -337,11 +335,11 @@ public class iBlackjackPlugin extends Plugin
 		{
 			return;
 		}
-		if (event.getOption().equals("Knock-Out") && selectedNPCIndex == 0)
+		if (event.getMenuOption().equals("Knock-Out") && selectedNPCIndex == 0)
 		{
 			final int ticks = (config.random()) ? RandomUtils.nextInt(3, 4) : 4;
 			nextKnockoutTick = client.getTickCount() + ticks;
-			selectedNPCIndex = event.getIdentifier();
+			selectedNPCIndex = event.getId();
 		}
 	}
 }

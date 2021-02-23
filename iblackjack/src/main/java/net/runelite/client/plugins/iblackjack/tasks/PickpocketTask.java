@@ -1,7 +1,7 @@
 package net.runelite.client.plugins.iblackjack.tasks;
 
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.NPC;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.iblackjack.Task;
@@ -34,7 +34,7 @@ public class PickpocketTask extends Task
 	@Override
 	public void onGameTick(GameTick event)
 	{
-		entry = new MenuEntry("", "", selectedNPCIndex, MenuOpcode.NPC_THIRD_OPTION.getId(), 0, 0, false);
+		entry = new MenuEntry("", "", selectedNPCIndex, MenuAction.NPC_THIRD_OPTION.getId(), 0, 0, false);
 		utils.doActionMsTime(entry, bandit.getConvexHull().getBounds(), sleepDelay());
 		if (config.random() && calc.getRandomIntBetweenRange(0, 10) == 0)
 		{

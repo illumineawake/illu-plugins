@@ -3,7 +3,7 @@ package net.runelite.client.plugins.iblackjack.tasks;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.Skill;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.WidgetInfo;
@@ -37,7 +37,7 @@ public class EatTask extends Task
 		WidgetItem food = inventory.getItemMenu(foodMenu);
 		if (food != null)
 		{
-			entry = new MenuEntry("", "", food.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(),
+			entry = new MenuEntry("", "", food.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
 				food.getIndex(), WidgetInfo.INVENTORY.getId(), false);
 			utils.doActionMsTime(entry, food.getCanvasBounds(), sleepDelay());
 			eatHP = calc.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
