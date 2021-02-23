@@ -595,7 +595,7 @@ public class iUtils extends Plugin
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		if (event.getMenuAction() == MenuAction.CC_OP && (event.getWidgetId() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
-			event.getWidgetId() == 11927560 || event.getWidgetId() == 4522007 || event.getWidgetId() == 24772686))
+				event.getWidgetId() == 11927560 || event.getWidgetId() == 4522007 || event.getWidgetId() == 24772686))
 		{
 			//Either logging out or world-hopping which is handled by 3rd party plugins so let them have priority
 			log.info("Received world-hop/login related click. Giving them priority");
@@ -613,7 +613,9 @@ public class iUtils extends Plugin
 				menu.consumeClick = false;
 				return;
 			}
-			if (menu.entry.getOption().equals("Walk here"))
+			MenuEntry entry = menu.entry;
+			menu.entry = null;
+			if (entry.getOption().equals("Walk here"))
 			{
 				log.info("Walk action: {} {}", walk.coordX, walk.coordY);
 				walk.walkTile(walk.coordX, walk.coordY);
@@ -627,17 +629,18 @@ public class iUtils extends Plugin
 				client.setSelectedItemSlot(menu.modifiedItemIndex);
 				client.setSelectedItemID(menu.modifiedItemID);
 				log.debug("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", menu.modifiedItemID,
-					menu.modifiedItemIndex, menu.entry.getParam1());
-				client.invokeMenuAction(menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
-					menu.modifiedOpCode, menu.entry.getParam0(), menu.entry.getParam1());
+						menu.modifiedItemIndex, entry.getParam1());
+				client.invokeMenuAction(entry.getOption(), entry.getTarget(), entry.getIdentifier(),
+						menu.modifiedOpCode, entry.getParam0(), entry.getParam1());
 				menu.modifiedMenu = false;
 			}
 			else
 			{
-				client.invokeMenuAction(menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
-					menu.entry.getOpcode(), menu.entry.getParam0(), menu.entry.getParam1());
+				System.out.println(String.format("%s, %s, %s, %s, %s, %s", entry.getOption(), entry.getTarget(), entry.getIdentifier(), entry.getOpcode(), entry.getParam0(), entry.getParam1()));
+				client.invokeMenuAction(entry.getOption(), entry.getTarget(), entry.getIdentifier(),
+						entry.getOpcode(), entry.getParam0(), entry.getParam1());
 			}
-			menu.entry = null;
+			//menu.entry = null;
 		}
 		else
 		{
