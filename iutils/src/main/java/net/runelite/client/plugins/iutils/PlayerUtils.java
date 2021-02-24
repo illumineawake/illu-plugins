@@ -13,8 +13,8 @@ import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
+import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
 import net.runelite.api.Player;
 import net.runelite.api.Varbits;
 import net.runelite.api.coords.LocalPoint;
@@ -169,7 +169,7 @@ public class PlayerUtils
 		if (staminaPotion != null)
 		{
 			log.info("using stamina potion");
-			menu.setEntry(new MenuEntry("", "", staminaPotion.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(),
+			menu.setEntry(new MenuEntry("", "", staminaPotion.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
 				staminaPotion.getIndex(), 9764864, false));
 			mouse.delayMouseClick(staminaPotion.getCanvasBounds(), calc.getRandomIntBetweenRange(5, 200));
 			return true;

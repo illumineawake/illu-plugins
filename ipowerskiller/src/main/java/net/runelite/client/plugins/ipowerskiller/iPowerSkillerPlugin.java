@@ -38,7 +38,7 @@ import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.NPC;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.ObjectID;
@@ -53,7 +53,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.NpcDefinitionChanged;
+import net.runelite.api.events.NpcChanged;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
@@ -63,7 +63,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
-import net.runelite.client.plugins.PluginType;
 import static net.runelite.client.plugins.ipowerskiller.iPowerSkillerState.*;
 import net.runelite.client.plugins.iutils.BankUtils;
 import net.runelite.client.plugins.iutils.CalculationUtils;
@@ -87,8 +86,7 @@ import org.pf4j.Extension;
 	name = "iPower Skiller",
 	enabledByDefault = false,
 	description = "Illumine auto power-skill plugin",
-	tags = {"fishing, mining, wood-cutting, illumine, bot, power, skill"},
-	type = PluginType.SKILLING
+	tags = {"fishing, mining, wood-cutting, illumine, bot, power, skill"}
 )
 @Slf4j
 public class iPowerSkillerPlugin extends Plugin
@@ -327,7 +325,7 @@ public class iPowerSkillerPlugin extends Plugin
 	private void interactNPC()
 	{
 		targetNPC = npc.findNearestNpcWithin(skillLocation, config.locationRadius(), objectIds);
-		opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuOpcode.NPC_FIRST_OPTION.getId());
+		opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuAction.NPC_FIRST_OPTION.getId());
 		if (targetNPC != null)
 		{
 			targetMenu = new MenuEntry("", "", targetNPC.getIndex(), opcode, 0, 0, false);
@@ -344,7 +342,7 @@ public class iPowerSkillerPlugin extends Plugin
 	{
 		targetObject = (config.type() == iPowerSkillerType.DENSE_ESSENCE) ? getDenseEssence() :
 			object.findNearestGameObjectWithin(skillLocation, config.locationRadius(), objectIds);
-		opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId());
+		opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuAction.GAME_OBJECT_FIRST_OPTION.getId());
 		if (targetObject != null)
 		{
 			targetMenu = new MenuEntry("", "", targetObject.getId(), opcode,
@@ -361,7 +359,7 @@ public class iPowerSkillerPlugin extends Plugin
 	private void interactWall()
 	{
 		targetWall = object.findWallObjectWithin(skillLocation, config.locationRadius(), objectIds);
-		opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId());
+		opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuAction.GAME_OBJECT_FIRST_OPTION.getId());
 		if (targetWall != null)
 		{
 			targetMenu = new MenuEntry("", "", targetWall.getId(), opcode,
@@ -677,8 +675,8 @@ public class iPowerSkillerPlugin extends Plugin
 	{
 		if (config.customOpcode() && config.printOpcode())
 		{
-			utils.sendGameMessage("Identifier value: " + event.getIdentifier());
-			utils.sendGameMessage("Opcode value: " + event.getOpcode());
+			utils.sendGameMessage("Identifier value: " + event.getId());
+			utils.sendGameMessage("Opcode value: " + event.getMenuAction());
 		}
 	}
 
@@ -699,7 +697,7 @@ public class iPowerSkillerPlugin extends Plugin
 	}
 
 	@Subscribe
-	public void onNPCDefinitionChanged(NpcDefinitionChanged event)
+	public void onNPCDefinitionChanged(NpcChanged event)
 	{
 		if (targetNPC == null || event.getNpc() != targetNPC || !startPowerSkiller)
 		{
@@ -784,7 +782,7 @@ public class iPowerSkillerPlugin extends Plugin
 			//extend search outside the players set radius
 			targetObject = object.getGameObjects(ObjectID.GRINDER).get(0);
 		}
-		opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId());
+		opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuAction.GAME_OBJECT_FIRST_OPTION.getId());
 		if (targetObject != null)
 		{
 			targetMenu = new MenuEntry("", "", targetObject.getId(), opcode,

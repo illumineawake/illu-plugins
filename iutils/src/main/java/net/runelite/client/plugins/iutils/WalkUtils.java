@@ -9,8 +9,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
 import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
@@ -72,7 +72,7 @@ public class WalkUtils
 		coordY = localPoint.getSceneY() + calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
 		log.info("Coord values: {}, {}", coordX, coordY);
 		walkAction = true;
-		menu.setEntry(new MenuEntry("Walk here", "", 0, MenuOpcode.WALK.getId(),
+		menu.setEntry(new MenuEntry("Walk here", "", 0, MenuAction.WALK.getId(),
 			0, 0, false));
 		mouse.delayMouseClick(new Point(0, 0), delay);
 	}

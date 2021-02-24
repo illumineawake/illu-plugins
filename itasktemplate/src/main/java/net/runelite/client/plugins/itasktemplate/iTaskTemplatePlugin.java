@@ -44,7 +44,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.itasktemplate.tasks.MovingTask;
 import net.runelite.client.plugins.itasktemplate.tasks.TimeoutTask;
 import net.runelite.client.plugins.iutils.iUtils;
@@ -58,8 +57,7 @@ import org.pf4j.Extension;
 	name = "iTaskTemplate",
 	enabledByDefault = false,
 	description = "Illumine - Task Template plugin",
-	tags = {"illumine", "task", "template", "bot"},
-	type = PluginType.MISCELLANEOUS
+	tags = {"illumine", "task", "template", "bot"}
 )
 @Slf4j
 public class iTaskTemplatePlugin extends Plugin

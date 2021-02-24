@@ -12,11 +12,11 @@ import net.runelite.api.Constants;
 import net.runelite.api.DecorativeObject;
 import net.runelite.api.GameObject;
 import net.runelite.api.GroundObject;
+import net.runelite.api.ItemLayer;
 import net.runelite.api.Player;
 import net.runelite.api.Scene;
 import net.runelite.api.Tile;
 import net.runelite.api.TileItem;
-import net.runelite.api.TileItemPile;
 import net.runelite.api.TileObject;
 import net.runelite.api.WallObject;
 import net.runelite.api.coords.LocalPoint;
@@ -224,7 +224,7 @@ public class ObjectUtils
 
 	private TileItem findItemAtTile(Tile tile, int id)
 	{
-		TileItemPile tileItemPile = tile.getItemLayer();
+		ItemLayer tileItemPile = tile.getItemLayer();
 		if (tileItemPile != null)
 		{
 			TileItem tileItem = (TileItem) tileItemPile.getBottom();

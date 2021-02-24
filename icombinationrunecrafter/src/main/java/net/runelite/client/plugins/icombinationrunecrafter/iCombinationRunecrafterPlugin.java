@@ -39,8 +39,8 @@ import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
-import static net.runelite.api.MenuOpcode.ITEM_USE_ON_GAME_OBJECT;
+import net.runelite.api.MenuAction;
+import static net.runelite.api.MenuAction.ITEM_USE_ON_GAME_OBJECT;
 import net.runelite.api.ObjectID;
 import net.runelite.api.Player;
 import net.runelite.api.Point;
@@ -58,7 +58,6 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import static net.runelite.client.plugins.icombinationrunecrafter.iCombinationRunecrafterState.*;
 import net.runelite.client.plugins.iutils.BankUtils;
 import net.runelite.client.plugins.iutils.CalculationUtils;
@@ -80,8 +79,7 @@ import org.pf4j.Extension;
 	name = "iCombination Runecrafter Plugin",
 	enabledByDefault = false,
 	description = "Illumine - Combination Runecrafting plugin",
-	tags = {"illumine", "runecrafting", "bot", "smoke", "steam", "lava", "combination"},
-	type = PluginType.SKILLING
+	tags = {"illumine", "runecrafting", "bot", "smoke", "steam", "lava", "combination"}
 )
 @Slf4j
 public class iCombinationRunecrafterPlugin extends Plugin
@@ -381,7 +379,7 @@ public class iCombinationRunecrafterPlugin extends Plugin
 
 	private void teleportRingOfDueling(int menuIdentifier)
 	{
-		targetMenu = new MenuEntry("", "", menuIdentifier, MenuOpcode.CC_OP.getId(), -1,
+		targetMenu = new MenuEntry("", "", menuIdentifier, MenuAction.CC_OP.getId(), -1,
 			25362455, false);
 		Widget ringWidget = client.getWidget(WidgetInfo.EQUIPMENT_RING);
 		if (ringWidget != null)
@@ -577,7 +575,7 @@ public class iCombinationRunecrafterPlugin extends Plugin
 					timeout = tickDelay();
 					break;
 				case ENTER_MYSTERIOUS_RUINS:
-					utils.doGameObjectActionMsTime(mysteriousRuins, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), sleepDelay());
+					utils.doGameObjectActionMsTime(mysteriousRuins, MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), sleepDelay());
 					timeout = tickDelay();
 					break;
 				case TELEPORT_CASTLE_WARS:
@@ -595,7 +593,7 @@ public class iCombinationRunecrafterPlugin extends Plugin
 					}
 					break;
 				case OPEN_BANK:
-					utils.doGameObjectActionMsTime(bankChest, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), sleepDelay());
+					utils.doGameObjectActionMsTime(bankChest, MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), sleepDelay());
 					timeout = tickDelay();
 					break;
 				case TELEPORT_DUEL_ARENA:
@@ -615,7 +613,7 @@ public class iCombinationRunecrafterPlugin extends Plugin
 						{
 							totalStaminaPots++;
 						}
-						MenuEntry targetMenu = new MenuEntry("", "", 9, MenuOpcode.CC_OP_LOW_PRIORITY.getId(),
+						MenuEntry targetMenu = new MenuEntry("", "", 9, MenuAction.CC_OP_LOW_PRIORITY.getId(),
 							useableItem.getIndex(), 983043, true);
 						utils.doActionMsTime(targetMenu, new Point(0, 0), sleepDelay());
 					}

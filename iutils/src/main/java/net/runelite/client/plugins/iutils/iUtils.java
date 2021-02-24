@@ -7,6 +7,7 @@ package net.runelite.client.plugins.iutils;
 
 import com.google.inject.Provides;
 import java.awt.Rectangle;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,8 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
+import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
 import net.runelite.api.NPC;
 import net.runelite.api.Point;
 import net.runelite.api.TileObject;
@@ -38,7 +39,6 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
@@ -51,7 +51,6 @@ import org.pf4j.Extension;
 @Extension
 @PluginDescriptor(
 	name = "iUtils",
-	type = PluginType.UTILITY,
 	description = "Illumine plugin utilities",
 	hidden = false
 )
@@ -453,25 +452,21 @@ public class iUtils extends Plugin
 	public OSBGrandExchangeResult getOSBItem(int itemId)
 	{
 		log.debug("Looking up OSB item price {}", itemId);
-		osbGrandExchangeClient.lookupItem(itemId)
-			.subscribe(
-				(osbresult) ->
-				{
-					if (osbresult != null && osbresult.getOverall_average() > 0)
-					{
-						osbGrandExchangeResult = osbresult;
-					}
-				},
-				(e) -> log.debug("Error getting price of item {}", itemId, e)
-			);
-		if (osbGrandExchangeResult != null)
+
+		try
 		{
-			return osbGrandExchangeResult;
+			final OSBGrandExchangeResult result = osbGrandExchangeClient.lookupItem(itemId);
+			if (result != null && result.getOverall_average() > 0)
+			{
+				return result;
+			}
 		}
-		else
+		catch (IOException e)
 		{
-			return null;
+			log.debug("Error getting price of item {}", itemId, e);
 		}
+
+		return null;
 	}
 
 	//Ganom's
@@ -581,7 +576,7 @@ public class iUtils extends Plugin
 	@Subscribe
 	private void onMenuEntryAdded(MenuEntryAdded event)
 	{
-		if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
+		if (event.getOpcode() == MenuAction.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
 			event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
 		{
 			return;
@@ -599,8 +594,8 @@ public class iUtils extends Plugin
 	@Subscribe
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (event.getOpcode() == MenuOpcode.CC_OP.getId() && (event.getParam1() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
-			event.getParam1() == 11927560 || event.getParam1() == 4522007 || event.getParam1() == 24772686))
+		if (event.getMenuAction() == MenuAction.CC_OP && (event.getWidgetId() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
+				event.getWidgetId() == 11927560 || event.getWidgetId() == 4522007 || event.getWidgetId() == 24772686))
 		{
 			//Either logging out or world-hopping which is handled by 3rd party plugins so let them have priority
 			log.info("Received world-hop/login related click. Giving them priority");
@@ -618,7 +613,9 @@ public class iUtils extends Plugin
 				menu.consumeClick = false;
 				return;
 			}
-			if (menu.entry.getOption().equals("Walk here"))
+			MenuEntry entry = menu.entry;
+			menu.entry = null;
+			if (entry.getOption().equals("Walk here"))
 			{
 				log.info("Walk action: {} {}", walk.coordX, walk.coordY);
 				walk.walkTile(walk.coordX, walk.coordY);
@@ -632,21 +629,22 @@ public class iUtils extends Plugin
 				client.setSelectedItemSlot(menu.modifiedItemIndex);
 				client.setSelectedItemID(menu.modifiedItemID);
 				log.debug("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", menu.modifiedItemID,
-					menu.modifiedItemIndex, menu.entry.getParam1());
-				client.invokeMenuAction(menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
-					menu.modifiedOpCode, menu.entry.getParam0(), menu.entry.getParam1());
+						menu.modifiedItemIndex, entry.getParam1());
+				client.invokeMenuAction(entry.getOption(), entry.getTarget(), entry.getIdentifier(),
+						menu.modifiedOpCode, entry.getParam0(), entry.getParam1());
 				menu.modifiedMenu = false;
 			}
 			else
 			{
-				client.invokeMenuAction(menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
-					menu.entry.getOpcode(), menu.entry.getParam0(), menu.entry.getParam1());
+				System.out.println(String.format("%s, %s, %s, %s, %s, %s", entry.getOption(), entry.getTarget(), entry.getIdentifier(), entry.getOpcode(), entry.getParam0(), entry.getParam1()));
+				client.invokeMenuAction(entry.getOption(), entry.getTarget(), entry.getIdentifier(),
+						entry.getOpcode(), entry.getParam0(), entry.getParam1());
 			}
-			menu.entry = null;
+			//menu.entry = null;
 		}
 		else
 		{
-			if (!event.isConsumed() && !action.delayedActions.isEmpty() && event.getOption().equals("Walk here"))
+			if (!event.isConsumed() && !action.delayedActions.isEmpty() && event.getMenuOption().equals("Walk here"))
 			{
 				log.info("Consuming a NULL MOC event");
 				event.consume();

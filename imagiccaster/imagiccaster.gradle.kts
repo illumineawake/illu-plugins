@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "3.2.2"
+version = "4.0.0"
 
 project.extra["PluginName"] = "iMagic Caster"
 project.extra["PluginDescription"] = "Illumine automated magic caster"

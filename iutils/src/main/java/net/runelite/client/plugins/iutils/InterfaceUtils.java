@@ -6,8 +6,8 @@ import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
 import net.runelite.api.Point;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -57,13 +57,13 @@ public class InterfaceUtils
 		final int INCREMENT = 4;
 		int styleParam = BASE_PARAM + (index * INCREMENT);
 
-		return new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, styleParam, false);
+		return new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), -1, styleParam, false);
 	}
 
 	public void logout()
 	{
 		int param1 = (client.getWidget(WidgetInfo.LOGOUT_BUTTON) != null) ? 11927560 : 4522007;
-		menu.setEntry(new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, param1, false));
+		menu.setEntry(new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), -1, param1, false));
 		Widget logoutWidget = client.getWidget(WidgetInfo.LOGOUT_BUTTON);
 		if (logoutWidget != null)
 		{

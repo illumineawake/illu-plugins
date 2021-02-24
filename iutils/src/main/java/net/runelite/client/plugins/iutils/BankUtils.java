@@ -12,8 +12,8 @@ import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
+import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
 import net.runelite.api.Point;
 import net.runelite.api.queries.BankItemQuery;
 import net.runelite.api.widgets.Widget;
@@ -74,7 +74,7 @@ public class BankUtils
 		{
 			return;
 		}
-		menu.setEntry(new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), 11, 786434, false)); //close bank
+		menu.setEntry(new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), 11, 786434, false)); //close bank
 		Widget bankCloseWidget = client.getWidget(WidgetInfo.BANK_PIN_EXIT_BUTTON);
 		if (bankCloseWidget != null)
 		{
@@ -86,8 +86,8 @@ public class BankUtils
 
 	public int getBankMenuOpcode(int bankID)
 	{
-		return Banks.BANK_CHECK_BOX.contains(bankID) ? MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId() :
-			MenuOpcode.GAME_OBJECT_SECOND_OPTION.getId();
+		return Banks.BANK_CHECK_BOX.contains(bankID) ? MenuAction.GAME_OBJECT_FIRST_OPTION.getId() :
+			MenuAction.GAME_OBJECT_SECOND_OPTION.getId();
 	}
 
 	//doesn't NPE
@@ -99,7 +99,7 @@ public class BankUtils
 
 			for (Item item : bankItemContainer.getItems())
 			{
-				if (itemManager.getItemDefinition(item.getId()).getName().equalsIgnoreCase(itemName))
+				if (itemManager.getItemComposition(item.getId()).getName().equalsIgnoreCase(itemName))
 				{
 					return true;
 				}
@@ -146,7 +146,7 @@ public class BankUtils
 
 			for (Item item : bankItemContainer.getItems())
 			{
-				if (itemManager.getItemDefinition(item.getId()).getName().equalsIgnoreCase(itemName) && item.getQuantity() >= minStackAmount)
+				if (itemManager.getItemComposition(item.getId()).getName().equalsIgnoreCase(itemName) && item.getQuantity() >= minStackAmount)
 				{
 					return true;
 				}
@@ -241,11 +241,11 @@ public class BankUtils
 			Widget depositInventoryWidget = client.getWidget(WidgetInfo.BANK_DEPOSIT_INVENTORY);
 			if (isDepositBoxOpen())
 			{
-				menu.setEntry(new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 12582916, false)); //deposit all in bank interface
+				menu.setEntry(new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), -1, 12582916, false)); //deposit all in bank interface
 			}
 			else
 			{
-				menu.setEntry(new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), -1, 786473, false)); //deposit all in bank interface
+				menu.setEntry(new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), -1, 786473, false)); //deposit all in bank interface
 			}
 			if ((depositInventoryWidget != null))
 			{
@@ -299,7 +299,7 @@ public class BankUtils
 			return;
 		}
 		boolean depositBox = isDepositBoxOpen();
-		menu.setEntry(new MenuEntry("", "", (depositBox) ? 1 : 8, MenuOpcode.CC_OP.getId(), item.getIndex(),
+		menu.setEntry(new MenuEntry("", "", (depositBox) ? 1 : 8, MenuAction.CC_OP.getId(), item.getIndex(),
 			(depositBox) ? 12582914 : 983043, false));
 		mouse.handleMouseClick(item.getCanvasBounds());
 	}
@@ -355,7 +355,7 @@ public class BankUtils
 		}
 		boolean depositBox = isDepositBoxOpen();
 
-		menu.setEntry(new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 2 : 3, MenuOpcode.CC_OP.getId(), item.getIndex(),
+		menu.setEntry(new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 2 : 3, MenuAction.CC_OP.getId(), item.getIndex(),
 			(depositBox) ? 12582914 : 983043, false));
 		mouse.delayMouseClick(item.getCanvasBounds(), calc.getRandomIntBetweenRange(0, 50));
 	}
@@ -373,7 +373,7 @@ public class BankUtils
 	{
 		executorService.submit(() ->
 		{
-			menu.setEntry(new MenuEntry("Withdraw-All", "", 7, MenuOpcode.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false));
+			menu.setEntry(new MenuEntry("Withdraw-All", "", 7, MenuAction.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false));
 			mouse.clickRandomPointCenter(-200, 200);
 		});
 	}
@@ -393,7 +393,7 @@ public class BankUtils
 
 	public void withdrawItem(Widget bankItemWidget)
 	{
-		MenuEntry entry = new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 1 : 2, MenuOpcode.CC_OP.getId(),
+		MenuEntry entry = new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 1 : 2, MenuAction.CC_OP.getId(),
 			bankItemWidget.getIndex(), 786444, false);
 		utils.doActionClientTick(entry, bankItemWidget.getBounds(), 0);
 	}
@@ -429,7 +429,7 @@ public class BankUtils
 						identifier = 6;
 						break;
 				}
-				menu.setEntry(new MenuEntry("", "", identifier, MenuOpcode.CC_OP.getId(), item.getIndex(), 786444, false));
+				menu.setEntry(new MenuEntry("", "", identifier, MenuAction.CC_OP.getId(), item.getIndex(), 786444, false));
 				mouse.delayClickRandomPointCenter(-200, 200, 50);
 				if (identifier == 6)
 				{
