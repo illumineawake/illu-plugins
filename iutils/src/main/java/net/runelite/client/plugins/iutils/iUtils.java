@@ -605,18 +605,17 @@ public class iUtils extends Plugin
 		if (menu.entry != null)
 		{
 			tickActions++;
-			event.consume();
 			log.debug("Actions this game tick: {}", tickActions);
 			if (menu.consumeClick)
 			{
+				event.consume();
 				log.info("Consuming a click and not sending anything else");
 				menu.consumeClick = false;
 				return;
 			}
-			MenuEntry entry = menu.entry;
-			menu.entry = null;
-			if (entry.getOption().equals("Walk here"))
+			if (menu.entry.getOption().equals("Walk here"))
 			{
+				event.consume();
 				log.info("Walk action: {} {}", walk.coordX, walk.coordY);
 				walk.walkTile(walk.coordX, walk.coordY);
 				walk.walkAction = false;
@@ -629,18 +628,18 @@ public class iUtils extends Plugin
 				client.setSelectedItemSlot(menu.modifiedItemIndex);
 				client.setSelectedItemID(menu.modifiedItemID);
 				log.debug("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", menu.modifiedItemID,
-						menu.modifiedItemIndex, entry.getParam1());
-				client.invokeMenuAction(entry.getOption(), entry.getTarget(), entry.getIdentifier(),
-						menu.modifiedOpCode, entry.getParam0(), entry.getParam1());
+						menu.modifiedItemIndex, menu.entry.getParam1());
+				menuAction(event,menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
+						MenuAction.of(menu.modifiedOpCode), menu.entry.getParam0(), menu.entry.getParam1());
 				menu.modifiedMenu = false;
 			}
 			else
 			{
-				System.out.println(String.format("%s, %s, %s, %s, %s, %s", entry.getOption(), entry.getTarget(), entry.getIdentifier(), entry.getOpcode(), entry.getParam0(), entry.getParam1()));
-				client.invokeMenuAction(entry.getOption(), entry.getTarget(), entry.getIdentifier(),
-						entry.getOpcode(), entry.getParam0(), entry.getParam1());
+				System.out.println(String.format("%s, %s, %s, %s, %s, %s", menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(), menu.entry.getOpcode(), menu.entry.getParam0(), menu.entry.getParam1()));
+				menuAction(event,menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
+						MenuAction.of(menu.entry.getOpcode()), menu.entry.getParam0(), menu.entry.getParam1());
 			}
-			//menu.entry = null;
+			menu.entry = null;
 		}
 		else
 		{
@@ -650,5 +649,15 @@ public class iUtils extends Plugin
 				event.consume();
 			}
 		}
+	}
+
+	public void menuAction(MenuOptionClicked menuOptionClicked, String option, String target, int identifier, MenuAction menuAction, int param0, int param1)
+	{
+		menuOptionClicked.setMenuOption(option);
+		menuOptionClicked.setMenuTarget(target);
+		menuOptionClicked.setId(identifier);
+		menuOptionClicked.setMenuAction(menuAction);
+		menuOptionClicked.setActionParam(param0);
+		menuOptionClicked.setWidgetId(param1);
 	}
 }
