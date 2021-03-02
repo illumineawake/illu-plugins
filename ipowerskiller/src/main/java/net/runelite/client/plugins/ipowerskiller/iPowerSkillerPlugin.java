@@ -676,7 +676,7 @@ public class iPowerSkillerPlugin extends Plugin
 		if (config.customOpcode() && config.printOpcode())
 		{
 			utils.sendGameMessage("Identifier value: " + event.getId());
-			utils.sendGameMessage("Opcode value: " + event.getMenuAction());
+			utils.sendGameMessage("Opcode value: " + event.getMenuAction().getId());
 		}
 	}
 
