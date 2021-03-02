@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "2.0.0"
+version = "2.1.0"
 
 project.extra["PluginName"] = "iTaskTemplate"
 project.extra["PluginDescription"] = "Illumine - Task Template plugin"
