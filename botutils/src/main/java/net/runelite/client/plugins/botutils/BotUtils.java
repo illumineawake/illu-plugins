@@ -2617,15 +2617,17 @@ public class BotUtils extends Plugin
 		}
 		if (targetMenu != null)
 		{
-			event.consume();
+
 			if (consumeClick)
 			{
+				event.consume();
 				log.info("Consuming a click and not sending anything else");
 				consumeClick = false;
 				return;
 			}
 			if (event.getMenuOption().equals("Walk here") && walkAction)
 			{
+				event.consume();
 				log.debug("Walk action");
 				walkTile(coordX, coordY);
 				walkAction = false;
@@ -2637,16 +2639,26 @@ public class BotUtils extends Plugin
 				client.setSelectedItemSlot(modifiedItemIndex);
 				client.setSelectedItemID(modifiedItemID);
 				log.info("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", modifiedItemID, modifiedItemIndex, targetMenu.getParam1());
-				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(), modifiedOpCode,
+				menuAction(event,targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(), MenuAction.of(modifiedOpCode),
 					targetMenu.getParam0(), targetMenu.getParam1());
 				modifiedMenu = false;
 			}
 			else
 			{
-				client.invokeMenuAction(targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(), targetMenu.getOpcode(),
+				menuAction(event,targetMenu.getOption(), targetMenu.getTarget(), targetMenu.getIdentifier(), targetMenu.getMenuAction(),
 					targetMenu.getParam0(), targetMenu.getParam1());
 			}
 			targetMenu = null;
 		}
+	}
+
+	public void menuAction(MenuOptionClicked menuOptionClicked, String option, String target, int identifier, MenuAction menuAction, int param0, int param1)
+	{
+		menuOptionClicked.setMenuOption(option);
+		menuOptionClicked.setMenuTarget(target);
+		menuOptionClicked.setId(identifier);
+		menuOptionClicked.setMenuAction(menuAction);
+		menuOptionClicked.setActionParam(param0);
+		menuOptionClicked.setWidgetId(param1);
 	}
 }

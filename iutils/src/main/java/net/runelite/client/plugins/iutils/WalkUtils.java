@@ -96,7 +96,7 @@ public class WalkUtils
 	public static String post(String url, String json) throws IOException
 	{
 		OkHttpClient okHttpClient = new OkHttpClient();
-		RequestBody body = RequestBody.create(json, JSON); // new
+		RequestBody body = RequestBody.create(JSON, json); // new
 		log.info("Sending POST request: {}", body);
 		Request request = new Request.Builder()
 			.url(url)
