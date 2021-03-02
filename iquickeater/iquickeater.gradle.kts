@@ -23,6 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+
 version = "5.1.0"
 
 project.extra["PluginName"] = "iQuick Eater"
