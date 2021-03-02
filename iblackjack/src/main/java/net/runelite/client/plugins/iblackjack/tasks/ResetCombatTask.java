@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameObject;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.ObjectID;
@@ -60,7 +60,7 @@ public class ResetCombatTask extends Task
 			if (openCurtain != null)
 			{
 				status = "Closing curtain";
-				entry = new MenuEntry("", "", openCurtain.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
+				entry = new MenuEntry("", "", openCurtain.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
 					openCurtain.getLocalLocation().getSceneX(), openCurtain.getLocalLocation().getSceneY(), false);
 				utils.doActionMsTime(entry, openCurtain.getConvexHull().getBounds(), sleepDelay());
 				log.debug(status);
@@ -77,7 +77,7 @@ public class ResetCombatTask extends Task
 			GameObject staircase = object.findNearestGameObjectWithin(config.npcType().escapeLocation, 2, config.npcType().escapeObjID);
 			if (staircase != null)
 			{
-				entry = new MenuEntry("", "", staircase.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
+				entry = new MenuEntry("", "", staircase.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
 					staircase.getSceneMinLocation().getX(), staircase.getSceneMinLocation().getY(), false);
 				utils.doActionMsTime(entry, staircase.getConvexHull().getBounds(), sleepDelay());
 				status = "Climbing staircase";
@@ -94,7 +94,7 @@ public class ResetCombatTask extends Task
 			if (barman != null)
 			{
 				status = "Opening shop";
-				entry = new MenuEntry("", "", barman.getIndex(), MenuOpcode.NPC_THIRD_OPTION.getId(), 0, 0, false);
+				entry = new MenuEntry("", "", barman.getIndex(), MenuAction.NPC_THIRD_OPTION.getId(), 0, 0, false);
 				utils.doActionMsTime(entry, new Point(0, 0), sleepDelay());
 			}
 			else

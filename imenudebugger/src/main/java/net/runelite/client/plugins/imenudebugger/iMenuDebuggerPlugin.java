@@ -48,7 +48,6 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.iutils.PlayerUtils;
 import net.runelite.client.plugins.iutils.iUtils;
 import static net.runelite.client.plugins.iutils.iUtils.iterating;
@@ -61,8 +60,7 @@ import org.pf4j.Extension;
 	name = "iMenu Debugger Plugin",
 	enabledByDefault = false,
 	description = "Illumine - Menu Debugger plugin. Has no function other than debugging",
-	tags = {"illumine", "menu", "debug", "bot"},
-	type = PluginType.UTILITY
+	tags = {"illumine", "menu", "debug", "bot"}
 )
 @Slf4j
 public class iMenuDebuggerPlugin extends Plugin
@@ -159,13 +157,13 @@ public class iMenuDebuggerPlugin extends Plugin
 		log.info("Menu Entry before override: {}", event.toString());
 		if (config.printChat())
 		{
-			utils.sendGameMessage("Option value: " + event.getOption());
-			utils.sendGameMessage("Target value: " + event.getTarget());
-			utils.sendGameMessage("Identifier value: " + event.getIdentifier());
-			utils.sendGameMessage("Opcode value: " + event.getOpcode());
-			utils.sendGameMessage("Param0 value: " + event.getParam0());
-			utils.sendGameMessage("Param1 value: " + event.getParam1());
-			utils.sendGameMessage("mouseButton value: " + event.getMouseButton());
+			utils.sendGameMessage("MenuOption value: " + event.getMenuOption());
+			utils.sendGameMessage("MenuTarget value: " + event.getMenuTarget());
+			utils.sendGameMessage("Id value: " + event.getId());
+			utils.sendGameMessage("MenuAction value: " + event.getMenuAction());
+			utils.sendGameMessage("ActionParam value: " + event.getActionParam());
+			utils.sendGameMessage("WidgetId value: " + event.getWidgetId());
+			utils.sendGameMessage("selectedItemIndex value: " + event.getSelectedItemIndex());
 		}
 		if (testMenu == null)
 		{

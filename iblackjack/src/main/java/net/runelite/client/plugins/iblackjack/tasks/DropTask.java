@@ -4,8 +4,9 @@ import java.util.List;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ItemID;
+import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -45,7 +46,7 @@ public class DropTask extends Task
 		long sleep = 0;
 		for (WidgetItem jug : jugs)
 		{
-			entry = new MenuEntry("", "", jug.getId(), MenuOpcode.ITEM_DROP.getId(), jug.getIndex(),
+			entry = new MenuEntry("", "", jug.getId(), MenuAction.ITEM_FIFTH_OPTION.getId(), jug.getIndex(),
 				WidgetInfo.INVENTORY.getId(), false);
 			sleep += sleepDelay();
 			log.info("Adding jug: {}, delay time: {}", jug.getIndex(), sleep);

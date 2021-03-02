@@ -23,7 +23,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "4.3.3"
+
+version = "5.1.0"
 
 project.extra["PluginName"] = "iQuick Eater"
 project.extra["PluginDescription"] = "Illumine - auto eat food, consume potions and equip items"

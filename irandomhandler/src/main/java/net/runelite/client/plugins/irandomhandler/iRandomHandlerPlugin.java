@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.Player;
@@ -46,7 +46,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.iutils.CalculationUtils;
 import net.runelite.client.plugins.iutils.MenuUtils;
 import net.runelite.client.plugins.iutils.MouseUtils;
@@ -59,8 +58,7 @@ import org.pf4j.Extension;
 	name = "iRandom Handler",
 	enabledByDefault = false,
 	description = "illumine - Dismiss random events and handle genie",
-	tags = {"illumine", "random", "event", "genie", "bot"},
-	type = PluginType.UTILITY
+	tags = {"illumine", "random", "event", "genie", "bot"}
 )
 @Slf4j
 public class iRandomHandlerPlugin extends Plugin
@@ -208,7 +206,7 @@ public class iRandomHandlerPlugin extends Plugin
 			if (client.getWidget(WidgetInfo.DIALOG_NPC_CONTINUE) != null)
 			{
 				log.debug("Genie click here to continue found, progressing...");
-				targetMenu = new MenuEntry("Continue", "", 0, MenuOpcode.WIDGET_TYPE_6.getId(),
+				targetMenu = new MenuEntry("Continue", "", 0, MenuAction.WIDGET_TYPE_6.getId(),
 					-1, 15138819, false);
 				menu.setEntry(targetMenu);
 				mouse.delayMouseClick(randomToDismiss.getConvexHull().getBounds(), sleepDelay());
@@ -218,7 +216,7 @@ public class iRandomHandlerPlugin extends Plugin
 		}
 		log.debug("Dismissing random event");
 		targetMenu = new MenuEntry("", "", randomToDismiss.getIndex(),
-			(genie) ? MenuOpcode.NPC_FIRST_OPTION.getId() : MenuOpcode.NPC_FIFTH_OPTION.getId(),
+			(genie) ? MenuAction.NPC_FIRST_OPTION.getId() : MenuAction.NPC_FIFTH_OPTION.getId(),
 			0, 0, false);
 		menu.setEntry(targetMenu);
 		mouse.delayMouseClick(randomToDismiss.getConvexHull().getBounds(), sleepDelay());

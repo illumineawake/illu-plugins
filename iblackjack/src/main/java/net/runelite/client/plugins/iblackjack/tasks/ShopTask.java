@@ -3,7 +3,7 @@ package net.runelite.client.plugins.iblackjack.tasks;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.Point;
@@ -35,7 +35,7 @@ public class ShopTask extends Task
 			if (jugWidget != null && jugWidget.getChild(3).getItemQuantity() > 0)
 			{
 				status = "Buying Jug of Wine";
-				entry = new MenuEntry("", "", 5, MenuOpcode.CC_OP.getId(), 3, 19660816, false);
+				entry = new MenuEntry("", "", 5, MenuAction.CC_OP.getId(), 3, 19660816, false);
 				utils.doActionMsTime(entry, jugWidget.getBounds(), sleepDelay());
 			}
 		}
@@ -45,7 +45,7 @@ public class ShopTask extends Task
 			if (barman != null)
 			{
 				status = "Opening shop";
-				entry = new MenuEntry("", "", barman.getIndex(), MenuOpcode.NPC_THIRD_OPTION.getId(), 0, 0, false);
+				entry = new MenuEntry("", "", barman.getIndex(), MenuAction.NPC_THIRD_OPTION.getId(), 0, 0, false);
 				utils.doActionMsTime(entry, new Point(0, 0), sleepDelay());
 			}
 		}

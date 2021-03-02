@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.Point;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
@@ -167,7 +167,7 @@ public class HopTask extends Task
 		if (isShopOpen())
 		{
 			status = "Close shop and hop";
-			entry = new MenuEntry("", "", 1, MenuOpcode.CC_OP.getId(), 11, 19660801, false);
+			entry = new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), 11, 19660801, false);
 			utils.doActionMsTime(entry, new Point(0, 0), sleepDelay());
 			shouldHop = true;
 		}
