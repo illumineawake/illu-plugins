@@ -29,7 +29,7 @@ import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigSection;
+import net.runelite.client.config.ConfigTitle;
 import net.runelite.client.config.Range;
 
 
@@ -124,16 +124,13 @@ public interface iMagicCasterConfig extends Config
 		return true;
 	}
 
-	@ConfigSection(
+	@ConfigTitle(
 		keyName = "delayConfig",
 		name = "Sleep Delay Configuration",
 		description = "Configure how the bot handles sleep delays",
 		position = 5
 	)
-	default boolean delayConfig()
-	{
-		return false;
-	}
+	String delayConfig = "delayConfig";
 
 	@Range(
 		min = 0,
@@ -211,16 +208,13 @@ public interface iMagicCasterConfig extends Config
 		return false;
 	}
 
-	@ConfigSection(
+	@ConfigTitle(
 		keyName = "delayTickConfig",
 		name = "Game Tick Configuration",
 		description = "Configure how the bot handles game tick delays, 1 game tick equates to roughly 600ms",
 		position = 11
 	)
-	default boolean delayTickConfig()
-	{
-		return false;
-	}
+	String delayTickConfig = "delayTickConfig";
 
 	@Range(
 		min = 0,
@@ -296,6 +290,17 @@ public interface iMagicCasterConfig extends Config
 	default boolean tickDelayWeightedDistribution()
 	{
 		return false;
+	}
+
+	@ConfigItem(
+			keyName = "enableRun",
+			name = "Automatically enable run (energy)",
+			description = "If enabled, this will toggle your run on when you're above 40%",
+			position = 17
+	)
+	default boolean enableRun()
+	{
+		return true;
 	}
 
 	@ConfigItem(

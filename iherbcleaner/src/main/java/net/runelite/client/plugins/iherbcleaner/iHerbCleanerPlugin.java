@@ -44,7 +44,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.iherbcleaner.tasks.BankItemsTask;
 import net.runelite.client.plugins.iherbcleaner.tasks.CleanHerbTask;
 import net.runelite.client.plugins.iherbcleaner.tasks.MovingTask;
@@ -61,8 +60,7 @@ import org.pf4j.Extension;
 	name = "iHerbCleaner",
 	enabledByDefault = false,
 	description = "Illumine - Herb Cleaner plugin",
-	tags = {"illumine", "task", "herblore", "clean", "bot"},
-	type = PluginType.MISCELLANEOUS
+	tags = {"illumine", "task", "herblore", "clean", "bot"}
 )
 @Slf4j
 public class iHerbCleanerPlugin extends Plugin

@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.RenderOverview;
@@ -54,7 +54,6 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.iutils.CalculationUtils;
 import net.runelite.client.plugins.iutils.PlayerUtils;
 import net.runelite.client.plugins.iutils.WalkUtils;
@@ -71,8 +70,7 @@ import org.pf4j.Extension;
 	name = "iWorld Walker Plugin",
 	enabledByDefault = false,
 	description = "Illumine - World Walker plugin",
-	tags = {"illumine", "walk", "web", "travel", "bot"},
-	type = PluginType.UTILITY
+	tags = {"illumine", "walk", "web", "travel", "bot"}
 )
 @Slf4j
 public class iWorldWalkerPlugin extends Plugin
@@ -452,12 +450,12 @@ public class iWorldWalkerPlugin extends Plugin
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (event.getOption().equals("illu-Walk here"))
+		if (event.getMenuOption().equals("illu-Walk here"))
 		{
 			mapPoint = calculateMapPoint(client.isMenuOpen() ? lastMenuOpenedPoint : client.getMouseCanvasPosition());
 			startVals();
 		}
-		if (event.getOption().equals("illu-Clear Destination"))
+		if (event.getMenuOption().equals("illu-Clear Destination"))
 		{
 			mapPoint = null;
 			resetVals();
@@ -484,7 +482,7 @@ public class iWorldWalkerPlugin extends Plugin
 		MenuEntry entry = new MenuEntry();
 		entry.setOption(option);
 		entry.setTarget(event.getTarget());
-		entry.setOpcode(MenuOpcode.RUNELITE.getId());
+		entry.setOpcode(MenuAction.RUNELITE.getId());
 		entries.add(0, entry);
 
 		client.setMenuEntries(entries.toArray(new MenuEntry[0]));

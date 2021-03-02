@@ -29,7 +29,7 @@ import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigSection;
+import net.runelite.client.config.ConfigTitle;
 import net.runelite.client.config.Range;
 import net.runelite.client.plugins.iworldwalker.farming.Allotments;
 import net.runelite.client.plugins.iworldwalker.farming.Bushes;
@@ -42,16 +42,13 @@ import net.runelite.client.plugins.iworldwalker.farming.Trees;
 public interface iWorldWalkerConfig extends Config
 {
 
-	@ConfigSection(
+	@ConfigTitle(
 		keyName = "delayConfig",
 		name = "Sleep Delay Configuration",
 		description = "Configure how the bot handles sleep delays",
 		position = 1
 	)
-	default boolean delayConfig()
-	{
-		return false;
-	}
+	String delayConfig = "delayConfig";
 
 	@Range(
 		min = 0,
@@ -129,16 +126,13 @@ public interface iWorldWalkerConfig extends Config
 		return false;
 	}
 
-	@ConfigSection(
+	@ConfigTitle(
 		keyName = "delayTickConfig",
 		name = "Game Tick Configuration",
 		description = "Configure how the bot handles game tick delays, 1 game tick equates to roughly 600ms",
 		position = 7
 	)
-	default boolean delayTickConfig()
-	{
-		return false;
-	}
+	String delayTickConfig = "delayTickConfig";
 
 	@Range(
 		min = 0,
@@ -216,16 +210,13 @@ public interface iWorldWalkerConfig extends Config
 		return false;
 	}
 
-	@ConfigSection(
+	@ConfigTitle(
 		keyName = "instructionsTitle",
 		name = "Instructions",
 		description = "Instructions Title",
 		position = 15
 	)
-	default boolean instructionsTitle()
-	{
-		return false;
-	}
+	String instructionsTitle = "instructionsTitle";
 
 	@ConfigItem(
 		keyName = "instructions",
@@ -239,16 +230,13 @@ public interface iWorldWalkerConfig extends Config
 		return "Select your location from the drop-down or enter a custom location using x,y,z format. Use Location/Tile Location in Developer Tools to obtain a custom coordinate.";
 	}
 
-	@ConfigSection(
+	@ConfigTitle(
 		keyName = "notesTitle",
 		name = "Custom Notes",
 		description = "Notes Title",
 		position = 29
 	)
-	default boolean notesTitle()
-	{
-		return false;
-	}
+	String notesTitle = "notesTitle";
 
 	@ConfigItem(
 		keyName = "notepad",
@@ -262,16 +250,13 @@ public interface iWorldWalkerConfig extends Config
 		return "Paste custom co-ords that you want to save for frequent use";
 	}
 
-	@ConfigSection(
+	@ConfigTitle(
 		keyName = "showQuestNotes",
 		name = "Show Quest Notes",
 		description = "Unhide the quest notes section, containing notes on supported quests",
 		position = 31
 	)
-	default boolean showQuestNotes()
-	{
-		return false;
-	}
+	String showQuestNotes = "showQuestNotes";
 
 	@ConfigItem(
 		keyName = "supportedQuests",

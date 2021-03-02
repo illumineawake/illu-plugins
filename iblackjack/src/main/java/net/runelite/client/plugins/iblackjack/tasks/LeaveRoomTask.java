@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameObject;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.ObjectID;
 import net.runelite.api.WallObject;
 import net.runelite.api.events.GameTick;
@@ -51,7 +51,7 @@ public class LeaveRoomTask extends Task
 			GameObject ladder = object.findNearestGameObjectWithin(currentRoom.escapeLocation, 1, config.npcType().escapeObjID);
 			if (ladder != null)
 			{
-				entry = new MenuEntry("", "", ladder.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
+				entry = new MenuEntry("", "", ladder.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
 					ladder.getSceneMinLocation().getX(), ladder.getSceneMinLocation().getY(), false);
 				utils.doActionMsTime(entry, ladder.getConvexHull().getBounds(), sleepDelay());
 				timeout = tickDelay();
@@ -63,7 +63,7 @@ public class LeaveRoomTask extends Task
 			if (closedCurtain != null)
 			{
 				status = "Opening curtain";
-				entry = new MenuEntry("", "", closedCurtain.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
+				entry = new MenuEntry("", "", closedCurtain.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
 					closedCurtain.getLocalLocation().getSceneX(), closedCurtain.getLocalLocation().getSceneY(), false);
 				utils.doActionMsTime(entry, closedCurtain.getConvexHull().getBounds(), sleepDelay());
 				log.debug(status);

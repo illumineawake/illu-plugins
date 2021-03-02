@@ -36,7 +36,7 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.TileItem;
@@ -56,7 +56,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
-import net.runelite.client.plugins.PluginType;
 import static net.runelite.client.plugins.imagiccaster.iMagicCasterState.FIND_ITEM;
 import static net.runelite.client.plugins.imagiccaster.iMagicCasterState.FIND_NPC;
 import static net.runelite.client.plugins.imagiccaster.iMagicCasterState.HANDLE_BREAK;
@@ -82,8 +81,7 @@ import org.pf4j.Extension;
 	name = "iMagic Caster",
 	enabledByDefault = false,
 	description = "Illumine automated magic caster",
-	tags = {"Magic", "Splashing", "Profit", "Casting"},
-	type = PluginType.SKILLING
+	tags = {"Magic", "Splashing", "Profit", "Casting"}
 )
 @Slf4j
 public class iMagicCasterPlugin extends Plugin
@@ -286,24 +284,24 @@ public class iMagicCasterPlugin extends Plugin
 		switch (castType.getName())
 		{
 			case "Single cast":
-				targetMenu = new MenuEntry("Cast", "", targetNPC.getIndex(), MenuOpcode.SPELL_CAST_ON_NPC.getId(),
+				targetMenu = new MenuEntry("Cast", "", targetNPC.getIndex(), MenuAction.SPELL_CAST_ON_NPC.getId(),
 					0, 0, false);
 				utils.oneClickCastSpell(selectedSpell.getSpell(), targetMenu, targetNPC.getConvexHull().getBounds(), sleepDelay());
 				timeout = 4 + tickDelay();
 				return;
 			case "Auto-cast":
-				targetMenu = new MenuEntry("", "", targetNPC.getIndex(), MenuOpcode.NPC_SECOND_OPTION.getId(), 0, 0, false);
+				targetMenu = new MenuEntry("", "", targetNPC.getIndex(), MenuAction.NPC_SECOND_OPTION.getId(), 0, 0, false);
 				menu.setEntry(targetMenu);
 				mouse.delayMouseClick(targetNPC.getConvexHull().getBounds(), sleepDelay());
 				timeout = 10 + tickDelay();
 				return;
 			case "High Alchemy":
-				targetMenu = new MenuEntry("Cast", "", targetItem.getId(), MenuOpcode.ITEM_USE_ON_WIDGET.getId(), targetItem.getIndex(), 9764864, true);
+				targetMenu = new MenuEntry("Cast", "", targetItem.getId(), MenuAction.ITEM_USE_ON_WIDGET.getId(), targetItem.getIndex(), 9764864, true);
 				timeout = 5 + tickDelay();
 				utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, targetItem.getCanvasBounds().getBounds(), sleepDelay());
 				return;
 			case "Tele Grab":
-				targetMenu = new MenuEntry("Cast", "", groundItem.getId(), MenuOpcode.SPELL_CAST_ON_GROUND_ITEM.getId(), groundItem.getTile().getSceneLocation().getX(), groundItem.getTile().getSceneLocation().getY(), true);
+				targetMenu = new MenuEntry("Cast", "", groundItem.getId(), MenuAction.SPELL_CAST_ON_GROUND_ITEM.getId(), groundItem.getTile().getSceneLocation().getX(), groundItem.getTile().getSceneLocation().getY(), true);
 				timeout = 5 + tickDelay();
 				utils.oneClickCastSpell(WidgetInfo.SPELL_TELEKINETIC_GRAB, targetMenu, new Rectangle(0, 0, 0, 0), sleepDelay());
 				return;
@@ -354,7 +352,9 @@ public class iMagicCasterPlugin extends Plugin
 				startBot = false;
 				return;
 			}
-			playerUtils.handleRun(40, 20);
+			if (config.enableRun()) {
+				playerUtils.handleRun(40, 20);
+			}
 			state = getState();
 			beforeLoc = player.getLocalLocation();
 			switch (state)
@@ -406,7 +406,8 @@ public class iMagicCasterPlugin extends Plugin
 			return;
 		}
 		log.debug("Animation ID changed to {}, resetting timeout", event.getActor().getAnimation());
-		if (event.getActor().getAnimation() == AnimationID.LOW_LEVEL_MAGIC_ATTACK)
+		//if (event.getActor().getAnimation() == AnimationID.LOW_LEVEL_MAGIC_ATTACK)
+		if (event.getActor().getAnimation() == 1162)
 		{
 			timeout = 10 + tickDelay();
 			failureCount = 0;

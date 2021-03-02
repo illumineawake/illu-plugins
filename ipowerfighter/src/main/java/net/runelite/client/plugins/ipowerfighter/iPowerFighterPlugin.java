@@ -45,10 +45,10 @@ import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemDefinition;
+import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
@@ -71,7 +71,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.iutils.CalculationUtils;
 import net.runelite.client.plugins.iutils.InterfaceUtils;
 import net.runelite.client.plugins.iutils.InventoryUtils;
@@ -94,8 +93,7 @@ import org.pf4j.Extension;
 	name = "iPower Fighter",
 	enabledByDefault = false,
 	description = "Illumine - Power Fighter plugin",
-	tags = {"illumine", "combat", "ranged", "magic", "bot"},
-	type = PluginType.PVM
+	tags = {"illumine", "combat", "ranged", "magic", "bot"}
 )
 @Slf4j
 public class iPowerFighterPlugin extends Plugin
@@ -319,7 +317,7 @@ public class iPowerFighterPlugin extends Plugin
 		TileItem lootItem = getNearestTileItem(itemList);
 		if (lootItem != null)
 		{
-			targetMenu = new MenuEntry("", "", lootItem.getId(), MenuOpcode.GROUND_ITEM_THIRD_OPTION.getId(),
+			targetMenu = new MenuEntry("", "", lootItem.getId(), MenuAction.GROUND_ITEM_THIRD_OPTION.getId(),
 				lootItem.getTile().getSceneLocation().getX(), lootItem.getTile().getSceneLocation().getY(), false);
 			menu.setEntry(targetMenu);
 			mouse.delayMouseClick(lootItem.getTile().getItemLayer().getCanvasTilePoly().getBounds(), sleepDelay());
@@ -356,7 +354,7 @@ public class iPowerFighterPlugin extends Plugin
 		{
 			itemGeValue = utils.getOSBItem(itemID);
 		}
-		ItemDefinition itemDef = client.getItemDefinition(itemID);
+		ItemComposition itemDef = client.getItemDefinition(itemID);
 	/*	if (itemDef != null) { //Currently bugged (https://discord.com/channels/734831848173338684/744402742839345182/788226017978220544)
 			if (!itemDef.isTradeable()) {
 				log.debug("Tried to alch untradeable item {}, adding to blacklist", itemDef.getName());
@@ -380,7 +378,7 @@ public class iPowerFighterPlugin extends Plugin
 			log.debug("Alching item: {}", alchItem.getId());
 			targetMenu = new MenuEntry("", "",
 				alchItem.getId(),
-				MenuOpcode.ITEM_USE_ON_WIDGET.getId(),
+				MenuAction.ITEM_USE_ON_WIDGET.getId(),
 				alchItem.getIndex(), WidgetInfo.INVENTORY.getId(),
 				false);
 			utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, alchItem.getCanvasBounds().getBounds(), sleepDelay());
@@ -403,7 +401,7 @@ public class iPowerFighterPlugin extends Plugin
 				{
 					continue;
 				}
-				targetMenu = new MenuEntry("", "", bone.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(),
+				targetMenu = new MenuEntry("", "", bone.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
 					bone.getIndex(), WidgetInfo.INVENTORY.getId(), false);
 				menu.setEntry(targetMenu);
 				mouse.handleMouseClick(bone.getCanvasBounds());
@@ -415,7 +413,7 @@ public class iPowerFighterPlugin extends Plugin
 
 	private void attackNPC(NPC npc)
 	{
-		targetMenu = new MenuEntry("", "", npc.getIndex(), MenuOpcode.NPC_SECOND_OPTION.getId(),
+		targetMenu = new MenuEntry("", "", npc.getIndex(), MenuAction.NPC_SECOND_OPTION.getId(),
 			0, 0, false);
 		menu.setEntry(targetMenu);
 		mouse.delayMouseClick(currentNPC.getConvexHull().getBounds(), sleepDelay());
@@ -684,7 +682,7 @@ public class iPowerFighterPlugin extends Plugin
 					WidgetItem ammoItem = inventory.getWidgetItem(config.ammoID());
 					if (ammoItem != null)
 					{
-						targetMenu = new MenuEntry("", "", ammoItem.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), ammoItem.getIndex(),
+						targetMenu = new MenuEntry("", "", ammoItem.getId(), MenuAction.ITEM_SECOND_OPTION.getId(), ammoItem.getIndex(),
 							WidgetInfo.INVENTORY.getId(), false);
 						menu.setEntry(targetMenu);
 						mouse.delayMouseClick(ammoItem.getCanvasBounds(), sleepDelay());
@@ -695,7 +693,7 @@ public class iPowerFighterPlugin extends Plugin
 					if (bracelet != null)
 					{
 						log.debug("Equipping bracelet");
-						targetMenu = new MenuEntry("", "", bracelet.getId(), MenuOpcode.ITEM_SECOND_OPTION.getId(), bracelet.getIndex(),
+						targetMenu = new MenuEntry("", "", bracelet.getId(), MenuAction.ITEM_SECOND_OPTION.getId(), bracelet.getIndex(),
 							WidgetInfo.INVENTORY.getId(), false);
 						menu.setEntry(targetMenu);
 						mouse.delayMouseClick(bracelet.getCanvasBounds(), sleepDelay());

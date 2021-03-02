@@ -17,8 +17,8 @@ import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
+import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
 import net.runelite.api.Varbits;
 import net.runelite.api.queries.InventoryItemQuery;
 import net.runelite.api.queries.InventoryWidgetItemQuery;
@@ -227,7 +227,7 @@ public class InventoryUtils
 				{
 					continue;
 				}
-				String[] menuActions = itemManager.getItemDefinition(item.getId()).getInventoryActions();
+				String[] menuActions = itemManager.getItemComposition(item.getId()).getInventoryActions();
 				for (String action : menuActions)
 				{
 					if (action != null && action.equals(menuOption))
@@ -248,7 +248,7 @@ public class InventoryUtils
 			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
 			for (WidgetItem item : items)
 			{
-				String[] menuActions = itemManager.getItemDefinition(item.getId()).getInventoryActions();
+				String[] menuActions = itemManager.getItemComposition(item.getId()).getInventoryActions();
 				for (String action : menuActions)
 				{
 					if (action != null && menuOptions.contains(action))
@@ -269,7 +269,7 @@ public class InventoryUtils
 			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
 			for (WidgetItem item : items)
 			{
-				String[] menuActions = itemManager.getItemDefinition(item.getId()).getInventoryActions();
+				String[] menuActions = itemManager.getItemComposition(item.getId()).getInventoryActions();
 				for (String action : menuActions)
 				{
 					if (action != null && action.equals(menuOption))
@@ -443,7 +443,7 @@ public class InventoryUtils
 	{
 		assert !client.isClientThread();
 
-		menu.setEntry(new MenuEntry("", "", item.getId(), MenuOpcode.ITEM_DROP.getId(), item.getIndex(), 9764864, false));
+		menu.setEntry(new MenuEntry("", "", item.getId(), MenuAction.ITEM_FIFTH_OPTION.getId(), item.getIndex(), 9764864, false));
 		mouse.click(item.getCanvasBounds());
 	}
 
@@ -585,7 +585,7 @@ public class InventoryUtils
 						log.info("interacting inventory item: {}", item.getId());
 						sleep(minDelayBetween, maxDelayBetween);
 						menu.setModifiedEntry(new MenuEntry("", "", item1.getId(), opcode, item1.getIndex(), WidgetInfo.INVENTORY.getId(),
-							false), item.getId(), item.getIndex(), MenuOpcode.ITEM_USE_ON_WIDGET_ITEM.getId());
+							false), item.getId(), item.getIndex(), MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId());
 						mouse.click(item1.getCanvasBounds());
 						if (!interactAll)
 						{

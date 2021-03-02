@@ -29,24 +29,19 @@ import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigSection;
-import net.runelite.client.config.ConfigTitleSection;
+import net.runelite.client.config.ConfigTitle;
 import net.runelite.client.config.Range;
-import net.runelite.client.config.Title;
 
 @ConfigGroup("iRooftopAgility")
 public interface iRooftopAgilityConfig extends Config
 {
-	@ConfigSection(
+	@ConfigTitle(
 		keyName = "delayConfig",
 		name = "Sleep Delay(ms) Configuration",
 		description = "Configure how the bot handles sleep delays in milliseconds",
 		position = 1
 	)
-	default boolean delayConfig()
-	{
-		return false;
-	}
+	String delayConfig = "delayConfig";
 
 	@Range(
 		min = 0,
@@ -124,16 +119,13 @@ public interface iRooftopAgilityConfig extends Config
 		return false;
 	}
 
-	@ConfigSection(
+	@ConfigTitle(
 		keyName = "delayTickConfig",
 		name = "Game Tick Configuration",
 		description = "Configure how the bot handles game tick delays, 1 game tick equates to roughly 600ms",
 		position = 7
 	)
-	default boolean delayTickConfig()
-	{
-		return false;
-	}
+	String delayTickConfig = "delayTickConfig";
 
 	@Range(
 		min = 0,
@@ -211,23 +203,20 @@ public interface iRooftopAgilityConfig extends Config
 		return false;
 	}
 
-	@ConfigTitleSection(
+	@ConfigTitle(
 		keyName = "agilityTitle",
 		name = "Agility Configuration",
 		description = "",
 		position = 13
 	)
-	default Title agilityTitle()
-	{
-		return new Title();
-	}
+	String agilityTitle = "agilityTitle";
 
 	@ConfigItem(
 		keyName = "highAlch",
 		name = "High Alch",
 		description = "Enable to High Alch while running",
 		position = 14,
-		titleSection = "agilityTitle"
+		title = "agilityTitle"
 	)
 	default boolean highAlch()
 	{
@@ -239,7 +228,7 @@ public interface iRooftopAgilityConfig extends Config
 		name = "Course",
 		description = "Supported agility courses",
 		position = 15,
-		titleSection = "agilityTitle",
+		title = "agilityTitle",
 		hidden = false,
 		hide = "highAlch",
 		hideValue = "true"
@@ -255,7 +244,7 @@ public interface iRooftopAgilityConfig extends Config
 		name = "Banking Courses",
 		description = "Agility courses that support bank restocking",
 		position = 16,
-		titleSection = "agilityTitle",
+		title = "agilityTitle",
 		hidden = true,
 		unhide = "highAlch",
 		unhideValue = "true"
@@ -270,7 +259,7 @@ public interface iRooftopAgilityConfig extends Config
 		name = "Alch Item ID (un-noted)",
 		description = "Item ID (un-noted) of item you wish to high alch.",
 		position = 17,
-		titleSection = "agilityTitle",
+		title = "agilityTitle",
 		hidden = true,
 		unhide = "highAlch"
 	)
@@ -284,7 +273,7 @@ public interface iRooftopAgilityConfig extends Config
 		name = "Bank to restock items",
 		description = "Go to bank to restock items for high alch. Auto-disables at unsupported locations or bank doesn't contain item.",
 		position = 18,
-		titleSection = "agilityTitle",
+		title = "agilityTitle",
 		hidden = true,
 		unhide = "highAlch"
 	)
@@ -298,7 +287,7 @@ public interface iRooftopAgilityConfig extends Config
 		name = "Pick up Mark of Grace",
 		description = "Enable to pick up Marks of Grace",
 		position = 19,
-		titleSection = "agilityTitle"
+		title = "agilityTitle"
 	)
 	default boolean mogPickup()
 	{
@@ -310,7 +299,7 @@ public interface iRooftopAgilityConfig extends Config
 		name = "Stop at HP",
 		description = "Stop if HP goes below given threshold",
 		position = 20,
-		titleSection = "agilityTitle"
+		title = "agilityTitle"
 	)
 	default int lowHP()
 	{
@@ -322,7 +311,7 @@ public interface iRooftopAgilityConfig extends Config
 		name = "Enable UI",
 		description = "Enable to turn on in game UI",
 		position = 21,
-		titleSection = "agilityTitle"
+		title = "agilityTitle"
 	)
 	default boolean enableUI()
 	{
@@ -334,7 +323,7 @@ public interface iRooftopAgilityConfig extends Config
 		name = "Use Camelot Teleport",
 		description = "Use Camelot Teleport if you have hard diaries completed. Requires Air Runes or (Air Staff equipped) and Law Runes in inventory",
 		position = 22,
-		titleSection = "agilityTitle"
+		title = "agilityTitle"
 	)
 	default boolean camelotTeleport()
 	{
@@ -346,7 +335,7 @@ public interface iRooftopAgilityConfig extends Config
 		name = "Start/Stop",
 		description = "Test button that changes variable value",
 		position = 33,
-		titleSection = "agilityTitle"
+		title = "agilityTitle"
 	)
 	default Button startButton()
 	{

@@ -29,25 +29,20 @@ import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigSection;
-import net.runelite.client.config.ConfigTitleSection;
+import net.runelite.client.config.ConfigTitle;
 import net.runelite.client.config.Range;
-import net.runelite.client.config.Title;
 
 @ConfigGroup("iPowerSkiller")
 public interface iPowerSkillerConfiguration extends Config
 {
 
-	@ConfigSection(
+	@ConfigTitle(
 		keyName = "delayConfig",
 		name = "Sleep Delay Configuration",
 		description = "Configure how the bot handles sleep delays",
 		position = 2
 	)
-	default boolean delayConfig()
-	{
-		return false;
-	}
+	String delayConfig = "delayConfig";
 
 	@Range(
 		min = 0,
@@ -125,16 +120,13 @@ public interface iPowerSkillerConfiguration extends Config
 		return false;
 	}
 
-	@ConfigSection(
+	@ConfigTitle(
 		keyName = "delayTickConfig",
 		name = "Game Tick Configuration",
 		description = "Configure how the bot handles game tick delays, 1 game tick equates to roughly 600ms",
 		position = 8
 	)
-	default boolean delayTickConfig()
-	{
-		return false;
-	}
+	String delayTickConfig = "delayTickConfig";
 
 	@Range(
 		min = 0,
@@ -212,23 +204,20 @@ public interface iPowerSkillerConfiguration extends Config
 		return false;
 	}
 
-	@ConfigTitleSection(
+	@ConfigTitle(
 		keyName = "instructionsTitle",
 		name = "Instructions",
 		description = "",
 		position = 16
 	)
-	default Title instructionsTitle()
-	{
-		return new Title();
-	}
+	String instructionsTitle = "instructionsTitle";
 
 	@ConfigItem(
 		keyName = "instructions",
 		name = "",
 		description = "Instructions. Don't enter anything into this field",
 		position = 20,
-		titleSection = "instructionsTitle"
+		title = "instructionsTitle"
 	)
 	default String instructions()
 	{
@@ -236,16 +225,13 @@ public interface iPowerSkillerConfiguration extends Config
 			"Typically in-game objects that have blue hover text are Game Objects (trees, rocks etc.) and objects that have yellow text are NPCs (fishing spots etc.)";
 	}
 
-	@ConfigTitleSection(
+	@ConfigTitle(
 		keyName = "skillerTitle",
 		name = "Power Skiller Configuration",
 		description = "",
 		position = 60
 	)
-	default Title skillerTitle()
-	{
-		return new Title();
-	}
+	String skillerTitle = "delayConfig";
 
 	@ConfigItem(
 		keyName = "type",
@@ -253,7 +239,7 @@ public interface iPowerSkillerConfiguration extends Config
 		description = "Type of Object. Typically in-game objects that have blue hover text are Game Objects (trees, rocks etc.) " +
 			"and objects that have yellow text are NPCs (e.g. fishing spots). Use Developer Tools to determine Object Type and ID.",
 		position = 70,
-		titleSection = "skillerTitle"
+		title = "skillerTitle"
 	)
 	default iPowerSkillerType type()
 	{
@@ -265,23 +251,20 @@ public interface iPowerSkillerConfiguration extends Config
 		name = "IDs to power-skill",
 		description = "Separate with comma",
 		position = 80,
-		titleSection = "skillerTitle"
+		title = "skillerTitle"
 	)
 	default String objectIds()
 	{
 		return "";
 	}
 
-	@ConfigTitleSection(
+	@ConfigTitle(
 		keyName = "opcodeTitle",
 		name = "Menu Opcodes",
 		description = "",
 		position = 85
 	)
-	default Title opcodeTitle()
-	{
-		return new Title();
-	}
+	String opcodeTitle = "opcodeTitle";
 
 	@ConfigItem(
 		keyName = "customOpcode",
@@ -289,7 +272,7 @@ public interface iPowerSkillerConfiguration extends Config
 		description = "Enable to use a custom Menu Opcode. Use this in scenarios where the default Menu Opcode isn't working." +
 			"Example default NPC Opcode works for fishing with lobster pots but not harpooning. To harpoon set an opcode of 10.",
 		position = 86,
-		titleSection = "opcodeTitle"
+		title = "opcodeTitle"
 	)
 	default boolean customOpcode()
 	{
@@ -304,7 +287,7 @@ public interface iPowerSkillerConfiguration extends Config
 		position = 87,
 		hidden = true,
 		unhide = "customOpcode",
-		titleSection = "opcodeTitle"
+		title = "opcodeTitle"
 	)
 	default boolean printOpcode()
 	{
@@ -317,7 +300,7 @@ public interface iPowerSkillerConfiguration extends Config
 		description = "Enable to use a custom Menu Opcode for interacting with an object." +
 			"Example default NPC Opcode works for fishing with lobster pots but not harpooning. To harpoon set an opcode of 10. Use for pickpocketing etc.",
 		position = 88,
-		titleSection = "opcodeTitle",
+		title = "opcodeTitle",
 		hidden = true,
 		unhide = "customOpcode"
 
@@ -335,7 +318,7 @@ public interface iPowerSkillerConfiguration extends Config
 		position = 89,
 		hidden = true,
 		unhide = "objectOpcode",
-		titleSection = "opcodeTitle"
+		title = "opcodeTitle"
 	)
 	default int objectOpcodeValue()
 	{
@@ -348,7 +331,7 @@ public interface iPowerSkillerConfiguration extends Config
 		description = "Enable to use a custom Menu for interacting with an inventory item." +
 			"Example emptying jars, combining items etc.",
 		position = 90,
-		titleSection = "opcodeTitle",
+		title = "opcodeTitle",
 		hidden = true,
 		unhide = "customOpcode"
 
@@ -364,7 +347,7 @@ public interface iPowerSkillerConfiguration extends Config
 		description = "Enable to combine 2 items in inventory together" +
 			"Example cutting fish",
 		position = 91,
-		titleSection = "opcodeTitle",
+		title = "opcodeTitle",
 		hidden = true,
 		unhide = "inventoryMenu"
 
@@ -381,7 +364,7 @@ public interface iPowerSkillerConfiguration extends Config
 		position = 92,
 		hidden = true,
 		unhide = "combineItems",
-		titleSection = "opcodeTitle"
+		title = "opcodeTitle"
 	)
 	default int toolId()
 	{
@@ -395,30 +378,27 @@ public interface iPowerSkillerConfiguration extends Config
 		position = 93,
 		hidden = true,
 		unhide = "inventoryMenu",
-		titleSection = "opcodeTitle"
+		title = "opcodeTitle"
 	)
 	default int inventoryOpcodeValue()
 	{
 		return 0;
 	}
 
-	@ConfigTitleSection(
+	@ConfigTitle(
 		keyName = "dropTitle",
 		name = "Dropping & Banking",
 		description = "",
 		position = 89
 	)
-	default Title dropTitle()
-	{
-		return new Title();
-	}
+	String dropTitle = "dropTitle";
 
 	@ConfigItem(
 		keyName = "bankItems",
 		name = "Bank gathered items (Beta)",
 		description = "Enable to bank your items instead of drop",
 		position = 90,
-		titleSection = "dropTitle"
+		title = "dropTitle"
 	)
 	default boolean bankItems()
 	{
@@ -430,7 +410,7 @@ public interface iPowerSkillerConfiguration extends Config
 		name = "Drop/Bank entire inventory",
 		description = "Enable to drop your entire inventory",
 		position = 91,
-		titleSection = "dropTitle"
+		title = "dropTitle"
 	)
 	default boolean dropInventory()
 	{
@@ -443,7 +423,7 @@ public interface iPowerSkillerConfiguration extends Config
 		description = "Separate with comma. Bot will stop if required items are not in inventory, e.g. fishing bait. Leave at 0 if there are none.",
 		position = 100,
 		hide = "dropInventory",
-		titleSection = "dropTitle"
+		title = "dropTitle"
 	)
 	default String requiredItems()
 	{
@@ -456,7 +436,7 @@ public interface iPowerSkillerConfiguration extends Config
 		description = "Bot will logout if required items are not in inventory, e.g. fishing bait.",
 		position = 101,
 		hide = "dropInventory",
-		titleSection = "dropTitle"
+		title = "dropTitle"
 	)
 	default boolean logout()
 	{
@@ -469,7 +449,7 @@ public interface iPowerSkillerConfiguration extends Config
 		description = "Separate with comma, enable below option to not drop/bank these IDs.",
 		position = 110,
 		hide = "dropInventory",
-		titleSection = "dropTitle"
+		title = "dropTitle"
 	)
 	default String items()
 	{
@@ -482,7 +462,7 @@ public interface iPowerSkillerConfiguration extends Config
 		description = "Enable to drop/Bank all items except the given IDs",
 		position = 120,
 		hide = "dropInventory",
-		titleSection = "dropTitle"
+		title = "dropTitle"
 	)
 	default boolean dropExcept()
 	{
@@ -494,7 +474,7 @@ public interface iPowerSkillerConfiguration extends Config
 		name = "Get 1 Drop 1",
 		description = "Tick manipulation",
 		position = 121,
-		titleSection = "dropTitle"
+		title = "dropTitle"
 	)
 	default boolean dropOne()
 	{
@@ -510,7 +490,7 @@ public interface iPowerSkillerConfiguration extends Config
 		name = "Location Radius",
 		description = "Radius to search for GameObjects.",
 		position = 130,
-		titleSection = "skillerTitle"
+		title = "skillerTitle"
 	)
 	default int locationRadius()
 	{
@@ -522,7 +502,7 @@ public interface iPowerSkillerConfiguration extends Config
 		name = "Draw Location Radius",
 		description = "Draw location Radius on screen.",
 		position = 131,
-		titleSection = "skillerTitle"
+		title = "skillerTitle"
 	)
 	default boolean drawlocationRadius()
 	{
@@ -534,7 +514,7 @@ public interface iPowerSkillerConfiguration extends Config
 		name = "Safe spot",
 		description = "Safe spot will force your character to always return to the tile you started the plugin on",
 		position = 135,
-		titleSection = "skillerTitle"
+		title = "skillerTitle"
 	)
 	default boolean safeSpot()
 	{
@@ -548,7 +528,7 @@ public interface iPowerSkillerConfiguration extends Config
 		position = 136,
 		hidden = true,
 		unhide = "safeSpot",
-		titleSection = "skillerTitle"
+		title = "skillerTitle"
 	)
 	default int safeSpotRadius()
 	{
@@ -560,7 +540,7 @@ public interface iPowerSkillerConfiguration extends Config
 		name = "Enable UI",
 		description = "Enable to turn on in game UI",
 		position = 140,
-		titleSection = "skillerTitle"
+		title = "skillerTitle"
 	)
 	default boolean enableUI()
 	{

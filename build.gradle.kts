@@ -67,7 +67,6 @@ subprojects {
         implementation(group = "com.google.guava", name = "guava", version = "29.0-jre")
         implementation(group = "com.google.inject", name = "guice", version = "4.2.3", classifier = "no_aop")
         implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "4.9.0")
-        implementation(group = "io.reactivex.rxjava3", name = "rxjava", version = "3.0.6")
         implementation(group = "net.sf.jopt-simple", name = "jopt-simple", version = "5.0.4")
         implementation(group = "org.apache.commons", name = "commons-text", version = "1.9")
         implementation(group = "org.pf4j", name = "pf4j", version = "3.4.1")

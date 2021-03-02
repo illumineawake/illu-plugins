@@ -42,7 +42,7 @@ import net.runelite.api.GameState;
 import net.runelite.api.GroundObject;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.Tile;
@@ -68,7 +68,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
-import net.runelite.client.plugins.PluginType;
 import static net.runelite.client.plugins.irooftopagility.iRooftopAgilityState.*;
 import net.runelite.client.plugins.iutils.BankUtils;
 import net.runelite.client.plugins.iutils.CalculationUtils;
@@ -88,8 +87,7 @@ import org.pf4j.Extension;
 	name = "iRooftop Agility",
 	enabledByDefault = false,
 	description = "Illumine auto rooftop agility plugin",
-	tags = {"agility"},
-	type = PluginType.SKILLING
+	tags = {"agility"}
 )
 @Slf4j
 public class iRooftopAgilityPlugin extends Plugin
@@ -298,7 +296,7 @@ public class iRooftopAgilityPlugin extends Plugin
 		if (!setHighAlch)
 		{
 			targetMenu = new MenuEntry("Cast", "<col=00ff00>High Level Alchemy</col>", 0,
-				MenuOpcode.WIDGET_TYPE_2.getId(), -1, 14286887, false);
+				MenuAction.WIDGET_TYPE_2.getId(), -1, 14286887, false);
 			Widget spellWidget = client.getWidget(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY);
 			if (spellWidget != null)
 			{
@@ -317,7 +315,7 @@ public class iRooftopAgilityPlugin extends Plugin
 			alchItem = inventory.getWidgetItem(List.of(config.alchItemID(), (config.alchItemID() + 1)));
 			targetMenu = new MenuEntry("Cast", "<col=00ff00>High Level Alchemy</col><col=ffffff> ->",
 				alchItem.getId(),
-				MenuOpcode.ITEM_USE_ON_WIDGET.getId(),
+				MenuAction.ITEM_USE_ON_WIDGET.getId(),
 				alchItem.getIndex(), 9764864,
 				false);
 			menu.setEntry(targetMenu);
@@ -342,9 +340,10 @@ public class iRooftopAgilityPlugin extends Plugin
 	{
 		if (bank.isOpen())
 		{
-			if (client.getVarbitValue(Varbits.BANK_NOTE_FLAG.getId()) != 1)
+			//if (client.getVarbitValue(Varbits.BANK_NOTE_FLAG.getId()) != 1)
+			if (client.getVarbitValue(3958) != 1)
 			{
-				targetMenu = new MenuEntry("Note", "", 1, MenuOpcode.CC_OP.getId(), -1, 786455, false);
+				targetMenu = new MenuEntry("Note", "", 1, MenuAction.CC_OP.getId(), -1, 786455, false);
 				menu.setEntry(targetMenu);
 				mouse.delayClickRandomPointCenter(-200, 200, sleepDelay());
 				return;
@@ -397,7 +396,7 @@ public class iRooftopAgilityPlugin extends Plugin
 			if (bankBooth != null)
 			{
 				targetMenu = new MenuEntry("", "", bankBooth.getId(),
-					MenuOpcode.GAME_OBJECT_SECOND_OPTION.getId(), bankBooth.getSceneMinLocation().getX(),
+					MenuAction.GAME_OBJECT_SECOND_OPTION.getId(), bankBooth.getSceneMinLocation().getX(),
 					bankBooth.getSceneMinLocation().getY(), false);
 				menu.setEntry(targetMenu);
 				mouse.delayMouseClick(bankBooth.getConvexHull().getBounds(), sleepDelay());
@@ -422,7 +421,7 @@ public class iRooftopAgilityPlugin extends Plugin
 				DecorativeObject decObstacle = object.findNearestDecorObject(obstacle.getObstacleId());
 				if (decObstacle != null)
 				{
-					targetMenu = new MenuEntry("", "", decObstacle.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
+					targetMenu = new MenuEntry("", "", decObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
 					menu.setEntry(targetMenu);
 					Rectangle clickPoint = (decObstacle.getConvexHull() != null) ? decObstacle.getConvexHull().getBounds() :
 						new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
@@ -435,7 +434,7 @@ public class iRooftopAgilityPlugin extends Plugin
 				GroundObject groundObstacle = object.findNearestGroundObject(obstacle.getObstacleId());
 				if (groundObstacle != null)
 				{
-					targetMenu = new MenuEntry("", "", groundObstacle.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
+					targetMenu = new MenuEntry("", "", groundObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
 					menu.setEntry(targetMenu);
 					Rectangle clickPoint = (groundObstacle.getConvexHull() != null) ? groundObstacle.getConvexHull().getBounds() :
 						new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
@@ -446,7 +445,7 @@ public class iRooftopAgilityPlugin extends Plugin
 			GameObject objObstacle = object.findNearestGameObject(obstacle.getObstacleId());
 			if (objObstacle != null)
 			{
-				targetMenu = new MenuEntry("", "", objObstacle.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
+				targetMenu = new MenuEntry("", "", objObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
 				menu.setEntry(targetMenu);
 				Rectangle clickPoint = (objObstacle.getConvexHull() != null) ? objObstacle.getConvexHull().getBounds() :
 					new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
@@ -628,7 +627,7 @@ public class iRooftopAgilityPlugin extends Plugin
 				case MOVING:
 					break;
 				case CAST_CAMELOT_TELEPORT:
-					targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), -1,
+					targetMenu = new MenuEntry("", "", 2, MenuAction.CC_OP.getId(), -1,
 						14286879, false);
 					Widget spellWidget = client.getWidget(WidgetInfo.SPELL_CAMELOT_TELEPORT);
 					if (spellWidget != null)
@@ -645,7 +644,7 @@ public class iRooftopAgilityPlugin extends Plugin
 					break;
 				case PRIFF_PORTAL:
 					log.info("Using Priff portal");
-					targetMenu = new MenuEntry("", "", spawnedPortal.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(),
+					targetMenu = new MenuEntry("", "", spawnedPortal.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
 						spawnedPortal.getSceneMinLocation().getX(), spawnedPortal.getSceneMinLocation().getY(), false);
 					menu.setEntry(targetMenu);
 					mouse.delayMouseClick(spawnedPortal.getConvexHull().getBounds(), sleepDelay());

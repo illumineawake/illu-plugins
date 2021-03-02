@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameObject;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
+import net.runelite.api.MenuAction;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.iherbcleaner.Task;
 import net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin;
@@ -47,7 +47,7 @@ public class OpenBankTask extends Task
 		if (bank != null)
 		{
 			status = "Opening bank";
-			entry = new MenuEntry("", "", bank.getId(), MenuOpcode.GAME_OBJECT_SECOND_OPTION.getId(),
+			entry = new MenuEntry("", "", bank.getId(), MenuAction.GAME_OBJECT_SECOND_OPTION.getId(),
 				bank.getSceneMinLocation().getX(), bank.getSceneMinLocation().getY(), false);
 			Rectangle rectangle = (bank.getConvexHull() != null) ? bank.getConvexHull().getBounds() :
 				new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
