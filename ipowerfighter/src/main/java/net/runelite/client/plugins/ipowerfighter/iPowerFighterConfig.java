@@ -25,21 +25,17 @@
  */
 package net.runelite.client.plugins.ipowerfighter;
 
-import net.runelite.client.config.Button;
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigTitle;
-import net.runelite.client.config.Range;
+import net.runelite.client.config.*;
 
 @ConfigGroup("iPowerFighter")
 public interface iPowerFighterConfig extends Config
 {
 
-	@ConfigTitle(
+	@ConfigSection(
 		keyName = "delayConfig",
 		name = "Sleep Delay Configuration",
 		description = "Configure how the bot handles sleep delays",
+			closedByDefault = true,
 		position = 0
 	)
 	String delayConfig = "delayConfig";
@@ -120,10 +116,11 @@ public interface iPowerFighterConfig extends Config
 		return false;
 	}
 
-	@ConfigTitle(
+	@ConfigSection(
 		keyName = "delayTickConfig",
 		name = "Game Tick Configuration",
 		description = "Configure how the bot handles game tick delays, 1 game tick equates to roughly 600ms",
+			closedByDefault = true,
 		position = 10
 	)
 	String delayTickConfig = "delayTickConfig";
@@ -224,7 +221,7 @@ public interface iPowerFighterConfig extends Config
 		return "Auto fights NPC's with the provided name. Enable Quick Eater Plugin for eating.";
 	}
 
-	@ConfigTitle(
+	@ConfigSection(
 		keyName = "generalTitle",
 		name = "General Config",
 		description = "",
@@ -237,7 +234,7 @@ public interface iPowerFighterConfig extends Config
 		name = "Loot only mode",
 		description = "Loot only mode, will loot items and not fight NPCs",
 		position = 29,
-		title = "generalTitle"
+		section = "lootTitle"
 	)
 	default boolean lootOnly()
 	{
@@ -249,7 +246,7 @@ public interface iPowerFighterConfig extends Config
 		name = "Exact NPC only mode",
 		description = "Exact NPC only mode, will fight exact NPC names only",
 		position = 29,
-		title = "generalTitle"
+		section = "generalTitle"
 	)
 	default boolean exactNpcOnly()
 	{
@@ -262,7 +259,7 @@ public interface iPowerFighterConfig extends Config
 		description = "Name of NPC. Will attack any NPC containing given name.",
 		position = 30,
 		hide = "dropInventory",
-		title = "generalTitle"
+		section = "generalTitle"
 	)
 	default String npcName()
 	{
@@ -279,7 +276,7 @@ public interface iPowerFighterConfig extends Config
 		description = "The distance (in tiles) to search for target NPC. Center search point is set when you click start.",
 		position = 31,
 		hide = "dropInventory",
-		title = "generalTitle"
+		section = "generalTitle"
 	)
 	default int searchRadius()
 	{
@@ -292,7 +289,7 @@ public interface iPowerFighterConfig extends Config
 		description = "Safe spot will force your character to always return to the tile you started the plugin on",
 		position = 32,
 		hide = "dropInventory",
-		title = "generalTitle"
+		section = "generalTitle"
 	)
 	default boolean safeSpot()
 	{
@@ -306,17 +303,18 @@ public interface iPowerFighterConfig extends Config
 		position = 33,
 		hidden = true,
 		unhide = "safeSpot",
-		title = "generalTitle"
+		section = "generalTitle"
 	)
 	default int safeSpotRadius()
 	{
 		return 1;
 	}
 
-	@ConfigTitle(
+	@ConfigSection(
 		keyName = "ammoTitle",
 		name = "Ammo Settings",
 		description = "",
+		closedByDefault = true,
 		position = 32
 	)
 	String ammoTitle = "ammoTitle";
@@ -326,7 +324,7 @@ public interface iPowerFighterConfig extends Config
 		name = "Loot Ammo",
 		description = "Enable to loot ammo",
 		position = 34,
-		title = "ammoTitle"
+		section = "ammoTitle"
 	)
 	default boolean lootAmmo()
 	{
@@ -336,11 +334,11 @@ public interface iPowerFighterConfig extends Config
 	@ConfigItem(
 		keyName = "ammoID",
 		name = "Ammo ID",
-		description = "Enable to stop when out of food",
+		description = "Enable to stop when out of Ammo",
 		position = 35,
 		hidden = true,
 		unhide = "lootAmmo",
-		title = "ammoTitle"
+		section = "ammoTitle"
 	)
 	default int ammoID()
 	{
@@ -354,7 +352,7 @@ public interface iPowerFighterConfig extends Config
 		position = 36,
 		hidden = true,
 		unhide = "lootAmmo",
-		title = "ammoTitle"
+			section = "ammoTitle"
 	)
 	default int minAmmoLootTime()
 	{
@@ -368,17 +366,18 @@ public interface iPowerFighterConfig extends Config
 		position = 37,
 		hidden = true,
 		unhide = "lootAmmo",
-		title = "ammoTitle"
+		section = "ammoTitle"
 	)
 	default int randAmmoLootTime()
 	{
 		return 30;
 	}
 
-	@ConfigTitle(
+	@ConfigSection(
 		keyName = "lootTitle",
 		name = "Loot Settings",
 		description = "",
+		closedByDefault = true,
 		position = 38
 	)
 	String lootTitle = "lootTitle";
@@ -388,7 +387,7 @@ public interface iPowerFighterConfig extends Config
 		name = "Loot Items",
 		description = "Enable to loot items",
 		position = 39,
-		title = "lootTitle"
+		section = "lootTitle"
 	)
 	default boolean lootItems()
 	{
@@ -406,7 +405,7 @@ public interface iPowerFighterConfig extends Config
 		position = 40,
 		hidden = true,
 		unhide = "lootItems",
-		title = "lootItems"
+		section = "lootTitle"
 	)
 	default int lootRadius()
 	{
@@ -420,7 +419,7 @@ public interface iPowerFighterConfig extends Config
 		position = 41,
 		hidden = true,
 		unhide = "lootItems",
-		title = "lootTitle"
+			section = "lootTitle"
 	)
 	default boolean lootGEValue()
 	{
@@ -434,7 +433,7 @@ public interface iPowerFighterConfig extends Config
 		position = 42,
 		hidden = true,
 		unhide = "lootGEValue",
-		title = "lootTitle"
+			section = "lootTitle"
 	)
 	default int minGEValue()
 	{
@@ -448,7 +447,7 @@ public interface iPowerFighterConfig extends Config
 		position = 43,
 		hidden = true,
 		unhide = "lootItems",
-		title = "lootTitle"
+			section = "lootTitle"
 	)
 	default String lootItemNames()
 	{
@@ -462,7 +461,7 @@ public interface iPowerFighterConfig extends Config
 		position = 44,
 		hidden = true,
 		unhide = "lootItems",
-		title = "lootTitle"
+			section = "lootTitle"
 	)
 	default boolean lootClueScrolls()
 	{
@@ -476,7 +475,7 @@ public interface iPowerFighterConfig extends Config
 		position = 46,
 		hidden = true,
 		unhide = "lootItems",
-		title = "lootTitle"
+			section = "lootTitle"
 	)
 	default boolean buryBones()
 	{
@@ -490,7 +489,7 @@ public interface iPowerFighterConfig extends Config
 		position = 48,
 		hidden = true,
 		unhide = "buryBones",
-		title = "lootTitle"
+			section = "lootTitle"
 	)
 	default boolean buryOne()
 	{
@@ -504,7 +503,8 @@ public interface iPowerFighterConfig extends Config
 		position = 50,
 		hidden = true,
 		unhide = "lootItems",
-		title = "lootTitle"
+			section = "lootTitle"
+
 	)
 	default boolean lootNPCOnly()
 	{
@@ -518,17 +518,18 @@ public interface iPowerFighterConfig extends Config
 		position = 51,
 		hidden = true,
 		unhide = "lootItems",
-		title = "lootTitle"
+			section = "lootTitle"
 	)
 	default boolean forceLoot()
 	{
 		return true;
 	}
 
-	@ConfigTitle(
+	@ConfigSection(
 		keyName = "alchTitle",
 		name = "Alch Settings",
 		description = "",
+		closedByDefault = true,
 		position = 90
 	)
 	String alchTitle = "alchTitle";
@@ -538,7 +539,7 @@ public interface iPowerFighterConfig extends Config
 		name = "Alch Items",
 		description = "Enable to alch looted items. Requires fire and nature runes in inventory",
 		position = 95,
-		title = "alchTitle"
+		section = "alchTitle"
 	)
 	default boolean alchItems()
 	{
@@ -552,7 +553,7 @@ public interface iPowerFighterConfig extends Config
 		position = 100,
 		hidden = true,
 		unhide = "alchItems",
-		title = "alchTitle"
+		section = "alchTitle"
 	)
 	default boolean alchByValue()
 	{
@@ -566,7 +567,7 @@ public interface iPowerFighterConfig extends Config
 		position = 105,
 		hidden = true,
 		unhide = "alchByValue",
-		title = "alchTitle"
+		section = "alchTitle"
 	)
 	default int maxAlchValue()
 	{
@@ -580,7 +581,7 @@ public interface iPowerFighterConfig extends Config
 		position = 110,
 		hidden = true,
 		unhide = "alchItems",
-		title = "alchTitle"
+		section = "alchTitle"
 	)
 	default boolean alchByName()
 	{
@@ -594,14 +595,14 @@ public interface iPowerFighterConfig extends Config
 		position = 115,
 		hidden = true,
 		unhide = "alchByName",
-		title = "alchTitle"
+		section = "alchTitle"
 	)
 	default String alchNames()
 	{
 		return "Steel platebody,Rune scimitar";
 	}
 
-	@ConfigTitle(
+	@ConfigSection(
 		keyName = "combatTitle",
 		name = "Combat Settings",
 		description = "",
@@ -614,7 +615,7 @@ public interface iPowerFighterConfig extends Config
 		name = "Combat Levels",
 		description = "Enable to set levels for the bot to reach and change between",
 		position = 120,
-		title = "combatTitle"
+		section = "combatTitle"
 	)
 	default boolean combatLevels()
 	{
@@ -628,7 +629,7 @@ public interface iPowerFighterConfig extends Config
 		position = 125,
 		hidden = true,
 		unhide = "combatLevels",
-		title = "combatTitle"
+		section = "combatTitle"
 	)
 	default int attackLvl()
 	{
@@ -642,7 +643,7 @@ public interface iPowerFighterConfig extends Config
 		position = 130,
 		hidden = true,
 		unhide = "combatLevels",
-		title = "combatTitle"
+		section = "combatTitle"
 	)
 	default int strengthLvl()
 	{
@@ -656,7 +657,7 @@ public interface iPowerFighterConfig extends Config
 		position = 135,
 		hidden = true,
 		unhide = "combatLevels",
-		title = "combatTitle"
+		section = "combatTitle"
 	)
 	default int defenceLvl()
 	{
@@ -670,7 +671,7 @@ public interface iPowerFighterConfig extends Config
 		position = 140,
 		hidden = true,
 		unhide = "combatLevels",
-		title = "combatTitle"
+		section = "combatTitle"
 	)
 	default combatType continueType()
 	{
@@ -681,7 +682,7 @@ public interface iPowerFighterConfig extends Config
 		keyName = "stopSlayer",
 		name = "Stop on Slayer task completion",
 		description = "Enable to stop when Slayer task completes",
-		position = 52,
+		position = 248,
 		title = "generalTitle"
 	)
 	default boolean stopSlayer()
@@ -693,7 +694,7 @@ public interface iPowerFighterConfig extends Config
 		keyName = "equipBracelet",
 		name = "Equip Bracelets of Slaughter/Expeditious",
 		description = "Enable to equip Bracelets of Slaughter/Expeditious Bracelet if in inventory",
-		position = 52,
+		position = 249,
 		title = "generalTitle"
 	)
 	default boolean equipBracelet()
@@ -706,7 +707,7 @@ public interface iPowerFighterConfig extends Config
 		name = "Stop when out of ammo",
 		description = "Enable to stop when out of ammo",
 		position = 58,
-		title = "generalTitle"
+		section = "ammoTitle"
 	)
 	default boolean stopAmmo()
 	{
@@ -718,7 +719,7 @@ public interface iPowerFighterConfig extends Config
 		name = "Stop if out of food",
 		description = "Enable to stop when out of food",
 		position = 59,
-		title = "generalTitle"
+		section = "generalTitle"
 	)
 	default boolean stopFood()
 	{
@@ -730,7 +731,7 @@ public interface iPowerFighterConfig extends Config
 		name = "Food ID",
 		description = "Enter the ID of your food so bot knows when to stop",
 		position = 60,
-		title = "generalTitle",
+		section = "generalTitle",
 		hidden = true,
 		unhide = "stopFood"
 	)
@@ -741,9 +742,9 @@ public interface iPowerFighterConfig extends Config
 
 	@ConfigItem(
 		keyName = "logout",
-		name = "Logout on stop",
+		name = "Logout When No Food/Ammo",
 		description = "Enable to logout when out of food or ammo",
-		position = 65,
+		position = 250,
 		title = "generalTitle"
 	)
 	default boolean logout()
@@ -755,7 +756,7 @@ public interface iPowerFighterConfig extends Config
 		keyName = "enableUI",
 		name = "Enable UI",
 		description = "Enable to turn on in game UI",
-		position = 70,
+		position = 300,
 		title = "generalTitle"
 	)
 	default boolean enableUI()
@@ -768,7 +769,7 @@ public interface iPowerFighterConfig extends Config
 		keyName = "startButton",
 		name = "Start/Stop",
 		description = "Test button that changes variable value",
-		position = 80
+		position = 350
 	)
 	default Button startButton()
 	{

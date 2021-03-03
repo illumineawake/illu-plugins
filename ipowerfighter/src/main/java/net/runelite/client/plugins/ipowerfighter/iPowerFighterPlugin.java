@@ -175,6 +175,9 @@ public class iPowerFighterPlugin extends Plugin
 	int nextItemLootTime;
 	int killcount;
 
+	static ConditionTimeout conditionTimeout;
+
+
 	String SLAYER_MSG = "return to a Slayer master";
 	String SLAYER_BOOST_MSG = "You'll be eligible to earn reward points if you complete tasks";
 	Set<Integer> BONE_BLACKLIST = Set.of(ItemID.CURVED_BONE, ItemID.LONG_BONE);
@@ -355,6 +358,7 @@ public class iPowerFighterPlugin extends Plugin
 			itemGeValue = utils.getOSBItem(itemID);
 		}
 		ItemComposition itemDef = client.getItemDefinition(itemID);
+//		if (!itemDef.isTradeable() || itemDef.getPrice() < 10) { return false; }
 	/*	if (itemDef != null) { //Currently bugged (https://discord.com/channels/734831848173338684/744402742839345182/788226017978220544)
 			if (!itemDef.isTradeable()) {
 				log.debug("Tried to alch untradeable item {}, adding to blacklist", itemDef.getName());
@@ -712,7 +716,17 @@ public class iPowerFighterPlugin extends Plugin
 					lootItem(ammoLoot);
 					break;
 				case WAIT_COMBAT:
-					timeout = 10 + tickDelay();
+					if (config.safeSpot()) {
+						conditionTimeout = new TimeoutUntil(
+								() -> startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()),
+								() -> playerUtils.isMoving(),
+								4);
+					} else {
+						conditionTimeout = new TimeoutUntil(
+								() -> playerUtils.isAnimating(),
+								() -> playerUtils.isMoving(),
+								4);
+					}
 					break;
 				case IN_COMBAT:
 					timeout = tickDelay();
