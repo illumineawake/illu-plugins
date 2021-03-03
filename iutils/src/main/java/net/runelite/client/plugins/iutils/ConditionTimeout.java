@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.ipowerfighter;
+package net.runelite.client.plugins.iutils;
 
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.ipowerfighter;
+package net.runelite.client.plugins.iutils;
 
 import java.util.concurrent.Callable;
 
