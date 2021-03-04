@@ -71,15 +71,8 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.iutils.CalculationUtils;
-import net.runelite.client.plugins.iutils.InterfaceUtils;
-import net.runelite.client.plugins.iutils.InventoryUtils;
-import net.runelite.client.plugins.iutils.MenuUtils;
-import net.runelite.client.plugins.iutils.MouseUtils;
-import net.runelite.client.plugins.iutils.NPCUtils;
-import net.runelite.client.plugins.iutils.PlayerUtils;
-import net.runelite.client.plugins.iutils.WalkUtils;
-import net.runelite.client.plugins.iutils.iUtils;
+import net.runelite.client.plugins.iutils.*;
+
 import static net.runelite.client.plugins.iutils.iUtils.iterating;
 import static net.runelite.client.plugins.iutils.iUtils.sleep;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -146,6 +139,11 @@ public class iPowerFighterPlugin extends Plugin
 	@Inject
 	private ChinBreakHandler chinBreakHandler;
 
+	private static ConditionTimeout conditionTimeout;
+
+	private TimeoutUntil timeoutUntil;
+
+
 	NPC currentNPC;
 	WorldPoint deathLocation;
 	List<TileItem> loot = new ArrayList<>();
@@ -174,6 +172,9 @@ public class iPowerFighterPlugin extends Plugin
 	int nextAmmoLootTime;
 	int nextItemLootTime;
 	int killcount;
+
+//	static ConditionTimeout conditionTimeout;
+
 
 	String SLAYER_MSG = "return to a Slayer master";
 	String SLAYER_BOOST_MSG = "You'll be eligible to earn reward points if you complete tasks";
@@ -355,6 +356,7 @@ public class iPowerFighterPlugin extends Plugin
 			itemGeValue = utils.getOSBItem(itemID);
 		}
 		ItemComposition itemDef = client.getItemDefinition(itemID);
+//		if (!itemDef.isTradeable() || itemDef.getPrice() < 10) { return false; }
 	/*	if (itemDef != null) { //Currently bugged (https://discord.com/channels/734831848173338684/744402742839345182/788226017978220544)
 			if (!itemDef.isTradeable()) {
 				log.debug("Tried to alch untradeable item {}, adding to blacklist", itemDef.getName());
@@ -647,6 +649,7 @@ public class iPowerFighterPlugin extends Plugin
 		return iPowerFighterState.NPC_NOT_FOUND;
 	}
 
+
 	@Subscribe
 	private void onGameTick(GameTick event)
 	{
@@ -712,7 +715,17 @@ public class iPowerFighterPlugin extends Plugin
 					lootItem(ammoLoot);
 					break;
 				case WAIT_COMBAT:
-					timeout = 10 + tickDelay();
+					if (config.safeSpot()) {
+						conditionTimeout = new TimeoutUntil(
+								() -> startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()),
+								() -> playerUtils.isMoving(),
+								3);
+					} else {
+						conditionTimeout = new TimeoutUntil(
+								() -> playerUtils.isAnimating(),
+								() -> playerUtils.isMoving(),
+								3);
+					}
 					break;
 				case IN_COMBAT:
 					timeout = tickDelay();
@@ -843,7 +856,16 @@ public class iPowerFighterPlugin extends Plugin
 			if (event.getMessage().contains("I'm already under attack") && event.getType() == ChatMessageType.SPAM)
 			{
 				log.debug("We already have a target. Waiting to auto-retaliate new target");
-				timeout = 10;
+				//! If we are underattack, probably are not in safespot --> prioritize returning to safety
+				if (config.safeSpot() && startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius())) {
+					walk.sceneWalk(startLoc, config.safeSpotRadius(), sleepDelay());
+					conditionTimeout = new TimeoutUntil(
+							() -> startLoc.distanceTo(player.getWorldLocation()) < (config.safeSpotRadius()),
+							() -> playerUtils.isMoving(),
+							3);
+				} else { //! Otherwise no safespot? Just AFK and auto retaliate.
+					timeout = 10;
+				}
 				return;
 			}
 			if (event.getMessage().contains(SLAYER_MSG) || event.getMessage().contains(SLAYER_BOOST_MSG) &&
