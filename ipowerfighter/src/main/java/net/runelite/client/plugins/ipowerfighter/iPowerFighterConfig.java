@@ -391,7 +391,7 @@ public interface iPowerFighterConfig extends Config
 	)
 	default boolean lootItems()
 	{
-		return true;
+		return false;
 	}
 
 	@Range(
@@ -543,7 +543,7 @@ public interface iPowerFighterConfig extends Config
 	)
 	default boolean alchItems()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(
@@ -711,7 +711,7 @@ public interface iPowerFighterConfig extends Config
 	)
 	default boolean stopAmmo()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(
@@ -723,7 +723,7 @@ public interface iPowerFighterConfig extends Config
 	)
 	default boolean stopFood()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(
