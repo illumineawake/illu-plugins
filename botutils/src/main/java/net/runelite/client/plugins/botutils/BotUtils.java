@@ -85,7 +85,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
 import org.pf4j.Extension;
 
 /**
@@ -859,7 +858,7 @@ public class BotUtils extends Plugin
 		mouseEvent(MouseEvent.MOUSE_CLICKED, point);
 	}
 
-	public Point getClickPoint(@NotNull Rectangle rect)
+	public Point getClickPoint(Rectangle rect)
 	{
 		final int x = (int) (rect.getX() + getRandomIntBetweenRange((int) rect.getWidth() / 6 * -1, (int) rect.getWidth() / 6) + rect.getWidth() / 2);
 		final int y = (int) (rect.getY() + getRandomIntBetweenRange((int) rect.getHeight() / 6 * -1, (int) rect.getHeight() / 6) + rect.getHeight() / 2);
@@ -898,7 +897,7 @@ public class BotUtils extends Plugin
 		return ThreadLocalRandom.current().nextInt(min, max + 1);
 	}
 
-	private void mouseEvent(int id, @NotNull Point point)
+	private void mouseEvent(int id, Point point)
 	{
 		MouseEvent e = new MouseEvent(
 			client.getCanvas(), id,
@@ -1090,7 +1089,7 @@ public class BotUtils extends Plugin
 	{
 
 		OkHttpClient okHttpClient = new OkHttpClient();
-		RequestBody body = RequestBody.create(json, JSON); // new
+		RequestBody body = RequestBody.create(JSON, json); // new
 		log.info("Sending POST request: {}", body);
 		Request request = new Request.Builder()
 			.url(url)
