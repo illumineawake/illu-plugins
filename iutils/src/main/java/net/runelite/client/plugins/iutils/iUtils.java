@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
+import net.runelite.api.ItemComposition;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
@@ -37,6 +38,7 @@ import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.http.api.ge.GrandExchangeClient;
@@ -88,6 +90,9 @@ public class iUtils extends Plugin
 
 	@Inject
 	private ChatMessageManager chatMessageManager;
+
+	@Inject
+	private ItemManager itemManager;
 
 	@Inject
 	ExecutorService executorService;
@@ -449,6 +454,7 @@ public class iUtils extends Plugin
 				.build());
 	}
 
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public OSBGrandExchangeResult getOSBItem(int itemId)
 	{
 		log.debug("Looking up OSB item price {}", itemId);
@@ -467,6 +473,20 @@ public class iUtils extends Plugin
 		}
 
 		return null;
+	}
+
+	public ItemComposition getCompositionItem(int itemId)
+	{
+		log.debug("Looking up CompositionItem: {}", itemId);
+
+		return itemManager.getItemComposition(itemId);
+	}
+
+	public int getItemPrice(int itemId, boolean useWikiPrice)
+	{
+		log.debug("Looking up price for Item: {}", itemId);
+
+		return itemManager.getItemPriceWithSource(itemId, useWikiPrice);
 	}
 
 	//Ganom's
