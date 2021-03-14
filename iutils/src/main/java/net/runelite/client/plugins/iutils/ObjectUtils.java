@@ -24,7 +24,6 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.queries.DecorativeObjectQuery;
 import net.runelite.api.queries.GameObjectQuery;
 import net.runelite.api.queries.GroundObjectQuery;
-import net.runelite.api.queries.TileObjectQuery;
 import net.runelite.api.queries.TileQuery;
 import net.runelite.api.queries.WallObjectQuery;
 import static net.runelite.client.plugins.iutils.Banks.ALL_BANKS;

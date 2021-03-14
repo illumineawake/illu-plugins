@@ -34,8 +34,8 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuAction;
+import net.runelite.api.MenuEntry;
 import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.RenderOverview;
@@ -60,7 +60,6 @@ import net.runelite.client.plugins.iutils.WalkUtils;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.worldmap.WorldMapOverlay;
-import net.runelite.client.ui.overlay.worldmap.WorldMapPoint;
 import org.pf4j.Extension;
 
 

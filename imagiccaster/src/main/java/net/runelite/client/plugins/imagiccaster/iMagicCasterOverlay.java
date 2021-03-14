@@ -1,5 +1,7 @@
 package net.runelite.client.plugins.imagiccaster;
 
+import com.openosrs.client.ui.overlay.components.table.TableAlignment;
+import com.openosrs.client.ui.overlay.components.table.TableComponent;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -15,8 +17,6 @@ import net.runelite.client.ui.overlay.OverlayMenuEntry;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.TitleComponent;
-import com.openosrs.client.ui.overlay.components.table.TableAlignment;
-import com.openosrs.client.ui.overlay.components.table.TableComponent;
 import net.runelite.client.util.ColorUtil;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDuration;
 

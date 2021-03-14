@@ -41,13 +41,12 @@ import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.GroundObject;
 import net.runelite.api.ItemID;
-import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuAction;
+import net.runelite.api.MenuEntry;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.Tile;
 import net.runelite.api.TileItem;
-import net.runelite.api.Varbits;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ConfigButtonClicked;
@@ -76,6 +75,7 @@ import net.runelite.client.plugins.iutils.MenuUtils;
 import net.runelite.client.plugins.iutils.MouseUtils;
 import net.runelite.client.plugins.iutils.ObjectUtils;
 import net.runelite.client.plugins.iutils.PlayerUtils;
+import net.runelite.client.plugins.iutils.bot.Bot;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
@@ -148,6 +148,7 @@ public class iRooftopAgilityPlugin extends Plugin
 	Portals priffPortal;
 	Set<Integer> inventoryItems = new HashSet<>();
 	GameObject spawnedPortal;
+	private Bot bot;
 
 	private final Set<Integer> REGION_IDS = Set.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878, 10547, 13105, 9012, 9013, 12895, 13151, 13152, 11050, 10794);
 	WorldPoint CAMELOT_TELE_LOC = new WorldPoint(2705, 3463, 0);
@@ -166,6 +167,11 @@ public class iRooftopAgilityPlugin extends Plugin
 	boolean setHighAlch;
 	boolean alchClick;
 
+	public iRooftopAgilityPlugin(Bot bot) {
+		this.bot = bot;
+	}
+
+
 	@Override
 	protected void startUp()
 	{
@@ -183,6 +189,10 @@ public class iRooftopAgilityPlugin extends Plugin
 	iRooftopAgilityConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(iRooftopAgilityConfig.class);
+	}
+
+	private void test() {
+
 	}
 
 	private void resetVals()

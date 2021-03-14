@@ -1,8 +1,8 @@
 package net.runelite.client.plugins.iblackjack.tasks;
 
 import java.util.Set;
-import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuAction;
+import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.iblackjack.Task;

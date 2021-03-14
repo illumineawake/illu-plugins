@@ -10,6 +10,7 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
@@ -28,6 +29,9 @@ import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.queries.GameObjectQuery;
+import net.runelite.api.queries.GroundObjectQuery;
+import net.runelite.api.queries.WallObjectQuery;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.callback.ClientThread;
@@ -39,6 +43,9 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.iutils.bot.Bot;
+import net.runelite.client.plugins.iutils.bot.iObject;
+import net.runelite.client.plugins.iutils.scene.GameObjectStream;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
@@ -59,6 +66,10 @@ import org.pf4j.Extension;
 @Singleton
 public class iUtils extends Plugin
 {
+
+	@Inject
+	public Bot bot;
+
 	@Inject
 	private Client client;
 
@@ -88,6 +99,9 @@ public class iUtils extends Plugin
 
 	@Inject
 	private ChatMessageManager chatMessageManager;
+
+	@Inject
+	private ObjectUtils objectUtils;
 
 	@Inject
 	ExecutorService executorService;
@@ -125,13 +139,46 @@ public class iUtils extends Plugin
 	@Override
 	protected void startUp()
 	{
-
+		long start = System.currentTimeMillis();
+		iObject test = bot.objects().withAction("Climb-up").nearest();
+		log.info("Search took: {}ms", System.currentTimeMillis() - start);
+		log.info("QUERY: {} {} {} {}", test.id, test.position(), test.name(), test.actions());
 	}
 
 	@Override
 	protected void shutDown()
 	{
 
+	}
+
+	public void doTestActionGameTick(Runnable runnable, Point point, long ticksToDelay)
+	{
+
+		action.delayGameTicks(ticksToDelay, runnable);
+	}
+
+	public GameObjectStream objects()
+	{
+		Collection<TileObject> allObjects = new GameObjectQuery()
+			.result(client)
+			.list
+			.stream()
+			.map(go -> (TileObject) go)
+			.collect(Collectors.toList());
+		new WallObjectQuery()
+			.result(client)
+			.list
+			.stream()
+			.map(go -> (TileObject) go)
+			.forEach(allObjects::add);
+		new GroundObjectQuery()
+			.result(client)
+			.list
+			.stream()
+			.map(go -> (TileObject) go)
+			.forEach(allObjects::add);
+
+		return new GameObjectStream(allObjects.stream().map(io -> (iObject) io));
 	}
 
 	//Use with caution, does not pair with mouse click and is potentially detectable
@@ -169,6 +216,8 @@ public class iUtils extends Plugin
 		MenuEntry entry = new MenuEntry("", "", object.getId(), menuOpcodeID, object.getSceneMinLocation().getX(),
 			object.getSceneMinLocation().getY(), false);
 		doActionClientTick(entry, rectangle, ticksToDelay);
+		iObject test;
+
 	}
 
 	public void doTileObjectActionClientTick(TileObject object, int menuOpcodeID, long ticksToDelay)
@@ -595,7 +644,7 @@ public class iUtils extends Plugin
 	private void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		if (event.getMenuAction() == MenuAction.CC_OP && (event.getWidgetId() == WidgetInfo.WORLD_SWITCHER_LIST.getId() ||
-				event.getWidgetId() == 11927560 || event.getWidgetId() == 4522007 || event.getWidgetId() == 24772686))
+			event.getWidgetId() == 11927560 || event.getWidgetId() == 4522007 || event.getWidgetId() == 24772686))
 		{
 			//Either logging out or world-hopping which is handled by 3rd party plugins so let them have priority
 			log.info("Received world-hop/login related click. Giving them priority");
@@ -628,16 +677,16 @@ public class iUtils extends Plugin
 				client.setSelectedItemSlot(menu.modifiedItemIndex);
 				client.setSelectedItemID(menu.modifiedItemID);
 				log.debug("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", menu.modifiedItemID,
-						menu.modifiedItemIndex, menu.entry.getParam1());
-				menuAction(event,menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
-						MenuAction.of(menu.modifiedOpCode), menu.entry.getParam0(), menu.entry.getParam1());
+					menu.modifiedItemIndex, menu.entry.getParam1());
+				menuAction(event, menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
+					MenuAction.of(menu.modifiedOpCode), menu.entry.getParam0(), menu.entry.getParam1());
 				menu.modifiedMenu = false;
 			}
 			else
 			{
 				System.out.println(String.format("%s, %s, %s, %s, %s, %s", menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(), menu.entry.getOpcode(), menu.entry.getParam0(), menu.entry.getParam1()));
-				menuAction(event,menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
-						MenuAction.of(menu.entry.getOpcode()), menu.entry.getParam0(), menu.entry.getParam1());
+				menuAction(event, menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
+					MenuAction.of(menu.entry.getOpcode()), menu.entry.getParam0(), menu.entry.getParam1());
 			}
 			menu.entry = null;
 		}
