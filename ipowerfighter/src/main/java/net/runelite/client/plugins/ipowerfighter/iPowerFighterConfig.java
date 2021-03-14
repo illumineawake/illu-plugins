@@ -413,29 +413,29 @@ public interface iPowerFighterConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "lootGEValue",
-		name = "Loot all items above GE value",
-		description = "Enable to loot all items above the given Grand Exchange value. Uses OSBuddy avg price.",
+		keyName = "lootValue",
+		name = "Loot all items above a set value",
+		description = "Enable to loot all items above the set GP value. Uses actively traded Wiki price.",
 		position = 41,
 		hidden = true,
 		unhide = "lootItems",
 			section = "lootTitle"
 	)
-	default boolean lootGEValue()
+	default boolean lootValue()
 	{
 		return false;
 	}
 
 	@ConfigItem(
-		keyName = "minGEValue",
+		keyName = "minTotalValue",
 		name = "",
-		description = "The minimum Grand Exchange value for loot. Uses OSBuddy avg price.",
+		description = "The minimum value for loot, including total stack value. Uses Wiki actively traded price.",
 		position = 42,
 		hidden = true,
-		unhide = "lootGEValue",
+		unhide = "lootValue",
 			section = "lootTitle"
 	)
-	default int minGEValue()
+	default int minTotalValue()
 	{
 		return 500;
 	}
