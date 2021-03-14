@@ -76,7 +76,6 @@ import net.runelite.client.plugins.iutils.*;
 import static net.runelite.client.plugins.iutils.iUtils.iterating;
 import static net.runelite.client.plugins.iutils.iUtils.sleep;
 import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
 import org.pf4j.Extension;
 
 
@@ -139,11 +138,6 @@ public class iPowerFighterPlugin extends Plugin
 	@Inject
 	private ChinBreakHandler chinBreakHandler;
 
-	private static ConditionTimeout conditionTimeout;
-
-	private TimeoutUntil timeoutUntil;
-
-
 	NPC currentNPC;
 	WorldPoint deathLocation;
 	List<TileItem> loot = new ArrayList<>();
@@ -161,7 +155,7 @@ public class iPowerFighterPlugin extends Plugin
 	Instant lootTimer;
 	LocalPoint beforeLoc = new LocalPoint(0, 0);
 	WorldPoint startLoc;
-	OSBGrandExchangeResult itemGeValue;
+	int itemValue;
 
 	int highAlchCost;
 	boolean startBot;
@@ -171,9 +165,7 @@ public class iPowerFighterPlugin extends Plugin
 	int timeout;
 	int nextAmmoLootTime;
 	int nextItemLootTime;
-	int killcount;
-
-//	static ConditionTimeout conditionTimeout;
+	int killCount;
 
 
 	String SLAYER_MSG = "return to a Slayer master";
@@ -237,7 +229,7 @@ public class iPowerFighterPlugin extends Plugin
 				startBot = true;
 				chinBreakHandler.startPlugin(this);
 				timeout = 0;
-				killcount = 0;
+				killCount = 0;
 				slayerCompleted = false;
 				state = null;
 				targetMenu = null;
@@ -246,7 +238,7 @@ public class iPowerFighterPlugin extends Plugin
 				updateConfigValues();
 				if (config.alchItems())
 				{
-					highAlchCost = utils.getOSBItem(ItemID.NATURE_RUNE).getOverall_average() + (utils.getOSBItem(ItemID.FIRE_RUNE).getOverall_average() * 5);
+					highAlchCost = utils.getItemPrice(ItemID.NATURE_RUNE, true) + (utils.getItemPrice(ItemID.FIRE_RUNE, true) * 5);
 				}
 				startLoc = client.getLocalPlayer().getWorldLocation();
 				if (config.safeSpot())
@@ -328,10 +320,13 @@ public class iPowerFighterPlugin extends Plugin
 	private boolean lootableItem(TileItem item)
 	{
 		String itemName = client.getItemDefinition(item.getId()).getName().toLowerCase();
+
+		int itemTotalValue = utils.getItemPrice(item.getId(), true) * item.getQuantity();
+
 		return config.lootItems() &&
 			((config.lootNPCOnly() && item.getTile().getWorldLocation().equals(deathLocation)) ||
 				(!config.lootNPCOnly() && item.getTile().getWorldLocation().distanceTo(startLoc) < config.lootRadius())) &&
-			((config.lootGEValue() && utils.getOSBItem(item.getId()).getOverall_average() > config.minGEValue()) ||
+			((config.lootValue() && itemTotalValue > config.minTotalValue()) ||
 				lootableItems.stream().anyMatch(itemName.toLowerCase()::contains) ||
 				config.buryBones() && itemName.contains("bones") ||
 				config.lootClueScrolls() && itemName.contains("scroll"));
@@ -353,7 +348,7 @@ public class iPowerFighterPlugin extends Plugin
 		}
 		if (config.alchByValue())
 		{
-			itemGeValue = utils.getOSBItem(itemID);
+			itemValue = utils.getItemPrice(itemID, true);
 		}
 		ItemComposition itemDef = client.getItemDefinition(itemID);
 //		if (!itemDef.isTradeable() || itemDef.getPrice() < 10) { return false; }
@@ -367,7 +362,7 @@ public class iPowerFighterPlugin extends Plugin
 		log.debug("Checking alch value of item: {}", itemDef.getName());
 		return config.alchItems() &&
 			(config.alchByValue() && itemDef.getHaPrice() > highAlchCost &&
-				itemDef.getHaPrice() > itemGeValue.getOverall_average() &&
+				itemDef.getHaPrice() > itemValue &&
 				itemDef.getHaPrice() < config.maxAlchValue()) ||
 			(config.alchByName() && !alchableItems.isEmpty() && alchableItems.stream().anyMatch(itemDef.getName().toLowerCase()::contains));
 	}
@@ -715,16 +710,19 @@ public class iPowerFighterPlugin extends Plugin
 					lootItem(ammoLoot);
 					break;
 				case WAIT_COMBAT:
-					if (config.safeSpot()) {
-						conditionTimeout = new TimeoutUntil(
-								() -> startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()),
-								() -> playerUtils.isMoving(),
-								3);
-					} else {
-						conditionTimeout = new TimeoutUntil(
-								() -> playerUtils.isAnimating(),
-								() -> playerUtils.isMoving(),
-								3);
+					if (config.safeSpot())
+					{
+						new TimeoutUntil(
+							() -> startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()),
+							() -> playerUtils.isMoving(),
+							3);
+					}
+					else
+					{
+						new TimeoutUntil(
+							() -> playerUtils.isAnimating(),
+							() -> playerUtils.isMoving(),
+							3);
 					}
 					break;
 				case IN_COMBAT:
@@ -765,7 +763,7 @@ public class iPowerFighterPlugin extends Plugin
 		{
 			deathLocation = event.getActor().getWorldLocation();
 			log.debug("Our npc died, updating deathLocation: {}", deathLocation.toString());
-			killcount++;
+			killCount++;
 		}
 	}
 
@@ -857,13 +855,16 @@ public class iPowerFighterPlugin extends Plugin
 			{
 				log.debug("We already have a target. Waiting to auto-retaliate new target");
 				//! If we are underattack, probably are not in safespot --> prioritize returning to safety
-				if (config.safeSpot() && startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius())) {
+				if (config.safeSpot() && startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius()))
+				{
 					walk.sceneWalk(startLoc, config.safeSpotRadius(), sleepDelay());
-					conditionTimeout = new TimeoutUntil(
-							() -> startLoc.distanceTo(player.getWorldLocation()) < (config.safeSpotRadius()),
-							() -> playerUtils.isMoving(),
-							3);
-				} else { //! Otherwise no safespot? Just AFK and auto retaliate.
+					new TimeoutUntil(
+						() -> startLoc.distanceTo(player.getWorldLocation()) < (config.safeSpotRadius()),
+						() -> playerUtils.isMoving(),
+						3);
+				}
+				else
+				{ //! Otherwise no safespot? Just AFK and auto retaliate.
 					timeout = 10;
 				}
 				return;
