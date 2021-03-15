@@ -14,9 +14,9 @@ public class iTile implements Locatable
 {
 	@Inject	private WalkUtils walk;
 
-	@Inject	private Client client;
+	private Client client;
 
-//    final Bot bot;
+    final Bot bot;
     final Position position;
 //    List<GroundItem> items = new ArrayList<>();
     iObject regularObject;
@@ -24,16 +24,16 @@ public class iTile implements Locatable
 	iObject wallDecoration;
 	iObject floorDecoration;
 
-    iTile(Client client, Position position) {
-//        this.bot = bot;
+    iTile(Bot bot, Client client, Position position) {
+        this.bot = bot;
 		this.client = client;
         this.position = position;
     }
 
 //    @Override
-//    public Bot bot() {
-//        return bot;
-//    }
+    public Bot bot() {
+        return bot;
+    }
 
     @Override
 	public Client client() { return client; }
@@ -63,15 +63,6 @@ public class iTile implements Locatable
         return objects;
     }
 
-    /*public iObject object(ObjectCategory category) {
-    	iObject result;
-        return switch (category) {
-            case REGULAR -> regularObject;
-            case WALL -> wall;
-            case WALL_DECORATION -> wallDecoration;
-            case FLOOR_DECORATION -> floorDecoration;
-        };
-    }*/
 	public iObject object(ObjectCategory category) { //Might need .equals?
 		iObject result = null;
 		switch (category) {
@@ -90,4 +81,14 @@ public class iTile implements Locatable
 		};
 		return result;
 	}
+
+    /*public iObject object(ObjectCategory category) {
+    	iObject result;
+        return switch (category) {
+            case REGULAR -> regularObject;
+            case WALL -> wall;
+            case WALL_DECORATION -> wallDecoration;
+            case FLOOR_DECORATION -> floorDecoration;
+        };
+    }*/
 }

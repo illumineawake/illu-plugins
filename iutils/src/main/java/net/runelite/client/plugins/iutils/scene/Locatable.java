@@ -21,7 +21,7 @@ public interface Locatable {
      * If not in an instance, this is equal to {@link Locatable#position()}. In an instance, this returns
      * the position in the chunk template.
      */
-//    default WorldPoint templatePosition() {
-//        return bot().tile(position()).templatePosition();
+//    Point scenePosition() {
+//        return client().tile(position()).templatePosition();
 //    }
 }

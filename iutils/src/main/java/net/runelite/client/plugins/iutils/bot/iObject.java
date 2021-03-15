@@ -5,154 +5,132 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import net.runelite.api.Client;
-import net.runelite.api.ObjectComposition;
+
+import net.runelite.api.*;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.plugins.iutils.api.Interactable;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.plugins.iutils.scene.Locatable;
+import net.runelite.client.plugins.iutils.scene.ObjectCategory;
+import net.runelite.client.plugins.iutils.scene.ObjectType;
 import net.runelite.client.plugins.iutils.scene.Position;
 
-public class iObject implements Locatable, Interactable
-{
-	//	@Inject private Bot bot;
-	@Inject
-	private iUtils utils;
-	private Client client;
+public class iObject implements Locatable, Interactable {
 
-	//	private final Bot bot;
-//	public final Tile tile;
-//	public final int id;
-//	public int sequence = -1;
-//	public final ObjectType type;
-//	public TileObject tileObject;
-//	public ObjectComposition ObjectComposition;
-	public int id;
-	public String name;
-	public String[] actions;
-	public WorldPoint worldPoint;
+    private Client client;
+    private Bot bot;
 
-	public iObject(Client client, int id, String name, String[] actions, WorldPoint worldPoint)
-	{
-//		this.bot = bot;
-		this.client = client;
-//		this.tileObject = tileObject;
-		this.id = id;
-		this.worldPoint = worldPoint;
-		this.name = name;
-		this.actions = actions;
-	}
+    public TileObject tileObject;
+    public ObjectCategory type;
+    public ObjectComposition definition;
 
-//	@Override
-//	public Bot bot() { return bot; }
+    public iObject(Bot bot, Client client, TileObject tileObject, ObjectCategory type, ObjectComposition definition) {
+        this.client = client;
+        this.bot = bot;
+        this.tileObject = tileObject;
+        this.type = type;
+        this.definition = definition;
+    }
 
-	@Override
-	public Client client()
-	{
-		return client;
-	}
+    //	@Override
+    public Bot bot() {
+        return bot;
+    }
 
-//	public int id() {
-//		return id;
-//	}
+    @Override
+    public Client client() {
+        return client;
+    }
 
-	@Override
-	public Position position()
-	{
-		return new Position(worldPoint);
-	}
 
-//	/**
-//	 * The {@link ObjectType} of the object.
-//	 */
-//	public ObjectType type() {
-//		return type;
-//	}
+    @Override
+    public Position position() {
+        return new Position(tileObject.getWorldLocation());
+    }
 
-	public int id()
-	{
-		return id;
-	}
+    public LocalPoint localPoint() {
+        return tileObject.getLocalLocation();
+    }
 
-	public String name() { return name;}
+    /**
+     * The {@link ObjectType} of the object.
+     */
+    public ObjectCategory type() {
+        return type;
+    }
 
-	public List<String> actions() {
-			return Arrays.stream(actions)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toList());
-		}
+    public int id() {
+        return tileObject.getId();
+    }
 
-	/**
-	 * The name of the object, or {@code null} if it has no name.
-	 */
-//	public String name() {
-//		return definition().getName();
-//	}
-//	public String name()
-//	{
-//		System.out.println("Definition value: " + String.valueOf(definition()));
-//		return definition().getName();
-//	}
+    public String name() {
+        return definition.getName();
+    }
 
-//	public ObjectComposition definition() {
-//		AtomicReference<ObjectComposition> ref = new AtomicReference<>();
-//
-//		clientThread().invoke(() -> {
-//			ref.set(client().getObjectDefinition(id()));
-//		});
-//
-//		return ref.get();
-//	}
+    public List<String> actions() {
+        return Arrays.stream(definition().getActions())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
 
-	public ObjectComposition definition() {
-		return client().getObjectDefinition(id());
-	}
+    public ObjectComposition definition() {
+//        return client().getObjectDefinition(id());
+        return definition;
+    }
 
-//	public ObjectComposition definition()
-//	{
-//		CompletableFuture<Object> completableFuture = new CompletableFuture<>();
-//		if (client.isClientThread()) {
-//			return client.getObjectDefinition(id());
-//		} else {
-//			clientThread.invoke(() -> {
-//				completableFuture.complete(client.getObjectDefinition(id()));
-//		});
-//			return (ObjectComposition) completableFuture.get();
-//	}
+    @Override
+    public void interact(String action) {
+        for (int i = 0; i < actions().size(); i++) {
+            if (action.equalsIgnoreCase(actions().get(i))) {
+                interact(i);
+                return;
+            }
+        }
 
-//	@Override
-//	public List<String> actions() {
-//		return Arrays.stream(definition().getActions())
-//			.filter(Objects::nonNull)
-//			.collect(Collectors.toList());
-//	}
+        throw new IllegalArgumentException("no action \"" + action + "\" on object " + id());
+    }
 
-//	public List<String> actions()
-//	{
-//		return Arrays.stream(definition().getActions())
-//			.filter(Objects::nonNull)
-//			.collect(Collectors.toList());
-//	}
+    public void interact(int action) {
+        bot().clientThread.invoke(() -> {
+            int menuAction;
+            Point point;
 
-	@Override
-	public void interact(String action)
-	{
-		String[] actions = definition().getActions();
+            switch (action) {
+                case 0:
+                    menuAction = MenuAction.GAME_OBJECT_FIRST_OPTION.getId();
+                    break;
+                case 1:
+                    menuAction = MenuAction.GAME_OBJECT_SECOND_OPTION.getId();
+                    break;
+                case 2:
+                    menuAction = MenuAction.GAME_OBJECT_THIRD_OPTION.getId();
+                    break;
+                case 3:
+                    menuAction = MenuAction.GAME_OBJECT_FOURTH_OPTION.getId();
+                    break;
+                case 4:
+                    menuAction = MenuAction.GAME_OBJECT_FIFTH_OPTION.getId();
+                    break;
+                default:
+                    throw new IllegalArgumentException("action = " + action);
+            }
+            ;
+            if (type() == ObjectCategory.REGULAR) {
+                GameObject temp = (GameObject) tileObject;
+                point = temp.getSceneMinLocation();
+            } else {
+                point = new Point(localPoint().getSceneX(), localPoint().getSceneY());
+            }
 
-		for (int i = 0; i < actions.length; i++)
-		{
-			if (action.equalsIgnoreCase(actions[i]))
-			{
-				interact(i);
-				return;
-			}
-		}
-
-		throw new IllegalArgumentException("no action \"" + action + "\" on object " + id());
-	}
-
-	public void interact(int action)
-	{
-		//TODO: write interact method
-	}
+            client().invokeMenuAction("",
+                    "",
+                    id(),
+                    menuAction,
+                    point.getX(),
+                    point.getY()
+            );
+        });
+    }
 }
