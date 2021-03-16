@@ -1,0 +1,141 @@
+package net.runelite.client.plugins.iutils.bot;
+
+import net.runelite.api.*;
+import net.runelite.client.plugins.iutils.scene.Position;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+public class iNPC extends iActor {
+
+    private final Client client;
+    private final NPC npc;
+    private final NPCComposition definition;
+
+    public iNPC(Bot bot, Client client, NPC npc, NPCComposition definition) {
+        super(bot, npc);
+        this.client = client;
+        this.npc = npc;
+        this.definition = definition;
+    }
+
+    @Override
+    public Client client() {
+        return client;
+    }
+
+    public NPCComposition definition() {
+        return definition;
+    }
+
+    /**
+     * The index of the NPC, between {@code 0} and {@code 32768}. The
+     * index is a number which uniquely identifies a single NPC in the
+     * world.
+     * <p>
+     * It is not guaranteed to be the same across worlds or server
+     * restarts.
+     *
+     * @see iNPC#id()
+     */
+    public int index() {
+        return npc.getIndex();
+    }
+
+    /**
+     * The ID of the NPC. This refers to the "transformed" ID, which may depend
+     * on the value of a varp or varb.
+     */
+    public int id() {
+        return npc.getId();
+    }
+
+    @Override
+    public String name() {
+        return npc.getName();
+    }
+
+    @Override
+    public int combatLevel() {
+        return npc.getCombatLevel();
+    }
+
+    @Override
+    public Bot bot() {
+        return bot;
+    }
+
+    @Override
+    public Position position() {
+        return new Position(npc.getWorldLocation());
+    }
+
+    @Override
+    public int animation() {
+        return npc.getAnimation();
+    }
+
+    @Override
+    public int spotAnimation() {
+        return npc.getSpotAnimationFrame();
+    }
+
+    @Override
+    public int orientation() {
+        return npc.getOrientation();
+    }
+
+    @Override
+    public List<String> actions() {
+        return Arrays.stream(definition().getActions())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void interact(String action) {
+        String[] actions = definition().getActions();
+
+        for (int i = 0; i < actions.length; i++) {
+            if (action.equalsIgnoreCase(actions[i])) {
+                interact(i);
+                return;
+            }
+        }
+
+        throw new IllegalArgumentException("action \"" + action + "\" not found on NPC " + id());
+    }
+
+    public void interact(int action) {
+        bot().clientThread.invoke(() -> {
+            int menuAction;
+
+            switch (action) {
+                case 0:
+                    menuAction = MenuAction.NPC_FIRST_OPTION.getId();
+                    break;
+                case 1:
+                    menuAction = MenuAction.NPC_SECOND_OPTION.getId();
+                    break;
+                case 2:
+                    menuAction = MenuAction.NPC_THIRD_OPTION.getId();
+                    break;
+                case 3:
+                    menuAction = MenuAction.NPC_FOURTH_OPTION.getId();
+                    break;
+                case 4:
+                    menuAction = MenuAction.NPC_FIFTH_OPTION.getId();
+                    break;
+                default:
+                    throw new IllegalArgumentException("action = " + action);
+            }
+            client().invokeMenuAction("", "", index(), menuAction, 0, 0);
+        });
+    }
+
+    public String toString() {
+        return index() + ": " + name() + " (" + id() + ") at " + position();
+    }
+}

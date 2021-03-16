@@ -19,12 +19,12 @@ import net.runelite.client.plugins.iutils.scene.Position;
 
 public class iObject implements Locatable, Interactable {
 
-    private Client client;
-    private Bot bot;
+    private final Client client;
+    private final Bot bot;
 
-    public TileObject tileObject;
-    public ObjectCategory type;
-    public ObjectComposition definition;
+    private final TileObject tileObject;
+    private final ObjectCategory type;
+    private final ObjectComposition definition;
 
     public iObject(Bot bot, Client client, TileObject tileObject, ObjectCategory type, ObjectComposition definition) {
         this.client = client;
@@ -80,6 +80,14 @@ public class iObject implements Locatable, Interactable {
         return definition;
     }
 
+    private Point menuPoint() {
+        if (type() == ObjectCategory.REGULAR) {
+            GameObject temp = (GameObject) tileObject;
+            return temp.getSceneMinLocation();
+        }
+        return new Point(localPoint().getSceneX(), localPoint().getSceneY());
+    }
+
     @Override
     public void interact(String action) {
         for (int i = 0; i < actions().size(); i++) {
@@ -88,14 +96,12 @@ public class iObject implements Locatable, Interactable {
                 return;
             }
         }
-
         throw new IllegalArgumentException("no action \"" + action + "\" on object " + id());
     }
 
     public void interact(int action) {
         bot().clientThread.invoke(() -> {
             int menuAction;
-            Point point;
 
             switch (action) {
                 case 0:
@@ -116,20 +122,13 @@ public class iObject implements Locatable, Interactable {
                 default:
                     throw new IllegalArgumentException("action = " + action);
             }
-            ;
-            if (type() == ObjectCategory.REGULAR) {
-                GameObject temp = (GameObject) tileObject;
-                point = temp.getSceneMinLocation();
-            } else {
-                point = new Point(localPoint().getSceneX(), localPoint().getSceneY());
-            }
 
             client().invokeMenuAction("",
                     "",
                     id(),
                     menuAction,
-                    point.getX(),
-                    point.getY()
+                    menuPoint().getX(),
+                    menuPoint().getY()
             );
         });
     }

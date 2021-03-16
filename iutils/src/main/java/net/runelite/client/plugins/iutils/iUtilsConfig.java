@@ -43,4 +43,15 @@ public interface iUtilsConfig extends Config
 	{
 		return MouseType.NO_MOVE;
 	}
+
+	@ConfigItem(
+			keyName = "test",
+			name = "Test ID",
+			description = "",
+			position = 1
+	)
+	default int test()
+	{
+		return 0;
+	}
 }

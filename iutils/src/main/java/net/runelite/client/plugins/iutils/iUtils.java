@@ -42,6 +42,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iutils.bot.Bot;
+import net.runelite.client.plugins.iutils.bot.iNPC;
 import net.runelite.client.plugins.iutils.bot.iObject;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
@@ -133,24 +134,21 @@ public class iUtils extends Plugin {
     protected void startUp() {
         long start = System.currentTimeMillis();
         iObject test = bot.objects().withName("Door").nearest();
-        log.info("Search took: {}ms", System.currentTimeMillis() - start);
-        log.info("QUERY: {} {} {} {}", test.id(),
+//        log.info("Search took: {}ms", System.currentTimeMillis() - start);
+        log.info("object query: {} {} {} {}", test.id(),
                 test.position(),
                 test.name(),
                 test.actions());
-//        iObject testTwo = bot.objects().withName("Ladder").nearest();
-//
-//        log.info("QUERY: {} {} {} {}", testTwo.id(), testTwo.position(), testTwo.name(), testTwo.actions());
-//        bot.objects().withName("Door").nearest().interact("Open");
-//        sleep(600);
-        bot.objects().withName("Tree").nearest().interact("Chop down");
-//                clientThread.invoke(() -> {
-//            TileObject to = (TileObject) objectUtils.findNearestWallObject(1535); //53, 56 to.getLocalLocation().getSceneX(), to.getLocalLocation().getSceneY()
-//            log.info("local scenexy: {} {} local xy {} {}", to.getLocalLocation().getSceneX(), to.getLocalLocation().getSceneY(),
-//                    to.getLocalLocation().getX(), to.getLocalLocation().getY());
-//            log.info("world regionxy: {} {} {} {}", to.getWorldLocation().getRegionX(), to.getWorldLocation().getRegionY(),
-//                    to.getWorldLocation().getX(), to.getWorldLocation().getY());
-//        });
+        //        bot.objects().withName("Tree").nearest().interact("Chop down");
+        iNPC npc = bot.npcs().withAction("Trade").nearest();
+        log.info("NPC query: {} {} {} {} {} {} {}", npc.id(),
+                npc.name(),
+                npc.position(),
+                npc.index(),
+                npc.actions(),
+                npc.isDead(),
+                npc.isMoving());
+        npc.interact("Trade");
     }
 
     @Override

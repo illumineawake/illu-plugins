@@ -11,6 +11,7 @@ import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.plugins.iutils.actor.NpcStream;
 import net.runelite.client.plugins.iutils.scene.GameObjectStream;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
 import net.runelite.client.plugins.iutils.scene.Position;
@@ -81,7 +82,7 @@ public class Bot {
     }
 
     public GameObjectStream objects() {
-        Collection<BaseObject> foo = new ArrayList<>();
+        Collection<BaseObject> baseObjects = new ArrayList<>();
         Tile[][][] tiles = client().getScene().getTiles();
         int plane = client().getPlane();
 
@@ -90,26 +91,26 @@ public class Bot {
                 GameObject[] go = tiles[plane][j][k].getGameObjects();
                 for (GameObject gameObject : go) {
                     if (gameObject != null) {
-                        foo.add(new BaseObject(gameObject, ObjectCategory.REGULAR));
+                        baseObjects.add(new BaseObject(gameObject, ObjectCategory.REGULAR));
                     }
                 }
                 WallObject wallObject = tiles[plane][j][k].getWallObject();
                 if (wallObject != null) {
-                    foo.add(new BaseObject(wallObject, ObjectCategory.WALL));
+                    baseObjects.add(new BaseObject(wallObject, ObjectCategory.WALL));
                 }
 
                 GroundObject groundObject = tiles[plane][j][k].getGroundObject();
                 if (groundObject!= null) {
-                    foo.add(new BaseObject(groundObject, ObjectCategory.FLOOR_DECORATION));
+                    baseObjects.add(new BaseObject(groundObject, ObjectCategory.FLOOR_DECORATION));
                 }
 
                 DecorativeObject decorativeObject = tiles[plane][j][k].getDecorativeObject();
                 if (decorativeObject != null) {
-                    foo.add(new BaseObject(decorativeObject, ObjectCategory.WALL_DECORATION));
+                    baseObjects.add(new BaseObject(decorativeObject, ObjectCategory.WALL_DECORATION));
                 }
             }
         }
-        return getFromClientThread(() -> new GameObjectStream(foo.stream()
+        return getFromClientThread(() -> new GameObjectStream(baseObjects.stream()
                 .map(o -> new iObject(
                         this,
                         client(),
@@ -117,6 +118,14 @@ public class Bot {
                         o.objectCategory(),
                         client().getObjectDefinition(o.tileObject.getId())
                         ))
+                .collect(Collectors.toList())
+                .stream())
+        );
+    }
+
+    public NpcStream npcs() {
+        return getFromClientThread(() -> new NpcStream(client().getNpcs().stream()
+                .map(n -> new iNPC(this, client(), n, client().getNpcDefinition(n.getId())))
                 .collect(Collectors.toList())
                 .stream())
         );
