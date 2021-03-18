@@ -10,6 +10,7 @@ import javax.inject.Singleton;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.plugins.iutils.actor.NpcStream;
 import net.runelite.client.plugins.iutils.actor.PlayerStream;
@@ -134,6 +135,14 @@ public class Bot {
                 .collect(Collectors.toList())
                 .stream())
         );
+    }
+
+    public iWidget widget(int parent, int child) {
+        return new iWidget(this, client.getWidget(parent, child));
+    }
+
+    public iWidget widget(WidgetInfo widgetInfo) {
+        return new iWidget(this, client.getWidget(widgetInfo));
     }
 
     public static class BaseObject {

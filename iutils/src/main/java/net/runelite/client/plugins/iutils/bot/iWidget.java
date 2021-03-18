@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class iWidget implements Interactable, Useable {
+public class iWidget implements Interactable/*, Useable */{
 
     private final Bot bot;
     private final Widget widget;

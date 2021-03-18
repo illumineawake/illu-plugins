@@ -134,25 +134,8 @@ public class iUtils extends Plugin {
 
     @Override
     protected void startUp() {
-        log.info("Run {} {}, Toggle {} {} {}", WidgetInfo.MINIMAP_RUN_ORB.getId(), WidgetInfo.MINIMAP_RUN_ORB.getPackedId(), WidgetInfo.MINIMAP_TOGGLE_RUN_ORB.getId(), WidgetInfo.MINIMAP_TOGGLE_RUN_ORB.getPackedId(), WidgetInfo.MINIMAP_RUN_ORB_TEXT.getId());
-        log.info("Test widget ID: " + client.getWidget(160, 22).getId());
-        long start = System.currentTimeMillis();
-//        iObject test = bot.objects().withName("Door").nearest();
-////        log.info("Search took: {}ms", System.currentTimeMillis() - start);
-//        log.info("object query: {} {} {} {}", test.id(),
-//                test.position(),
-//                test.name(),
-//                test.actions());
-////                bot.objects().withName("Tree").nearest().interact("Chop down");
-        iNPC npc = bot.npcs().withAction("Trade").nearest();
-        log.info("NPC query: {} {} {} {} {} {} {}", npc.id(),
-                npc.name(),
-                npc.position(),
-                npc.index(),
-                npc.actions(),
-                npc.isDead(),
-                npc.isMoving());
-        npc.interact("Trade");
+        bot.widget(WidgetInfo.BANK_DEPOSIT_INVENTORY).interact("Deposit inventory");
+        WidgetItem test
     }
 
 
