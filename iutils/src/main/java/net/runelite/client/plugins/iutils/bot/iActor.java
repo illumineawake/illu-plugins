@@ -1,7 +1,6 @@
 package net.runelite.client.plugins.iutils.bot;
 
-import net.runelite.api.Actor;
-import net.runelite.api.AnimationID;
+import net.runelite.api.*;
 import net.runelite.client.plugins.iutils.api.Interactable;
 import net.runelite.client.plugins.iutils.scene.Locatable;
 import net.runelite.client.plugins.iutils.scene.Position;
@@ -29,9 +28,15 @@ public abstract class iActor implements Locatable, Interactable {
      * NPC may target another {@link iActor} if they are attacking them, talking to them,
      * following them, etc.
      */
-    public iActor target() { //TODO: check if int is required
-        return (iActor) actor.getInteracting();
-//        return target < 0x8000 ? bot.npcs.get(target) : bot.player(target - 0x8000);
+    public iActor target() {
+        Actor interacting = actor.getInteracting();
+        if (interacting instanceof NPC)
+            return new iNPC(bot(), (NPC) interacting, client().getNpcDefinition(((NPC) interacting).getId()));
+        else if (interacting instanceof Player) { //TODO: return player
+            Player player = (Player) interacting;
+            return new iPlayer(bot(), player, player.getPlayerComposition());
+        } else
+            throw new AssertionError("not possible, Actor is either an Npc or Player");
     }
 
     public int orientation() {

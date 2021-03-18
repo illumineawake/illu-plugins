@@ -44,6 +44,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iutils.bot.Bot;
 import net.runelite.client.plugins.iutils.bot.iNPC;
 import net.runelite.client.plugins.iutils.bot.iObject;
+import net.runelite.client.plugins.iutils.bot.iPlayer;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
@@ -133,13 +134,13 @@ public class iUtils extends Plugin {
     @Override
     protected void startUp() {
         long start = System.currentTimeMillis();
-        iObject test = bot.objects().withName("Door").nearest();
-//        log.info("Search took: {}ms", System.currentTimeMillis() - start);
-        log.info("object query: {} {} {} {}", test.id(),
-                test.position(),
-                test.name(),
-                test.actions());
-        //        bot.objects().withName("Tree").nearest().interact("Chop down");
+//        iObject test = bot.objects().withName("Door").nearest();
+////        log.info("Search took: {}ms", System.currentTimeMillis() - start);
+//        log.info("object query: {} {} {} {}", test.id(),
+//                test.position(),
+//                test.name(),
+//                test.actions());
+////                bot.objects().withName("Tree").nearest().interact("Chop down");
         iNPC npc = bot.npcs().withAction("Trade").nearest();
         log.info("NPC query: {} {} {} {} {} {} {}", npc.id(),
                 npc.name(),
@@ -150,6 +151,7 @@ public class iUtils extends Plugin {
                 npc.isMoving());
         npc.interact("Trade");
     }
+
 
     @Override
     protected void shutDown() {

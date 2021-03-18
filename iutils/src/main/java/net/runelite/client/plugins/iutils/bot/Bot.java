@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.plugins.iutils.actor.NpcStream;
+import net.runelite.client.plugins.iutils.actor.PlayerStream;
 import net.runelite.client.plugins.iutils.scene.GameObjectStream;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
 import net.runelite.client.plugins.iutils.scene.Position;
@@ -19,11 +20,9 @@ import net.runelite.client.plugins.iutils.scene.Position;
 @Slf4j
 @Singleton
 public class Bot {
-    @Inject
-    public Client client;
 
-    @Inject
-    public ClientThread clientThread;
+    @Inject public Client client;
+    @Inject public ClientThread clientThread;
 
     iTile[][][] tiles = new iTile[4][104][104];
     Position base;
@@ -46,9 +45,8 @@ public class Bot {
         return future.join();
     }
 
-    public Player localPlayer() {
-        System.out.println("Local: " + client.getLocalPlayer().getWorldLocation().toString());
-        return client.getLocalPlayer();
+    public iPlayer localPlayer() {
+        return new iPlayer(this, client.getLocalPlayer(), client.getLocalPlayer().getPlayerComposition());
     }
 
     public Position base() {
@@ -113,7 +111,6 @@ public class Bot {
         return getFromClientThread(() -> new GameObjectStream(baseObjects.stream()
                 .map(o -> new iObject(
                         this,
-                        client(),
                         o.tileObject,
                         o.objectCategory(),
                         client().getObjectDefinition(o.tileObject.getId())
@@ -125,7 +122,15 @@ public class Bot {
 
     public NpcStream npcs() {
         return getFromClientThread(() -> new NpcStream(client().getNpcs().stream()
-                .map(n -> new iNPC(this, client(), n, client().getNpcDefinition(n.getId())))
+                .map(npc -> new iNPC(this, npc, client().getNpcDefinition(npc.getId())))
+                .collect(Collectors.toList())
+                .stream())
+        );
+    }
+
+    public PlayerStream players() {
+        return getFromClientThread(() -> new PlayerStream(client().getPlayers().stream()
+                .map(p -> new iPlayer(this, p, p.getPlayerComposition()))
                 .collect(Collectors.toList())
                 .stream())
         );

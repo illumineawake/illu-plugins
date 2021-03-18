@@ -9,21 +9,18 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class iNPC extends iActor {
-
-    private final Client client;
     private final NPC npc;
     private final NPCComposition definition;
 
-    public iNPC(Bot bot, Client client, NPC npc, NPCComposition definition) {
+    public iNPC(Bot bot, NPC npc, NPCComposition definition) {
         super(bot, npc);
-        this.client = client;
         this.npc = npc;
         this.definition = definition;
     }
 
     @Override
     public Client client() {
-        return client;
+        return bot.client();
     }
 
     public NPCComposition definition() {

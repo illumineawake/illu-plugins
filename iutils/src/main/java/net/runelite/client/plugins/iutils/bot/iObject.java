@@ -19,15 +19,12 @@ import net.runelite.client.plugins.iutils.scene.Position;
 
 public class iObject implements Locatable, Interactable {
 
-    private final Client client;
     private final Bot bot;
-
     private final TileObject tileObject;
     private final ObjectCategory type;
     private final ObjectComposition definition;
 
-    public iObject(Bot bot, Client client, TileObject tileObject, ObjectCategory type, ObjectComposition definition) {
-        this.client = client;
+    public iObject(Bot bot, TileObject tileObject, ObjectCategory type, ObjectComposition definition) {
         this.bot = bot;
         this.tileObject = tileObject;
         this.type = type;
@@ -39,11 +36,9 @@ public class iObject implements Locatable, Interactable {
         return bot;
     }
 
-    @Override
     public Client client() {
-        return client;
+        return bot.client;
     }
-
 
     @Override
     public Position position() {
