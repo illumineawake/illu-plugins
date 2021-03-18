@@ -134,6 +134,8 @@ public class iUtils extends Plugin {
 
     @Override
     protected void startUp() {
+        log.info("Run {} {}, Toggle {} {} {}", WidgetInfo.MINIMAP_RUN_ORB.getId(), WidgetInfo.MINIMAP_RUN_ORB.getPackedId(), WidgetInfo.MINIMAP_TOGGLE_RUN_ORB.getId(), WidgetInfo.MINIMAP_TOGGLE_RUN_ORB.getPackedId(), WidgetInfo.MINIMAP_RUN_ORB_TEXT.getId());
+        log.info("Test widget ID: " + client.getWidget(160, 22).getId());
         long start = System.currentTimeMillis();
 //        iObject test = bot.objects().withName("Door").nearest();
 ////        log.info("Search took: {}ms", System.currentTimeMillis() - start);
