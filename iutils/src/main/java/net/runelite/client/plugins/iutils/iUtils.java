@@ -135,7 +135,6 @@ public class iUtils extends Plugin {
     @Override
     protected void startUp() {
         bot.widget(WidgetInfo.BANK_DEPOSIT_INVENTORY).interact("Deposit inventory");
-        WidgetItem test
     }
 
 
