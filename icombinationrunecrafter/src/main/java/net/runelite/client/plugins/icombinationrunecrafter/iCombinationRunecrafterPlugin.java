@@ -380,7 +380,7 @@ public class iCombinationRunecrafterPlugin extends Plugin
 	private void teleportRingOfDueling(int menuIdentifier)
 	{
 		targetMenu = new MenuEntry("", "", menuIdentifier, MenuAction.CC_OP.getId(), -1,
-			25362455, false);
+			25362456, false);
 		Widget ringWidget = client.getWidget(WidgetInfo.EQUIPMENT_RING);
 		if (ringWidget != null)
 		{
