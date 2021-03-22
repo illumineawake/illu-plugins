@@ -10,6 +10,7 @@ import javax.inject.Singleton;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.plugins.iutils.actor.NpcStream;
@@ -143,6 +144,15 @@ public class Bot {
 
     public iWidget widget(WidgetInfo widgetInfo) {
         return new iWidget(this, client.getWidget(widgetInfo));
+    }
+
+    public ItemContainer container(InventoryID inventoryID) {
+        return client.getItemContainer(inventoryID);
+    }
+
+    public ItemContainer container(int containerId) {
+        InventoryID inventoryID = InventoryID.getValue(containerId);
+        return client.getItemContainer(inventoryID);
     }
 
     public static class BaseObject {

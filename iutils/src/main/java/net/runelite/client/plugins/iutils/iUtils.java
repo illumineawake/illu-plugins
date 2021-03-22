@@ -18,19 +18,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.Client;
-import net.runelite.api.GameObject;
-import net.runelite.api.MenuAction;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.NPC;
-import net.runelite.api.Point;
-import net.runelite.api.TileObject;
+import net.runelite.api.*;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.callback.ClientThread;
@@ -42,15 +36,14 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.iutils.bot.Bot;
-import net.runelite.client.plugins.iutils.bot.iNPC;
-import net.runelite.client.plugins.iutils.bot.iObject;
-import net.runelite.client.plugins.iutils.bot.iPlayer;
+import net.runelite.client.plugins.iutils.bot.*;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
 import okhttp3.OkHttpClient;
 import org.pf4j.Extension;
+
+import static net.runelite.api.widgets.WidgetInfo.BANK_ITEM_CONTAINER;
 
 /**
  *
@@ -134,9 +127,17 @@ public class iUtils extends Plugin {
 
     @Override
     protected void startUp() {
-        bot.widget(WidgetInfo.BANK_DEPOSIT_INVENTORY).interact("Deposit inventory");
+//        bot.widget(WidgetInfo.BANK_DEPOSIT_INVENTORY).interact("Deposit inventory");
+        /* bank items example
+        Widget[] widgets = bot.widget(BANK_ITEM_CONTAINER).dynamicChildren();
+        for (Widget widget : widgets) {
+            if (widget.getItemId() == 6512 || widget.getItemId() == -1 || widget.isSelfHidden())
+            {
+                continue;
+            }
+            log.info("Widget id: {} quantity: {} slot: {}", widget.getItemId(), widget.getItemQuantity(), widget.getIndex());
+        }*/
     }
-
 
     @Override
     protected void shutDown() {

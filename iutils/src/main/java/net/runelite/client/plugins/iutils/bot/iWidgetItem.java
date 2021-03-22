@@ -1,12 +1,8 @@
 package net.runelite.client.plugins.iutils.bot;
 
 import net.runelite.api.Client;
-import net.runelite.api.ItemContainer;
 import net.runelite.api.MenuAction;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.api.widgets.WidgetItem;
-import net.runelite.client.plugins.iutils.ContainerUtils;
 import net.runelite.client.plugins.iutils.api.Interactable;
 
 import java.util.Arrays;
@@ -14,12 +10,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
+public class iWidgetItem implements Interactable/*, Useable */{ //TODO: Useable
 
     private final Bot bot;
     private final Widget widget;
 
-    public iWidget(Bot bot, Widget widget) {
+    public iWidgetItem(Bot bot, Widget widget) {
         this.bot = bot;
         this.widget = widget;
     }
@@ -49,8 +45,6 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
     public boolean hidden() {
         return widget.isHidden();
     }
-
-    public Widget[] dynamicChildren() { return widget.getDynamicChildren(); }
 
 //    public int nestedInterface() { //TODO
 //        widget.getNestedChildren()
