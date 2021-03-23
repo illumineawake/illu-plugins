@@ -12,19 +12,23 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.plugins.iutils.actor.NpcStream;
 import net.runelite.client.plugins.iutils.actor.PlayerStream;
 import net.runelite.client.plugins.iutils.scene.GameObjectStream;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
 import net.runelite.client.plugins.iutils.scene.Position;
+import net.runelite.client.plugins.iutils.ui.InventoryItemStream;
 
 @Slf4j
 @Singleton
 public class Bot {
 
-    @Inject public Client client;
-    @Inject public ClientThread clientThread;
+    @Inject
+    public Client client;
+    @Inject
+    public ClientThread clientThread;
 
     iTile[][][] tiles = new iTile[4][104][104];
     Position base;
@@ -100,7 +104,7 @@ public class Bot {
                 }
 
                 GroundObject groundObject = tiles[plane][j][k].getGroundObject();
-                if (groundObject!= null) {
+                if (groundObject != null) {
                     baseObjects.add(new BaseObject(groundObject, ObjectCategory.FLOOR_DECORATION));
                 }
 
@@ -116,7 +120,7 @@ public class Bot {
                         o.tileObject,
                         o.objectCategory(),
                         client().getObjectDefinition(o.tileObject.getId())
-                        ))
+                ))
                 .collect(Collectors.toList())
                 .stream())
         );
@@ -144,6 +148,13 @@ public class Bot {
 
     public iWidget widget(WidgetInfo widgetInfo) {
         return new iWidget(this, client.getWidget(widgetInfo));
+    }
+
+    public InventoryItemStream inventory() {
+        return getFromClientThread(() -> new InventoryItemStream(widget(WidgetInfo.INVENTORY).items().stream().map(ci -> new InventoryItem(this,
+                ci.getWidgetItem(ci.getIndex()),
+                client.getItemDefinition(ci.getId()))
+        )));
     }
 
     public ItemContainer container(InventoryID inventoryID) {

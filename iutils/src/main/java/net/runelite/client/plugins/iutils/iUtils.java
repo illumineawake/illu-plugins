@@ -128,8 +128,8 @@ public class iUtils extends Plugin {
     @Override
     protected void startUp() {
 //        bot.widget(WidgetInfo.BANK_DEPOSIT_INVENTORY).interact("Deposit inventory");
-        /* bank items example
-        Widget[] widgets = bot.widget(BANK_ITEM_CONTAINER).dynamicChildren();
+//         bank items example
+        /*List<Widget> widgets = bot.widget(BANK_ITEM_CONTAINER).items();
         for (Widget widget : widgets) {
             if (widget.getItemId() == 6512 || widget.getItemId() == -1 || widget.isSelfHidden())
             {
@@ -137,6 +137,10 @@ public class iUtils extends Plugin {
             }
             log.info("Widget id: {} quantity: {} slot: {}", widget.getItemId(), widget.getItemQuantity(), widget.getIndex());
         }*/
+        List<InventoryItem> items = bot.inventory().all();
+        for (InventoryItem item : items) {
+            log.info("Item id: {}, name: {}, quantity: {}, slot: {}, actions: {}", item.id(), item.name(), item.quantity(), item.slot(), item.actions());
+        }
     }
 
     @Override

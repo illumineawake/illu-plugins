@@ -9,6 +9,7 @@ import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.iutils.ContainerUtils;
 import net.runelite.client.plugins.iutils.api.Interactable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -50,7 +51,17 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
         return widget.isHidden();
     }
 
-    public Widget[] dynamicChildren() { return widget.getDynamicChildren(); }
+    public List<Widget> items() {
+        ArrayList<Widget> items = new ArrayList<>();
+
+        for (Widget slot : widget.getDynamicChildren()) {
+            if (slot != null) {
+                items.add(slot);
+            }
+        }
+        return items;
+    }
+//        return widget.getDynamicChildren(); }
 
 //    public int nestedInterface() { //TODO
 //        widget.getNestedChildren()
