@@ -2,6 +2,7 @@ package net.runelite.client.plugins.iutils.bot;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -10,10 +11,12 @@ import javax.inject.Singleton;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.iutils.actor.NpcStream;
 import net.runelite.client.plugins.iutils.actor.PlayerStream;
 import net.runelite.client.plugins.iutils.scene.GameObjectStream;
@@ -27,8 +30,11 @@ public class Bot {
 
     @Inject
     public Client client;
+
     @Inject
     public ClientThread clientThread;
+
+    private boolean tickEvent;
 
     iTile[][][] tiles = new iTile[4][104][104];
     Position base;
@@ -49,6 +55,22 @@ public class Bot {
         });
 
         return future.join();
+    }
+
+//    public void onGameTick(GameTick event) {
+//        log.info("Game tick {}", System.currentTimeMillis());
+//    }
+
+    public void tick() {
+        long start = client().getTickCount();
+
+        while (client.getTickCount() == start) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public iPlayer localPlayer() {
@@ -151,10 +173,11 @@ public class Bot {
     }
 
     public InventoryItemStream inventory() {
-        return getFromClientThread(() -> new InventoryItemStream(widget(WidgetInfo.INVENTORY).items().stream().map(ci -> new InventoryItem(this,
-                ci.getWidgetItem(ci.getIndex()),
-                client.getItemDefinition(ci.getId()))
-        )));
+        return getFromClientThread(() -> new InventoryItemStream(widget(WidgetInfo.INVENTORY).items().stream()
+                .map(wi -> new InventoryItem(this, wi, client().getItemDefinition(wi.getId())))
+                .collect(Collectors.toList())
+                .stream())
+        );
     }
 
     public ItemContainer container(InventoryID inventoryID) {
@@ -165,6 +188,70 @@ public class Bot {
         InventoryID inventoryID = InventoryID.getValue(containerId);
         return client.getItemContainer(inventoryID);
     }
+
+    ///////////////////////////////////////////////////
+    //                    Other                      //
+    ///////////////////////////////////////////////////
+
+//    public void sleepApproximately(int averageTime) {
+//        sleepExact((long) random.lognormal(averageTime));
+//    }
+//
+//    public void sleepExact(long time) {
+//        long endTime = System.currentTimeMillis() + time;
+//
+//        while (endTime > lastTickTime + 600) {
+//            tick();
+//        }
+//
+//        time = endTime - System.currentTimeMillis();
+//
+//        if (time > 0) {
+//            try {
+//                Thread.sleep(time);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//    }
+//
+//    public void waitUntil(BooleanSupplier condition) {
+//        long start = System.currentTimeMillis();
+//
+//        while (!condition.getAsBoolean()) {
+//            tick();
+//
+//            if (System.currentTimeMillis() - start > 60000) {
+//                throw new IllegalStateException("timed out");
+//            }
+//        }
+//
+//        int timeWaited = (int) (System.currentTimeMillis() - start);
+//
+//        if (timeWaited > 200) {
+//            sleepExact((long) random.lognormal(timeWaited / 10));
+//        }
+//    }
+//
+//    public boolean waitUntil(BooleanSupplier condition, int timeout) {
+//        long start = System.currentTimeMillis();
+//
+//        while (!condition.getAsBoolean()) {
+//            tick();
+//
+//            if (System.currentTimeMillis() - start > timeout) {
+//                return false;
+//            }
+//        }
+//
+//        int timeWaited = (int) (System.currentTimeMillis() - start);
+//
+//        if (timeWaited > 200) {
+//            sleepExact((long) random.lognormal(timeWaited / 10));
+//        }
+//
+//        return true;
+//    }
 
     public static class BaseObject {
         private final TileObject tileObject;

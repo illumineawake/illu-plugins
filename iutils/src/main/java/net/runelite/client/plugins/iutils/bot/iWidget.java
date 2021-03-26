@@ -51,10 +51,10 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
         return widget.isHidden();
     }
 
-    public List<Widget> items() {
-        ArrayList<Widget> items = new ArrayList<>();
+    public List<WidgetItem> items() {
+        ArrayList<WidgetItem> items = new ArrayList<>();
 
-        for (Widget slot : widget.getDynamicChildren()) {
+        for (WidgetItem slot : widget.getWidgetItems()) {
             if (slot != null) {
                 items.add(slot);
             }
@@ -63,9 +63,15 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
     }
 //        return widget.getDynamicChildren(); }
 
-//    public int nestedInterface() { //TODO
-//        widget.getNestedChildren()
-//    }
+    public int nestedInterface() {
+        Widget[] nested = widget.getNestedChildren();
+
+        if (nested.length == 0) {
+            return -1;
+        }
+
+        return nested[0].getId() >> 16;
+    }
 
     @Override
     public List<String> actions() {

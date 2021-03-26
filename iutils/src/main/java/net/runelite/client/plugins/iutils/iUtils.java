@@ -44,6 +44,7 @@ import okhttp3.OkHttpClient;
 import org.pf4j.Extension;
 
 import static net.runelite.api.widgets.WidgetInfo.BANK_ITEM_CONTAINER;
+import static net.runelite.api.widgets.WidgetInfo.CHATBOX_MESSAGES;
 
 /**
  *
@@ -137,9 +138,20 @@ public class iUtils extends Plugin {
             }
             log.info("Widget id: {} quantity: {} slot: {}", widget.getItemId(), widget.getItemQuantity(), widget.getIndex());
         }*/
-        List<InventoryItem> items = bot.inventory().all();
-        for (InventoryItem item : items) {
-            log.info("Item id: {}, name: {}, quantity: {}, slot: {}, actions: {}", item.id(), item.name(), item.quantity(), item.slot(), item.actions());
+        if (client != null && client.getLocalPlayer() != null) {
+//            List<InventoryItem> items = bot.inventory().all();
+//            for (InventoryItem item : items) {
+//                log.info("Item id: {}, name: {}, quantity: {}, slot: {}, actions: {}", item.id(), item.name(), item.quantity(), item.slot(), item.actions());
+//            }
+//            bot.inventory().withName("Tuna").first().interact("Eat");
+//            bot.widget(CHATBOX_MESSAGES).nestedInterface();
+//            clientThread.invoke(() -> {Widget[] widgets = client.getWidget(162, 562).getNestedChildren();
+//            for (Widget widget:widgets) {
+//                int num = widget.getId();
+//                log.info("{} {}",num, (WidgetInfo.DIALOG_NPC.getId() >>16));
+//
+//            }});
+            clientThread.invoke(() -> log.info("{}", bot.widget(162, 562).nestedInterface()));
         }
     }
 
