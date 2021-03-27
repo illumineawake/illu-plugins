@@ -168,13 +168,14 @@ public class iUtils extends Plugin {
         log.info("button {} pressed!", configButtonClicked.getKey());
         if (configButtonClicked.getKey().equals("startButton"))
         {
+            bot.sleepApproximately(config.test());
             long start = System.currentTimeMillis();
 //            log.info("Size: {}", bot.objects2().size());
-            log.info("Pos: {}",bot.objects2().withAction("Open").nearest().position());
+            log.info("Pos: {}",bot.objects2().withName("Door").withAction("Open").nearest().position());
             log.info("Time taken: {}", System.currentTimeMillis() - start);
 
             start = System.currentTimeMillis();
-            log.info("Pos: {}",bot.objects().withAction("Open").nearest().position());
+            log.info("Pos: {}",bot.objects().withName("Door").withAction("Open").nearest().position());
             log.info("Time taken: {}", System.currentTimeMillis() - start);
 
         }

@@ -17,6 +17,7 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.plugins.iutils.CalculationUtils;
 import net.runelite.client.plugins.iutils.actor.NpcStream;
 import net.runelite.client.plugins.iutils.actor.PlayerStream;
 import net.runelite.client.plugins.iutils.iUtils;
@@ -35,6 +36,9 @@ public class Bot {
 
     @Inject
     public ClientThread clientThread;
+
+    @Inject
+    private CalculationUtils calc;
 
     private boolean tickEvent;
 
@@ -208,65 +212,66 @@ public class Bot {
     //                    Other                      //
     ///////////////////////////////////////////////////
 
-//    public void sleepApproximately(int averageTime) {
-//        sleepExact((long) random.lognormal(averageTime));
-//    }
-//
-//    public void sleepExact(long time) {
-//        long endTime = System.currentTimeMillis() + time;
-//
+    public void sleepApproximately(int averageTime) { //TODO
+        sleepExact(calc.randomDelay(true, (int)(averageTime *0.7), (int)(averageTime *1.3), 50, averageTime));
+    }
+
+    public void sleepExact(long time) {
+        log.info("Performing sleep for: {}ms", time);
+        long endTime = System.currentTimeMillis() + time;
+
 //        while (endTime > lastTickTime + 600) {
 //            tick();
 //        }
+
+        time = endTime - System.currentTimeMillis();
+
+        if (time > 0) {
+            try {
+                Thread.sleep(time);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 //
-//        time = endTime - System.currentTimeMillis();
-//
-//        if (time > 0) {
-//            try {
-//                Thread.sleep(time);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
-//    }
-//
-//    public void waitUntil(BooleanSupplier condition) {
-//        long start = System.currentTimeMillis();
-//
-//        while (!condition.getAsBoolean()) {
-//            tick();
-//
-//            if (System.currentTimeMillis() - start > 60000) {
-//                throw new IllegalStateException("timed out");
-//            }
-//        }
-//
-//        int timeWaited = (int) (System.currentTimeMillis() - start);
-//
-//        if (timeWaited > 200) {
-//            sleepExact((long) random.lognormal(timeWaited / 10));
-//        }
-//    }
-//
-//    public boolean waitUntil(BooleanSupplier condition, int timeout) {
-//        long start = System.currentTimeMillis();
-//
-//        while (!condition.getAsBoolean()) {
-//            tick();
-//
-//            if (System.currentTimeMillis() - start > timeout) {
-//                return false;
-//            }
-//        }
-//
-//        int timeWaited = (int) (System.currentTimeMillis() - start);
-//
-//        if (timeWaited > 200) {
-//            sleepExact((long) random.lognormal(timeWaited / 10));
-//        }
-//
-//        return true;
-//    }
+    public void waitUntil(BooleanSupplier condition) {
+        long start = System.currentTimeMillis();
+
+        while (!condition.getAsBoolean()) {
+            tick();
+
+            if (System.currentTimeMillis() - start > 60000) {
+                throw new IllegalStateException("timed out");
+            }
+        }
+
+        int timeWaited = (int) (System.currentTimeMillis() - start);
+
+        if (timeWaited > 200) {
+            sleepExact((timeWaited / 10));
+        }
+    }
+
+    public boolean waitUntil(BooleanSupplier condition, int timeout) {
+        long start = System.currentTimeMillis();
+
+        while (!condition.getAsBoolean()) {
+            tick();
+
+            if (System.currentTimeMillis() - start > timeout) {
+                return false;
+            }
+        }
+
+        int timeWaited = (int) (System.currentTimeMillis() - start);
+
+        if (timeWaited > 200) {
+            sleepExact((timeWaited / 10));
+        }
+
+        return true;
+    }
 
     public static class BaseObject {
         private final TileObject tileObject;

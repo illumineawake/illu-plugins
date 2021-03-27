@@ -25,20 +25,102 @@
  */
 package net.runelite.client.plugins.iutils;
 
-import net.runelite.client.config.Button;
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.*;
 
 
 @ConfigGroup("iUtils")
 public interface iUtilsConfig extends Config
 {
+	@ConfigSection(
+			keyName = "delayConfig",
+			name = "Sleep Delay Configuration",
+			description = "Configure how the bot handles sleep delays",
+			closedByDefault = true,
+			position = 0
+	)
+	String delayConfig = "delayConfig";
+
+	@Range(
+			min = 0,
+			max = 550
+	)
+	@ConfigItem(
+			keyName = "sleepMin",
+			name = "Sleep Min",
+			description = "",
+			position = 1,
+			section = "delayConfig"
+	)
+	default int sleepMin()
+	{
+		return 60;
+	}
+
+	@Range(
+			min = 0,
+			max = 550
+	)
+	@ConfigItem(
+			keyName = "sleepMax",
+			name = "Sleep Max",
+			description = "",
+			position = 2,
+			section = "delayConfig"
+	)
+	default int sleepMax()
+	{
+		return 350;
+	}
+
+	@Range(
+			min = 0,
+			max = 550
+	)
+	@ConfigItem(
+			keyName = "sleepTarget",
+			name = "Sleep Target",
+			description = "",
+			position = 3,
+			section = "delayConfig"
+	)
+	default int sleepTarget()
+	{
+		return 100;
+	}
+
+	@Range(
+			min = 0,
+			max = 550
+	)
+	@ConfigItem(
+			keyName = "sleepDeviation",
+			name = "Sleep Deviation",
+			description = "",
+			position = 4,
+			section = "delayConfig"
+	)
+	default int sleepDeviation()
+	{
+		return 10;
+	}
+
+	@ConfigItem(
+			keyName = "sleepWeightedDistribution",
+			name = "Sleep Weighted Distribution",
+			description = "Shifts the random distribution towards the lower end at the target, otherwise it will be an even distribution",
+			position = 5,
+			section = "delayConfig"
+	)
+	default boolean sleepWeightedDistribution()
+	{
+		return false;
+	}
+
 	@ConfigItem(
 		keyName = "getMouse",
 		name = "Mouse",
 		description = "Choose a mouse movement style",
-		position = 0
+		position = 6
 	)
 	default MouseType getMouse()
 	{
@@ -49,7 +131,7 @@ public interface iUtilsConfig extends Config
 			keyName = "test",
 			name = "Test ID",
 			description = "",
-			position = 1
+			position = 7
 	)
 	default int test()
 	{
