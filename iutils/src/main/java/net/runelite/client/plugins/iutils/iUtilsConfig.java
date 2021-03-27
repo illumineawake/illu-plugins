@@ -25,6 +25,7 @@
  */
 package net.runelite.client.plugins.iutils;
 
+import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -53,5 +54,16 @@ public interface iUtilsConfig extends Config
 	default int test()
 	{
 		return 0;
+	}
+
+	@ConfigItem(
+			keyName = "startButton",
+			name = "Start/Stop",
+			description = "Test button that changes variable value",
+			position = 150
+	)
+	default Button startButton()
+	{
+		return new Button();
 	}
 }

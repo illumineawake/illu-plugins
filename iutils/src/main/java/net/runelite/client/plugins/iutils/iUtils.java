@@ -9,9 +9,8 @@ import com.google.inject.Provides;
 
 import java.awt.Rectangle;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.time.Instant;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
@@ -19,10 +18,7 @@ import javax.inject.Singleton;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.events.ClientTick;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.MenuEntryAdded;
-import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -37,6 +33,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iutils.bot.*;
+import net.runelite.client.plugins.iutils.scene.ObjectCategory;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
@@ -138,7 +135,8 @@ public class iUtils extends Plugin {
             }
             log.info("Widget id: {} quantity: {} slot: {}", widget.getItemId(), widget.getItemQuantity(), widget.getIndex());
         }*/
-        if (client != null && client.getLocalPlayer() != null) {
+//        if (client != null && client.getLocalPlayer() != null) {
+//            bot.objects2().withAction("Chop-down").nearest().interact("Chop-down");
 //            List<InventoryItem> items = bot.inventory().all();
 //            for (InventoryItem item : items) {
 //                log.info("Item id: {}, name: {}, quantity: {}, slot: {}, actions: {}", item.id(), item.name(), item.quantity(), item.slot(), item.actions());
@@ -151,13 +149,114 @@ public class iUtils extends Plugin {
 //                log.info("{} {}",num, (WidgetInfo.DIALOG_NPC.getId() >>16));
 //
 //            }});
-            clientThread.invoke(() -> log.info("{}", bot.widget(162, 562).nestedInterface()));
-        }
+//            clientThread.invoke(() -> log.info("{}", bot.widget(162, 562).nestedInterface()));
+//        }
     }
 
     @Override
     protected void shutDown() {
 
+    }
+
+    @Subscribe
+    private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked)
+    {
+        if (!configButtonClicked.getGroup().equalsIgnoreCase("iUtils"))
+        {
+            return;
+        }
+        log.info("button {} pressed!", configButtonClicked.getKey());
+        if (configButtonClicked.getKey().equals("startButton"))
+        {
+            long start = System.currentTimeMillis();
+//            log.info("Size: {}", bot.objects2().size());
+            log.info("Pos: {}",bot.objects2().withAction("Open").nearest().position());
+            log.info("Time taken: {}", System.currentTimeMillis() - start);
+
+            start = System.currentTimeMillis();
+            log.info("Pos: {}",bot.objects().withAction("Open").nearest().position());
+            log.info("Time taken: {}", System.currentTimeMillis() - start);
+
+        }
+    }
+    public final static Set<TileObject> objects = new HashSet<>();
+    public final static Set<NPC> npcs = new HashSet<>();
+
+    @Subscribe
+    public void onGameStateChanged(GameStateChanged gameStateChanged)
+    {
+        if (gameStateChanged.getGameState() != GameState.LOGGED_IN && gameStateChanged.getGameState() != GameState.CONNECTION_LOST)
+        {
+            objects.clear();
+            npcs.clear();
+        }
+    }
+
+    @Subscribe
+    public void onWallObjectSpawned(WallObjectSpawned event)
+    {
+        objects.add(event.getWallObject());
+    }
+
+    @Subscribe
+    public void onWallObjectChanged(WallObjectChanged event)
+    {
+        objects.remove(event.getPrevious());
+        objects.add(event.getWallObject());
+    }
+
+    @Subscribe
+    public void onWallObjectDespawned(WallObjectDespawned event)
+    {
+        objects.remove(event.getWallObject());
+    }
+
+    @Subscribe
+    public void onGameObjectSpawned(GameObjectSpawned event)
+    {
+        objects.add(event.getGameObject());
+    }
+
+    @Subscribe
+    public void onGameObjectDespawned(GameObjectDespawned event)
+    {
+        objects.remove(event.getGameObject());
+    }
+
+    @Subscribe
+    public void onDecorativeObjectSpawned(DecorativeObjectSpawned event)
+    {
+        objects.add(event.getDecorativeObject());
+    }
+
+    @Subscribe
+    public void onDecorativeObjectDespawned(DecorativeObjectDespawned event)
+    {
+        objects.remove(event.getDecorativeObject());
+    }
+
+    @Subscribe
+    public void onGroundObjectSpawned(GroundObjectSpawned event)
+    {
+        objects.add(event.getGroundObject());
+    }
+
+    @Subscribe
+    public void onGroundObjectDespawned(GroundObjectDespawned event)
+    {
+        objects.remove(event.getGroundObject());
+    }
+
+    @Subscribe
+    public void npcSpawned(NpcSpawned event)
+    {
+        npcs.add(event.getNpc());
+    }
+
+    @Subscribe
+    public void npcDespawned(NpcDespawned event)
+    {
+        npcs.remove(event.getNpc());
     }
 
     public void doTestActionGameTick(Runnable runnable, Point point, long ticksToDelay) {

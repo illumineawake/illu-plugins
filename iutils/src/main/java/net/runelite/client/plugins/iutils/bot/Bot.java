@@ -19,7 +19,9 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.iutils.actor.NpcStream;
 import net.runelite.client.plugins.iutils.actor.PlayerStream;
+import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.plugins.iutils.scene.GameObjectStream;
+import net.runelite.client.plugins.iutils.scene.GameObjectStreamT;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
 import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.ui.InventoryItemStream;
@@ -106,6 +108,19 @@ public class Bot {
                 .filter(Objects::nonNull)
                 .map(to -> new iTile(this, client(), new Position(to.getWorldLocation())));
     }
+
+    public GameObjectStreamT objects2() {
+        return getFromClientThread(() -> new GameObjectStreamT(iUtils.objects.stream()
+                .map(o -> new iObjectT(
+                        this,
+                        o,
+                        client().getObjectDefinition(o.getId())
+                ))
+                .collect(Collectors.toList())
+                .stream())
+        );
+    }
+
 
     public GameObjectStream objects() {
         Collection<BaseObject> baseObjects = new ArrayList<>();
