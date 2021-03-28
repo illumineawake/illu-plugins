@@ -2,6 +2,7 @@ package net.runelite.client.plugins.iutils.bot;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.iutils.CalculationUtils;
+import net.runelite.client.plugins.iutils.KeyboardUtils;
 import net.runelite.client.plugins.iutils.actor.NpcStream;
 import net.runelite.client.plugins.iutils.actor.PlayerStream;
 import net.runelite.client.plugins.iutils.iUtils;
@@ -26,6 +28,9 @@ import net.runelite.client.plugins.iutils.scene.GameObjectStreamT;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
 import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.ui.InventoryItemStream;
+
+import static java.awt.event.KeyEvent.VK_ENTER;
+import static net.runelite.client.plugins.iutils.iUtils.sleep;
 
 @Slf4j
 @Singleton
@@ -39,6 +44,12 @@ public class Bot {
 
     @Inject
     private CalculationUtils calc;
+
+    @Inject
+    private KeyboardUtils keyboard;
+
+    @Inject
+    private ExecutorService executorService;
 
     private boolean tickEvent;
 
@@ -54,13 +65,18 @@ public class Bot {
     }
 
     public <T> T getFromClientThread(Supplier<T> supplier) {
-        CompletableFuture<T> future = new CompletableFuture<>();
+        if (!client.isClientThread()) {
+            log.info("not on client thread");
+            CompletableFuture<T> future = new CompletableFuture<>();
 
-        clientThread().invoke(() -> {
-            future.complete(supplier.get());
-        });
-
-        return future.join();
+            clientThread().invoke(() -> {
+                future.complete(supplier.get());
+            });
+            return future.join();
+        } else {
+            log.info("On client thread");
+            return supplier.get();
+        }
     }
 
 //    public void onGameTick(GameTick event) {
@@ -183,8 +199,12 @@ public class Bot {
         );
     }
 
-    public iWidget widget(int parent, int child) {
-        return new iWidget(this, client.getWidget(parent, child));
+    public iWidget widget(int group, int file) {
+        return new iWidget(this, client.getWidget(group, file));
+    }
+
+    public iWidget widget(int group, int file, int child) {
+        return new iWidget(this, client.getWidget(group, file).getDynamicChildren()[child]);
     }
 
     public iWidget widget(WidgetInfo widgetInfo) {
@@ -192,7 +212,7 @@ public class Bot {
     }
 
     public InventoryItemStream inventory() {
-        return getFromClientThread(() -> new InventoryItemStream(widget(WidgetInfo.INVENTORY).items().stream()
+        return getFromClientThread(() -> new InventoryItemStream(widget(WidgetInfo.INVENTORY).getWidgetItems().stream()
                 .map(wi -> new InventoryItem(this, wi, client().getItemDefinition(wi.getId())))
                 .collect(Collectors.toList())
                 .stream())
@@ -208,12 +228,21 @@ public class Bot {
         return client.getItemContainer(inventoryID);
     }
 
+    public void chooseNumber(int number) {
+        executorService.submit(() -> {
+            sleep(calc.getRandomIntBetweenRange(1000, 1500));
+            keyboard.typeString(String.valueOf(number));
+            sleep(calc.getRandomIntBetweenRange(80, 250));
+            keyboard.pressKey(VK_ENTER);
+        });
+    }
+
     ///////////////////////////////////////////////////
     //                    Other                      //
     ///////////////////////////////////////////////////
 
     public void sleepApproximately(int averageTime) { //TODO
-        sleepExact(calc.randomDelay(true, (int)(averageTime *0.7), (int)(averageTime *1.3), 50, averageTime));
+        sleepExact(calc.randomDelay(true, (int) (averageTime * 0.7), (int) (averageTime * 1.3), 50, averageTime));
     }
 
     public void sleepExact(long time) {
@@ -234,7 +263,8 @@ public class Bot {
             }
         }
     }
-//
+
+    //
     public void waitUntil(BooleanSupplier condition) {
         long start = System.currentTimeMillis();
 
@@ -271,6 +301,14 @@ public class Bot {
         }
 
         return true;
+    }
+
+    ///////////////////////////////////////////////////
+    //                  Variables                    //
+    ///////////////////////////////////////////////////
+
+    public int varb(int id) {
+        return getFromClientThread(() -> client.getVarbitValue(id));
     }
 
     public static class BaseObject {

@@ -34,14 +34,14 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iutils.bot.*;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
+import net.runelite.client.plugins.iutils.ui.Bank;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
 import okhttp3.OkHttpClient;
 import org.pf4j.Extension;
 
-import static net.runelite.api.widgets.WidgetInfo.BANK_ITEM_CONTAINER;
-import static net.runelite.api.widgets.WidgetInfo.CHATBOX_MESSAGES;
+import static net.runelite.api.widgets.WidgetInfo.*;
 
 /**
  *
@@ -168,7 +168,7 @@ public class iUtils extends Plugin {
         log.info("button {} pressed!", configButtonClicked.getKey());
         if (configButtonClicked.getKey().equals("startButton"))
         {
-            bot.sleepApproximately(config.test());
+            /*bot.sleepApproximately(config.test());
             long start = System.currentTimeMillis();
 //            log.info("Size: {}", bot.objects2().size());
             log.info("Pos: {}",bot.objects2().withName("Door").withAction("Open").nearest().position());
@@ -176,8 +176,10 @@ public class iUtils extends Plugin {
 
             start = System.currentTimeMillis();
             log.info("Pos: {}",bot.objects().withName("Door").withAction("Open").nearest().position());
-            log.info("Time taken: {}", System.currentTimeMillis() - start);
-
+            log.info("Time taken: {}", System.currentTimeMillis() - start);*/
+//            bot.inventory().withName("Tuna").first().interact("Eat");
+//            Bank bank = new Bank(bot);
+//            bank.withdraw(361, 20, true);
         }
     }
     public final static Set<TileObject> objects = new HashSet<>();

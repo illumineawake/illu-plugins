@@ -47,16 +47,29 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
         return widget.getOriginalY();
     }
 
+    public String text() { return widget.getText(); }
+
     public boolean hidden() {
         return widget.isHidden();
     }
 
-    public List<WidgetItem> items() {
+    public List<WidgetItem> getWidgetItems() {
         ArrayList<WidgetItem> items = new ArrayList<>();
 
         for (WidgetItem slot : widget.getWidgetItems()) {
             if (slot != null) {
                 items.add(slot);
+            }
+        }
+        return items;
+    }
+
+    public List<iWidget> items() {
+        ArrayList<iWidget> items = new ArrayList<>();
+
+        for (Widget slot : widget.getDynamicChildren()) {
+            if (slot != null) {
+                items.add(new iWidget(bot(), slot));
             }
         }
         return items;
@@ -103,6 +116,18 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
                     MenuAction.CC_OP.getId(),
                     index(),
                     id()
+            );
+        });
+    }
+
+    public void select(int action) {
+        bot().clientThread.invoke(() -> {
+            //TODO action might not require + 1 and param0 need to confirm returns -1 or child
+            client().invokeMenuAction("", "",
+                    action,
+                    MenuAction.WIDGET_TYPE_6.getId(),
+                    0,
+                    0
             );
         });
     }

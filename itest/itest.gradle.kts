@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Owain van Brakel <https:github.com/Owain94>
+ * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,30 +23,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-rootProject.name = "Illumine Plugins"
+version = "2.1.0"
 
-include(":botutils")
-include(":iutils")
-include("iblackjack")
-include(":icombinationrunecrafter")
-include("iherbcleaner")
-include(":imagiccaster")
-include(":imenudebugger")
-include(":ipowerfighter")
-include(":ipowerskiller")
-include(":iquickeater")
-include(":irandomhandler")
-include(":irooftopagility")
-include("itasktemplate")
-include("itest")
-include(":iworldwalker")
+project.extra["PluginName"] = "iTest"
+project.extra["PluginDescription"] = "Illumine - Test plugin"
 
-for (project in rootProject.children) {
-    project.apply {
-        projectDir = file(name)
-        buildFileName = "$name.gradle.kts"
+dependencies {
+    //compileOnly(group = "com.openosrs.externals", name = "iutils", version = "1.0.0+") uncomment this is you want to use this in a project that doesn't also hold iUtils
+    compileOnly(project(":iutils"))
+    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "+")
+}
 
-        require(projectDir.isDirectory) { "Project '${project.path} must have a $projectDir directory" }
-        require(buildFile.isFile) { "Project '${project.path} must have a $buildFile build script" }
+tasks {
+    jar {
+        manifest {
+            attributes(mapOf(
+                    "Plugin-Version" to project.version,
+                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+                    "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Dependencies" to
+                            arrayOf(
+                                    nameToId("iUtils"),
+                                    "chinbreakhandler-plugin"
+                            ).joinToString(),
+                    "Plugin-Description" to project.extra["PluginDescription"],
+                    "Plugin-License" to project.extra["PluginLicense"]
+            ))
+        }
     }
 }
