@@ -51,12 +51,12 @@ public class Bank {
             throw new IllegalStateException("bank isn't open");
         }
 
-        // Close bank tutorial TODO
-//        if (bot.widget(12, 113).nestedInterface() == 664) {
-//            System.out.println("[Bank] Closing bank tutorial");
-//            bot.widget(664, 9).select();
-//            bot.waitUntil(() -> bot.widget(12, 113).nestedInterface() == -1);
-//        }
+        // Close bank tutorial
+        if (bot.widget(12, 113).nestedInterface() == 664) {
+            System.out.println("[Bank] Closing bank tutorial");
+            bot.widget(664, 9).select();
+            bot.waitUntil(() -> bot.widget(12, 113).nestedInterface() == -1);
+        }
 
         ItemComposition definition = bot.getFromClientThread(() -> bot.client().getItemComposition(id));
 
@@ -76,32 +76,30 @@ public class Bank {
             bot.tick();
         }
 
-
-        for (Widget item : bot.widget(WidgetInfo.BANK_ITEM_CONTAINER).items()) {
-            if (item.getItemId() == 6512 || item.getItemId() == -1 || item.isSelfHidden())
+        for (iWidget item : bot.widget(WidgetInfo.BANK_ITEM_CONTAINER).items()) {
+            if (item.itemId() == 6512 || item.itemId() == -1 || item.hidden())
             {
                 continue;
             }
-            if (item.getItemId() == id) {
-                System.out.println("[Bank] Found item (requested = " + quantity + ", bank = " + item.getItemQuantity() + ", capacity = " + inventoryCapacity + ")");
+            if (item.itemId() == id) {
+                System.out.println("[Bank] Found item (requested = " + quantity + ", bank = " + item.quantity() + ", capacity = " + inventoryCapacity + ")");
 
-                quantity = Math.min(quantity, item.getItemQuantity());
-                iWidget itemWidget = new iWidget(bot, item); //TODO this could be very wrong
+                quantity = Math.min(quantity, item.quantity());
 
                 if (quantity == withdrawDefaultQuantity()) {
-                    itemWidget.interact(0); // default
-                } else if (item.getItemQuantity() <= quantity || inventoryCapacity <= quantity) {
-                    itemWidget.interact(6); // all
+                    item.interact(0); // default
+                } else if (item.quantity() <= quantity || inventoryCapacity <= quantity) {
+                    item.interact(6); // all
                 } else if (quantity == 1) {
-                    itemWidget.interact(1); // 1
+                    item.interact(1); // 1
                 } else if (quantity == 5) {
-                    itemWidget.interact(2); // 5
+                    item.interact(2); // 5
                 } else if (quantity == 10) {
-                    itemWidget.interact(3); // 10
+                    item.interact(3); // 10
                 } else if (quantity == withdrawXDefaultQuantity()) {
-                    itemWidget.interact(4); // last
+                    item.interact(4); // last
                 } else {
-                    itemWidget.interact(5);
+                    item.interact(5);
                     bot.tick();
                     bot.tick();
                     bot.tick();
@@ -124,9 +122,9 @@ public class Bank {
             throw new IllegalStateException("bank not open");
         }
 
-        for (Widget item : bot.widget(WidgetInfo.BANK_ITEM_CONTAINER).items()) {
-            if (item.getItemId() == id) {
-                return item.getItemQuantity();
+        for (iWidget item : bot.widget(WidgetInfo.BANK_ITEM_CONTAINER).items()) {
+            if (item.itemId() == id) {
+                return item.quantity();
             }
         }
 

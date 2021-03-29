@@ -37,6 +37,10 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
         return widget.getId();
     }
 
+    public int itemId() {
+        return widget.getItemId();
+    }
+
     public int index() { return widget.getIndex(); }
 
     public int x() {
@@ -49,8 +53,10 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
 
     public String text() { return widget.getText(); }
 
+    public int quantity() { return widget.getItemQuantity(); }
+
     public boolean hidden() {
-        return widget.isHidden();
+        return bot.getFromClientThread(widget::isHidden);
     }
 
     public List<WidgetItem> getWidgetItems() {
@@ -77,7 +83,7 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
 //        return widget.getDynamicChildren(); }
 
     public int nestedInterface() {
-        Widget[] nested = widget.getNestedChildren();
+        Widget[] nested = bot.getFromClientThread(widget::getNestedChildren);
 
         if (nested.length == 0) {
             return -1;
@@ -120,14 +126,13 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
         });
     }
 
-    public void select(int action) {
+    public void select() {
         bot().clientThread.invoke(() -> {
-            //TODO action might not require + 1 and param0 need to confirm returns -1 or child
             client().invokeMenuAction("", "",
-                    action,
-                    MenuAction.WIDGET_TYPE_6.getId(),
                     0,
-                    0
+                    MenuAction.WIDGET_TYPE_6.getId(),
+                    index(),
+                    id()
             );
         });
     }

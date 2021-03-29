@@ -66,7 +66,6 @@ public class Bot {
 
     public <T> T getFromClientThread(Supplier<T> supplier) {
         if (!client.isClientThread()) {
-            log.info("not on client thread");
             CompletableFuture<T> future = new CompletableFuture<>();
 
             clientThread().invoke(() -> {
@@ -74,7 +73,6 @@ public class Bot {
             });
             return future.join();
         } else {
-            log.info("On client thread");
             return supplier.get();
         }
     }
@@ -200,15 +198,15 @@ public class Bot {
     }
 
     public iWidget widget(int group, int file) {
-        return new iWidget(this, client.getWidget(group, file));
+        return getFromClientThread(() -> new iWidget(this, client.getWidget(group, file)));
     }
 
     public iWidget widget(int group, int file, int child) {
-        return new iWidget(this, client.getWidget(group, file).getDynamicChildren()[child]);
+        return getFromClientThread(() -> new iWidget(this, client.getWidget(group, file).getDynamicChildren()[child]));
     }
 
     public iWidget widget(WidgetInfo widgetInfo) {
-        return new iWidget(this, client.getWidget(widgetInfo));
+        return getFromClientThread(() ->  new iWidget(this, client.getWidget(widgetInfo)));
     }
 
     public InventoryItemStream inventory() {

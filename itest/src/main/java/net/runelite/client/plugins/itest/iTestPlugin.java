@@ -135,15 +135,17 @@ public class iTestPlugin extends Plugin implements Runnable
 		if (client != null && client.getLocalPlayer() != null) {
 			log.info("reloaded");
 			long start = System.currentTimeMillis();
-			List<iWidget> widgets = bot.widget(219, 1).items();
-			for (iWidget widget : widgets) {
-				log.info("{}", widget.text());
-			}
+			bot.inventory().withName("Tuna").first().interact("Eat");
+//			List<iWidget> widgets = bot.widget(219, 1).items();
+//			for (iWidget widget : widgets) {
+//				log.info("{}", widget.text());
+//			}
 //			client.invokeMenuAction("","", 1, 57, -1, 10485782);
 //			log.info("{}",bot.getFromClientThread(bank::isOpen));
 //			Bank bank = new Bank(bot);
 //			log.info("{}", bank.isOpen());
 //			bank.withdraw(361, 20, true);
+//			log.info("{}",bank.quantity(361));
 //			bot.objects2().withName("Tree").nearest().interact("Chop down");
 //			bot.objects().withName("Tree").nearest().interact("Chop down");
 			log.info("finish: {}", System.currentTimeMillis() - start);
