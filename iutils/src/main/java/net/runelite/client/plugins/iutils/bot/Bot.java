@@ -81,6 +81,12 @@ public class Bot {
 //        log.info("Game tick {}", System.currentTimeMillis());
 //    }
 
+    public void tick(int ticks) {
+        for (int i = 0; i < ticks; i++) {
+            tick();
+        }
+    }
+
     public void tick() {
         long start = client().getTickCount();
 
