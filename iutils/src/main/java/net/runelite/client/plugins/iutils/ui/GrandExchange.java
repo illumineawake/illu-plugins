@@ -1,5 +1,7 @@
 package net.runelite.client.plugins.iutils.ui;
 
+import net.runelite.api.GrandExchangeOffer;
+import net.runelite.api.GrandExchangeOfferState;
 import net.runelite.client.plugins.iutils.bot.Bot;
 
 // TODO: selling, several offers at once, custom prices, collect to inventory
@@ -21,7 +23,7 @@ public class GrandExchange {
 
         int slot = freeSlot();
         startBuyOffer(slot);
-        bot.tick(12);
+        bot.tick(4);
         bot.chooseItem(item);
         bot.waitUntil(() -> currentItem() == item);
 
@@ -29,7 +31,7 @@ public class GrandExchange {
             bot.widget(465, 24, 7).interact(0);
             bot.tick(4);
             bot.chooseNumber(quantity);
-            bot.tick();
+            bot.tick(3);
         }
 
         int price = (int) Math.ceil(priceMultiplier * currentPrice());
@@ -39,7 +41,7 @@ public class GrandExchange {
             bot.widget(465, 24, 12).interact(0);
             bot.tick(4);
             bot.chooseNumber(price);
-            bot.tick();
+            bot.tick(3);
         }
 
         bot.widget(465, 27).interact(0);
@@ -48,12 +50,12 @@ public class GrandExchange {
 
         long start = System.currentTimeMillis();
 
-        while (bot.grandExchangeOffer(slot).completedQuantity() != quantity && System.currentTimeMillis() - start < timeout) {
+        while (bot.grandExchangeOffer(slot).getQuantitySold() != quantity && System.currentTimeMillis() - start < timeout) {
             bot.tick();
         }
 
-        if (bot.grandExchangeOffer(slot).completedQuantity() != quantity) {
-            System.out.println("[Grand Exchange] Timed out waiting for offer to complete: " + bot.grandExchangeOffer(slot).completedQuantity() + " / " + quantity);
+        if (bot.grandExchangeOffer(slot).getQuantitySold() != quantity) {
+            System.out.println("[Grand Exchange] Timed out waiting for offer to complete: " + bot.grandExchangeOffer(slot).getQuantitySold() + " / " + quantity);
             bot.widget(465, 14).interact(0);
             bot.tick(4);
             collectToBank();
@@ -104,7 +106,7 @@ public class GrandExchange {
             bot.tick();
         }
 
-        if (bot.grandExchangeOffer(slot) != null) {
+        if (bot.grandExchangeOffer(slot).getState() != GrandExchangeOfferState.EMPTY) {
             throw new IllegalArgumentException("slot not free");
         }
 
@@ -114,7 +116,9 @@ public class GrandExchange {
 
     private int freeSlot() {
         for (int slot = 0; slot < 8; slot++) {
-            if (bot.grandExchangeOffer(slot) == null) {
+            GrandExchangeOffer offer = bot.grandExchangeOffer(slot);
+            if (offer == null || offer.getState() == GrandExchangeOfferState.EMPTY) {
+                System.out.println(bot.grandExchangeOffer(slot));
                 return slot;
             }
         }

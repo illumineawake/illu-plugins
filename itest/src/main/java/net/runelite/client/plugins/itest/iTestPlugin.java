@@ -34,14 +34,12 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.Player;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -54,6 +52,7 @@ import net.runelite.client.plugins.iutils.bot.iWidget;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.plugins.iutils.ui.Bank;
 import net.runelite.client.plugins.iutils.ui.Chatbox;
+import net.runelite.client.plugins.iutils.ui.GrandExchange;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
@@ -74,6 +73,9 @@ public class iTestPlugin extends Plugin implements Runnable
 
 	@Inject
 	private Client client;
+
+	@Inject
+	private ClientThread clientThread;
 
 	@Inject
 	private ExecutorService executorService;
@@ -136,8 +138,12 @@ public class iTestPlugin extends Plugin implements Runnable
 		if (client != null && client.getLocalPlayer() != null) {
 			log.info("reloaded");
 			long start = System.currentTimeMillis();
-			Chatbox chatbox = new Chatbox(bot);
-			chatbox.chat("access my bank");
+			GrandExchange grandExchange = new GrandExchange(bot);
+			grandExchange.buy(361, 5, 2, 60000);
+//			grandExchange.sell(bot.inventory().withName("Tuna").first().id(), 85 );
+//			clientThread.invoke(() -> client.runScript(112,84,'\n',"5")); //112
+//			Chatbox chatbox = new Chatbox(bot);
+//			chatbox.chat("access my bank");
 //			log.info("{}", client.isResized());
 //			List<iWidget> widgets = bot.widget(219, 1).items();
 //			for (iWidget widget : widgets) {

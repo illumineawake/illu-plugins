@@ -235,12 +235,16 @@ public class Bot {
     }
 
     public void chooseNumber(int number) {
-        executorService.submit(() -> {
-            sleep(calc.getRandomIntBetweenRange(1000, 1500));
             keyboard.typeString(String.valueOf(number));
             sleep(calc.getRandomIntBetweenRange(80, 250));
             keyboard.pressKey(VK_ENTER);
-        });
+    }
+
+    /**
+     * Sends an item choice to the server.
+     */
+    public void chooseItem(int item) {
+        clientThread.invoke(() -> client.runScript(754, item, 84));
     }
 
 
@@ -249,6 +253,22 @@ public class Bot {
      */
     public iWidget screenContainer() {
         return client.isResized() ? widget(164, 15) : widget(548, 23); //Modern or fixed TODO support classic resizable
+    }
+
+    ///////////////////////////////////////////////////
+    //                  Variables                    //
+    ///////////////////////////////////////////////////
+
+    public int varb(int id) {
+        return getFromClientThread(() -> client.getVarbitValue(id));
+    }
+
+    public int varp(int id) {
+        return getFromClientThread(() -> client.getVarpValue(id));
+    }
+
+    public GrandExchangeOffer grandExchangeOffer(int slot) {
+        return client.getGrandExchangeOffers()[slot];
     }
 
     ///////////////////////////////////////////////////
@@ -315,14 +335,6 @@ public class Bot {
         }
 
         return true;
-    }
-
-    ///////////////////////////////////////////////////
-    //                  Variables                    //
-    ///////////////////////////////////////////////////
-
-    public int varb(int id) {
-        return getFromClientThread(() -> client.getVarbitValue(id));
     }
 
     public static class BaseObject {
