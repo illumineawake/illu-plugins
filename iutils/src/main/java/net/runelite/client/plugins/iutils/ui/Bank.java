@@ -77,8 +77,7 @@ public class Bank {
         }
 
         for (iWidget item : bot.widget(WidgetInfo.BANK_ITEM_CONTAINER).items()) {
-            if (item.itemId() == 6512 || item.itemId() == -1 || item.hidden())
-            {
+            if (item.itemId() == 6512 || item.itemId() == -1 || item.hidden()) {
                 continue;
             }
             if (item.itemId() == id) {
@@ -140,7 +139,7 @@ public class Bank {
     }
 
     public int withdrawDefaultQuantity() {
-        switch(bot.varb(6590)) {
+        switch (bot.varb(6590)) {
             case 0:
                 return 1;
             case 1:

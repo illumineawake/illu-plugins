@@ -41,7 +41,7 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
         return widget.getItemId();
     }
 
-    public int index() { return widget.getIndex(); }
+    public int index() { return bot.getFromClientThread(() -> widget.getIndex()); }
 
     public int x() {
         return widget.getOriginalX();
@@ -56,6 +56,9 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
     public int quantity() { return widget.getItemQuantity(); }
 
     public boolean hidden() {
+        if (widget == null) {
+            System.out.println("Widget is null");
+        }
         return bot.getFromClientThread(widget::isHidden);
     }
 
@@ -127,7 +130,9 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
     }
 
     public void select() {
+        System.out.println("Doing select");
         bot().clientThread.invoke(() -> {
+            System.out.println("in invoke");
             client().invokeMenuAction("", "",
                     0,
                     MenuAction.WIDGET_TYPE_6.getId(),

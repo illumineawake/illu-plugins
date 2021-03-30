@@ -202,11 +202,13 @@ public class Bot {
     }
 
     public iWidget widget(int group, int file, int child) {
-        return getFromClientThread(() -> new iWidget(this, client.getWidget(group, file).getDynamicChildren()[child]));
+//        Widget widget = Objects.requireNonNull(client.getWidget(group, file)).getDynamicChildren()[child];
+        return getFromClientThread(() ->
+            new iWidget(this, client.getWidget(group, file).getDynamicChildren()[child]));
     }
 
     public iWidget widget(WidgetInfo widgetInfo) {
-        return getFromClientThread(() ->  new iWidget(this, client.getWidget(widgetInfo)));
+        return getFromClientThread(() -> new iWidget(this, client.getWidget(widgetInfo)));
     }
 
     public InventoryItemStream inventory() {
@@ -233,6 +235,14 @@ public class Bot {
             sleep(calc.getRandomIntBetweenRange(80, 250));
             keyboard.pressKey(VK_ENTER);
         });
+    }
+
+
+    /**
+     * The widget which contains all screens (bank, grand exchange, trade, etc.)
+     */
+    public iWidget screenContainer() {
+        return client.isResized() ? widget(164, 15) : widget(548, 23); //Modern or fixed TODO support classic resizable
     }
 
     ///////////////////////////////////////////////////

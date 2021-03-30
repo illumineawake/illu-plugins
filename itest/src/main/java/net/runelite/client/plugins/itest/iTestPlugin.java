@@ -53,6 +53,7 @@ import net.runelite.client.plugins.iutils.bot.Bot;
 import net.runelite.client.plugins.iutils.bot.iWidget;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.plugins.iutils.ui.Bank;
+import net.runelite.client.plugins.iutils.ui.Chatbox;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
@@ -135,7 +136,9 @@ public class iTestPlugin extends Plugin implements Runnable
 		if (client != null && client.getLocalPlayer() != null) {
 			log.info("reloaded");
 			long start = System.currentTimeMillis();
-			bot.inventory().withName("Tuna").first().interact("Eat");
+			Chatbox chatbox = new Chatbox(bot);
+			chatbox.chat("access my bank");
+//			log.info("{}", client.isResized());
 //			List<iWidget> widgets = bot.widget(219, 1).items();
 //			for (iWidget widget : widgets) {
 //				log.info("{}", widget.text());
