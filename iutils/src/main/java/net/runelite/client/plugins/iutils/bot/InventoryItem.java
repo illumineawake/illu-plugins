@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class InventoryItem implements Interactable/*, Useable*/ {
+public class InventoryItem implements Interactable, Useable {
     private final Bot bot;
     private final WidgetItem widgetItem;
     private final ItemComposition definition;
@@ -98,6 +98,46 @@ public class InventoryItem implements Interactable/*, Useable*/ {
             );
         });
     }
+
+    @Override
+    public void useOn(InventoryItem item) {
+        bot.clientThread.invoke(() -> {
+            bot.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+            bot.client.setSelectedItemSlot(item.slot());
+            bot.client.setSelectedItemID(item.id());
+            bot.client.invokeMenuAction("", "", id(),
+                    MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId(), slot(), WidgetInfo.INVENTORY.getId());
+        });
+    }
+
+    //    @Override
+//    public void useOn(GroundItem item) {
+//        game.mouseClicked();
+//        game.connection().groundItemUseItem(item.id, item.tile.position.x, item.tile.position.y, id, slot, (containingWidget.group << 16) + containingWidget.file, game.ctrlRun);
+//    }
+//
+    @Override
+    public void useOn(iObject object) {
+        bot.clientThread.invoke(() -> {
+            bot.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+            bot.client.setSelectedItemSlot(slot());
+            bot.client.setSelectedItemID(id());
+            bot.client.invokeMenuAction("", "", object.id(),
+                    MenuAction.ITEM_USE_ON_GAME_OBJECT.getId(), object.menuPoint().getX(), object.menuPoint().getY());
+        });
+    }
+//
+//    @Override
+//    public void useOn(iPlayer player) {
+//        game.mouseClicked();
+//        game.connection().playerUseItem(player.index(), id, slot, (containingWidget.group << 16) + containingWidget.file, game.ctrlRun);
+//    }
+//
+//    @Override
+//    public void useOn(iNPC npc) {
+//        game.mouseClicked();
+//        game.connection().npcUseItem(npc.index(), id, slot, (containingWidget.group << 16) + containingWidget.file, game.ctrlRun);
+//    }
 
     public String toString() {
         return name() + " (" + id() + ")" + (quantity() == 1 ? "" : " x" + quantity());

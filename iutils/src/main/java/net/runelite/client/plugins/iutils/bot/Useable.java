@@ -5,9 +5,9 @@ public interface Useable {
 
 //    void useOn(GroundItem groundItem); TODO
 
-    void useOn(iNPC npc);
+//    void useOn(iNPC npc);
+//
+//    void useOn(iPlayer player);
 
-    void useOn(iPlayer player);
-
-//    void useOn(InventoryItem item); TODO
+    void useOn(InventoryItem item);
 }

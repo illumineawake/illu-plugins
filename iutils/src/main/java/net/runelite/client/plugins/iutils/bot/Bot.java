@@ -104,14 +104,15 @@ public class Bot {
     }
 
     public Position base() {
-        return base;
+        return new Position(client.getBaseX(), client.getBaseY(), client.getPlane());
     }
 
     public iTile tile(Position position) {
+        log.info(position.toString());
         int plane = position.z;
-        int x = position.x - base.x;
-        int y = position.y - base.y;
-
+        int x = position.x - client.getBaseX();
+        int y = position.y - client.getBaseY();
+        log.info("x {} y{} z {}", x, y, plane);
         if (plane < 0 || plane >= 4) {
             return null;
         }
@@ -121,8 +122,8 @@ public class Bot {
         if (y < 0 || y >= 104) {
             return null;
         }
-
-        return tiles[plane][x][y];
+        log.info("made it");
+        return new iTile(this, new Position(x,y,plane));
     }
 
     public Stream<iTile> tiles() {
@@ -130,7 +131,7 @@ public class Bot {
                 .flatMap(Arrays::stream)
                 .flatMap(Arrays::stream)
                 .filter(Objects::nonNull)
-                .map(to -> new iTile(this, client(), new Position(to.getWorldLocation())));
+                .map(to -> new iTile(this, new Position(to.getWorldLocation())));
     }
 
     public GameObjectStreamT objects2() {
@@ -266,6 +267,8 @@ public class Bot {
     public int varp(int id) {
         return getFromClientThread(() -> client.getVarpValue(id));
     }
+
+    public int energy() { return client.getEnergy(); }
 
     public GrandExchangeOffer grandExchangeOffer(int slot) {
         return client.getGrandExchangeOffers()[slot];

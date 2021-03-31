@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import net.runelite.api.Client;
+import net.runelite.api.Tile;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.plugins.iutils.WalkUtils;
 import net.runelite.client.plugins.iutils.scene.Locatable;
@@ -14,8 +15,6 @@ public class iTile implements Locatable
 {
 	@Inject	private WalkUtils walk;
 
-	private Client client;
-
     final Bot bot;
     final Position position;
 //    List<GroundItem> items = new ArrayList<>();
@@ -24,9 +23,8 @@ public class iTile implements Locatable
 	iObject wallDecoration;
 	iObject floorDecoration;
 
-    iTile(Bot bot, Client client, Position position) {
+    iTile(Bot bot, Position position) {
         this.bot = bot;
-		this.client = client;
         this.position = position;
     }
 
@@ -36,7 +34,7 @@ public class iTile implements Locatable
     }
 
     @Override
-	public Client client() { return client; }
+	public Client client() { return bot.client; }
 
     @Override
     public Position position() {
@@ -47,7 +45,7 @@ public class iTile implements Locatable
 //		bot.minimapFlag = position;
 //		bot.mouseClicked();
 //		bot.connection().walkViewport(position.x, position.y, game.ctrlRun ? 1 : 0);
-		walk.sceneWalk(new WorldPoint(position.x, position.y, position.z), 0, 0);
+		bot.clientThread.invoke(() -> walk.sceneWalk(new WorldPoint(position.x, position.y, position.z), 0, 0));
     }
 
 //    public List<GroundItem> items() {
@@ -63,23 +61,19 @@ public class iTile implements Locatable
         return objects;
     }
 
-	public iObject object(ObjectCategory category) { //Might need .equals?
-		iObject result = null;
+	public iObject object(ObjectCategory category) {
 		switch (category) {
 			case REGULAR:
-				result = regularObject;
-				break;
+				return regularObject;
 			case WALL:
-				result = wall;
-				break;
+				return wall;
 			case WALL_DECORATION:
-				result = wallDecoration;
-				break;
+				return wallDecoration;
 			case FLOOR_DECORATION:
-				result = floorDecoration;
-				break;
-		};
-		return result;
+				return floorDecoration;
+			default:
+				return null;
+		}
 	}
 
     /*public iObject object(ObjectCategory category) {

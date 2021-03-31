@@ -64,6 +64,14 @@ public class iObject implements Locatable, Interactable {
         return definition.getName();
     }
 
+    public int orientation() { //TODO untested
+        if (tileObject instanceof WallObject)
+            return ((WallObject) tileObject).getOrientationA();
+        if (tileObject instanceof DecorativeObject)
+            return ((DecorativeObject) tileObject).getOrientation();
+        return -1;
+    }
+
     public List<String> actions() {
         return Arrays.stream(definition().getActions())
                 .filter(Objects::nonNull)
@@ -71,11 +79,10 @@ public class iObject implements Locatable, Interactable {
     }
 
     public ObjectComposition definition() {
-//        return client().getObjectDefinition(id());
         return definition;
     }
 
-    private Point menuPoint() {
+    public Point menuPoint() {
         if (type() == ObjectCategory.REGULAR) {
             GameObject temp = (GameObject) tileObject;
             return temp.getSceneMinLocation();
