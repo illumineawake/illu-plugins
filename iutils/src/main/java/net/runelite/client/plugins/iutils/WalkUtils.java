@@ -16,6 +16,7 @@ import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.rs.api.RSClient;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -88,6 +89,19 @@ public class WalkUtils
 		{
 			log.info("WorldPoint to LocalPoint coversion is null");
 		}
+	}
+
+	public void sceneWalk(Position position, int rand, long delay)
+	{
+		coordX = position.x +
+				calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
+		coordY = position.y +
+				calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
+		log.info("Coord values: {}, {}", coordX, coordY);
+		walkAction = true;
+		menu.setEntry(new MenuEntry("Walk here", "", 0, MenuAction.WALK.getId(),
+				0, 0, false));
+		mouse.delayMouseClick(new Point(0, 0), delay);
 	}
 
 	/**

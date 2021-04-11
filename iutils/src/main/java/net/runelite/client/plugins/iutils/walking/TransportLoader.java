@@ -81,7 +81,7 @@ public class TransportLoader {
     }
 
     private static Transport objectTransport(Position source, Position target, int id, String action) {
-        return new Transport(source, target, 1, Integer.MAX_VALUE, bot -> bot.objects().withId(id).nearest(source).interact(action));
+        return new Transport(source, target, 1, Integer.MAX_VALUE, bot -> bot.objects2().withId(id).nearest(source).interact(action));
     }
 
     private static Transport itemObjectTransport(Position source, Position target, int item, int object) {

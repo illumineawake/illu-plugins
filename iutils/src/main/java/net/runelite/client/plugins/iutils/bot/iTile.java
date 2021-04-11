@@ -1,80 +1,86 @@
 package net.runelite.client.plugins.iutils.bot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import javax.inject.Inject;
-import net.runelite.api.Client;
-import net.runelite.api.Tile;
-import net.runelite.api.coords.WorldPoint;
-import net.runelite.client.plugins.iutils.WalkUtils;
+import java.util.Objects;
+
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.*;
 import net.runelite.client.plugins.iutils.scene.Locatable;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
 import net.runelite.client.plugins.iutils.scene.Position;
+import net.runelite.rs.api.RSClient;
 
-public class iTile implements Locatable
-{
-	@Inject	private WalkUtils walk;
-
+@Slf4j
+public class iTile implements Locatable {
     final Bot bot;
-    final Position position;
-//    List<GroundItem> items = new ArrayList<>();
+    final Tile tile;
+    //    List<GroundItem> items = new ArrayList<>();
     iObject regularObject;
-	iObject wall;
-	iObject wallDecoration;
-	iObject floorDecoration;
+    iObject wall;
+    iObject wallDecoration;
+    iObject floorDecoration;
 
-    iTile(Bot bot, Position position) {
+    iTile(Bot bot, Tile tile) {
         this.bot = bot;
-        this.position = position;
+        this.tile = tile;
+        //tile.getGameObjects()).filter(Objects::nonNull).findFirst().orElse(null)
     }
 
-//    @Override
+    //    @Override
     public Bot bot() {
         return bot;
     }
 
     @Override
-	public Client client() { return bot.client; }
+    public Client client() {
+        return bot.client;
+    }
 
     @Override
     public Position position() {
-        return position;
+        return new Position(tile.getSceneLocation().getX(), tile.getSceneLocation().getY(), tile.getPlane());
     }
 
-    public void walkTo() { // todo: when is run = 2?
-//		bot.minimapFlag = position;
-//		bot.mouseClicked();
-//		bot.connection().walkViewport(position.x, position.y, game.ctrlRun ? 1 : 0);
-		bot.clientThread.invoke(() -> walk.sceneWalk(new WorldPoint(position.x, position.y, position.z), 0, 0));
+    public void walkTo() {
+        bot.clientThread.invoke(() -> bot.walkUtils.sceneWalk(position(), 0, 0));
     }
 
 //    public List<GroundItem> items() {
 //        return items;
 //    }
 
-    public List<iObject> objects() {
-        ArrayList<iObject> objects = new ArrayList<>(4);
-        if (regularObject != null) objects.add(regularObject);
-        if (wall != null) objects.add(wall);
-        if (wallDecoration != null) objects.add(wallDecoration);
-        if (floorDecoration != null) objects.add(floorDecoration);
-        return objects;
-    }
+//    public List<iObject> objects() {
+//        ArrayList<iObject> objects = new ArrayList<>(4);
+//        if (regularObject != null) objects.add(regularObject);
+//        if (wall != null) objects.add(wall);
+//        if (wallDecoration != null) objects.add(wallDecoration);
+//        if (floorDecoration != null) objects.add(floorDecoration);
+//        return objects;
+//    }
 
-	public iObject object(ObjectCategory category) {
-		switch (category) {
-			case REGULAR:
-				return regularObject;
-			case WALL:
-				return wall;
-			case WALL_DECORATION:
-				return wallDecoration;
-			case FLOOR_DECORATION:
-				return floorDecoration;
-			default:
-				return null;
-		}
-	}
+    public iObject object(ObjectCategory category) {
+        switch (category) {
+            case REGULAR:
+                GameObject go = Arrays.stream(tile.getGameObjects()).filter(Objects::nonNull).findFirst().orElse(null);
+                return (go == null) ? null : new iObject(bot, go,
+                        ObjectCategory.REGULAR,
+                        bot.getFromClientThread(() -> client().getObjectDefinition(go.getId()))
+                );
+            case WALL:
+                WallObject wo = tile.getWallObject();
+                return (wo == null) ? null :  new iObject(bot, wo, ObjectCategory.WALL, bot.getFromClientThread(() -> client().getObjectDefinition(wo.getId())));
+            case WALL_DECORATION:
+                DecorativeObject dec = tile.getDecorativeObject();
+                return (dec == null) ? null :  new iObject(bot, dec, ObjectCategory.WALL_DECORATION, bot.getFromClientThread(() -> client().getObjectDefinition(dec.getId())));
+            case FLOOR_DECORATION:
+                GroundObject ground = tile.getGroundObject();
+                return (ground == null) ? null :  new iObject(bot, ground, ObjectCategory.FLOOR_DECORATION, bot.getFromClientThread(() -> client().getObjectDefinition(ground.getId())));
+            default:
+                return null;
+        }
+    }
 
     /*public iObject object(ObjectCategory category) {
     	iObject result;

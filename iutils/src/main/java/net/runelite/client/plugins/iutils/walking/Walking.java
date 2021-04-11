@@ -1,5 +1,7 @@
 package net.runelite.client.plugins.iutils.walking;
 
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.client.plugins.iutils.WalkUtils;
 import net.runelite.client.plugins.iutils.bot.Bot;
 import net.runelite.client.plugins.iutils.bot.iObject;
 import net.runelite.client.plugins.iutils.bot.iTile;
@@ -9,15 +11,20 @@ import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.scene.RectangularArea;
 import net.runelite.client.plugins.iutils.ui.Chatbox;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+@Slf4j
 public class Walking {
     private static final CollisionMap map;
-    private static final int MAX_WALK_DISTANCE = 20;
+    private static final int MAX_INTERACT_DISTANCE = 20;
+    private static final int MIN_TILES_WALKED_IN_STEP = 10;
+    private static final int MIN_TILES_WALKED_BEFORE_RECHOOSE = 10; // < MIN_TILES_WALKED_IN_STEP
+    private static final int MIN_TILES_LEFT_BEFORE_RECHOOSE = 3; // < MIN_TILES_WALKED_IN_STEP
     private static final Random RANDOM = new Random();
     private static final int MAX_MIN_ENERGY = 50;
     private static final int MIN_ENERGY = 15;
@@ -113,30 +120,29 @@ public class Walking {
     }
 
     private void walkAlong(List<Position> path, Map<Position, List<Transport>> transports) {
-        int failed = 0;
         Position target = path.get(path.size() - 1);
 
         while (bot.localPlayer().position().distanceTo(target) > 0) {
             List<Position> remainingPath = remainingPath(path);
+            Position start = path.get(0);
+            Position current = bot.localPlayer().position();
+            Position end = path.get(path.size() - 1);
+            int progress = path.size() - remainingPath.size();
+            System.out.println("[Walking] " + start + " -> " + current + " -> " + end + ": " + progress + " / " + path.size());
 
-            System.out.println("[Walking] " + path.get(0) + " -> " + bot.localPlayer().position() + " -> " + path.get(path.size() - 1) + ": " + (path.size() - remainingPath.size()) + " / " + path.size());
-
-            if (handleBreak(remainingPath, transports) || stepAlong(remainingPath)) {
-                failed = 0;
-            } else {
-                failed++;
+            if (handleBreak(remainingPath, transports)) {
+                continue;
             }
 
-            if (failed >= 10) {
-                throw new IllegalStateException("stuck in path " + bot.localPlayer().position() + " -> " + target);
-            }
-
-            bot.tick();
+            stepAlong(remainingPath);
         }
 
         System.out.println("[Walking] Path end reached");
     }
 
+    /**
+     * Remaining tiles in a path, including the tile the player is on.
+     */
     private List<Position> remainingPath(List<Position> path) {
         Position nearest = path.stream()
                 .min(Comparator.comparing(p -> bot.localPlayer().position().distanceTo(p)))
@@ -152,7 +158,7 @@ public class Walking {
     }
 
     private boolean handleBreak(List<Position> path, Map<Position, List<Transport>> transports) {
-        for (int i = 0; i < MAX_WALK_DISTANCE; i++) {
+        for (int i = 0; i < MAX_INTERACT_DISTANCE; i++) {
             if (i + 1 >= path.size()) {
                 break;
             }
@@ -170,7 +176,13 @@ public class Walking {
             Transport transport = transportTargets == null ? null : transportTargets.stream().filter(t -> t.target.equals(b)).findFirst().orElse(null);
 
             if (transport != null && bot.localPlayer().position().distanceTo(transport.source) <= transport.sourceRadius) {
-                return handleTransport(transport);
+                if (handleTransport(transport)) {
+                    if (transport.source.regionID() != bot.localPlayer().position().regionID()) {
+                        bot.tick(5);
+                    }
+                    return true;
+                }
+                return false;
             }
 
             if (hasDiagonalDoor(tileA)) return openDiagonalDoor(a);
@@ -182,7 +194,6 @@ public class Walking {
             if (hasDoor(tileA) && isWallBlocking(a, b)) return openDoor(a);
             if (hasDoor(tileB) && isWallBlocking(b, a)) return openDoor(b);
         }
-
         return false;
     }
 
@@ -213,7 +224,18 @@ public class Walking {
 
     private boolean openDoor(Position position) {
         bot.tile(position).object(ObjectCategory.WALL).interact("Open");
+
+//        if (bot.screenContainer().nestedInterface() == 580) { TODO: Handle Mort Myre Gate
+//            bot.widget(580, 20).interact("Off/On");
+//            bot.sleepApproximately(1000);
+//            bot.widget(580, 17).interact("Yes");
+//            bot.waitUntil(() -> bot.screenContainer().nestedInterface() == -1);
+//            bot.waitUntil(this::isStill);
+//        }
+
         bot.waitUntil(this::isStill);
+        log.info("Waiting 3 ticks for door");
+        bot.tick(3);
         return true;
     }
 
@@ -229,53 +251,83 @@ public class Walking {
         return bot.waitUntil(() -> bot.localPlayer().position().distanceTo(transport.target) <= transport.targetRadius, 10000); // todo
     }
 
-    private boolean stepAlong(List<Position> path) {
+    private void stepAlong(List<Position> path) {
+        path = reachablePath(path);
+
+        if (path.size() - 1 <= MIN_TILES_WALKED_IN_STEP) {
+            step(path.get(path.size() - 1), Integer.MAX_VALUE);
+            return;
+        }
+
+        int targetDistance = MIN_TILES_WALKED_IN_STEP + RANDOM.nextInt(path.size() - MIN_TILES_WALKED_IN_STEP);
+        int rechooseDistance = rechooseDistance(targetDistance);
+
+        step(path.get(targetDistance), rechooseDistance);
+    }
+
+    private int rechooseDistance(int targetDistance) {
+        int rechoose = MIN_TILES_WALKED_BEFORE_RECHOOSE + RANDOM.nextInt(targetDistance - MIN_TILES_WALKED_BEFORE_RECHOOSE + 1);
+        rechoose = Math.min(rechoose, targetDistance - MIN_TILES_LEFT_BEFORE_RECHOOSE); // don't get too near the end of the path, to avoid stopping
+        return rechoose;
+    }
+
+    /**
+     * Interacts with the target tile to walk to it, and waits for the player to either
+     * reach it, or walk {@code tiles} tiles towards it before returning.
+     */
+    private void step(Position target, int tiles) {
+        bot.tile(target).walkTo();
+        int ticksStill = 0;
+
+        for (int tilesWalked = 0; tilesWalked < tiles; tilesWalked += isRunning() ? 2 : 1) {
+            if (bot.localPlayer().position().equals(target)) {
+                return;
+            }
+
+            Position oldPosition = bot.localPlayer().position();
+            bot.tick();
+
+            if (bot.localPlayer().position().equals(oldPosition)) {
+                if (++ticksStill == 5) {
+                    throw new IllegalStateException("stuck in path at " + bot.localPlayer().position());
+                }
+            } else {
+                ticksStill = 0;
+            }
+
+            if (!isRunning() && bot.energy() > minEnergy) {
+                minEnergy = new Random().nextInt(MAX_MIN_ENERGY - MIN_ENERGY + 1) + MIN_ENERGY;
+                System.out.println("[Walking] Enabling run, next minimum run energy: " + minEnergy);
+                setRun(true);
+            }
+        }
+    }
+
+    /**
+     * Tiles in a remaining path which can be walked to (including the tile the
+     * player is currently on).
+     */
+    private List<Position> reachablePath(List<Position> remainingPath) {
         List<Position> reachable = new ArrayList<>();
 
-        for (Position position : path) {
-            if (bot.tile(position) == null || position.distanceTo(bot.localPlayer().position()) >= MAX_WALK_DISTANCE) {
-                System.out.println("null :" + (bot.tile(position) == null));
-                System.out.println("distance: " + (position.distanceTo(bot.localPlayer().position()) >= MAX_WALK_DISTANCE));
+        for (Position position : remainingPath) {
+            if (bot.tile(position) == null || position.distanceTo(bot.localPlayer().position()) >= MAX_INTERACT_DISTANCE) {
                 break;
             }
 
             reachable.add(position);
         }
 
-        if (reachable.isEmpty()) {
-            throw new IllegalStateException("no tiles in the path are reachable " + bot.localPlayer().position() + " " + path.get(0) + " -> " + path.get(path.size() - 1));
+        if (reachable.isEmpty() || reachable.size() == 1 && reachable.get(0).equals(bot.localPlayer().position())) {
+            throw new IllegalStateException("no tiles in the path are reachable");
         }
 
-        Position step = reachable.get(Math.min(new Random().nextInt(MAX_WALK_DISTANCE), reachable.size() - 1));
-        int currentDistance = bot.localPlayer().position().distanceTo(step);
-        int nextStepDistance = 1 + new Random().nextInt(1 + currentDistance / 3);
-        bot.tile(step).walkTo();
-
-        Position lastPosition = bot.localPlayer().position();
-        while (bot.localPlayer().position().distanceTo(step) > nextStepDistance) {
-            bot.tick();
-
-            if (bot.energy() > minEnergy) {
-                setRun(true);
-            }
-
-            if (lastPosition.equals(bot.localPlayer().position())) {
-                System.err.println("[Walking] Path step stuck: " + bot.localPlayer().position() + " -> " + step);
-                return false; // stuck, cancel this step
-            }
-
-            lastPosition = bot.localPlayer().position();
-        }
-
-        return true;
+        return reachable;
     }
 
     public void setRun(boolean run) {
         if (isRunning() != run) {
             bot.widget(160, 22).interact(0);
-            minEnergy = new Random().nextInt(MAX_MIN_ENERGY - MIN_ENERGY + 1) + MIN_ENERGY;
-            System.out.println("[Walking] Enabling run, next minimum run energy: " + minEnergy);
-            bot.tick();
         }
     }
 

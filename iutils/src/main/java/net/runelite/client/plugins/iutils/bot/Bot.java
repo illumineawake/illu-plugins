@@ -20,6 +20,7 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.iutils.CalculationUtils;
 import net.runelite.client.plugins.iutils.KeyboardUtils;
+import net.runelite.client.plugins.iutils.WalkUtils;
 import net.runelite.client.plugins.iutils.actor.NpcStream;
 import net.runelite.client.plugins.iutils.actor.PlayerStream;
 import net.runelite.client.plugins.iutils.iUtils;
@@ -41,6 +42,12 @@ public class Bot {
 
     @Inject
     public ClientThread clientThread;
+
+    @Inject
+    public iUtils utils;
+
+    @Inject
+    public WalkUtils walkUtils;
 
     @Inject
     private CalculationUtils calc;
@@ -108,11 +115,9 @@ public class Bot {
     }
 
     public iTile tile(Position position) {
-        log.info(position.toString());
         int plane = position.z;
         int x = position.x - client.getBaseX();
         int y = position.y - client.getBaseY();
-        log.info("x {} y{} z {}", x, y, plane);
         if (plane < 0 || plane >= 4) {
             return null;
         }
@@ -122,8 +127,8 @@ public class Bot {
         if (y < 0 || y >= 104) {
             return null;
         }
-        log.info("made it");
-        return new iTile(this, new Position(x,y,plane));
+        Tile tile = client.getScene().getTiles()[plane][x][y];
+        return new iTile(this, tile);
     }
 
     public Stream<iTile> tiles() {
@@ -131,7 +136,7 @@ public class Bot {
                 .flatMap(Arrays::stream)
                 .flatMap(Arrays::stream)
                 .filter(Objects::nonNull)
-                .map(to -> new iTile(this, new Position(to.getWorldLocation())));
+                .map(to -> new iTile(this, to));
     }
 
     public GameObjectStreamT objects2() {

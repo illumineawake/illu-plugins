@@ -36,6 +36,7 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
@@ -47,6 +48,7 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.itest.tasks.MovingTask;
 import net.runelite.client.plugins.itest.tasks.TimeoutTask;
+import net.runelite.client.plugins.iutils.WalkUtils;
 import net.runelite.client.plugins.iutils.bot.Bot;
 import net.runelite.client.plugins.iutils.bot.iWidget;
 import net.runelite.client.plugins.iutils.iUtils;
@@ -93,6 +95,9 @@ public class iTestPlugin extends Plugin implements Runnable
 
 	@Inject
 	private iUtils utils;
+
+	@Inject
+	private WalkUtils walkUtils;
 
 	@Inject
 	private Bot bot;
@@ -142,7 +147,10 @@ public class iTestPlugin extends Plugin implements Runnable
 			long start = System.currentTimeMillis();
 //			bot.inventory().withName("Tinderbox").first().useOn(bot.inventory().withName("Logs").first());
 			Walking walking = new Walking(bot);
-			walking.walkTo(new RectangularArea(3180, 3444, 3183, 3440));
+			walking.walkTo(new RectangularArea(3220, 3222, 3224, 3215)); //Lumbridge
+//			walking.walkTo(new RectangularArea(1763, 3666, 1780, 3661)); //Port Pisc
+//			walking.walkTo(new RectangularArea(3073, 3290, 3084, 3283)); //Draynorish
+//			log.info("{}",bot.objects().withAction("Open").nearest().orientation());
 //			GrandExchange grandExchange = new GrandExchange(bot);
 //			grandExchange.buy(361, 5, 2, 60000);
 //			grandExchange.sell(bot.inventory().withName("Tuna").first().id(), 85 );

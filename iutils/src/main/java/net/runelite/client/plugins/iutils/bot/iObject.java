@@ -65,10 +65,18 @@ public class iObject implements Locatable, Interactable {
     }
 
     public int orientation() { //TODO untested
-        if (tileObject instanceof WallObject)
-            return ((WallObject) tileObject).getOrientationA();
+        if (tileObject instanceof WallObject) {
+            int orientation = ((WallObject) tileObject).getOrientationA();
+            if (orientation == 1) return 0;
+            if (orientation == 2) return 1;
+            if (orientation == 4) return 2;
+            if (orientation == 8) return 3;
+            throw new AssertionError();
+        }
+
         if (tileObject instanceof DecorativeObject)
             return ((DecorativeObject) tileObject).getOrientation();
+
         return -1;
     }
 

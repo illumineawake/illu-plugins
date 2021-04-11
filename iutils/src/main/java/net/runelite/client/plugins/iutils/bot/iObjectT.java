@@ -76,6 +76,9 @@ public class iObjectT implements Locatable, Interactable {
         for (int i = 0; i < actions().size(); i++) {
             if (action.equalsIgnoreCase(actions().get(i))) {
                 interact(i);
+                if (action.equalsIgnoreCase("Open")) {
+                    bot.tick();
+                }
                 return;
             }
         }
