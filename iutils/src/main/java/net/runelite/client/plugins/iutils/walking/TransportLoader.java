@@ -70,21 +70,21 @@ public class TransportLoader {
     }
 
     private static Transport npcTransport(Position source, Position target, int id, String action) {
-        return new Transport(source, target, 1, 10, bot -> bot.npcs().withId(id).nearest(source).interact(action));
+        return new Transport(source, target, 0, 10, bot -> bot.npcs().withId(id).nearest(source).interact(action));
     }
 
     private static Transport npcChatTransport(Position source, Position target, int id, String... options) {
-        return new Transport(source, target, 1, 10, bot -> {
+        return new Transport(source, target, 0, 10, bot -> {
             bot.npcs().withId(id).nearest(target).interact("Talk-to");
             new Chatbox(bot).chat(options);
         });
     }
 
     private static Transport objectTransport(Position source, Position target, int id, String action) {
-        return new Transport(source, target, 1, Integer.MAX_VALUE, bot -> bot.objects2().withId(id).nearest(source).interact(action));
+        return new Transport(source, target, 0, Integer.MAX_VALUE, bot -> bot.objects2().withId(id).nearest(source).interact(action));
     }
 
     private static Transport itemObjectTransport(Position source, Position target, int item, int object) {
-        return new Transport(source, target, 1, Integer.MAX_VALUE, bot -> bot.inventory().withId(item).first().useOn(bot.objects().withId(object).nearest(source)));
+        return new Transport(source, target, 0, Integer.MAX_VALUE, bot -> bot.inventory().withId(item).first().useOn(bot.objects().withId(object).nearest(source)));
     }
 }

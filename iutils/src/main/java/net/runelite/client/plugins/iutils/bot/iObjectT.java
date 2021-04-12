@@ -25,7 +25,6 @@ public class iObjectT implements Locatable, Interactable {
         this.definition = definition;
     }
 
-    //	@Override
     public Bot bot() {
         return bot;
     }
@@ -58,7 +57,6 @@ public class iObjectT implements Locatable, Interactable {
     }
 
     public ObjectComposition definition() {
-//        return client().getObjectDefinition(id());
         return definition;
     }
 
@@ -76,9 +74,6 @@ public class iObjectT implements Locatable, Interactable {
         for (int i = 0; i < actions().size(); i++) {
             if (action.equalsIgnoreCase(actions().get(i))) {
                 interact(i);
-                if (action.equalsIgnoreCase("Open")) {
-                    bot.tick();
-                }
                 return;
             }
         }
@@ -88,7 +83,6 @@ public class iObjectT implements Locatable, Interactable {
     public void interact(int action) {
         bot().clientThread.invoke(() -> {
             int menuAction;
-
             switch (action) {
                 case 0:
                     menuAction = MenuAction.GAME_OBJECT_FIRST_OPTION.getId();

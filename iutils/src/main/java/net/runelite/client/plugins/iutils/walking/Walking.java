@@ -180,6 +180,7 @@ public class Walking {
                     if (transport.source.regionID() != bot.localPlayer().position().regionID()) {
                         bot.tick(5);
                     }
+//                    bot.tick();
                     return true;
                 }
                 return false;
@@ -248,6 +249,7 @@ public class Walking {
     private boolean handleTransport(Transport transport) {
         System.out.println("[Walking] Handling transport " + transport.source + " -> " + transport.target);
         transport.handler.accept(bot);
+        log.info("positionP {}, positionT {}, distance {}, targetRadius {}", bot.localPlayer().position(), transport.target, bot.localPlayer().position().distanceTo(transport.target), transport.targetRadius);
         return bot.waitUntil(() -> bot.localPlayer().position().distanceTo(transport.target) <= transport.targetRadius, 10000); // todo
     }
 
