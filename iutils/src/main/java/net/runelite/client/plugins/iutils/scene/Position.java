@@ -8,7 +8,7 @@ import net.runelite.api.coords.WorldPoint;
 
 import javax.inject.Inject;
 
-public class Position extends Area
+public class Position implements Area
 {
     @Inject private Client client;
     public final int x;
@@ -98,14 +98,14 @@ public class Position extends Area
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof Position &&
-                x == ((Position) o).x &&
-                y == ((Position) o).y &&
-                z == ((Position) o).z;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Position position = (Position) o;
+        return x == position.x && y == position.y && z == position.z;
     }
 
     @Override
     public int hashCode() {
-        return packed();
+        return Objects.hash(x, y, z);
     }
 }

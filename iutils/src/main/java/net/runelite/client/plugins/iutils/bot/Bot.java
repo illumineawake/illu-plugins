@@ -275,6 +275,10 @@ public class Bot {
 
     public int energy() { return client.getEnergy(); }
 
+    public int modifiedLevel(Skill skill) {
+        return client.getBoostedSkillLevel(skill);
+    }
+
     public GrandExchangeOffer grandExchangeOffer(int slot) {
         return client.getGrandExchangeOffers()[slot];
     }

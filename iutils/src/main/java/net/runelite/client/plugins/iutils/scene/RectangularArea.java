@@ -1,6 +1,6 @@
 package net.runelite.client.plugins.iutils.scene;
 
-public class RectangularArea extends Area
+public class RectangularArea implements Area
 {
     public final int minX;
     public final int minY;

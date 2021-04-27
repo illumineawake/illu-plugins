@@ -11,7 +11,7 @@ public class Pathfinder {
     private final List<Node> starts;
     private final Predicate<Position> target;
     private final List<Node> boundary = new LinkedList<>();
-    private final Set<Position> visited = new HashSet<>();
+    private final PositionSet visited = new PositionSet();
     private final Map<Position, List<Position>> transports;
 
     public Pathfinder(CollisionMap map, Map<Position, List<Position>> transports, List<Position> starts, Predicate<Position> target) {
@@ -25,7 +25,7 @@ public class Pathfinder {
         boundary.addAll(starts);
 
         while (!boundary.isEmpty()) {
-            Node node = boundary.remove(0);
+            var node = boundary.remove(0);
 
             if (target.test(node.position)) {
                 return node.path();
@@ -38,6 +38,12 @@ public class Pathfinder {
     }
 
     private void addNeighbors(Node node) {
+        // Prefer taking transports as early as possible, to avoid causing problems with ladders which can be taken
+        // from several source positions.
+        for (var transport : transports.getOrDefault(node.position, new ArrayList<>())) {
+            addNeighbor(node, transport);
+        }
+
         if (map.w(node.position.x, node.position.y, node.position.z)) {
             addNeighbor(node, new Position(node.position.x - 1, node.position.y, node.position.z));
         }
@@ -69,17 +75,14 @@ public class Pathfinder {
         if (map.ne(node.position.x, node.position.y, node.position.z)) {
             addNeighbor(node, new Position(node.position.x + 1, node.position.y + 1, node.position.z));
         }
-
-        for (Position transport : transports.getOrDefault(node.position, new ArrayList<>())) {
-            addNeighbor(node, transport);
-        }
     }
 
     private void addNeighbor(Node node, Position neighbor) {
-        if (!visited.add(neighbor)) {
+        if (visited.contains(neighbor.x, neighbor.y, neighbor.z)) {
             return;
         }
 
+        visited.add(neighbor.x, neighbor.y, neighbor.z);
         boundary.add(new Node(neighbor, node));
     }
 
@@ -94,7 +97,7 @@ public class Pathfinder {
 
         public List<Position> path() {
             List<Position> path = new LinkedList<>();
-            Node node = this;
+            var node = this;
 
             while (node != null) {
                 path.add(0, node.position);
