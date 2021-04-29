@@ -2,7 +2,6 @@ package net.runelite.client.plugins.iutils.ui;
 
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemComposition;
-import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.iutils.bot.Bot;
 import net.runelite.client.plugins.iutils.bot.InventoryItem;

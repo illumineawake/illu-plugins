@@ -1,16 +1,13 @@
 package net.runelite.client.plugins.iutils;
 
-import java.lang.reflect.Method;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.MenuAction;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.Point;
+import net.runelite.api.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.lang.reflect.Method;
 
 @Slf4j
 @Singleton

@@ -1,16 +1,13 @@
 package net.runelite.client.plugins.iutils.bot;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.client.plugins.iutils.scene.Locatable;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
 import net.runelite.client.plugins.iutils.scene.Position;
-import net.runelite.rs.api.RSClient;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 @Slf4j
 public class iTile implements Locatable {
@@ -65,18 +62,17 @@ public class iTile implements Locatable {
             case REGULAR:
                 GameObject go = Arrays.stream(tile.getGameObjects()).filter(Objects::nonNull).findFirst().orElse(null);
                 return (go == null) ? null : new iObject(bot, go,
-                        ObjectCategory.REGULAR,
                         bot.getFromClientThread(() -> client().getObjectDefinition(go.getId()))
                 );
             case WALL:
                 WallObject wo = tile.getWallObject();
-                return (wo == null) ? null :  new iObject(bot, wo, ObjectCategory.WALL, bot.getFromClientThread(() -> client().getObjectDefinition(wo.getId())));
+                return (wo == null) ? null :  new iObject(bot, wo, bot.getFromClientThread(() -> client().getObjectDefinition(wo.getId())));
             case WALL_DECORATION:
                 DecorativeObject dec = tile.getDecorativeObject();
-                return (dec == null) ? null :  new iObject(bot, dec, ObjectCategory.WALL_DECORATION, bot.getFromClientThread(() -> client().getObjectDefinition(dec.getId())));
+                return (dec == null) ? null :  new iObject(bot, dec, bot.getFromClientThread(() -> client().getObjectDefinition(dec.getId())));
             case FLOOR_DECORATION:
                 GroundObject ground = tile.getGroundObject();
-                return (ground == null) ? null :  new iObject(bot, ground, ObjectCategory.FLOOR_DECORATION, bot.getFromClientThread(() -> client().getObjectDefinition(ground.getId())));
+                return (ground == null) ? null :  new iObject(bot, ground, bot.getFromClientThread(() -> client().getObjectDefinition(ground.getId())));
             default:
                 return null;
         }

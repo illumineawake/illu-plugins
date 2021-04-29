@@ -6,7 +6,6 @@ import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.ui.Chatbox;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 public class TeleportLoader {
@@ -39,13 +38,13 @@ public class TeleportLoader {
             teleports.add(new Teleport(new Position(3151, 3635, 0), 2, () -> jewleryAction(ringOfDueling(), "Ferox Enclave")));
         }
 
-        if (botsNecklace() != null) {
-            teleports.add(new Teleport(new Position(2898, 3553, 0), 2, () -> jewleryAction(botsNecklace(), "Burtrope")));
-            teleports.add(new Teleport(new Position(2520, 3571, 0), 2, () -> jewleryAction(botsNecklace(), "Barbarian Outpost")));
-            teleports.add(new Teleport(new Position(2964, 4382, 2), 2, () -> jewleryAction(botsNecklace(), "Corporeal Beast")));
-            teleports.add(new Teleport(new Position(3244, 9501, 2), 2, () -> jewleryAction(botsNecklace(), "Tears of Guthix")));
-            teleports.add(new Teleport(new Position(1624, 3938, 0), 1, () -> jewleryAction(botsNecklace(), "Barbarian Outpost")));
-            teleports.add(new Teleport(new Position(2520, 3571, 0), 1, () -> jewleryAction(botsNecklace(), "Barbarian Outpost")));
+        if (gamesNecklace() != null) {
+            teleports.add(new Teleport(new Position(2898, 3553, 0), 2, () -> jewleryAction(gamesNecklace(), "Burtrope")));
+            teleports.add(new Teleport(new Position(2520, 3571, 0), 2, () -> jewleryAction(gamesNecklace(), "Barbarian Outpost")));
+            teleports.add(new Teleport(new Position(2964, 4382, 2), 2, () -> jewleryAction(gamesNecklace(), "Corporeal Beast")));
+            teleports.add(new Teleport(new Position(3244, 9501, 2), 2, () -> jewleryAction(gamesNecklace(), "Tears of Guthix")));
+            teleports.add(new Teleport(new Position(1624, 3938, 0), 1, () -> jewleryAction(gamesNecklace(), "Barbarian Outpost")));
+            teleports.add(new Teleport(new Position(2520, 3571, 0), 1, () -> jewleryAction(gamesNecklace(), "Barbarian Outpost")));
         }
 
         if (combatBracelet() != null) {
@@ -104,10 +103,10 @@ public class TeleportLoader {
             teleports.add(new Teleport(new Position(3549, 10456, 0), 2, () -> jewleryAction(digsitePendant(), "Lithkren")));
         }
 
-        if (drakansMedallion() != null) {
-            teleports.add(new Teleport(new Position(3649, 3230, 0), 0, () -> jewleryAction(drakansMedallion(), "Ver Sinhaza")));
-            teleports.add(new Teleport(new Position(3592, 3337, 0), 0, () -> jewleryAction(drakansMedallion(), "Darkmeyer")));
-        }
+//        if (drakansMedallion() != null) {
+//            teleports.add(new Teleport(new Position(3649, 3230, 0), 0, () -> jewleryAction(drakansMedallion(), "Ver Sinhaza")));
+//            teleports.add(new Teleport(new Position(3592, 3337, 0), 0, () -> jewleryAction(drakansMedallion(), "Darkmeyer")));
+//        }
 
         return teleports;
     }
@@ -119,6 +118,10 @@ public class TeleportLoader {
 
     private InventoryItem ringOfDueling() {
         return bot.inventory().withId(RING_OF_DUELING).first();
+    }
+
+    private InventoryItem gamesNecklace() {
+        return bot.inventory().withId(GAMES_NECKLACE).first();
     }
 
     private InventoryItem botsNecklace() {

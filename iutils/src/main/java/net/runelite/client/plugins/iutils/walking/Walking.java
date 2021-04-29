@@ -1,9 +1,7 @@
 package net.runelite.client.plugins.iutils.walking;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.client.plugins.iutils.WalkUtils;
 import net.runelite.client.plugins.iutils.bot.Bot;
-import net.runelite.client.plugins.iutils.bot.iObject;
 import net.runelite.client.plugins.iutils.bot.iTile;
 import net.runelite.client.plugins.iutils.scene.Area;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
@@ -19,8 +17,6 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 @Slf4j
 public class Walking {
@@ -33,8 +29,11 @@ public class Walking {
     private static final int MAX_MIN_ENERGY = 50;
     private static final int MIN_ENERGY = 15;
     private static final Area DEATHS_OFFICE = new RectangularArea(3167, 5733, 3184, 5720);
-    public static final ExecutorService PATHFINDING_EXECUTOR = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
+    public static final ExecutorService PATHFINDING_EXECUTOR = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), r -> {
+        var thread = Executors.defaultThreadFactory().newThread(r);
+        thread.setDaemon(true);
+        return thread;
+    });
 
     private final Bot bot;
     private final Chatbox chatbox;
@@ -49,6 +48,7 @@ public class Walking {
         }
     }
 
+    @Inject
     public Walking(Bot bot) {
         this.bot = bot;
         chatbox = new Chatbox(bot);

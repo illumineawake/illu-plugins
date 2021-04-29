@@ -1,33 +1,25 @@
 package net.runelite.client.plugins.iutils.bot;
 
+import net.runelite.api.*;
+import net.runelite.api.coords.LocalPoint;
+import net.runelite.client.plugins.iutils.api.Interactable;
+import net.runelite.client.plugins.iutils.scene.Locatable;
+import net.runelite.client.plugins.iutils.scene.Position;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
-
-import net.runelite.api.*;
-import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
-import net.runelite.client.callback.ClientThread;
-import net.runelite.client.plugins.iutils.api.Interactable;
-import net.runelite.client.plugins.iutils.iUtils;
-import net.runelite.client.plugins.iutils.scene.Locatable;
-import net.runelite.client.plugins.iutils.scene.ObjectCategory;
-import net.runelite.client.plugins.iutils.scene.ObjectType;
-import net.runelite.client.plugins.iutils.scene.Position;
 
 public class iObject implements Locatable, Interactable {
 
     private final Bot bot;
     private final TileObject tileObject;
-    private final ObjectCategory type;
     private final ObjectComposition definition;
 
-    public iObject(Bot bot, TileObject tileObject, ObjectCategory type, ObjectComposition definition) {
+    public iObject(Bot bot, TileObject tileObject, ObjectComposition definition) {
         this.bot = bot;
         this.tileObject = tileObject;
-        this.type = type;
         this.definition = definition;
     }
 
@@ -47,13 +39,6 @@ public class iObject implements Locatable, Interactable {
 
     public LocalPoint localPoint() {
         return tileObject.getLocalLocation();
-    }
-
-    /**
-     * The {@link ObjectType} of the object.
-     */
-    public ObjectCategory type() {
-        return type;
     }
 
     public int id() {
@@ -91,7 +76,8 @@ public class iObject implements Locatable, Interactable {
     }
 
     public Point menuPoint() {
-        if (type() == ObjectCategory.REGULAR) {
+        if (tileObject instanceof GameObject) {
+            System.out.println("Is GO");
             GameObject temp = (GameObject) tileObject;
             return temp.getSceneMinLocation();
         }

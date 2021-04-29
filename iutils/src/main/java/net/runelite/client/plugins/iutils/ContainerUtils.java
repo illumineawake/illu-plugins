@@ -1,17 +1,15 @@
 package net.runelite.client.plugins.iutils;
 
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
 import net.runelite.api.Client;
 import net.runelite.api.Point;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
+
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.util.List;
+import java.util.*;
 
 public class ContainerUtils
 {

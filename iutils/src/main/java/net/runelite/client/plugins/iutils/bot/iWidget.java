@@ -1,24 +1,19 @@
 package net.runelite.client.plugins.iutils.bot;
 
 import net.runelite.api.Client;
-import net.runelite.api.ItemContainer;
 import net.runelite.api.MenuAction;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
-import net.runelite.client.plugins.iutils.ContainerUtils;
 import net.runelite.client.plugins.iutils.api.Interactable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
 
     private final Bot bot;
     private final Widget widget;
+    Map<Integer, iWidget> children = new HashMap<>();
 
     public iWidget(Bot bot, Widget widget) {
         this.bot = bot;
@@ -130,9 +125,7 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
     }
 
     public void select() {
-        System.out.println("Doing select");
         bot().clientThread.invoke(() -> {
-            System.out.println("in invoke");
             client().invokeMenuAction("", "",
                     0,
                     MenuAction.WIDGET_TYPE_6.getId(),
@@ -140,5 +133,19 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
                     id()
             );
         });
+    }
+
+    public Widget child(int child) { //TODO untested
+        var c = widget.getDynamicChildren()[child];
+
+        if (c == null) {
+            this.children.put(child, this);
+        }
+
+        return c;
+    }
+
+    public List<iWidget> children() { //TODO untested
+        return new ArrayList<>(children.values());
     }
 }

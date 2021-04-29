@@ -6,11 +6,12 @@
 package net.runelite.client.plugins.iutils;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Map;
-import javax.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.runelite.api.widgets.WidgetInfo;
+
+import javax.annotation.Nullable;
+import java.util.Map;
 
 @Getter
 @AllArgsConstructor

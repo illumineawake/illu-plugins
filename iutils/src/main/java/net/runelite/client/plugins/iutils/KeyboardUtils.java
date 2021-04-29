@@ -1,10 +1,11 @@
 package net.runelite.client.plugins.iutils;
 
 import com.google.inject.Inject;
-import java.awt.event.KeyEvent;
-import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.client.callback.ClientThread;
+
+import javax.inject.Singleton;
+import java.awt.event.KeyEvent;
 
 @Singleton
 public class KeyboardUtils

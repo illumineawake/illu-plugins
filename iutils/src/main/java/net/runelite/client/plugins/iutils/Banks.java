@@ -1,9 +1,11 @@
 package net.runelite.client.plugins.iutils;
 
 import com.google.common.collect.ImmutableSet;
-import java.util.Set;
-import static net.runelite.api.NullObjectID.NULL_34810;
 import net.runelite.api.ObjectID;
+
+import java.util.Set;
+
+import static net.runelite.api.NullObjectID.NULL_34810;
 
 public class Banks
 {

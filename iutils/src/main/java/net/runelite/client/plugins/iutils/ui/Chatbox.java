@@ -4,11 +4,13 @@ import net.runelite.api.Skill;
 import net.runelite.client.plugins.iutils.bot.Bot;
 import net.runelite.client.plugins.iutils.bot.iWidget;
 
+import javax.inject.Inject;
 import java.util.List;
 
 public class Chatbox {
     private final Bot bot;
 
+    @Inject
     public Chatbox(Bot bot) {
         this.bot = bot;
     }
@@ -31,6 +33,10 @@ public class Chatbox {
                 return ChatState.MODEL;
             case 633:
                 return ChatState.SPRITE;
+            case 233:
+                return ChatState.LEVEL_UP;
+            case 270:
+                return ChatState.MAKE;
             default:
                 throw new IllegalStateException("unknown chat child " + bot.widget(162, 562).nestedInterface());
         }
@@ -48,7 +54,7 @@ public class Chatbox {
     }
 
     public void continueChats() {
-        while (chatState() != ChatState.CLOSED && chatState() != ChatState.OPTIONS_CHAT) {
+        while (chatState() != ChatState.CLOSED && chatState() != ChatState.OPTIONS_CHAT && chatState() != ChatState.MAKE) {
             continueChat();
             bot.tick();
         }
@@ -101,6 +107,19 @@ public class Chatbox {
                 bot.widget(633, 0, 1).select();
                 break;
         }
+    }
+
+    public void selectMenu(String option) { //TODO untested
+        bot.waitUntil(() -> bot.screenContainer().nestedInterface() == 187);
+
+        for (var child : bot.widget(187, 3).children()) {
+            if (child.text() != null && child.text().contains(option)) {
+                child.select();
+                return;
+            }
+        }
+
+        throw new IllegalArgumentException("no option '" + option + "' found");
     }
 
     public void selectExperienceItemSkill(Skill skill) {
@@ -181,6 +200,11 @@ public class Chatbox {
         bot.waitUntil(() -> bot.screenContainer().nestedInterface() != 240);
     }
 
+    public void make(int index, int quantity) {
+        bot.waitUntil(() -> chatState() == ChatState.MAKE);
+        bot.widget(270, 14 + index, quantity).select();
+    }
+
     public enum ChatState {
         CLOSED,
         PLAYER_CHAT,
@@ -189,6 +213,8 @@ public class Chatbox {
         OPTIONS_CHAT,
         SPECIAL,
         MODEL,
-        SPRITE
+        SPRITE,
+        LEVEL_UP,
+        MAKE
     }
 }

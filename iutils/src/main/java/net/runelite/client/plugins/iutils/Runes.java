@@ -25,11 +25,13 @@
 package net.runelite.client.plugins.iutils;
 
 import com.google.common.collect.ImmutableMap;
-import java.awt.image.BufferedImage;
-import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.awt.image.BufferedImage;
+import java.util.Map;
+
 import static net.runelite.api.ItemID.*;
 
 public enum Runes

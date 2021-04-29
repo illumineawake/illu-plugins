@@ -1,7 +1,8 @@
 package net.runelite.client.plugins.iutils;
 
-import java.util.List;
 import net.runelite.api.coords.WorldPoint;
+
+import java.util.List;
 
 class Outer
 {

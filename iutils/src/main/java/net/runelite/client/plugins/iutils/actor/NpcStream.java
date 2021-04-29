@@ -3,7 +3,6 @@ package net.runelite.client.plugins.iutils.actor;
 
 import net.runelite.client.plugins.iutils.bot.iNPC;
 import net.runelite.client.plugins.iutils.bot.iObject;
-import net.runelite.client.plugins.iutils.scene.GameObjectStream;
 
 import java.util.Arrays;
 import java.util.stream.Stream;

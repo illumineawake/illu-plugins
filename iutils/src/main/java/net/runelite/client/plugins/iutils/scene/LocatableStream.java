@@ -1,9 +1,10 @@
 package net.runelite.client.plugins.iutils.scene;
 
-import java.util.Comparator;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.plugins.iutils.util.RandomizedStreamAdapter;
+
+import java.util.Comparator;
+import java.util.stream.Stream;
 
 @Slf4j
 public abstract class LocatableStream<T extends Locatable, S extends LocatableStream<T, S>> extends RandomizedStreamAdapter<T, S>

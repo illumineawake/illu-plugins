@@ -12,7 +12,70 @@ public class GrandExchange {
         this.bot = bot;
     }
 
-    public boolean buy(int item, int quantity, double priceMultiplier, int timeout) {
+    public void buy(int item, int quantity) {
+        if (!isOpen()) {
+            bot.npcs().withName("Grand Exchange Clerk").nearest().interact("Exchange");
+            bot.waitUntil(this::isOpen);
+        }
+
+        if (bot.inventory().withId(995).first() == null) {
+            throw new IllegalStateException("you'll need some coins to buy stuff");
+        }
+
+        var slot = freeSlot();
+
+        startBuyOffer(slot);
+
+        bot.chooseItem(item);
+        bot.waitUntil(() -> currentItem() == item);
+
+        if (quantity != currentQuantity()) { // todo: use +/- buttons
+            bot.widget(465, 24, 7).interact(0);
+            bot.tick();
+
+            bot.chooseNumber(quantity);
+            bot.tick();
+        }
+
+        var price = Math.min(
+                (int) Math.ceil(10 * currentPrice()),
+                bot.inventory().withId(995).first().quantity() / quantity
+        );
+
+        if (price != currentPrice()) {
+            bot.widget(465, 24, 12).interact(0);
+            bot.tick();
+
+            bot.chooseNumber(price);
+            bot.tick();
+        }
+
+        bot.tick();
+
+        bot.widget(465, 27).interact(0);
+
+        bot.waitUntil(() -> bot.grandExchangeOffer(slot) != null);
+
+        var ticks = 0;
+
+        while (bot.grandExchangeOffer(slot).getQuantitySold() != quantity && ticks++ < 10) {
+            bot.tick();
+        }
+
+        if (bot.grandExchangeOffer(slot).getQuantitySold() == quantity) {
+            collectToBank();
+            return;
+        }
+
+        if (bot.grandExchangeOffer(slot).getQuantitySold() != quantity) {
+            bot.widget(465, 7, 2).interact(1);
+            bot.tick(4);
+            collectToInv();
+            throw new IllegalStateException("timed out waiting for offer to complete: " + bot.grandExchangeOffer(slot).getQuantitySold() + " / " + quantity);
+        }
+    }
+
+    public boolean buyProgressively(int item, int quantity, double priceMultiplier, int timeout) {
         if (!isOpen()) {
             throw new IllegalStateException("grand exchange window is closed");
         }
@@ -92,6 +155,11 @@ public class GrandExchange {
     }
 
     public void collectToInventory() {
+        bot.widget(465, 6, 0).interact(0);
+        bot.sleepApproximately(2000);
+    }
+
+    public void collectToInv() {
         bot.widget(465, 6, 0).interact(0);
         bot.sleepApproximately(2000);
     }

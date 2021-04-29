@@ -1,9 +1,10 @@
 package net.runelite.client.plugins.iutils.scene;
 
+import net.runelite.client.plugins.iutils.bot.iObject;
+
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
-import net.runelite.client.plugins.iutils.bot.iObject;
 
 public class GameObjectStream extends LocatableStream<iObject, GameObjectStream> {
     public GameObjectStream(Stream<iObject> stream) {

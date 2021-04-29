@@ -1,6 +1,9 @@
 package net.runelite.client.plugins.iutils.bot;
 
-import net.runelite.api.*;
+import net.runelite.api.Actor;
+import net.runelite.api.AnimationID;
+import net.runelite.api.NPC;
+import net.runelite.api.Player;
 import net.runelite.client.plugins.iutils.api.Interactable;
 import net.runelite.client.plugins.iutils.scene.Locatable;
 import net.runelite.client.plugins.iutils.scene.Position;
@@ -59,7 +62,7 @@ public abstract class iActor implements Locatable, Interactable {
      * tablet animation for players)
      */
     public int spotAnimation() {
-        return actor.getSpotAnimationFrame();
+        return actor.getSpotAnimFrame();
     }
 
     /**

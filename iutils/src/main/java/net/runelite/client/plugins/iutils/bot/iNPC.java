@@ -1,6 +1,9 @@
 package net.runelite.client.plugins.iutils.bot;
 
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.MenuAction;
+import net.runelite.api.NPC;
+import net.runelite.api.NPCComposition;
 import net.runelite.client.plugins.iutils.scene.Position;
 
 import java.util.Arrays;
@@ -76,7 +79,7 @@ public class iNPC extends iActor {
 
     @Override
     public int spotAnimation() {
-        return npc.getSpotAnimationFrame();
+        return npc.getSpotAnimFrame();
     }
 
     @Override

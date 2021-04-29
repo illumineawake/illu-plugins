@@ -1,12 +1,10 @@
 package net.runelite.client.plugins.iutils.scene;
 
-import java.util.Objects;
-
 import net.runelite.api.Client;
-import net.runelite.api.Point;
 import net.runelite.api.coords.WorldPoint;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
 public class Position implements Area
 {

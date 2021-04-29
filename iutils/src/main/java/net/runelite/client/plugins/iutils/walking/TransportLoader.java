@@ -23,14 +23,7 @@ public class TransportLoader {
                     continue;
                 }
 
-                var parts = line.split(" ");
-
-                transports.add(objectTransport(
-                        new Position(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2])),
-                        new Position(Integer.parseInt(parts[3]), Integer.parseInt(parts[4]), Integer.parseInt(parts[5])),
-                        Integer.parseInt(parts[parts.length - 1]),
-                        parts[6].replace('_', ' '))
-                );
+                transports.add(parseTransportLine(line));
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -79,6 +72,7 @@ public class TransportLoader {
         transports.add(npcActionTransport(new Position(2834, 3335, 0), new Position(3048, 3231, 1), 1170, "Take-boat"));
         transports.add(npcChatTransport(new Position(2821, 3374, 0), new Position(2822, 9774, 0), 1164, "Well that is a risk I will have to take."));
 
+
         // Paterdomus
         transports.add(trapdoorTransport(new Position(3405, 3506, 0), new Position(3405, 9906, 0), 1579, 1581));
         transports.add(trapdoorTransport(new Position(3423, 3485, 0), new Position(3440, 9887, 0), 3432, 3433));
@@ -87,7 +81,7 @@ public class TransportLoader {
         transports.add(trapdoorTransport(new Position(3491, 3232, 0), new Position(14723, 2000, 0), 12743, 12743));
 
         // Port Piscarilius
-        transports.add(npcTransport(new Position(1824, 3691, 0), new Position(3055, 3242, 1), 2147, "Port Sarim"));
+        transports.add(npcTransport(new Position(1824, 3691, 0), new Position(3055, 3242, 1), 10727, "Port Sarim"));
 
         // Meyerditch
         transports.add(new Transport(
@@ -115,6 +109,15 @@ public class TransportLoader {
 
         transports.add(trapdoorTransport(new Position(3606, 3215, 0), new Position(3603, 9611, 0), 32577, 32578));
 
+        if (bot.varb(2573) > 123) {
+            transports.add(parseTransportLine("3649 3220 0 3631 3219 0 Enter Door 32660"));
+            transports.add(parseTransportLine("3631 3219 0 3649 3219 0 Enter Door 32659"));
+            transports.add(parseTransportLine("3649 3219 0 3631 3219 0 Enter Door 32660"));
+            transports.add(parseTransportLine("3631 3220 0 3649 3219 0 Enter Door 32659"));
+            transports.add(parseTransportLine("3649 3218 0 3631 3219 0 Enter Door 32660"));
+            transports.add(parseTransportLine("3631 3218 0 3649 3219 0 Enter Door 32659"));
+        }
+
         /*
          * TODO: if the target is in the wilderness, add these
          * 2561 3311 0 3154 3924 0 Pull Lever 1814
@@ -129,6 +132,16 @@ public class TransportLoader {
          */
 
         return transports;
+    }
+
+    private static Transport parseTransportLine(String line) {
+        var parts = line.split(" ");
+
+        return objectTransport(
+                new Position(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2])),
+                new Position(Integer.parseInt(parts[3]), Integer.parseInt(parts[4]), Integer.parseInt(parts[5])),
+                Integer.parseInt(parts[parts.length - 1]),
+                parts[6].replace('_', ' '));
     }
 
 
@@ -158,12 +171,12 @@ public class TransportLoader {
     }
 
     private static Transport objectTransport(Position source, Position target, int id, String action) {
-        return new Transport(source, target, Integer.MAX_VALUE, 0, bot -> bot.objects2().withId(id).nearest(source).interact(action));
+        return new Transport(source, target, Integer.MAX_VALUE, 0, bot -> bot.objects().withId(id).nearest(source).interact(action));
     }
 
-    private static Transport objectChatTransport(Position source, Position target, int id, String action, String... options) {
+    private static Transport objectChatTransport(Position source, Position target, String id, String action, String... options) {
         return new Transport(source, target, Integer.MAX_VALUE, 0, bot -> {
-            bot.objects2().withId(id).nearest(source).interact(action);
+            bot.objects().withName(id).nearest(source).interact(action);
             new Chatbox(bot).chat(options);
         });
     }

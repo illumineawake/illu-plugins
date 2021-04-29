@@ -1,23 +1,9 @@
 package net.runelite.client.plugins.iutils.bot;
 
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.callback.ClientThread;
-import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.iutils.CalculationUtils;
 import net.runelite.client.plugins.iutils.KeyboardUtils;
 import net.runelite.client.plugins.iutils.WalkUtils;
@@ -25,10 +11,20 @@ import net.runelite.client.plugins.iutils.actor.NpcStream;
 import net.runelite.client.plugins.iutils.actor.PlayerStream;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.plugins.iutils.scene.GameObjectStream;
-import net.runelite.client.plugins.iutils.scene.GameObjectStreamT;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
 import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.ui.InventoryItemStream;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
 import static net.runelite.client.plugins.iutils.iUtils.sleep;
@@ -139,9 +135,9 @@ public class Bot {
                 .map(to -> new iTile(this, to));
     }
 
-    public GameObjectStreamT objects2() {
-        return getFromClientThread(() -> new GameObjectStreamT(iUtils.objects.stream()
-                .map(o -> new iObjectT(
+    public GameObjectStream objects() {
+        return getFromClientThread(() -> new GameObjectStream(iUtils.objects.stream()
+                .map(o -> new iObject(
                         this,
                         o,
                         client().getObjectDefinition(o.getId())
@@ -152,46 +148,46 @@ public class Bot {
     }
 
 
-    public GameObjectStream objects() {
-        Collection<BaseObject> baseObjects = new ArrayList<>();
-        Tile[][][] tiles = client().getScene().getTiles();
-        int plane = client().getPlane();
-
-        for (int j = 0; j < tiles[plane].length; j++) {
-            for (int k = 0; k < tiles[plane][j].length; k++) {
-                GameObject[] go = tiles[plane][j][k].getGameObjects();
-                for (GameObject gameObject : go) {
-                    if (gameObject != null) {
-                        baseObjects.add(new BaseObject(gameObject, ObjectCategory.REGULAR));
-                    }
-                }
-                WallObject wallObject = tiles[plane][j][k].getWallObject();
-                if (wallObject != null) {
-                    baseObjects.add(new BaseObject(wallObject, ObjectCategory.WALL));
-                }
-
-                GroundObject groundObject = tiles[plane][j][k].getGroundObject();
-                if (groundObject != null) {
-                    baseObjects.add(new BaseObject(groundObject, ObjectCategory.FLOOR_DECORATION));
-                }
-
-                DecorativeObject decorativeObject = tiles[plane][j][k].getDecorativeObject();
-                if (decorativeObject != null) {
-                    baseObjects.add(new BaseObject(decorativeObject, ObjectCategory.WALL_DECORATION));
-                }
-            }
-        }
-        return getFromClientThread(() -> new GameObjectStream(baseObjects.stream()
-                .map(o -> new iObject(
-                        this,
-                        o.tileObject,
-                        o.objectCategory(),
-                        client().getObjectDefinition(o.tileObject.getId())
-                ))
-                .collect(Collectors.toList())
-                .stream())
-        );
-    }
+//    public GameObjectStream objects() {
+//        Collection<BaseObject> baseObjects = new ArrayList<>();
+//        Tile[][][] tiles = client().getScene().getTiles();
+//        int plane = client().getPlane();
+//
+//        for (int j = 0; j < tiles[plane].length; j++) {
+//            for (int k = 0; k < tiles[plane][j].length; k++) {
+//                GameObject[] go = tiles[plane][j][k].getGameObjects();
+//                for (GameObject gameObject : go) {
+//                    if (gameObject != null) {
+//                        baseObjects.add(new BaseObject(gameObject, ObjectCategory.REGULAR));
+//                    }
+//                }
+//                WallObject wallObject = tiles[plane][j][k].getWallObject();
+//                if (wallObject != null) {
+//                    baseObjects.add(new BaseObject(wallObject, ObjectCategory.WALL));
+//                }
+//
+//                GroundObject groundObject = tiles[plane][j][k].getGroundObject();
+//                if (groundObject != null) {
+//                    baseObjects.add(new BaseObject(groundObject, ObjectCategory.FLOOR_DECORATION));
+//                }
+//
+//                DecorativeObject decorativeObject = tiles[plane][j][k].getDecorativeObject();
+//                if (decorativeObject != null) {
+//                    baseObjects.add(new BaseObject(decorativeObject, ObjectCategory.WALL_DECORATION));
+//                }
+//            }
+//        }
+//        return getFromClientThread(() -> new GameObjectStream(baseObjects.stream()
+//                .map(o -> new iObject(
+//                        this,
+//                        o.tileObject,
+//                        o.objectCategory(),
+//                        client().getObjectDefinition(o.tileObject.getId())
+//                ))
+//                .collect(Collectors.toList())
+//                .stream())
+//        );
+//    }
 
     public NpcStream npcs() {
         return getFromClientThread(() -> new NpcStream(client().getNpcs().stream()
@@ -275,8 +271,16 @@ public class Bot {
 
     public int energy() { return client.getEnergy(); }
 
+    public int experience(Skill skill) {
+        return client.getSkillExperience(skill);
+    }
+
     public int modifiedLevel(Skill skill) {
         return client.getBoostedSkillLevel(skill);
+    }
+
+    public int baseLevel(Skill skill) {
+        return client.getRealSkillLevel(skill);
     }
 
     public GrandExchangeOffer grandExchangeOffer(int slot) {

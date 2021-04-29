@@ -1,33 +1,20 @@
 package net.runelite.client.plugins.iutils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.*;
+import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.queries.*;
+import org.apache.commons.lang3.ArrayUtils;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
-import net.runelite.api.Constants;
-import net.runelite.api.DecorativeObject;
-import net.runelite.api.GameObject;
-import net.runelite.api.GroundObject;
-import net.runelite.api.ItemLayer;
-import net.runelite.api.Player;
-import net.runelite.api.Scene;
-import net.runelite.api.Tile;
-import net.runelite.api.TileItem;
-import net.runelite.api.TileObject;
-import net.runelite.api.WallObject;
-import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.queries.DecorativeObjectQuery;
-import net.runelite.api.queries.GameObjectQuery;
-import net.runelite.api.queries.GroundObjectQuery;
-import net.runelite.api.queries.TileQuery;
-import net.runelite.api.queries.WallObjectQuery;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import static net.runelite.client.plugins.iutils.Banks.ALL_BANKS;
-import org.apache.commons.lang3.ArrayUtils;
 
 @Slf4j
 @Singleton
