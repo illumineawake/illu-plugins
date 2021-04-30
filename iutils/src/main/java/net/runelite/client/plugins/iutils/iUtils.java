@@ -96,6 +96,10 @@ public class iUtils extends Plugin {
 
     private OSBGrandExchangeResult osbGrandExchangeResult;
 
+    public final static Set<TileObject> objects = new HashSet<>();
+    public final static Set<TileItem> tileItems = new HashSet<>();
+    public final static Set<NPC> npcs = new HashSet<>();
+
     public boolean randomEvent;
     public static boolean iterating;
     private final List<ActionQueue.DelayedAction> delayedActions = new ArrayList<>();
@@ -120,32 +124,7 @@ public class iUtils extends Plugin {
 
     @Override
     protected void startUp() {
-//        bot.widget(WidgetInfo.BANK_DEPOSIT_INVENTORY).interact("Deposit inventory");
-//         bank items example
-        /*List<Widget> widgets = bot.widget(BANK_ITEM_CONTAINER).items();
-        for (Widget widget : widgets) {
-            if (widget.getItemId() == 6512 || widget.getItemId() == -1 || widget.isSelfHidden())
-            {
-                continue;
-            }
-            log.info("Widget id: {} quantity: {} slot: {}", widget.getItemId(), widget.getItemQuantity(), widget.getIndex());
-        }*/
-//        if (client != null && client.getLocalPlayer() != null) {
-//            bot.objects2().withAction("Chop-down").nearest().interact("Chop-down");
-//            List<InventoryItem> items = bot.inventory().all();
-//            for (InventoryItem item : items) {
-//                log.info("Item id: {}, name: {}, quantity: {}, slot: {}, actions: {}", item.id(), item.name(), item.quantity(), item.slot(), item.actions());
-//            }
-//            bot.inventory().withName("Tuna").first().interact("Eat");
-//            bot.widget(CHATBOX_MESSAGES).nestedInterface();
-//            clientThread.invoke(() -> {Widget[] widgets = client.getWidget(162, 562).getNestedChildren();
-//            for (Widget widget:widgets) {
-//                int num = widget.getId();
-//                log.info("{} {}",num, (WidgetInfo.DIALOG_NPC.getId() >>16));
-//
-//            }});
-//            clientThread.invoke(() -> log.info("{}", bot.widget(162, 562).nestedInterface()));
-//        }
+
     }
 
     @Override
@@ -154,106 +133,82 @@ public class iUtils extends Plugin {
     }
 
     @Subscribe
-    private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked)
-    {
-        if (!configButtonClicked.getGroup().equalsIgnoreCase("iUtils"))
-        {
+    private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked) {
+        if (!configButtonClicked.getGroup().equalsIgnoreCase("iUtils")) {
             return;
         }
         log.info("button {} pressed!", configButtonClicked.getKey());
-        if (configButtonClicked.getKey().equals("startButton"))
-        {
-            /*bot.sleepApproximately(config.test());
-            long start = System.currentTimeMillis();
-//            log.info("Size: {}", bot.objects2().size());
-            log.info("Pos: {}",bot.objects2().withName("Door").withAction("Open").nearest().position());
-            log.info("Time taken: {}", System.currentTimeMillis() - start);
+        if (configButtonClicked.getKey().equals("startButton")) {
 
-            start = System.currentTimeMillis();
-            log.info("Pos: {}",bot.objects().withName("Door").withAction("Open").nearest().position());
-            log.info("Time taken: {}", System.currentTimeMillis() - start);*/
-//            bot.inventory().withName("Tuna").first().interact("Eat");
-//            Bank bank = new Bank(bot);
-//            bank.withdraw(361, 20, true);
         }
     }
-    public final static Set<TileObject> objects = new HashSet<>();
-    public final static Set<NPC> npcs = new HashSet<>();
 
     @Subscribe
-    public void onGameStateChanged(GameStateChanged gameStateChanged)
-    {
-        if (gameStateChanged.getGameState() != GameState.LOGGED_IN && gameStateChanged.getGameState() != GameState.CONNECTION_LOST)
-        {
+    public void onGameStateChanged(GameStateChanged gameStateChanged) {
+        if (gameStateChanged.getGameState() != GameState.LOGGED_IN && gameStateChanged.getGameState() != GameState.CONNECTION_LOST) {
             objects.clear();
             npcs.clear();
+            tileItems.clear();
         }
     }
 
     @Subscribe
-    public void onWallObjectSpawned(WallObjectSpawned event)
-    {
+    public void onWallObjectSpawned(WallObjectSpawned event) {
         objects.add(event.getWallObject());
     }
 
     @Subscribe
-    public void onWallObjectChanged(WallObjectChanged event)
-    {
+    public void onWallObjectChanged(WallObjectChanged event) {
         objects.remove(event.getPrevious());
         objects.add(event.getWallObject());
     }
 
     @Subscribe
-    public void onWallObjectDespawned(WallObjectDespawned event)
-    {
+    public void onWallObjectDespawned(WallObjectDespawned event) {
         objects.remove(event.getWallObject());
     }
 
     @Subscribe
-    public void onGameObjectSpawned(GameObjectSpawned event)
-    {
+    public void onGameObjectSpawned(GameObjectSpawned event) {
         objects.add(event.getGameObject());
     }
 
     @Subscribe
-    public void onGameObjectDespawned(GameObjectDespawned event)
-    {
+    public void onGameObjectDespawned(GameObjectDespawned event) {
         objects.remove(event.getGameObject());
     }
 
     @Subscribe
-    public void onDecorativeObjectSpawned(DecorativeObjectSpawned event)
-    {
+    public void onDecorativeObjectSpawned(DecorativeObjectSpawned event) {
         objects.add(event.getDecorativeObject());
     }
 
     @Subscribe
-    public void onDecorativeObjectDespawned(DecorativeObjectDespawned event)
-    {
-        objects.remove(event.getDecorativeObject());
-    }
+    public void onDecorativeObjectDespawned(DecorativeObjectDespawned event) { objects.remove(event.getDecorativeObject()); }
 
     @Subscribe
-    public void onGroundObjectSpawned(GroundObjectSpawned event)
-    {
+    public void onGroundObjectSpawned(GroundObjectSpawned event) {
         objects.add(event.getGroundObject());
     }
 
     @Subscribe
-    public void onGroundObjectDespawned(GroundObjectDespawned event)
-    {
+    public void onGroundObjectDespawned(GroundObjectDespawned event) {
         objects.remove(event.getGroundObject());
     }
 
     @Subscribe
-    public void npcSpawned(NpcSpawned event)
-    {
+    private void onItemSpawned(ItemSpawned event) { tileItems.add(event.getItem()); }
+
+    @Subscribe
+    private void onItemDespawned(ItemDespawned event) { tileItems.remove(event.getItem()); }
+
+    @Subscribe
+    public void npcSpawned(NpcSpawned event) {
         npcs.add(event.getNpc());
     }
 
     @Subscribe
-    public void npcDespawned(NpcDespawned event)
-    {
+    public void npcDespawned(NpcDespawned event) {
         npcs.remove(event.getNpc());
     }
 

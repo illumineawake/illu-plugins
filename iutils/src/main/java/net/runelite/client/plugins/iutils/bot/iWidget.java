@@ -3,13 +3,14 @@ package net.runelite.client.plugins.iutils.bot;
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.iutils.api.Interactable;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
+public class iWidget implements Interactable, Useable {
 
     private final Bot bot;
     private final Widget widget;
@@ -147,5 +148,35 @@ public class iWidget implements Interactable/*, Useable */{ //TODO: Useable
 
     public List<iWidget> children() { //TODO untested
         return new ArrayList<>(children.values());
+    }
+
+    @Override
+    public void useOn(InventoryItem item) {
+        bot.clientThread.invoke(() -> {
+            bot.client.setSelectedSpellWidget(id());
+            bot.client.setSelectedSpellChildIndex(-1);
+            bot.client.invokeMenuAction("", "", item.id(),
+                    MenuAction.ITEM_USE_ON_WIDGET.getId(), item.slot(), WidgetInfo.INVENTORY.getId());
+        });
+    }
+
+    @Override
+    public void useOn(iNPC npc) {
+        bot.clientThread.invoke(() -> {
+            bot.client.setSelectedSpellWidget(id());
+            bot.client.setSelectedSpellChildIndex(-1);
+            bot.client.invokeMenuAction("", "", npc.index(),
+                    MenuAction.SPELL_CAST_ON_NPC.getId(), 0, 0);
+        });
+    }
+
+    @Override
+    public void useOn(iObject object) {
+        bot.clientThread.invoke(() -> {
+            bot.client.setSelectedSpellWidget(id());
+            bot.client.setSelectedSpellChildIndex(-1);
+            bot.client.invokeMenuAction("", "", object.id(),
+                    MenuAction.SPELL_CAST_ON_GAME_OBJECT.getId(), object.menuPoint().getX(), object.menuPoint().getY());
+        });
     }
 }

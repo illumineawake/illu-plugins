@@ -11,6 +11,7 @@ import net.runelite.client.plugins.iutils.actor.NpcStream;
 import net.runelite.client.plugins.iutils.actor.PlayerStream;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.plugins.iutils.scene.GameObjectStream;
+import net.runelite.client.plugins.iutils.scene.GroundItemStream;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
 import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.ui.InventoryItemStream;
@@ -147,7 +148,6 @@ public class Bot {
         );
     }
 
-
 //    public GameObjectStream objects() {
 //        Collection<BaseObject> baseObjects = new ArrayList<>();
 //        Tile[][][] tiles = client().getScene().getTiles();
@@ -188,6 +188,18 @@ public class Bot {
 //                .stream())
 //        );
 //    }
+
+    public GroundItemStream groundItems() {
+        return getFromClientThread(() -> new GroundItemStream(iUtils.tileItems.stream()
+                .map(o -> new iGroundItem(
+                        this,
+                        o,
+                        client().getObjectDefinition(o.getId())
+                ))
+                .collect(Collectors.toList())
+                .stream())
+        );
+    }
 
     public NpcStream npcs() {
         return getFromClientThread(() -> new NpcStream(client().getNpcs().stream()

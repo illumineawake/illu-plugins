@@ -126,6 +126,17 @@ public class InventoryItem implements Interactable, Useable {
                     MenuAction.ITEM_USE_ON_GAME_OBJECT.getId(), object.menuPoint().getX(), object.menuPoint().getY());
         });
     }
+
+    @Override
+    public void useOn(iNPC npc) {
+        bot.clientThread.invoke(() -> {
+            bot.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+            bot.client.setSelectedItemSlot(slot());
+            bot.client.setSelectedItemID(id());
+            bot.client.invokeMenuAction("", "", npc.index(),
+                    MenuAction.ITEM_USE_ON_NPC.getId(), 0, 0);
+        });
+    }
 //
 //    @Override
 //    public void useOn(iPlayer player) {
