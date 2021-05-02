@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class PathfinderTest {
     private static final CollisionMap map;
-    public static final Position START = new Position(3209, 3220, 2);
-    public static final Position END = new Position(3224, 3219, 0);
+    public static final Position START = new Position(3225, 3218, 0);
+    public static final Position END = new Position(3166, 9999, 0);
 
     static {
         try {
@@ -22,14 +22,6 @@ public class PathfinderTest {
     }
 
     public static void main(String[] args) {
-        System.out.println("Position[] path = {");
-
-        for (var position : new Pathfinder(map, Map.of(), List.of(START), p -> p.equals(END)).find()) {
-            System.out.print("    new Position");
-            System.out.print(position);
-            System.out.println(",");
-        }
-
         while (true) {
             var s = System.nanoTime();
             new Pathfinder(map, Map.of(), List.of(START), p -> p.equals(END)).find();

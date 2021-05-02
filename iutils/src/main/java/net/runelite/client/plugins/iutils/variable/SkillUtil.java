@@ -1,4 +1,4 @@
-package variable;
+package net.runelite.client.plugins.iutils.variable;
 
 public class SkillUtil {
     private static final int[] LEVEL_TO_EXPERIENCE = new int[99];
