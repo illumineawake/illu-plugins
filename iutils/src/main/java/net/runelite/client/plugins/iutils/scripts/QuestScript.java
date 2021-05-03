@@ -20,18 +20,15 @@ import javax.inject.Inject;
 import java.util.Arrays;
 
 public abstract class QuestScript extends Plugin implements Runnable {
-    private static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3160, 3486, 3169, 3478);
-    @Inject protected Bot bot;
-    @Inject protected Walking walking;
-    @Inject protected Chatbox chatbox;
-    @Inject protected Prayers prayers;
-
-//    protected QuestScript(Bot bot) {
-//        this.bot = bot;
-//        walking = new Walking(bot);
-//        chatbox = new Chatbox(bot);
-//        this.prayers = new Prayers(bot);
-//    }
+    private static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3159, 3493, 3169, 3485);
+    @Inject
+    protected Bot bot;
+    @Inject
+    protected Walking walking;
+    @Inject
+    protected Chatbox chatbox;
+    @Inject
+    protected Prayers prayers;
 
     protected void equip(int id) {
         if (Arrays.stream(bot.container(94).getItems()).anyMatch(i -> i.getId() == id)) {
@@ -62,6 +59,10 @@ public abstract class QuestScript extends Plugin implements Runnable {
 
     protected boolean inventoryHasItems(ItemQuantity... items) {
         for (var item : items) {
+            if (bot.inventory().withId(item.id) == null) {
+                System.out.println(item.id + " is null");
+                System.out.println("Quantity: " + bot.inventory().withId(item.id).quantity());
+            }
             if (bot.inventory().withId(item.id).quantity() < item.quantity) {
                 return false;
             }
@@ -107,6 +108,7 @@ public abstract class QuestScript extends Plugin implements Runnable {
 
         if (!grandExchange.isOpen()) {
             if (!GRAND_EXCHANGE.contains(bot.localPlayer().position())) {
+                System.out.println(GRAND_EXCHANGE.toString() + " doesn't contain player: " + bot.localPlayer().position());
                 walking.walkTo(GRAND_EXCHANGE);
             }
 

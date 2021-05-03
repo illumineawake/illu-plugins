@@ -14,6 +14,7 @@ public class GrandExchange {
 
     public void buy(int item, int quantity) {
         if (!isOpen()) {
+            System.out.println("Opening Grand Exchange");
             bot.npcs().withName("Grand Exchange Clerk").nearest().interact("Exchange");
             bot.waitUntil(this::isOpen);
         }

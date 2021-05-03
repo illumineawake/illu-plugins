@@ -73,10 +73,6 @@ public class Position implements Area
         return x >> 6 << 8 | y >> 6;
     }
 
-    public String toString() {
-        return "(" + x + ", " + y + ", " + z + ")";
-    }
-
     public Position groundLevel() {
         return new Position(x, y, 0);
     }
@@ -95,7 +91,20 @@ public class Position implements Area
     }
 
     @Override
-    public int hashCode() {
-        return packed();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Position position = (Position) o;
+        return x == position.x && y == position.y && z == position.z;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, z);
+    }
+
+    public String toString() {
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
+
 }
