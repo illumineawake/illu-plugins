@@ -1,8 +1,5 @@
 package net.runelite.client.plugins.iherbcleaner.tasks;
 
-import java.awt.Rectangle;
-import java.util.List;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
@@ -11,9 +8,14 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.iherbcleaner.Task;
 import net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin;
-import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.status;
 import net.runelite.client.plugins.iutils.ActionQueue;
 import net.runelite.client.plugins.iutils.InventoryUtils;
+
+import javax.inject.Inject;
+import java.awt.*;
+import java.util.List;
+
+import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.status;
 
 @Slf4j
 public class CleanHerbTask extends Task

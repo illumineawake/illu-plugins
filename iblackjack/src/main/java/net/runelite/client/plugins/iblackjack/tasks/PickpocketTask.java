@@ -5,10 +5,8 @@ import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.iblackjack.Task;
-import static net.runelite.client.plugins.iblackjack.iBlackjackPlugin.inCombat;
-import static net.runelite.client.plugins.iblackjack.iBlackjackPlugin.nextKnockoutTick;
-import static net.runelite.client.plugins.iblackjack.iBlackjackPlugin.selectedNPCIndex;
-import static net.runelite.client.plugins.iblackjack.iBlackjackPlugin.timeout;
+
+import static net.runelite.client.plugins.iblackjack.iBlackjackPlugin.*;
 
 public class PickpocketTask extends Task
 {

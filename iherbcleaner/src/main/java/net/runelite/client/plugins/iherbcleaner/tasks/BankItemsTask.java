@@ -1,15 +1,17 @@
 package net.runelite.client.plugins.iherbcleaner.tasks;
 
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.iherbcleaner.Task;
 import net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin;
-import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.startBot;
-import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.status;
 import net.runelite.client.plugins.iutils.ActionQueue;
 import net.runelite.client.plugins.iutils.BankUtils;
 import net.runelite.client.plugins.iutils.InventoryUtils;
+
+import javax.inject.Inject;
+
+import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.startBot;
+import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.status;
 
 @Slf4j
 public class BankItemsTask extends Task

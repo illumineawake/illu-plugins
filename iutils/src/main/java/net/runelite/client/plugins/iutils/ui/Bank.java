@@ -18,11 +18,9 @@ public class Bank {
         if (!isOpen()) {
             throw new IllegalStateException("bank isn't open");
         }
-
+        completeBankTutorial();
         bot.widget(12, 41).interact(0);
-        bot.tick();
-        bot.tick();
-        bot.tick();
+        bot.tick(3);
     }
 
     public void depositEquipment() {
@@ -30,10 +28,9 @@ public class Bank {
             throw new IllegalStateException("bank isn't open");
         }
 
+        completeBankTutorial();
         bot.widget(12, 43).interact(0);
-        bot.tick();
-        bot.tick();
-        bot.tick();
+        bot.tick(3);
     }
 
     /**
@@ -50,12 +47,7 @@ public class Bank {
             throw new IllegalStateException("bank isn't open");
         }
 
-        // Close bank tutorial
-        if (bot.widget(12, 113).nestedInterface() == 664) {
-            System.out.println("[Bank] Closing bank tutorial");
-            bot.widget(664, 9).select();
-            bot.waitUntil(() -> bot.widget(12, 113).nestedInterface() == -1);
-        }
+        completeBankTutorial();
 
         ItemComposition definition = bot.getFromClientThread(() -> bot.client().getItemComposition(id));
 
@@ -98,21 +90,25 @@ public class Bank {
                     item.interact(4); // last
                 } else {
                     item.interact(5);
-                    bot.tick();
-                    bot.tick();
-                    bot.tick();
+                    bot.tick(3);
                     bot.chooseNumber(quantity);
                 }
 
-                bot.tick();
-                bot.tick();
-                bot.tick();
+                bot.tick(3);
                 return Math.min(inventoryCapacity, quantity);
             }
         }
 
         System.out.println("[Bank] Item not found");
         return 0;
+    }
+
+    private void completeBankTutorial() {
+        if (bot.widget(12, 113).nestedInterface() == 664) {
+            System.out.println("[Bank] Closing bank tutorial");
+            bot.widget(664, 9).select();
+            bot.waitUntil(() -> bot.widget(12, 113).nestedInterface() == -1);
+        }
     }
 
     public int quantity(int id) {

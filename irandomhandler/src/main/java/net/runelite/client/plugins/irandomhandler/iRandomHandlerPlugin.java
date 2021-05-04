@@ -26,16 +26,8 @@
 package net.runelite.client.plugins.irandomhandler;
 
 import com.google.inject.Provides;
-import java.util.Set;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Actor;
-import net.runelite.api.Client;
-import net.runelite.api.MenuAction;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
-import net.runelite.api.Player;
+import net.runelite.api.*;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.NpcDespawned;
@@ -51,6 +43,9 @@ import net.runelite.client.plugins.iutils.MenuUtils;
 import net.runelite.client.plugins.iutils.MouseUtils;
 import net.runelite.client.plugins.iutils.iUtils;
 import org.pf4j.Extension;
+
+import javax.inject.Inject;
+import java.util.Set;
 
 @PluginDependency(iUtils.class)
 @Extension

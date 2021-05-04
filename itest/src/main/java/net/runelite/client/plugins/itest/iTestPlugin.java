@@ -28,18 +28,10 @@ package net.runelite.client.plugins.itest;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -50,15 +42,16 @@ import net.runelite.client.plugins.itest.tasks.MovingTask;
 import net.runelite.client.plugins.itest.tasks.TimeoutTask;
 import net.runelite.client.plugins.iutils.WalkUtils;
 import net.runelite.client.plugins.iutils.bot.Bot;
-import net.runelite.client.plugins.iutils.bot.iWidget;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.plugins.iutils.scene.RectangularArea;
-import net.runelite.client.plugins.iutils.ui.Bank;
-import net.runelite.client.plugins.iutils.ui.Chatbox;
-import net.runelite.client.plugins.iutils.ui.GrandExchange;
 import net.runelite.client.plugins.iutils.walking.Walking;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
+
+import javax.inject.Inject;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.concurrent.ExecutorService;
 
 
 @Extension

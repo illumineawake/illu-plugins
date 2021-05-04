@@ -10,9 +10,7 @@ import net.runelite.client.plugins.iutils.bot.InventoryItem;
 import net.runelite.client.plugins.iutils.bot.iNPC;
 import net.runelite.client.plugins.iutils.scene.Area;
 import net.runelite.client.plugins.iutils.scene.RectangularArea;
-import net.runelite.client.plugins.iutils.ui.Bank;
-import net.runelite.client.plugins.iutils.ui.Chatbox;
-import net.runelite.client.plugins.iutils.ui.GrandExchange;
+import net.runelite.client.plugins.iutils.ui.*;
 import net.runelite.client.plugins.iutils.walking.BankLocations;
 import net.runelite.client.plugins.iutils.walking.Walking;
 
@@ -21,33 +19,30 @@ import java.util.Arrays;
 
 public abstract class QuestScript extends Plugin implements Runnable {
     private static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3159, 3493, 3169, 3485);
-    @Inject
-    protected Bot bot;
-    @Inject
-    protected Walking walking;
-    @Inject
-    protected Chatbox chatbox;
-    @Inject
-    protected Prayers prayers;
+
+    @Inject protected Bot bot;
+    @Inject protected Walking walking;
+    @Inject protected Chatbox chatbox;
+    @Inject protected Prayers prayers;
+    @Inject protected Equipment equipment;
+    @Inject protected StandardSpellbook standardSpellbook;
 
     protected void equip(int id) {
-        if (Arrays.stream(bot.container(94).getItems()).anyMatch(i -> i.getId() == id)) {
+        if (equipment.isEquipped(id)) {
             return;
         }
 
         obtain(new ItemQuantity(id, 1));
 
         bot.inventory().withId(id).first().interact(1);
-        bot.waitUntil(() -> Arrays.stream(bot.container(94).getItems()).anyMatch(x -> x.getId() == id));
+        bot.waitUntil(() -> equipment.isEquipped(id));
     }
 
     protected void obtain(ItemQuantity... items) {
-        if (inventoryHasItems(items)) {
+        if (hasItems(items)) {
             System.out.println("Required items already in inventory, carry on...");
             return;
         }
-
-        bank().depositInventory();
 
         Arrays.stream(items)
                 .map(i -> new ItemQuantity(i.id, i.quantity - bank().quantity(i.id)))
@@ -59,11 +54,16 @@ public abstract class QuestScript extends Plugin implements Runnable {
 
     protected boolean inventoryHasItems(ItemQuantity... items) {
         for (var item : items) {
-            if (bot.inventory().withId(item.id) == null) {
-                System.out.println(item.id + " is null");
-                System.out.println("Quantity: " + bot.inventory().withId(item.id).quantity());
-            }
             if (bot.inventory().withId(item.id).quantity() < item.quantity) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected boolean hasItems(ItemQuantity... items) {
+        for (var item : items) {
+            if (equipment.quantity(item.id) < item.quantity && bot.inventory().withId(item.id).quantity() < item.quantity) {
                 return false;
             }
         }
@@ -120,8 +120,7 @@ public abstract class QuestScript extends Plugin implements Runnable {
     }
 
     protected void teleportToLumbridge() {
-        bot.widget(218, 5).interact("Cast");
-        bot.waitUntil(() -> bot.localPlayer().position().regionID() == 12850);
+        standardSpellbook.lumbridgeHomeTeleport();
     }
 
     protected void killNpc(String name) {

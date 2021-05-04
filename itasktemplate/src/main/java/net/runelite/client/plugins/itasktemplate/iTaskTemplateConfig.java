@@ -25,12 +25,7 @@
  */
 package net.runelite.client.plugins.itasktemplate;
 
-import net.runelite.client.config.Button;
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigTitle;
-import net.runelite.client.config.Range;
+import net.runelite.client.config.*;
 
 @ConfigGroup("iTaskTemplate")
 public interface iTaskTemplateConfig extends Config

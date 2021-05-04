@@ -9,16 +9,20 @@ import net.runelite.client.plugins.iutils.KeyboardUtils;
 import net.runelite.client.plugins.iutils.WalkUtils;
 import net.runelite.client.plugins.iutils.actor.NpcStream;
 import net.runelite.client.plugins.iutils.actor.PlayerStream;
+import net.runelite.client.plugins.iutils.api.EquipmentSlot;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.plugins.iutils.scene.GameObjectStream;
 import net.runelite.client.plugins.iutils.scene.GroundItemStream;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
 import net.runelite.client.plugins.iutils.scene.Position;
+import net.runelite.client.plugins.iutils.ui.EquipmentItemStream;
 import net.runelite.client.plugins.iutils.ui.InventoryItemStream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -236,6 +240,34 @@ public class Bot {
                 .map(wi -> new InventoryItem(this, wi, client().getItemDefinition(wi.getId())))
                 .collect(Collectors.toList())
                 .stream())
+        );
+    }
+
+    public EquipmentSlot equipmentSlot(int index) {
+        for (var slot : EquipmentSlot.values()) {
+            if (slot.index == index) {
+                return slot;
+            }
+        }
+        return null;
+    }
+
+    public EquipmentItemStream equipment() {
+        Map<Item, EquipmentSlot> equipped = new HashMap();
+        Item[] items = client.getItemContainer(InventoryID.EQUIPMENT).getItems();
+        for (int i = 0; i <= items.length -1; i++)
+        {
+            if (items[i].getId() == -1 || items[i].getId() == 0)
+            {
+                continue;
+            }
+            equipped.put(items[i], equipmentSlot(i));
+        }
+        return getFromClientThread(() -> new EquipmentItemStream(equipped.entrySet().stream()
+                .map(i -> new EquipmentItem(this, i.getKey(), client().getItemDefinition(i.getKey().getId()), i.getValue()))
+                .collect(Collectors.toList())
+                .stream())
+                .filter(Objects::nonNull)
         );
     }
 

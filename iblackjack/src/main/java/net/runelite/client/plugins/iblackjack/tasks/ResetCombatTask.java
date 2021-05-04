@@ -1,25 +1,15 @@
 package net.runelite.client.plugins.iblackjack.tasks;
 
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.GameObject;
-import net.runelite.api.ItemID;
-import net.runelite.api.MenuAction;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
-import net.runelite.api.ObjectID;
-import net.runelite.api.Point;
-import net.runelite.api.WallObject;
+import net.runelite.api.*;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.iblackjack.Location;
 import net.runelite.client.plugins.iblackjack.Task;
-import static net.runelite.client.plugins.iblackjack.iBlackjackPlugin.beforeLoc;
-import static net.runelite.client.plugins.iblackjack.iBlackjackPlugin.inCombat;
-import static net.runelite.client.plugins.iblackjack.iBlackjackPlugin.nextKnockoutTick;
-import static net.runelite.client.plugins.iblackjack.iBlackjackPlugin.selectedNPCIndex;
-import static net.runelite.client.plugins.iblackjack.iBlackjackPlugin.timeout;
 import net.runelite.client.plugins.iutils.WalkUtils;
+
+import javax.inject.Inject;
+
+import static net.runelite.client.plugins.iblackjack.iBlackjackPlugin.*;
 
 @Slf4j
 public class ResetCombatTask extends Task

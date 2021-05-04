@@ -26,9 +26,6 @@
 package net.runelite.client.plugins.randomhandler;
 
 import com.google.inject.Provides;
-import java.util.Arrays;
-import java.util.Set;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.MenuEntryAdded;
@@ -43,6 +40,10 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.iutils.iUtils;
 import org.pf4j.Extension;
+
+import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.Set;
 
 @Extension
 @PluginDependency(iUtils.class)

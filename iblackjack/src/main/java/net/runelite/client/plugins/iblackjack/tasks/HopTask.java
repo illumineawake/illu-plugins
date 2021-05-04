@@ -1,9 +1,5 @@
 package net.runelite.client.plugins.iblackjack.tasks;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Random;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuAction;
@@ -20,6 +16,11 @@ import net.runelite.client.util.WorldUtil;
 import net.runelite.http.api.worlds.World;
 import net.runelite.http.api.worlds.WorldResult;
 import net.runelite.http.api.worlds.WorldType;
+
+import javax.inject.Inject;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Random;
 
 @Slf4j
 public class HopTask extends Task

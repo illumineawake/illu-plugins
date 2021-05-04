@@ -1,6 +1,7 @@
 package net.runelite.client.plugins.iblackjack.tasks;
 
 import net.runelite.client.plugins.iblackjack.Task;
+
 import static net.runelite.client.plugins.iblackjack.iBlackjackPlugin.selectedNPCIndex;
 
 

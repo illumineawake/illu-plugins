@@ -25,18 +25,8 @@
  */
 package net.runelite.client.plugins.iworldwalker;
 
-import net.runelite.client.config.Button;
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigTitle;
-import net.runelite.client.config.Range;
-import net.runelite.client.plugins.iworldwalker.farming.Allotments;
-import net.runelite.client.plugins.iworldwalker.farming.Bushes;
-import net.runelite.client.plugins.iworldwalker.farming.FruitTrees;
-import net.runelite.client.plugins.iworldwalker.farming.Herbs;
-import net.runelite.client.plugins.iworldwalker.farming.Hops;
-import net.runelite.client.plugins.iworldwalker.farming.Trees;
+import net.runelite.client.config.*;
+import net.runelite.client.plugins.iworldwalker.farming.*;
 
 @ConfigGroup("iWorldWalker")
 public interface iWorldWalkerConfig extends Config

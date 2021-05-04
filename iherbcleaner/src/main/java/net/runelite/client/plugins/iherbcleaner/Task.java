@@ -1,18 +1,15 @@
 package net.runelite.client.plugins.iherbcleaner;
 
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.events.GameTick;
+import net.runelite.client.plugins.iutils.*;
+
+import javax.inject.Inject;
+
 import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.sleepLength;
 import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.tickLength;
-import net.runelite.client.plugins.iutils.CalculationUtils;
-import net.runelite.client.plugins.iutils.MenuUtils;
-import net.runelite.client.plugins.iutils.MouseUtils;
-import net.runelite.client.plugins.iutils.ObjectUtils;
-import net.runelite.client.plugins.iutils.PlayerUtils;
-import net.runelite.client.plugins.iutils.iUtils;
 
 @Slf4j
 public abstract class Task

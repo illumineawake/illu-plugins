@@ -3,9 +3,10 @@ package net.runelite.client.plugins.irooftopagility;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.ObjectID;
-import static net.runelite.api.ObjectID.*;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
+
+import static net.runelite.api.ObjectID.*;
 
 public enum iRooftopAgilityObstacles
 {

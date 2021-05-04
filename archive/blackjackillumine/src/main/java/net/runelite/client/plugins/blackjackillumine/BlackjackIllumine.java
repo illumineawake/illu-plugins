@@ -27,14 +27,6 @@
 package net.runelite.client.plugins.blackjackillumine;
 
 import com.google.inject.Provides;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Point;
 import net.runelite.api.util.Text;
@@ -54,6 +46,15 @@ import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.util.HotkeyListener;
 import org.apache.commons.lang3.RandomUtils;
 import org.pf4j.Extension;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Authors gazivodag longstreet

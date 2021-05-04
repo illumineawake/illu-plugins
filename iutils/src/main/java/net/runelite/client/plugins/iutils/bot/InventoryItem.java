@@ -65,34 +65,29 @@ public class InventoryItem implements Interactable, Useable {
         throw new IllegalArgumentException("no action \"" + action + "\" on item " + id());
     }
 
+    private int getActionId(int action) {
+        switch (action) {
+            case 0:
+                return MenuAction.ITEM_FIRST_OPTION.getId();
+            case 1:
+                return MenuAction.ITEM_SECOND_OPTION.getId();
+            case 2:
+                return MenuAction.ITEM_THIRD_OPTION.getId();
+            case 3:
+                return MenuAction.ITEM_FOURTH_OPTION.getId();
+            case 4:
+                return MenuAction.ITEM_FIFTH_OPTION.getId();
+            default:
+                throw new IllegalArgumentException("action = " + action);
+        }
+    }
+
     public void interact(int action) {
         bot().clientThread.invoke(() -> {
-            int menuAction;
-
-            switch (action) {
-                case 0:
-                    menuAction = MenuAction.ITEM_FIRST_OPTION.getId();
-                    break;
-                case 1:
-                    menuAction = MenuAction.ITEM_SECOND_OPTION.getId();
-                    break;
-                case 2:
-                    menuAction = MenuAction.ITEM_THIRD_OPTION.getId();
-                    break;
-                case 3:
-                    menuAction = MenuAction.ITEM_FOURTH_OPTION.getId();
-                    break;
-                case 4:
-                    menuAction = MenuAction.ITEM_FIFTH_OPTION.getId();
-                    break;
-                default:
-                    throw new IllegalArgumentException("action = " + action);
-            }
-
             bot.client().invokeMenuAction("",
                     "",
                     id(),
-                    menuAction,
+                    getActionId(action),
                     slot(),
                     WidgetInfo.INVENTORY.getId()
             );
@@ -110,12 +105,6 @@ public class InventoryItem implements Interactable, Useable {
         });
     }
 
-    //    @Override
-//    public void useOn(GroundItem item) {
-//        game.mouseClicked();
-//        game.connection().groundItemUseItem(item.id, item.tile.position.x, item.tile.position.y, id, slot, (containingWidget.group << 16) + containingWidget.file, game.ctrlRun);
-//    }
-//
     @Override
     public void useOn(iObject object) {
         bot.clientThread.invoke(() -> {

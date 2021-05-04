@@ -26,18 +26,9 @@
 package net.runelite.client.plugins.blastfurnacebot;
 
 import com.google.inject.Provides;
-import java.awt.event.KeyEvent;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import static net.runelite.api.NullObjectID.NULL_29330;
-import static net.runelite.api.NullObjectID.NULL_9092;
-import static net.runelite.api.ObjectID.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
@@ -52,11 +43,22 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import static net.runelite.client.plugins.blastfurnacebot.BlastFurnaceState.*;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import org.pf4j.Extension;
+
+import javax.inject.Inject;
+import java.awt.event.KeyEvent;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
+import static net.runelite.api.NullObjectID.NULL_29330;
+import static net.runelite.api.NullObjectID.NULL_9092;
+import static net.runelite.api.ObjectID.*;
+import static net.runelite.client.plugins.blastfurnacebot.BlastFurnaceState.*;
 
 @Extension
 @PluginDependency(iUtils.class)

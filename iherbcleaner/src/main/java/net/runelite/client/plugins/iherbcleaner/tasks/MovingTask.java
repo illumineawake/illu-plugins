@@ -5,6 +5,7 @@ import net.runelite.api.Player;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.iherbcleaner.Task;
 import net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin;
+
 import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.beforeLoc;
 import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.timeout;
 

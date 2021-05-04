@@ -27,24 +27,10 @@ package net.runelite.client.plugins.imagiccaster;
 
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
-import java.awt.Rectangle;
-import java.time.Instant;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.MenuAction;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.NPC;
-import net.runelite.api.Player;
-import net.runelite.api.TileItem;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.events.AnimationChanged;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.ConfigButtonClicked;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
+import net.runelite.api.events.*;
 import net.runelite.api.queries.NPCQuery;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -55,23 +41,15 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
-import static net.runelite.client.plugins.imagiccaster.iMagicCasterState.FIND_ITEM;
-import static net.runelite.client.plugins.imagiccaster.iMagicCasterState.FIND_NPC;
-import static net.runelite.client.plugins.imagiccaster.iMagicCasterState.HANDLE_BREAK;
-import static net.runelite.client.plugins.imagiccaster.iMagicCasterState.IDLING;
-import static net.runelite.client.plugins.imagiccaster.iMagicCasterState.ITEM_NOT_FOUND;
-import static net.runelite.client.plugins.imagiccaster.iMagicCasterState.MOVING;
-import static net.runelite.client.plugins.imagiccaster.iMagicCasterState.NPC_NOT_FOUND;
-import net.runelite.client.plugins.iutils.CalculationUtils;
-import net.runelite.client.plugins.iutils.InterfaceUtils;
-import net.runelite.client.plugins.iutils.InventoryUtils;
-import net.runelite.client.plugins.iutils.MenuUtils;
-import net.runelite.client.plugins.iutils.MouseUtils;
-import net.runelite.client.plugins.iutils.ObjectUtils;
-import net.runelite.client.plugins.iutils.PlayerUtils;
-import net.runelite.client.plugins.iutils.iUtils;
+import net.runelite.client.plugins.iutils.*;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
+
+import javax.inject.Inject;
+import java.awt.*;
+import java.time.Instant;
+
+import static net.runelite.client.plugins.imagiccaster.iMagicCasterState.*;
 
 
 @Extension

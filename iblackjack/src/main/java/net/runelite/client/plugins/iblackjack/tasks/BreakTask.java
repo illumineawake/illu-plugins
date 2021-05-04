@@ -1,10 +1,12 @@
 package net.runelite.client.plugins.iblackjack.tasks;
 
 import com.owain.chinbreakhandler.ChinBreakHandler;
-import javax.inject.Inject;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.iblackjack.Task;
 import net.runelite.client.plugins.iblackjack.iBlackjackPlugin;
+
+import javax.inject.Inject;
+
 import static net.runelite.client.plugins.iblackjack.iBlackjackPlugin.timeout;
 
 public class BreakTask extends Task
