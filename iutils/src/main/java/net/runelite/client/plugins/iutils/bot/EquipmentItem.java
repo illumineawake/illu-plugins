@@ -48,17 +48,17 @@ public class EquipmentItem implements Interactable {
 
     @Override
     public List<String> actions() {
-        var itemAttributes = definition().getParams();
-        if (itemAttributes == null) return List.of("Remove", "Examine");
         var actions = new String[10];
         actions[0] = "Remove";
-        actions[1] = "Examine";
-        for (int i = 0; i < 8; i++) {
-            if (itemAttributes.get(451 + i) != null) {
-                actions[i + 1] = definition.getStringValue(451 + i);
+        actions[9] = "Examine";
+        var itemAttributes = definition().getParams();
+        if (itemAttributes != null) {
+            for (int i = 0; i < 8; i++) {
+                if (itemAttributes.get(451 + i) != null) {
+                    actions[i + 1] = definition.getStringValue(451 + i);
+                }
             }
         }
-        System.out.println(Arrays.asList(actions).toString());
         return Arrays.asList(actions);
     }
 
