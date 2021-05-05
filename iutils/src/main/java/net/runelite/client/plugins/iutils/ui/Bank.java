@@ -117,7 +117,11 @@ public class Bank {
         }
 
         for (iWidget item : bot.widget(WidgetInfo.BANK_ITEM_CONTAINER).items()) {
+            if (item.itemId() == 6512 || item.itemId() == -1 || item.hidden()) {
+                continue;
+            }
             if (item.itemId() == id) {
+                System.out.println(item.itemId() + " " + item.quantity());
                 return item.quantity();
             }
         }

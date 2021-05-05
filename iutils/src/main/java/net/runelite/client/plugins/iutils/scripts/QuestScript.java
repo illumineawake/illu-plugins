@@ -1,5 +1,6 @@
 package net.runelite.client.plugins.iutils.scripts;
 
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Skill;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.iutils.api.EquipmentSlot;
@@ -17,6 +18,7 @@ import net.runelite.client.plugins.iutils.walking.Walking;
 import javax.inject.Inject;
 import java.util.Arrays;
 
+@Slf4j
 public abstract class QuestScript extends Plugin implements Runnable {
     private static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3159, 3493, 3169, 3485);
 
@@ -61,7 +63,7 @@ public abstract class QuestScript extends Plugin implements Runnable {
         return true;
     }
 
-    protected boolean hasItems(ItemQuantity... items) {
+    protected boolean hasItems(ItemQuantity... items) { //TODO needs fixing
         for (var item : items) {
             if (equipment.quantity(item.id) < item.quantity && bot.inventory().withId(item.id).quantity() < item.quantity) {
                 return false;
@@ -100,6 +102,11 @@ public abstract class QuestScript extends Plugin implements Runnable {
     }
 
     protected GrandExchange grandExchange() {
+        if (!GRAND_EXCHANGE.contains(bot.localPlayer().position())) {
+            System.out.println(GRAND_EXCHANGE.toString() + " doesn't contain player: " + bot.localPlayer().position());
+            walking.walkTo(GRAND_EXCHANGE);
+        }
+
         if (!bot.inventory().withId(995).exists()) {
             bank().withdraw(995, Integer.MAX_VALUE, false);
         }
@@ -107,10 +114,6 @@ public abstract class QuestScript extends Plugin implements Runnable {
         var grandExchange = new GrandExchange(bot);
 
         if (!grandExchange.isOpen()) {
-            if (!GRAND_EXCHANGE.contains(bot.localPlayer().position())) {
-                System.out.println(GRAND_EXCHANGE.toString() + " doesn't contain player: " + bot.localPlayer().position());
-                walking.walkTo(GRAND_EXCHANGE);
-            }
 
             bot.npcs().withName("Grand Exchange Clerk").nearest().interact("Exchange");
             bot.waitUntil(grandExchange::isOpen);
