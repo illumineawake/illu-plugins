@@ -12,7 +12,7 @@ public class Transport {
     public final int targetRadius;
     public final int sourceRadius;
 
-    public Transport(Position source, Position target, int targetRadius, int sourceRadius, Consumer<Bot> handler) {
+    public Transport(Position source, Position target, int sourceRadius, int targetRadius, Consumer<Bot> handler) {
         this.source = source;
         this.target = target;
         this.targetRadius = targetRadius;

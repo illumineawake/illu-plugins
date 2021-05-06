@@ -30,6 +30,7 @@ public abstract class QuestScript extends Plugin implements Runnable {
     @Inject protected Equipment equipment;
     @Inject protected Combat combat;
     @Inject protected StandardSpellbook standardSpellbook;
+    @Inject protected Prayers prayers;
 
     protected void equip(int id) {
         if (equipment.isEquipped(id)) {
@@ -51,7 +52,10 @@ public abstract class QuestScript extends Plugin implements Runnable {
                 .map(i -> new ItemQuantity(i.id, i.quantity - bank().quantity(i.id) - bot.inventory().withId(i.id).quantity()))
                 .filter(i -> i.quantity > 0)
                 .collect(Collectors.toList())
-                .forEach(i -> grandExchange().buy(i.id, i.quantity));
+                .forEach(i -> {
+                    log.info("Buying: {} {}", i.id, i.quantity);
+                    grandExchange().buy(i.id, i.quantity);
+                });
         bank().depositInventory();
         Arrays.stream(items).forEach(i -> bank().withdraw(i.id, i.quantity, false));
     }
@@ -282,7 +286,7 @@ public abstract class QuestScript extends Plugin implements Runnable {
     protected void useItemNpc(String item, String npc) {
         bot.inventory().withName(item).first().useOn(bot.npcs().withName(npc).nearest());
     }
-    
+
     public static class ItemQuantity {
         public final int id;
         public int quantity;

@@ -179,6 +179,7 @@ public class TransportLoader {
                 bot.waitUntil(() -> !bot.objects().withId(closedId).inside(source.areaWithin(1)).exists());
             }
             bot.objects().withId(openId).nearest().interact("Climb-down");
+            bot.tick(1);
         });
     }
 

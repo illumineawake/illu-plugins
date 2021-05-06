@@ -95,7 +95,8 @@ public class Bank {
                     bot.chooseNumber(quantity);
                 }
 
-                bot.waitChange(() -> bot.inventory().withId(id).quantity());
+//                bot.waitChange(() -> bot.inventory().withId(id).quantity());
+                bot.tick();
                 return Math.min(inventoryCapacity, quantity);
             }
         }
@@ -134,7 +135,6 @@ public class Bank {
                 continue;
             }
             if (item.itemId() == id) {
-                System.out.println(item.itemId() + " " + item.quantity());
                 return item.quantity();
             }
         }

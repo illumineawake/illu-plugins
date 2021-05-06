@@ -1,10 +1,12 @@
 package net.runelite.client.plugins.iutils.ui;
 
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GrandExchangeOffer;
 import net.runelite.api.GrandExchangeOfferState;
 import net.runelite.client.plugins.iutils.bot.Bot;
 
 // TODO: selling, several offers at once, custom prices, collect to inventory
+@Slf4j
 public class GrandExchange {
     private final Bot bot;
 
@@ -22,7 +24,7 @@ public class GrandExchange {
         if (bot.inventory().withId(995).first() == null) {
             throw new IllegalStateException("you'll need some coins to buy stuff");
         }
-
+        log.info("Buying: {} quantity: {}" , item, quantity);
         var slot = freeSlot();
 
         startBuyOffer(slot);
