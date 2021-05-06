@@ -95,34 +95,29 @@ public class iObject implements Locatable, Interactable {
         throw new IllegalArgumentException("no action \"" + action + "\" on object " + id());
     }
 
+    private int getActionId(int action) {
+        switch (action) {
+            case 0:
+                return MenuAction.GAME_OBJECT_FIRST_OPTION.getId();
+            case 1:
+                return MenuAction.GAME_OBJECT_SECOND_OPTION.getId();
+            case 2:
+                return MenuAction.GAME_OBJECT_THIRD_OPTION.getId();
+            case 3:
+                return MenuAction.GAME_OBJECT_FOURTH_OPTION.getId();
+            case 4:
+                return MenuAction.GAME_OBJECT_FIFTH_OPTION.getId();
+            default:
+                throw new IllegalArgumentException("action = " + action);
+        }
+    }
+
     public void interact(int action) {
         bot().clientThread.invoke(() -> {
-            int menuAction;
-
-            switch (action) {
-                case 0:
-                    menuAction = MenuAction.GAME_OBJECT_FIRST_OPTION.getId();
-                    break;
-                case 1:
-                    menuAction = MenuAction.GAME_OBJECT_SECOND_OPTION.getId();
-                    break;
-                case 2:
-                    menuAction = MenuAction.GAME_OBJECT_THIRD_OPTION.getId();
-                    break;
-                case 3:
-                    menuAction = MenuAction.GAME_OBJECT_FOURTH_OPTION.getId();
-                    break;
-                case 4:
-                    menuAction = MenuAction.GAME_OBJECT_FIFTH_OPTION.getId();
-                    break;
-                default:
-                    throw new IllegalArgumentException("action = " + action);
-            }
-
             client().invokeMenuAction("",
                     "",
                     id(),
-                    menuAction,
+                    getActionId(action),
                     menuPoint().getX(),
                     menuPoint().getY()
             );

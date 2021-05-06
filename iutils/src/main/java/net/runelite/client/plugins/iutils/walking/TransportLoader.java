@@ -131,7 +131,34 @@ public class TransportLoader {
          * wilderness ditch
          */
 
+        // Tree Gnome Village
+        if (bot.varp(111) > 0) {
+            transports.add(npcTransport(new Position(2504, 3192, 0), new Position(2515, 3159, 0), 4968, "Follow"));
+            transports.add(npcTransport(new Position(2515, 3159, 0), new Position(2504, 3192, 0), 4968, "Follow"));
+        }
+
+        // Mort Myre Swamp
+        transports.add(objectWarningTransport(new Position(3444, 3458, 0), new Position(3444, 3457, 0), 3506, "Open", 580, 17));
+        transports.add(objectWarningTransport(new Position(3443, 3458, 0), new Position(3443, 3457, 0), 3507, "Open", 580, 17));
+
         return transports;
+    }
+
+    private static Transport objectWarningTransport(Position source, Position target, int id, String action, int interfaceId, int widgetId) {
+        return new Transport(
+                source,
+                target,
+                Integer.MAX_VALUE,
+                0,
+                game -> {
+                    game.objects().withId(id).nearest(source).interact(action);
+                    game.waitUntil(() -> target.contains(game.localPlayer().position()) || game.screenContainer().nestedInterface() == interfaceId);
+
+                    if (game.screenContainer().nestedInterface() == interfaceId) {
+                        game.widget(interfaceId, widgetId).interact("Yes");
+                        game.waitUntil(() -> game.screenContainer().nestedInterface() == -1);
+                    }
+                });
     }
 
     private static Transport parseTransportLine(String line) {

@@ -236,20 +236,11 @@ public class Walking {
 
     private boolean openDoor(Position position) {
         bot.tile(position).object(ObjectCategory.WALL).interact("Open");
-
-        if (bot.screenContainer().nestedInterface() == 580) { //TODO untested
-            bot.widget(580, 20).interact("Off/On");
-            bot.sleepApproximately(1000);
-            bot.widget(580, 17).interact("Yes");
-            bot.waitUntil(() -> bot.screenContainer().nestedInterface() == -1);
-            bot.waitUntil(this::isStill);
-        }
-
         bot.waitUntil(this::isStill);
-        log.info("Waiting 3 ticks for door");
-        bot.tick(3);
+        bot.tick();
         return true;
     }
+
 
     private boolean openDiagonalDoor(Position position) {
         bot.tile(position).object(ObjectCategory.REGULAR).interact("Open");
@@ -263,17 +254,9 @@ public class Walking {
         System.out.println("[Walking] Handling transport " + transport.source + " -> " + transport.target);
         transport.handler.accept(bot);
 
-        if (bot.screenContainer().nestedInterface() == 580) {
-            bot.widget(580, 20).interact("Off/On");
-            bot.sleepApproximately(1000);
-            bot.widget(580, 17).interact("Yes");
-            bot.waitUntil(() -> bot.screenContainer().nestedInterface() == -1);
-            bot.waitUntil(this::isStill);
-        }
-
         // TODO: if the player isn't on the transport source tile, interacting with the transport may cause the
         //   player to walk to a different source tile for the same transport, which has a different destination
-        bot.waitUntil(() -> bot.localPlayer().position().distanceTo(transport.target) <= transport.targetRadius, 10000);
+        bot.waitUntil(() -> bot.localPlayer().position().distanceTo(transport.target) <= transport.targetRadius, 10);
 
         if (sourceRegion != bot.localPlayer().position().regionID()) {
             bot.tick(5);

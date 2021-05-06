@@ -198,7 +198,7 @@ public class Bot {
                 .map(o -> new iGroundItem(
                         this,
                         o,
-                        client().getObjectDefinition(o.getId())
+                        client().getItemComposition(o.getId())
                 ))
                 .collect(Collectors.toList())
                 .stream())
@@ -343,10 +343,6 @@ public class Bot {
         log.info("Performing sleep for: {}ms", time);
         long endTime = System.currentTimeMillis() + time;
 
-//        while (endTime > lastTickTime + 600) {
-//            tick();
-//        }
-
         time = endTime - System.currentTimeMillis();
 
         if (time > 0) {
@@ -358,43 +354,30 @@ public class Bot {
         }
     }
 
-    //
     public void waitUntil(BooleanSupplier condition) {
-        long start = System.currentTimeMillis();
-
-        while (!condition.getAsBoolean()) {
-            tick();
-
-            if (System.currentTimeMillis() - start > 60000) {
-                throw new IllegalStateException("timed out");
-            }
-        }
-
-        int timeWaited = (int) (System.currentTimeMillis() - start);
-
-        if (timeWaited > 200) {
-            sleepExact((timeWaited / 10));
+        if (!waitUntil(condition, 100)) {
+            throw new IllegalStateException("timed out");
         }
     }
 
-    public boolean waitUntil(BooleanSupplier condition, int timeout) {
-        long start = System.currentTimeMillis();
-
-        while (!condition.getAsBoolean()) {
-            tick();
-
-            if (System.currentTimeMillis() - start > timeout) {
-                return false;
+    public boolean waitUntil(BooleanSupplier condition, int ticks) {
+        for (var i = 0; i < ticks; i++) {
+            if (condition.getAsBoolean()) {
+                return true;
             }
+
+            tick();
         }
 
-        int timeWaited = (int) (System.currentTimeMillis() - start);
+        return false;
+    }
 
-        if (timeWaited > 200) {
-            sleepExact((timeWaited / 10));
-        }
+    public void waitChange(Supplier<Object> supplier) {
+        var initial = supplier.get();
 
-        return true;
+        do {
+            tick();
+        } while (Objects.equals(supplier.get(), initial));
     }
 
     public static class BaseObject {

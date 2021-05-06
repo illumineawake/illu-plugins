@@ -33,11 +33,15 @@ public abstract class iActor implements Locatable, Interactable {
      */
     public iActor target() {
         Actor interacting = actor.getInteracting();
+        if (interacting == null) {
+            return null;
+        }
+        System.out.println(interacting.toString());
         if (interacting instanceof NPC)
-            return new iNPC(bot(), (NPC) interacting, client().getNpcDefinition(((NPC) interacting).getId()));
-        else if (interacting instanceof Player) { //TODO: return player
+            return bot.getFromClientThread(() -> new iNPC(bot(), (NPC) interacting, client().getNpcDefinition(((NPC) interacting).getId())));
+        else if (interacting instanceof Player) {
             Player player = (Player) interacting;
-            return new iPlayer(bot(), player, player.getPlayerComposition());
+            return bot.getFromClientThread(() ->  new iPlayer(bot(), player, player.getPlayerComposition()));
         } else
             throw new AssertionError("not possible, Actor is either an Npc or Player");
     }

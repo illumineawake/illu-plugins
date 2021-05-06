@@ -3,6 +3,7 @@ package net.runelite.client.plugins.iutils.scripts;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Skill;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.iutils.api.Combat;
 import net.runelite.client.plugins.iutils.api.EquipmentSlot;
 import net.runelite.client.plugins.iutils.api.Magic;
 import net.runelite.client.plugins.iutils.api.Prayers;
@@ -17,6 +18,7 @@ import net.runelite.client.plugins.iutils.walking.Walking;
 
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class QuestScript extends Plugin implements Runnable {
@@ -25,8 +27,8 @@ public abstract class QuestScript extends Plugin implements Runnable {
     @Inject protected Bot bot;
     @Inject protected Walking walking;
     @Inject protected Chatbox chatbox;
-    @Inject protected Prayers prayers;
     @Inject protected Equipment equipment;
+    @Inject protected Combat combat;
     @Inject protected StandardSpellbook standardSpellbook;
 
     protected void equip(int id) {
@@ -42,13 +44,13 @@ public abstract class QuestScript extends Plugin implements Runnable {
 
     protected void obtain(ItemQuantity... items) {
         if (hasItems(items)) {
-            System.out.println("Required items already in inventory, carry on...");
             return;
         }
 
         Arrays.stream(items)
-                .map(i -> new ItemQuantity(i.id, i.quantity - bank().quantity(i.id)))
+                .map(i -> new ItemQuantity(i.id, i.quantity - bank().quantity(i.id) - bot.inventory().withId(i.id).quantity()))
                 .filter(i -> i.quantity > 0)
+                .collect(Collectors.toList())
                 .forEach(i -> grandExchange().buy(i.id, i.quantity));
         bank().depositInventory();
         Arrays.stream(items).forEach(i -> bank().withdraw(i.id, i.quantity, false));
@@ -126,33 +128,23 @@ public abstract class QuestScript extends Plugin implements Runnable {
         standardSpellbook.lumbridgeHomeTeleport();
     }
 
-    protected void killNpc(String name) {
-        var npc = bot.npcs().withName(name).withoutTarget().nearest();
-        killNpc(npc);
+    protected void killNpc(String name, Prayer... prayers) {
+        var npc = bot.npcs().withName(name).nearest();
+        killNpc(npc, prayers);
     }
 
-    protected void killNpc(int id) {
-        var npc = bot.npcs().withId(id).withoutTarget().nearest();
+    protected void killNpc(int id, Prayer... prayers) {
+        var npc = bot.npcs().withId(id).nearest();
 
         if (bot.npcs().withId(id).withTarget(bot.localPlayer()).nearest() != null) {
             npc = bot.npcs().withId(id).withTarget(bot.localPlayer()).nearest();
         }
 
-        killNpc(npc);
+        killNpc(npc, prayers);
     }
 
-    private void killNpc(iNPC npc) {
-        while (bot.npcs().withIndex(npc.index()).exists()) {
-            if (bot.localPlayer().target() != npc) {
-                npc.interact("Attack");
-                bot.waitUntil(() -> bot.localPlayer().target() == npc, 10);
-            }
-
-            heal();
-            restorePrayer();
-            restoreStats();
-            bot.tick();
-        }
+    public void killNpc(iNPC npc, Prayer... prayers) {
+        combat.kill(npc, prayers);
     }
 
     private boolean needsStatRestore() {
@@ -163,31 +155,6 @@ public abstract class QuestScript extends Plugin implements Runnable {
             }
         }
         return false;
-    }
-
-    private void restoreStats() {
-        if (bot.inventory().withNamePart("restore").exists() && needsStatRestore()) {
-            bot.inventory().withNamePart("restore").first().interact("Drink");
-        }
-    }
-
-    private void restorePrayer() {
-        if (bot.modifiedLevel(Skill.PRAYER) < bot.baseLevel(Skill.PRAYER) / 2) {
-            //todo add super restores?
-            if (bot.inventory().withNamePart("Prayer potion(").exists()) {
-                bot.inventory().withNamePart("Prayer potion(").first().interact("Drink");
-            }
-        }
-    }
-
-    protected void heal() {
-        if (bot.modifiedLevel(Skill.HITPOINTS) < bot.baseLevel(Skill.HITPOINTS) / 2) {
-            var food = bot.inventory().withAction("Eat").first();
-            if (food != null) {
-                food.interact("Eat");
-                bot.tick();
-            }
-        }
     }
 
     protected void chatNpc(Area location, String npcName, String... chatOptions) {
@@ -262,7 +229,10 @@ public abstract class QuestScript extends Plugin implements Runnable {
 
 
     protected void take(RectangularArea area, String item) {
-        walking.walkTo(area);
+        if (area != null) {
+            walking.walkTo(area);
+        }
+
         bot.waitUntil(() -> bot.groundItems().withName(item).exists());
         bot.groundItems().withName(item).nearest().interact("Take");
         waitItem(item);
@@ -309,6 +279,10 @@ public abstract class QuestScript extends Plugin implements Runnable {
         bot.inventory().withName(item).first().interact(action);
     }
 
+    protected void useItemNpc(String item, String npc) {
+        bot.inventory().withName(item).first().useOn(bot.npcs().withName(npc).nearest());
+    }
+    
     public static class ItemQuantity {
         public final int id;
         public int quantity;

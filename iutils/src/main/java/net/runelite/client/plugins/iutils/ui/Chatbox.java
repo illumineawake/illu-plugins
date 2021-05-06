@@ -70,11 +70,7 @@ public class Chatbox {
         for (iWidget widget : widgets) {
             if (widget.text() != null && widget.text().contains(part)) {
                 widget.select();
-                System.out.println("Tick waiting");
-                bot.tick();
-                bot.tick();
-                bot.tick();
-                System.out.println("tick wait done");
+                bot.tick(2);
                 return; // todo: wait
             }
         }

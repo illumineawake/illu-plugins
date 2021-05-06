@@ -15,22 +15,33 @@ public class Bank {
     }
 
     public void depositInventory() {
-        if (!isOpen()) {
-            throw new IllegalStateException("bank isn't open");
+        checkBankOpen();
+
+        if (bot.inventory().count() != 0) {
+            bot.widget(12, 41).interact(0);
+            bot.waitUntil(() -> bot.inventory().count() == 0);
         }
-        completeBankTutorial();
-        bot.widget(12, 41).interact(0);
-        bot.tick(3);
     }
 
     public void depositEquipment() {
+        checkBankOpen();
+
+        if (bot.equipment().count() != 0) {
+            bot.widget(12, 43).interact(0);
+            bot.waitUntil(() -> bot.equipment().count() == 0);
+        }
+    }
+
+    private void checkBankOpen() {
         if (!isOpen()) {
             throw new IllegalStateException("bank isn't open");
         }
 
-        completeBankTutorial();
-        bot.widget(12, 43).interact(0);
-        bot.tick(3);
+        if (bot.widget(12, 113).nestedInterface() == 664) {
+            System.out.println("[Bank] Closing bank tutorial");
+            bot.widget(664, 9).select();
+            bot.waitUntil(() -> bot.widget(12, 113).nestedInterface() == -1);
+        }
     }
 
     /**
@@ -43,9 +54,7 @@ public class Bank {
      * quantity if there are not enough in the bank or the inventory is too full)
      */
     public int withdraw(int id, int quantity, boolean noted) { // todo: doesn't wait until the item is withdrawn
-        if (!isOpen()) {
-            throw new IllegalStateException("bank isn't open");
-        }
+        checkBankOpen();
 
         completeBankTutorial();
 
@@ -53,19 +62,11 @@ public class Bank {
 
         int inventoryCapacity = !noted ? inventoryCapacity(id) : inventoryCapacity(definition.getLinkedNoteId());
 
-        if (noted != withdrawNoted()) {
-            System.out.println("[Bank] Switching noted mode");
-
-            if (!noted) {
-                bot.widget(12, 21).interact(0);
-            } else {
-                bot.widget(WidgetInfo.BANK_NOTED_BUTTON).interact(0);
-            }
-
-            bot.tick();
-            bot.tick();
-            bot.tick();
+        if (inventoryCapacity == 0) {
+            return 0;
         }
+
+        setNotedMode(noted);
 
         for (iWidget item : bot.widget(WidgetInfo.BANK_ITEM_CONTAINER).items()) {
             if (item.itemId() == 6512 || item.itemId() == -1 || item.hidden()) {
@@ -94,13 +95,25 @@ public class Bank {
                     bot.chooseNumber(quantity);
                 }
 
-                bot.tick(3);
+                bot.waitChange(() -> bot.inventory().withId(id).quantity());
                 return Math.min(inventoryCapacity, quantity);
             }
         }
 
         System.out.println("[Bank] Item not found");
         return 0;
+    }
+
+    private void setNotedMode(boolean noted) {
+        if (noted != withdrawNoted()) {
+            if (!noted) {
+                bot.widget(12, 21).interact(0);
+            } else {
+                bot.widget(12, 24).interact(0);
+            }
+
+            bot.waitUntil(() -> noted == withdrawNoted());
+        }
     }
 
     private void completeBankTutorial() {
