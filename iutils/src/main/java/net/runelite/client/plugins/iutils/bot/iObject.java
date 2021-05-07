@@ -1,5 +1,6 @@
 package net.runelite.client.plugins.iutils.bot;
 
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.client.plugins.iutils.api.Interactable;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class iObject implements Locatable, Interactable {
 
     private final Bot bot;
@@ -72,6 +74,11 @@ public class iObject implements Locatable, Interactable {
     }
 
     public ObjectComposition definition() {
+        int[] imposter = definition.getImpostorIds();
+        if (imposter != null && imposter.length > 0) {
+            System.out.println("Using imposter ID");
+            return definition.getImpostor();
+        }
         return definition;
     }
 
@@ -113,6 +120,11 @@ public class iObject implements Locatable, Interactable {
     }
 
     public void interact(int action) {
+        log.info("Interacting with: {} {} {} {}",
+                id(),
+                getActionId(action),
+                menuPoint().getX(),
+                menuPoint().getY());
         bot().clientThread.invoke(() -> {
             client().invokeMenuAction("",
                     "",

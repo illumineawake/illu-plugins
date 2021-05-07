@@ -152,35 +152,39 @@ public class Bot {
         );
     }
 
-//    public GameObjectStream objects() {
+    public TileObject objects(int id) {
 //        Collection<BaseObject> baseObjects = new ArrayList<>();
-//        Tile[][][] tiles = client().getScene().getTiles();
-//        int plane = client().getPlane();
-//
-//        for (int j = 0; j < tiles[plane].length; j++) {
-//            for (int k = 0; k < tiles[plane][j].length; k++) {
-//                GameObject[] go = tiles[plane][j][k].getGameObjects();
-//                for (GameObject gameObject : go) {
-//                    if (gameObject != null) {
+        Tile[][][] tiles = client().getScene().getTiles();
+        int plane = client().getPlane();
+
+        for (int j = 0; j < tiles[plane].length; j++) {
+            for (int k = 0; k < tiles[plane][j].length; k++) {
+                GameObject[] go = tiles[plane][j][k].getGameObjects();
+                for (GameObject gameObject : go) {
+                    if (gameObject != null && gameObject.getId() == id) {
+                        return gameObject;
 //                        baseObjects.add(new BaseObject(gameObject, ObjectCategory.REGULAR));
-//                    }
-//                }
-//                WallObject wallObject = tiles[plane][j][k].getWallObject();
-//                if (wallObject != null) {
+                    }
+                }
+                WallObject wallObject = tiles[plane][j][k].getWallObject();
+                if (wallObject != null && wallObject.getId() == id) {
+                    return wallObject;
 //                    baseObjects.add(new BaseObject(wallObject, ObjectCategory.WALL));
-//                }
-//
-//                GroundObject groundObject = tiles[plane][j][k].getGroundObject();
-//                if (groundObject != null) {
+                }
+
+                GroundObject groundObject = tiles[plane][j][k].getGroundObject();
+                if (groundObject != null && groundObject.getId() == id) {
+                    return groundObject;
 //                    baseObjects.add(new BaseObject(groundObject, ObjectCategory.FLOOR_DECORATION));
-//                }
-//
-//                DecorativeObject decorativeObject = tiles[plane][j][k].getDecorativeObject();
-//                if (decorativeObject != null) {
+                }
+
+                DecorativeObject decorativeObject = tiles[plane][j][k].getDecorativeObject();
+                if (decorativeObject != null && decorativeObject.getId() == id) {
+                    return decorativeObject;
 //                    baseObjects.add(new BaseObject(decorativeObject, ObjectCategory.WALL_DECORATION));
-//                }
-//            }
-//        }
+                }
+            }
+        }
 //        return getFromClientThread(() -> new GameObjectStream(baseObjects.stream()
 //                .map(o -> new iObject(
 //                        this,
@@ -191,7 +195,8 @@ public class Bot {
 //                .collect(Collectors.toList())
 //                .stream())
 //        );
-//    }
+        return null;
+    }
 
     public GroundItemStream groundItems() {
         return getFromClientThread(() -> new GroundItemStream(iUtils.tileItems.stream()

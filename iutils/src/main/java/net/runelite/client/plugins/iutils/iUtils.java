@@ -170,11 +170,13 @@ public class iUtils extends Plugin {
 
     @Subscribe
     public void onGameObjectSpawned(GameObjectSpawned event) {
+        log.info("Adding GO: {}, {}, {}", event.getGameObject().getId(), event.getGameObject().getName(), event.getGameObject().getWorldLocation());
         objects.add(event.getGameObject());
     }
 
     @Subscribe
     public void onGameObjectDespawned(GameObjectDespawned event) {
+        log.info("Removing GO: {}, {}, {}", event.getGameObject().getId(), event.getGameObject().getName(), event.getGameObject().getWorldLocation());
         objects.remove(event.getGameObject());
     }
 
