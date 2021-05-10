@@ -55,28 +55,28 @@ public class Walking {
     }
 
     public void walkTo(Area target) {
-        if (target.contains(bot.localPlayer().position())) {
+        if (target.contains(bot.localPlayer().templatePosition())) {
             return;
         }
 
-//        if (DEATHS_OFFICE.contains(bot.localPlayer().templatePosition())) {
-//            if (chatbox.chatState() != Chatbox.ChatState.NPC_CHAT) {
-//                bot.npcs().withName("Death").nearest().interact("Talk-to");
-//                bot.waitUntil(() -> chatbox.chatState() == Chatbox.ChatState.NPC_CHAT);
-//            }
-//
-//            chatbox.chat(
-//                    "How do I pay a gravestone fee?",
-//                    "How long do I have to return to my gravestone?",
-//                    "How do I know what will happen to my items when I die?",
-//                    "I think I'm done here."
-//            );
-//
-//            bot.objects().withName("Portal").nearest().interact("Use");
-//            bot.waitUntil(() -> !DEATHS_OFFICE.contains(bot.localPlayer().templatePosition()));
-//        }
+        if (DEATHS_OFFICE.contains(bot.localPlayer().templatePosition())) {
+            if (chatbox.chatState() != Chatbox.ChatState.NPC_CHAT) {
+                bot.npcs().withName("Death").nearest().interact("Talk-to");
+                bot.waitUntil(() -> chatbox.chatState() == Chatbox.ChatState.NPC_CHAT);
+            }
 
-        System.out.println("[Walking] Pathfinding " + bot.localPlayer().position() + " -> " + target);
+            chatbox.chat(
+                    "How do I pay a gravestone fee?",
+                    "How long do I have to return to my gravestone?",
+                    "How do I know what will happen to my items when I die?",
+                    "I think I'm done here."
+            );
+
+            bot.objects().withName("Portal").nearest().interact("Use");
+            bot.waitUntil(() -> !DEATHS_OFFICE.contains(bot.localPlayer().templatePosition()));
+        }
+
+        System.out.println("[Walking] Pathfinding " + bot.localPlayer().templatePosition() + " -> " + target);
         var transports = new HashMap<Position, List<Transport>>();
         var transportPositions = new HashMap<Position, List<Position>>();
 
@@ -92,11 +92,11 @@ public class Walking {
         }
 
         var starts = new ArrayList<>(teleports.keySet());
-        starts.add(bot.localPlayer().position());
+        starts.add(bot.localPlayer().templatePosition());
         var path = pathfind(starts, target, transportPositions);
 
         if (path == null) {
-            throw new IllegalStateException("couldn't pathfind " + bot.localPlayer().position() + " -> " + target);
+            throw new IllegalStateException("couldn't pathfind " + bot.localPlayer().templatePosition() + " -> " + target);
         }
 
         System.out.println("[Walking] Done pathfinding");
@@ -107,7 +107,7 @@ public class Walking {
         if (teleport != null) {
             System.out.println("[Walking] Teleporting to path start");
             teleport.handler.run();
-            bot.waitUntil(() -> bot.localPlayer().position().distanceTo(teleport.target) <= teleport.radius);
+            bot.waitUntil(() -> bot.localPlayer().templatePosition().distanceTo(teleport.target) <= teleport.radius);
         }
 
         walkAlong(path, transports);
@@ -132,10 +132,10 @@ public class Walking {
 
         var fails = 0;
 
-        while (bot.localPlayer().position().distanceTo(target) > 0) {
+        while (bot.localPlayer().templatePosition().distanceTo(target) > 0) {
             var remainingPath = remainingPath(path);
             var start = path.get(0);
-            var current = bot.localPlayer().position();
+            var current = bot.localPlayer().templatePosition();
             var end = path.get(path.size() - 1);
             var progress = path.size() - remainingPath.size();
             System.out.println("[Walking] " + start + " -> " + current + " -> " + end + ": " + progress + " / " + path.size());
@@ -146,7 +146,7 @@ public class Walking {
 
             if (!stepAlong(remainingPath)) {
                 if (fails++ == 5) {
-                    throw new IllegalStateException("stuck in path at " + bot.localPlayer().position());
+                    throw new IllegalStateException("stuck in path at " + bot.localPlayer().templatePosition());
                 }
             } else {
                 fails = 0;
@@ -161,13 +161,13 @@ public class Walking {
      */
     private List<Position> remainingPath(List<Position> path) {
         var nearest = path.stream()
-                .min(Comparator.comparing(p -> bot.localPlayer().position().distanceTo(p)))
+                .min(Comparator.comparing(p -> bot.localPlayer().templatePosition().distanceTo(p)))
                 .orElseThrow(() -> new IllegalArgumentException("empty path"));
 
         var remainingPath = path.subList(path.indexOf(nearest), path.size());
 
         if (remainingPath.isEmpty()) {
-            throw new IllegalStateException("too far from path " + bot.localPlayer().position() + " -> " + nearest);
+            throw new IllegalStateException("too far from path " + bot.localPlayer().templatePosition() + " -> " + nearest);
         }
 
         return remainingPath;
@@ -181,8 +181,8 @@ public class Walking {
 
             var a = path.get(i);
             var b = path.get(i + 1);
-            var tileA = bot.tile(a);
-            var tileB = bot.tile(b);
+            var tileA = tile(a);
+            var tileB = tile(b);
 
             if (tileA == null) {
                 return false;
@@ -191,7 +191,7 @@ public class Walking {
             var transportTargets = transports.get(a);
             var transport = transportTargets == null ? null : transportTargets.stream().filter(t -> t.target.equals(b)).findFirst().orElse(null);
 
-            if (transport != null && bot.localPlayer().position().distanceTo(transport.source) <= transport.sourceRadius) {
+            if (transport != null && bot.localPlayer().templatePosition().distanceTo(transport.source) <= transport.sourceRadius) {
                 handleTransport(transport);
                 return true;
             }
@@ -220,7 +220,7 @@ public class Walking {
     }
 
     private boolean isWallBlocking(Position a, Position b) {
-        switch (bot.tile(a).object(ObjectCategory.WALL).orientation()) {
+        switch (tile(a).object(ObjectCategory.WALL).orientation()) {
             case 0:
                 return a.west().equals(b) || a.west().north().equals(b) || a.west().south().equals(b);
             case 1:
@@ -235,7 +235,7 @@ public class Walking {
     }
 
     private boolean openDoor(Position position) {
-        bot.tile(position).object(ObjectCategory.WALL).interact("Open");
+        tile(position).object(ObjectCategory.WALL).interact("Open");
         bot.waitUntil(this::isStill);
         bot.tick();
         return true;
@@ -243,24 +243,19 @@ public class Walking {
 
 
     private boolean openDiagonalDoor(Position position) {
-        bot.tile(position).object(ObjectCategory.REGULAR).interact("Open");
+        tile(position).object(ObjectCategory.REGULAR).interact("Open");
         bot.waitUntil(this::isStill);
         return true;
     }
 
     private void handleTransport(Transport transport) {
-        var sourceRegion = bot.localPlayer().position().regionID();
-
         System.out.println("[Walking] Handling transport " + transport.source + " -> " + transport.target);
         transport.handler.accept(bot);
 
         // TODO: if the player isn't on the transport source tile, interacting with the transport may cause the
         //   player to walk to a different source tile for the same transport, which has a different destination
-        bot.waitUntil(() -> bot.localPlayer().position().distanceTo(transport.target) <= transport.targetRadius, 10);
-
-        if (sourceRegion != bot.localPlayer().position().regionID()) {
-            bot.tick(5);
-        }
+        bot.waitUntil(() -> bot.localPlayer().templatePosition().distanceTo(transport.target) <= transport.targetRadius, 10);
+        bot.tick(2);
     }
 
     private boolean stepAlong(List<Position> path) {
@@ -290,18 +285,22 @@ public class Walking {
      * @return
      */
     private boolean step(Position target, int tiles) {
-        bot.tile(target).walkTo();
+        if (bot.inInstance()) {
+            tile(bot.instancePositions(target).get(0)).walkTo();
+        } else {
+            tile(target).walkTo();
+        }
         var ticksStill = 0;
 
         for (var tilesWalked = 0; tilesWalked < tiles; tilesWalked += isRunning() ? 2 : 1) {
-            if (bot.localPlayer().position().equals(target)) {
+            if (bot.localPlayer().templatePosition().equals(target)) {
                 return false;
             }
 
-            var oldPosition = bot.localPlayer().position();
+            var oldPosition = bot.localPlayer().templatePosition();
             bot.tick();
 
-            if (bot.localPlayer().position().equals(oldPosition)) {
+            if (bot.localPlayer().templatePosition().equals(oldPosition)) {
                 if (++ticksStill == 5) {
                     return false;
                 }
@@ -313,6 +312,16 @@ public class Walking {
                 minEnergy = new Random().nextInt(MAX_MIN_ENERGY - MIN_ENERGY + 1) + MIN_ENERGY;
                 System.out.println("[Walking] Enabling run, next minimum run energy: " + minEnergy);
                 setRun(true);
+            }
+
+            if (bot.inventory().withNamePart("Stamina potion").exists() && bot.energy() < 70 && (bot.varb(25) == 0 || bot.energy() <= 4)) {
+                var staminaPotion = bot.inventory().withNamePart("Stamina potion").first();
+                staminaPotion.interact("Drink");
+                bot.waitUntil(() -> bot.varb(25) == 1 && bot.energy() >= 20);
+            }
+
+            if (bot.varb(25) == 1) {
+                setRun(true); // don't waste stamina effect
             }
         }
 
@@ -327,19 +336,33 @@ public class Walking {
         var reachable = new ArrayList<Position>();
 
         for (var position : remainingPath) {
-            if (bot.tile(position) == null || position.distanceTo(bot.localPlayer().position()) >= MAX_INTERACT_DISTANCE) {
+            if (bot.tile(position) == null || position.distanceTo(bot.localPlayer().templatePosition()) >= MAX_INTERACT_DISTANCE) {
                 break;
             }
 
             reachable.add(position);
         }
 
-        if (reachable.isEmpty() || reachable.size() == 1 && reachable.get(0).equals(bot.localPlayer().position())) {
+        if (reachable.isEmpty() || reachable.size() == 1 && reachable.get(0).equals(bot.localPlayer().templatePosition())) {
 //            throw new IllegalStateException("no tiles in the path are reachable");
             return null;
         }
 
         return reachable;
+    }
+
+    private iTile tile(Position position) {
+        if (bot.inInstance()) {
+            var instancePositions = bot.instancePositions(position);
+
+            if (instancePositions.isEmpty()) {
+                return null;
+            }
+
+            return bot.tile(instancePositions.get(0));
+        } else {
+            return bot.tile(position);
+        }
     }
 
     public void setRun(boolean run) {
@@ -354,18 +377,18 @@ public class Walking {
     }
 
     public boolean reachable(Area target) {
-        if (bot.localPlayer().position().equals(target)) {
+        if (bot.localPlayer().templatePosition().equals(target)) {
             return true;
         }
 
-        var path = new Pathfinder(map, Collections.emptyMap(), List.of(bot.localPlayer().position()), target::contains).find();
+        var path = new Pathfinder(map, Collections.emptyMap(), List.of(bot.localPlayer().templatePosition()), target::contains).find();
 
         if (path == null) {
             return false;
         }
 
         for (var position : path) {
-            var wallObject = bot.tile(position).object(ObjectCategory.WALL);
+            var wallObject = tile(position).object(ObjectCategory.WALL);
 
             if (wallObject != null && wallObject.actions().contains("Open")) {
                 return false;
@@ -376,8 +399,8 @@ public class Walking {
     }
 
     public boolean isStill() {
-        var position = bot.localPlayer().position();
+        var position = bot.localPlayer().templatePosition();
         bot.tick();
-        return bot.localPlayer().position().equals(position);
+        return bot.localPlayer().templatePosition().equals(position);
     }
 }

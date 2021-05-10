@@ -60,18 +60,38 @@ public class Chatbox {
         }
     }
 
+//    public void chooseOption(String part) {
+//        bot.tick();
+//
+//        if (chatState() != ChatState.OPTIONS_CHAT) {
+//            throw new IllegalStateException("not an options chat");
+//        }
+//        List<iWidget> widgets = bot.widget(219, 1).items();
+//        for (iWidget widget : widgets) {
+//            if (widget.text() != null && widget.text().contains(part)) {
+//                widget.select();
+//                bot.waitChange(this::chatState, 6);
+//                return; // todo: wait
+//            }
+//        }
+//
+//        throw new IllegalStateException("no option " + part + " found");
+//    }
+
     public void chooseOption(String part) {
-        bot.tick();
+        if (chatState() == ChatState.CLOSED) {
+            throw new IllegalStateException("chat closed before option: " + part);
+        }
 
         if (chatState() != ChatState.OPTIONS_CHAT) {
-            throw new IllegalStateException("not an options chat");
+            throw new IllegalStateException("not an options chat, " + chatState());
         }
-        List<iWidget> widgets = bot.widget(219, 1).items();
-        for (iWidget widget : widgets) {
-            if (widget.text() != null && widget.text().contains(part)) {
-                widget.select();
-                bot.tick(2);
-                return; // todo: wait
+
+        for (var i = 0; i < 6; i++) {
+            if (bot.widget(219, 1, i).text() != null && bot.widget(219, 1, i).text().contains(part)) {
+                bot.widget(219, 1, i).select();
+                bot.waitChange(this::chatState, 6);
+                return;
             }
         }
 

@@ -32,15 +32,23 @@ public abstract class QuestScript extends Plugin implements Runnable {
     @Inject protected StandardSpellbook standardSpellbook;
     @Inject protected Prayers prayers;
 
-    protected void equip(int id) {
-        if (equipment.isEquipped(id)) {
+    protected void equip(int... ids) {
+        obtain(Arrays.stream(ids)
+                .filter(i -> !equipment.isEquipped(i))
+                .mapToObj(i -> new ItemQuantity(i, 1))
+                .toArray(ItemQuantity[]::new));
+
+        bot.inventory().withId(ids).forEach(i -> i.interact(1));
+        bot.waitUntil(() -> Arrays.stream(ids).allMatch(equipment::isEquipped));
+    }
+
+    protected void equip(String name) {
+        if (bot.equipment().withName(name).exists()) {
             return;
         }
 
-        obtain(new ItemQuantity(id, 1));
-
-        bot.inventory().withId(id).first().interact(1);
-        bot.waitUntil(() -> equipment.isEquipped(id));
+        bot.inventory().withName(name).first().interact(0);
+        bot.waitUntil(() -> bot.equipment().withName(name).exists());
     }
 
     protected void obtain(ItemQuantity... items) {
@@ -48,16 +56,26 @@ public abstract class QuestScript extends Plugin implements Runnable {
             return;
         }
 
+        obtainBank(items);
+        withdraw(items);
+    }
+
+    protected void withdraw(ItemQuantity... items) {
+        Arrays.stream(items)
+                .map(i -> new ItemQuantity(i.id, i.quantity - bot.inventory().withId(i.id).quantity()))
+                .filter(i -> i.quantity > 0)
+                .collect(Collectors.toList())
+                .forEach(i -> bank().withdraw(i.id, i.quantity, false));
+    }
+
+    protected void obtainBank(ItemQuantity... items) {
         Arrays.stream(items)
                 .map(i -> new ItemQuantity(i.id, i.quantity - bank().quantity(i.id) - bot.inventory().withId(i.id).quantity()))
                 .filter(i -> i.quantity > 0)
                 .collect(Collectors.toList())
-                .forEach(i -> {
-                    log.info("Buying: {} {}", i.id, i.quantity);
-                    grandExchange().buy(i.id, i.quantity);
-                });
+                .forEach(i -> grandExchange().buy(i.id, i.quantity));
+
         bank().depositInventory();
-        Arrays.stream(items).forEach(i -> bank().withdraw(i.id, i.quantity, false));
     }
 
     protected boolean inventoryHasItems(ItemQuantity... items) {
@@ -91,9 +109,7 @@ public abstract class QuestScript extends Plugin implements Runnable {
         var bank = new Bank(bot);
 
         if (!bank.isOpen()) {
-            if (!BankLocations.ANY.contains(bot.localPlayer().position())) {
-                walking.walkTo(BankLocations.ANY);
-            }
+            BankLocations.walkToBank(bot);
             if (bot.npcs().withName("Banker").exists()) {
                 bot.npcs().withName("Banker").nearest().interact("Bank");
             } else if (bot.objects().withName("Bank booth").withAction("Bank").exists()) {
@@ -101,7 +117,7 @@ public abstract class QuestScript extends Plugin implements Runnable {
             } else {
                 bot.objects().withName("Bank chest").nearest().interact("Use");
             }
-            bot.waitUntil(bank::isOpen);
+            bot.waitUntil(bank::isOpen, 10);
         }
 
         return bank;
@@ -133,11 +149,13 @@ public abstract class QuestScript extends Plugin implements Runnable {
     }
 
     protected void killNpc(String name, Prayer... prayers) {
+        bot.waitUntil(() -> bot.npcs().withName(name).withAction("Attack").exists());
         var npc = bot.npcs().withName(name).nearest();
         killNpc(npc, prayers);
     }
 
     protected void killNpc(int id, Prayer... prayers) {
+        bot.waitUntil(() -> bot.npcs().withId(id).exists());
         var npc = bot.npcs().withId(id).nearest();
 
         if (bot.npcs().withId(id).withTarget(bot.localPlayer()).nearest() != null) {
@@ -175,8 +193,8 @@ public abstract class QuestScript extends Plugin implements Runnable {
         bot.tick();
     }
 
-    protected void unequip(int item, EquipmentSlot slot) {
-        if (Arrays.stream(bot.container(94).getItems()).anyMatch(i -> i.getId() == item)) {
+    protected void unequip(String item, EquipmentSlot slot) {
+        if (bot.equipment().withName(item).exists()) {
             bot.widget(slot.widgetID, slot.widgetChild).interact(0);
             bot.tick();
         }
@@ -213,6 +231,12 @@ public abstract class QuestScript extends Plugin implements Runnable {
         chatbox.chat(options);
     }
 
+    protected void chat(int n) {
+        for (int i = 0; i < n; i++) {
+            chat();
+        }
+    }
+
     protected void interactObject(Area area, String object, String action) {
         walking.walkTo(area);
         bot.objects().withName(object).withAction(action).nearest().interact(action);
@@ -232,7 +256,7 @@ public abstract class QuestScript extends Plugin implements Runnable {
     }
 
 
-    protected void take(RectangularArea area, String item) {
+    protected void take(Area area, String item) {
         if (area != null) {
             walking.walkTo(area);
         }
@@ -243,12 +267,11 @@ public abstract class QuestScript extends Plugin implements Runnable {
     }
 
     protected boolean hasItem(String item) {
-        return bot.inventory().withName(item).exists();
+        return bot.inventory().withName(item).exists() || bot.equipment().withName(item).exists();
     }
 
     protected void waitItem(String item) {
-        var oldSize = bot.inventory().withName(item).size();
-        bot.waitUntil(() -> bot.inventory().withName(item).size() > oldSize);
+        bot.waitUntil(() -> bot.inventory().withName(item).size() > 0);
     }
 
     protected void useItemObject(Area area, String item, String object) {
@@ -285,6 +308,11 @@ public abstract class QuestScript extends Plugin implements Runnable {
 
     protected void useItemNpc(String item, String npc) {
         bot.inventory().withName(item).first().useOn(bot.npcs().withName(npc).nearest());
+    }
+
+    protected void waitAnimationEnd(int id) {
+        bot.waitUntil(() -> bot.localPlayer().animation() == id);
+        bot.waitUntil(() -> bot.localPlayer().animation() == -1);
     }
 
     public static class ItemQuantity {

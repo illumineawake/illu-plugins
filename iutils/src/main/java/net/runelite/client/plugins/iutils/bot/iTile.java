@@ -2,12 +2,15 @@ package net.runelite.client.plugins.iutils.bot;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.client.plugins.iutils.scene.Locatable;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
 import net.runelite.client.plugins.iutils.scene.Position;
 
 import java.util.Arrays;
 import java.util.Objects;
+
+import static net.runelite.api.Constants.CHUNK_SIZE;
 
 @Slf4j
 public class iTile implements Locatable {
@@ -38,6 +41,22 @@ public class iTile implements Locatable {
     @Override
     public Position position() {
         return new Position(tile.getSceneLocation().getX(), tile.getSceneLocation().getY(), tile.getPlane());
+    }
+
+    public Position templatePosition() {
+        if (client().isInInstancedRegion()) {
+            LocalPoint localPoint = client().getLocalPlayer().getLocalLocation();
+            int[][][] instanceTemplateChunks = client().getInstanceTemplateChunks();
+            int z = client().getPlane();
+            int chunkData = instanceTemplateChunks[z][localPoint.getSceneX() / CHUNK_SIZE][localPoint.getSceneY() / CHUNK_SIZE];
+
+            int rotation = chunkData >> 1 & 0x3;
+            int chunkY = (chunkData >> 3 & 0x7FF) * CHUNK_SIZE;
+            int chunkX = (chunkData >> 14 & 0x3FF) * CHUNK_SIZE;
+
+            return new Position(chunkX, chunkY, rotation);
+        }
+        return bot.localPlayer().position();
     }
 
     public void walkTo() {

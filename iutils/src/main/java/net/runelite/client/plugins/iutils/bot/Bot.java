@@ -20,10 +20,7 @@ import net.runelite.client.plugins.iutils.ui.InventoryItemStream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BooleanSupplier;
@@ -115,6 +112,34 @@ public class Bot {
         return new Position(client.getBaseX(), client.getBaseY(), client.getPlane());
     }
 
+    /**
+     * Whether the player is inside of an instance.
+     */
+    public boolean inInstance() {
+        return client().isInInstancedRegion();
+    }
+
+    /**
+     * Given an instance template position, returns all occurences of
+     * the template tile inside the instance.
+     */
+    public List<Position> instancePositions(Position templatePosition) {
+        var results = new ArrayList<Position>();
+
+        for (var z = 0; z < 4; z++) {
+            for (var x = 0; x < 104; x++) {
+                for (var y = 0; y < 104; y++) {
+                    var tile = new iTile(this, client.getScene().getTiles()[z][x][y]);
+                    if (tile.templatePosition().equals(templatePosition)) {
+                        results.add(tile.position());
+                    }
+                }
+            }
+        }
+
+        return results;
+    }
+
     public iTile tile(Position position) {
         int plane = position.z;
         int x = position.x - client.getBaseX();
@@ -152,39 +177,39 @@ public class Bot {
         );
     }
 
-    public TileObject objects(int id) {
-//        Collection<BaseObject> baseObjects = new ArrayList<>();
-        Tile[][][] tiles = client().getScene().getTiles();
-        int plane = client().getPlane();
-
-        for (int j = 0; j < tiles[plane].length; j++) {
-            for (int k = 0; k < tiles[plane][j].length; k++) {
-                GameObject[] go = tiles[plane][j][k].getGameObjects();
-                for (GameObject gameObject : go) {
-                    if (gameObject != null && gameObject.getId() == id) {
-                        return gameObject;
-//                        baseObjects.add(new BaseObject(gameObject, ObjectCategory.REGULAR));
-                    }
-                }
-                WallObject wallObject = tiles[plane][j][k].getWallObject();
-                if (wallObject != null && wallObject.getId() == id) {
-                    return wallObject;
-//                    baseObjects.add(new BaseObject(wallObject, ObjectCategory.WALL));
-                }
-
-                GroundObject groundObject = tiles[plane][j][k].getGroundObject();
-                if (groundObject != null && groundObject.getId() == id) {
-                    return groundObject;
-//                    baseObjects.add(new BaseObject(groundObject, ObjectCategory.FLOOR_DECORATION));
-                }
-
-                DecorativeObject decorativeObject = tiles[plane][j][k].getDecorativeObject();
-                if (decorativeObject != null && decorativeObject.getId() == id) {
-                    return decorativeObject;
-//                    baseObjects.add(new BaseObject(decorativeObject, ObjectCategory.WALL_DECORATION));
-                }
-            }
-        }
+//    public TileObject objects(int id) {
+////        Collection<BaseObject> baseObjects = new ArrayList<>();
+//        Tile[][][] tiles = client().getScene().getTiles();
+//        int plane = client().getPlane();
+//
+//        for (int j = 0; j < tiles[plane].length; j++) {
+//            for (int k = 0; k < tiles[plane][j].length; k++) {
+//                GameObject[] go = tiles[plane][j][k].getGameObjects();
+//                for (GameObject gameObject : go) {
+//                    if (gameObject != null && gameObject.getId() == id) {
+//                        return gameObject;
+////                        baseObjects.add(new BaseObject(gameObject, ObjectCategory.REGULAR));
+//                    }
+//                }
+//                WallObject wallObject = tiles[plane][j][k].getWallObject();
+//                if (wallObject != null && wallObject.getId() == id) {
+//                    return wallObject;
+////                    baseObjects.add(new BaseObject(wallObject, ObjectCategory.WALL));
+//                }
+//
+//                GroundObject groundObject = tiles[plane][j][k].getGroundObject();
+//                if (groundObject != null && groundObject.getId() == id) {
+//                    return groundObject;
+////                    baseObjects.add(new BaseObject(groundObject, ObjectCategory.FLOOR_DECORATION));
+//                }
+//
+//                DecorativeObject decorativeObject = tiles[plane][j][k].getDecorativeObject();
+//                if (decorativeObject != null && decorativeObject.getId() == id) {
+//                    return decorativeObject;
+////                    baseObjects.add(new BaseObject(decorativeObject, ObjectCategory.WALL_DECORATION));
+//                }
+//            }
+//        }
 //        return getFromClientThread(() -> new GameObjectStream(baseObjects.stream()
 //                .map(o -> new iObject(
 //                        this,
@@ -195,8 +220,8 @@ public class Bot {
 //                .collect(Collectors.toList())
 //                .stream())
 //        );
-        return null;
-    }
+//        return null;
+//    }
 
     public GroundItemStream groundItems() {
         return getFromClientThread(() -> new GroundItemStream(iUtils.tileItems.stream()
@@ -259,21 +284,21 @@ public class Bot {
 
     public EquipmentItemStream equipment() {
         Map<Item, EquipmentSlot> equipped = new HashMap();
-        Item[] items = client.getItemContainer(InventoryID.EQUIPMENT).getItems();
-        for (int i = 0; i <= items.length -1; i++)
-        {
-            if (items[i].getId() == -1 || items[i].getId() == 0)
-            {
-                continue;
+        if (client.getItemContainer(InventoryID.EQUIPMENT) != null) {
+            Item[] items = client.getItemContainer(InventoryID.EQUIPMENT).getItems();
+            for (int i = 0; i <= items.length - 1; i++) {
+                if (items[i].getId() == -1 || items[i].getId() == 0) {
+                    continue;
+                }
+                equipped.put(items[i], equipmentSlot(i));
             }
-            equipped.put(items[i], equipmentSlot(i));
         }
-        return getFromClientThread(() -> new EquipmentItemStream(equipped.entrySet().stream()
-                .map(i -> new EquipmentItem(this, i.getKey(), client().getItemDefinition(i.getKey().getId()), i.getValue()))
-                .collect(Collectors.toList())
-                .stream())
-                .filter(Objects::nonNull)
-        );
+            return getFromClientThread(() -> new EquipmentItemStream(equipped.entrySet().stream()
+                    .map(i -> new EquipmentItem(this, i.getKey(), client().getItemDefinition(i.getKey().getId()), i.getValue()))
+                    .collect(Collectors.toList())
+                    .stream())
+                    .filter(Objects::nonNull)
+            );
     }
 
     public ItemContainer container(InventoryID inventoryID) {
@@ -377,12 +402,48 @@ public class Bot {
         return false;
     }
 
-    public void waitChange(Supplier<Object> supplier) {
+    public boolean waitChange(Supplier<Object> supplier, int ticks) {
         var initial = supplier.get();
 
-        do {
+        for (var i = 0; i < ticks; i++) {
             tick();
-        } while (Objects.equals(supplier.get(), initial));
+
+            if (!Objects.equals(supplier.get(), initial)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void waitChange(Supplier<Object> supplier) {
+        if (!waitChange(supplier, 100)) {
+            throw new IllegalStateException("timed out");
+        }
+    }
+
+    public <T> T waitFor(Supplier<T> supplier) {
+        var t = waitFor(supplier, 100);
+
+        if (t == null) {
+            throw new IllegalStateException("timed out");
+        }
+
+        return t;
+    }
+
+    public <T> T waitFor(Supplier<T> supplier, int ticks) {
+        for (int i = 0; i < ticks; i++) {
+            var t = supplier.get();
+
+            if (t != null) {
+                return t;
+            }
+
+            tick();
+        }
+
+        return null;
     }
 
     public static class BaseObject {

@@ -7,7 +7,7 @@ public interface Locatable {
     /**
      * The {@link Bot} instance this object belongs to.
      */
-//    Bot bot();
+    Bot bot();
 
     Client client();
 
@@ -21,7 +21,13 @@ public interface Locatable {
      * If not in an instance, this is equal to {@link Locatable#position()}. In an instance, this returns
      * the position in the chunk template.
      */
-//    Point scenePosition() {
-//        return client().tile(position()).templatePosition();
-//    }
+    default Position templatePosition() {
+        var tile = bot().tile(position());
+
+        if (tile == null) {
+            return position();
+        }
+
+        return tile.templatePosition();
+    }
 }

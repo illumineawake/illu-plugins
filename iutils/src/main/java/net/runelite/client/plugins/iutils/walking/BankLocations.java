@@ -1,7 +1,10 @@
 package net.runelite.client.plugins.iutils.walking;
 
+import net.runelite.client.plugins.iutils.bot.Bot;
 import net.runelite.client.plugins.iutils.scene.Area;
 import net.runelite.client.plugins.iutils.scene.RectangularArea;
+
+import java.util.ArrayList;
 
 public class BankLocations {
     public static final Area LUMBRIDGE_BANK = new RectangularArea(3207, 3222, 3210, 3215, 2);
@@ -36,38 +39,55 @@ public class BankLocations {
     public static final Area CHARCOAL_BURNERS_BANK = new RectangularArea(1711, 3469, 1723, 3460, 0);
     public static final Area HOSIDIUS_BANK = new RectangularArea(1749, 3594, 1745, 3603, 0);
     public static final Area PORT_PISCARILIUS_BANK = new RectangularArea(1794, 3793, 1811, 3784);
+    public static final Area HALLOWED_SEPULCHRE_BANK = new RectangularArea(2383, 5997, 2420, 5963);
+    public static final Area CANIFIS_BANK = new RectangularArea(3509, 3483, 3516, 3478);
+    public static final Area BURGH_DE_ROTT_BANK = new RectangularArea(3492, 3213, 3496, 3210);
+    public static final Area VER_SINHAZA_BANK = new RectangularArea(3649, 3208, 3652, 3209);
 
-    public static final Area ANY = Area.union(
-            LUMBRIDGE_BANK,
-            VARROCK_WEST_BANK,
-            VARROCK_EAST_BANK,
-            GRAND_EXCHANGE_BANK,
-            EDGEVILLE_BANK,
-            FALADOR_EAST_BANK,
-            FALADOR_WEST_BANK,
-            DRAYNOR_BANK,
-            DUEL_ARENA_BANK,
-            SHANTAY_PASS_BANK,
-            AL_KHARID_BANK,
-            CATHERBY_BANK,
-            SEERS_VILLAGE_BANK,
-            ARDOUGNE_NORTH_BANK,
-            ARDOUGNE_SOUTH_BANK,
-            PORT_KHAZARD_BANK,
-            YANILLE_BANK,
-            CORSAIR_COVE_BANK,
-            CASTLE_WARS_BANK,
-            LLETYA_BANK,
-            GRAND_TREE_WEST_BANK,
-            GRAND_TREE_SOUTH_BANK,
-            TREE_GNOME_STRONGHOLD_BANK,
-            SHILO_VILLAGE_BANK,
-            NEITIZNOT_BANK,
-            JATIZSO_BANK,
-            BARBARIAN_OUTPOST_BANK,
-            ETCETARIA_BANK,
-            DARKMEYER_BANK,
-            CHARCOAL_BURNERS_BANK,
-            HOSIDIUS_BANK
-    );
+    public static void walkToBank(Bot bot) {
+        var validBanks = new ArrayList<Area>();
+        validBanks.add(LUMBRIDGE_BANK);
+        validBanks.add(VARROCK_WEST_BANK);
+        validBanks.add(VARROCK_EAST_BANK);
+        validBanks.add(GRAND_EXCHANGE_BANK);
+        validBanks.add(EDGEVILLE_BANK);
+        validBanks.add(FALADOR_EAST_BANK);
+        validBanks.add(FALADOR_WEST_BANK);
+        validBanks.add(DRAYNOR_BANK);
+        validBanks.add(DUEL_ARENA_BANK);
+        validBanks.add(SHANTAY_PASS_BANK);
+        validBanks.add(AL_KHARID_BANK);
+        validBanks.add(CATHERBY_BANK);
+        validBanks.add(SEERS_VILLAGE_BANK);
+        validBanks.add(ARDOUGNE_NORTH_BANK);
+        validBanks.add(ARDOUGNE_SOUTH_BANK);
+        validBanks.add(PORT_KHAZARD_BANK);
+        validBanks.add(YANILLE_BANK);
+        validBanks.add(CORSAIR_COVE_BANK);
+        validBanks.add(CASTLE_WARS_BANK);
+        validBanks.add(LLETYA_BANK);
+        validBanks.add(GRAND_TREE_WEST_BANK);
+        validBanks.add(GRAND_TREE_SOUTH_BANK);
+        validBanks.add(TREE_GNOME_STRONGHOLD_BANK);
+        validBanks.add(SHILO_VILLAGE_BANK);
+        validBanks.add(NEITIZNOT_BANK);
+        validBanks.add(JATIZSO_BANK);
+        validBanks.add(BARBARIAN_OUTPOST_BANK);
+        validBanks.add(ETCETARIA_BANK);
+        validBanks.add(DARKMEYER_BANK);
+        validBanks.add(CHARCOAL_BURNERS_BANK);
+        validBanks.add(HOSIDIUS_BANK);
+        validBanks.add(HALLOWED_SEPULCHRE_BANK);
+        validBanks.add(VER_SINHAZA_BANK);
+
+        if (bot.varp(302) >= 61) {
+            validBanks.add(CANIFIS_BANK);
+        }
+
+        if (bot.varb(1990) >= 200) {
+            validBanks.add(BURGH_DE_ROTT_BANK);
+        }
+
+        new Walking(bot).walkTo(Area.union(validBanks.toArray(new Area[0])));
+    }
 }

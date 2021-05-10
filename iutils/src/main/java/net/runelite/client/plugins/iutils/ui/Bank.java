@@ -53,14 +53,12 @@ public class Bank {
      * @return the quantity actually withdrawn (may be less then the requested
      * quantity if there are not enough in the bank or the inventory is too full)
      */
-    public int withdraw(int id, int quantity, boolean noted) { // todo: doesn't wait until the item is withdrawn
+    public int withdraw(int id, int quantity, boolean noted) {
         checkBankOpen();
-
-        completeBankTutorial();
 
         ItemComposition definition = bot.getFromClientThread(() -> bot.client().getItemComposition(id));
 
-        int inventoryCapacity = !noted ? inventoryCapacity(id) : inventoryCapacity(definition.getLinkedNoteId());
+        var inventoryCapacity = inventoryCapacity(noted ? definition.getLinkedNoteId() : id);
 
         if (inventoryCapacity == 0) {
             return 0;
@@ -110,7 +108,7 @@ public class Bank {
             if (!noted) {
                 bot.widget(12, 21).interact(0);
             } else {
-                bot.widget(12, 24).interact(0);
+                bot.widget(12, 23).interact(0);
             }
 
             bot.waitUntil(() -> noted == withdrawNoted());

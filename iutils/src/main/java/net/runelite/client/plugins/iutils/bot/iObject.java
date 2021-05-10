@@ -48,7 +48,7 @@ public class iObject implements Locatable, Interactable {
     }
 
     public String name() {
-        return definition.getName();
+        return definition().getName();
     }
 
     public int orientation() { //TODO untested
@@ -68,15 +68,18 @@ public class iObject implements Locatable, Interactable {
     }
 
     public List<String> actions() {
+        Arrays.stream(definition().getActions()).filter(Objects::nonNull).forEach(log::info);
         return Arrays.stream(definition().getActions())
-                .filter(Objects::nonNull)
+//                .filter(Objects::nonNull) //TODO may need to readd this for non-imposter objects
                 .collect(Collectors.toList());
     }
 
     public ObjectComposition definition() {
         int[] imposter = definition.getImpostorIds();
-        if (imposter != null && imposter.length > 0) {
-            System.out.println("Using imposter ID");
+        if (imposter != null && imposter.length > 0 && definition.getImpostor() != null) {
+//            if (definition.getImpostor() != null && definition.getImpostor().getName() != null) {
+            System.out.println("Using imposter ID ");
+            System.out.println(definition.getImpostor().getId() + " " + definition.getImpostor().getId());
             return definition.getImpostor();
         }
         return definition;

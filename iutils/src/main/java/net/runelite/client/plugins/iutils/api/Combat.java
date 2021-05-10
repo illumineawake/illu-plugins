@@ -25,7 +25,7 @@ public class Combat {
         npc.interact("Attack");
 
         try {
-            while (bot.npcs().withIndex(npc.index()).exists() && !npc.isDead()) {
+            while (bot.npcs().withIndex(npc.index()).withAction("Attack").exists()) {
                 heal();
                 restorePrayer();
                 restoreStats();
@@ -75,7 +75,7 @@ public class Combat {
         }
     }
 
-    protected void heal() {
+    public void heal() {
         if (bot.modifiedLevel(Skill.HITPOINTS) < bot.baseLevel(Skill.HITPOINTS) / 2) {
             var food = bot.inventory().withAction("Eat").first();
             if (food != null) {
@@ -83,5 +83,16 @@ public class Combat {
                 bot.tick();
             }
         }
+    }
+
+    public void setAutoRetaliate(boolean autoRetaliate) {
+        if (autoRetaliate() != autoRetaliate) {
+            bot.widget(593, 30).interact("Auto retaliate");
+            bot.waitUntil(() -> autoRetaliate() == autoRetaliate);
+        }
+    }
+
+    public boolean autoRetaliate() {
+        return bot.varp(172) == 0;
     }
 }

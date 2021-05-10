@@ -3,6 +3,7 @@ package net.runelite.client.plugins.iutils.ui;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GrandExchangeOffer;
 import net.runelite.api.GrandExchangeOfferState;
+import net.runelite.api.Item;
 import net.runelite.client.plugins.iutils.bot.Bot;
 
 // TODO: selling, several offers at once, custom prices, collect to inventory
@@ -14,9 +15,31 @@ public class GrandExchange {
         this.bot = bot;
     }
 
+    public void sell(int item, int price) {
+        if (!isOpen()) {
+            bot.npcs().withName("Grand Exchange Clerk").nearest().interact("Exchange");
+            bot.waitUntil(this::isOpen);
+        }
+
+        var baseId = bot.getFromClientThread(() -> bot.client().getItemComposition(item).getNote() == 799 ? item - 1 : item);
+        bot.widget(467, 0, bot.inventory().withId(item).first().slot()).interact(0);
+        bot.waitUntil(() -> currentSellItem() == baseId);
+
+        if (price != currentPrice()) {
+            bot.widget(465, 24, 12).interact(0);
+            bot.tick(2);
+            bot.chooseNumber(price);
+            bot.tick(2);
+        }
+
+        bot.widget(465, 27).interact(0);
+        bot.tick(5);
+        collectToInv();
+    }
+
     public void buy(int item, int quantity) {
         if (!isOpen()) {
-            System.out.println("Opening Grand Exchange");
+            log.info("Opening Grand Exchange");
             bot.npcs().withName("Grand Exchange Clerk").nearest().interact("Exchange");
             bot.waitUntil(this::isOpen);
         }
@@ -30,7 +53,7 @@ public class GrandExchange {
         startBuyOffer(slot);
 
         bot.chooseItem(item);
-        bot.waitUntil(() -> currentItem() == item);
+        bot.waitUntil(() -> currentBuyItem() == item);
 
         if (quantity != currentQuantity()) { // todo: use +/- buttons
             bot.widget(465, 24, 7).interact(0);
@@ -91,7 +114,7 @@ public class GrandExchange {
         startBuyOffer(slot);
         bot.tick(4);
         bot.chooseItem(item);
-        bot.waitUntil(() -> currentItem() == item);
+        bot.waitUntil(() -> currentBuyItem() == item);
 
         if (quantity != currentQuantity()) { // todo: use +/- buttons
             bot.widget(465, 24, 7).interact(0);
@@ -130,26 +153,6 @@ public class GrandExchange {
 
         collectToBank();
         return true;
-    }
-
-    public void sell(int item, int price) {
-        if (!isOpen()) {
-            throw new IllegalStateException("grand exchange window is closed");
-        }
-
-        bot.widget(467, 0, bot.inventory().withId(item).first().slot()).interact(0);
-        bot.sleepApproximately(3000);
-
-        if (price != currentPrice()) {
-            bot.widget(465, 24, 12).interact(0);
-            bot.sleepApproximately(2000);
-            bot.chooseNumber(price);
-            bot.sleepApproximately(800);
-        }
-
-        bot.widget(465, 27).interact(0);
-        bot.sleepApproximately(4000);
-        collectToInventory();
     }
 
     public void collectToBank() {
@@ -209,7 +212,11 @@ public class GrandExchange {
         return bot.varb(4439);
     }
 
-    public int currentItem() {
+    public int currentBuyItem() {
+        return bot.varp(1151);
+    }
+
+    public int currentSellItem() {
         return bot.varp(1151);
     }
 

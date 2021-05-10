@@ -64,7 +64,7 @@ public class TransportLoader {
                 transports.add(npcChatTransport(new Position(3054, 3245, 0), new Position(1824, 3691, 0), 8484, "That's great, can you take me there please?"));
             }
         } else {
-            transports.add(npcTransport(new Position(3054, 3245, 0), new Position(1824, 3695, 1), 8630, "Port Piscarilius"));
+            transports.add(npcTransport(new Position(3054, 3245, 0), new Position(1824, 3695, 1), 10724, "Port Piscarilius"));
         }
 
         //entrana
@@ -72,13 +72,10 @@ public class TransportLoader {
         transports.add(npcActionTransport(new Position(2834, 3335, 0), new Position(3048, 3231, 1), 1170, "Take-boat"));
         transports.add(npcChatTransport(new Position(2821, 3374, 0), new Position(2822, 9774, 0), 1164, "Well that is a risk I will have to take."));
 
-
         // Paterdomus
         transports.add(trapdoorTransport(new Position(3405, 3506, 0), new Position(3405, 9906, 0), 1579, 1581));
         transports.add(trapdoorTransport(new Position(3423, 3485, 0), new Position(3440, 9887, 0), 3432, 3433));
-
-        //in aid of myreque
-        transports.add(trapdoorTransport(new Position(3491, 3232, 0), new Position(14723, 2000, 0), 12743, 12743));
+        transports.add(trapdoorTransport(new Position(3422, 3484, 0), new Position(3440, 9887, 0), 3432, 3433));
 
         // Port Piscarilius
         transports.add(npcTransport(new Position(1824, 3691, 0), new Position(3055, 3242, 1), 10727, "Port Sarim"));
@@ -86,11 +83,11 @@ public class TransportLoader {
         // Meyerditch
         transports.add(new Transport(
                 new Position(3638, 3251, 0),
-                new Position(3626, 9618, 0),
+                bot.varb(6396) >= 105 ? new Position(3629, 9644, 0) : new Position(3626, 9618, 0),
                 0, 0,
                 g -> {
                     if (g.varb(2590) < 1) {
-                        g.objects().withId(17562).nearest().interact("Press");
+                        g.objects().withId(18146).nearest().interact("Press");
                         g.waitUntil(() -> g.varb(2590) == 1);
                     }
 
@@ -109,7 +106,7 @@ public class TransportLoader {
 
         transports.add(trapdoorTransport(new Position(3606, 3215, 0), new Position(3603, 9611, 0), 32577, 32578));
 
-        if (bot.varb(2573) > 123) {
+        if (bot.varb(2573) >= 320) {
             transports.add(parseTransportLine("3649 3220 0 3631 3219 0 Enter Door 32660"));
             transports.add(parseTransportLine("3631 3219 0 3649 3219 0 Enter Door 32659"));
             transports.add(parseTransportLine("3649 3219 0 3631 3219 0 Enter Door 32660"));
@@ -141,7 +138,61 @@ public class TransportLoader {
         transports.add(objectWarningTransport(new Position(3444, 3458, 0), new Position(3444, 3457, 0), 3506, "Open", 580, 17));
         transports.add(objectWarningTransport(new Position(3443, 3458, 0), new Position(3443, 3457, 0), 3507, "Open", 580, 17));
 
+        // Canifis
+        if (bot.varp(387) >= 110) {
+            transports.add(objectTransport(new Position(3495, 3465, 0), new Position(3477, 9845, 0), 5055, "Open"));
+        }
+
+        // Burgh de Rott
+        transports.add(trapdoorTransport(new Position(3491, 3232, 0), new Position(3491, 9632, 1), 12744, 12745)); // Before cleaning rubble
+        transports.add(trapdoorTransport(new Position(3491, 3232, 0), new Position(3490, 9631, 0), 12744, 12745)); // After cleaning rubble
+
+        // Meyerditch
+        transports.add(meyerditchFloorTransport(new Position(3590, 3173, 1)));
+        transports.add(meyerditchFloorTransport(new Position(3589, 3174, 1)));
+        transports.add(meyerditchFloorTransport(new Position(3589, 3173, 1)));
+        transports.add(meyerditchFloorTransport(new Position(3588, 3173, 1)));
+
+        // TODO: these doors are only available after darkness of hallowvale (or some step in it?)
+        //   as well as a few others that are currently still in transport.txt
+//        3625 3223 0 3625 3224 0 Open Door 18057
+//        3625 3224 0 3625 3223 0 Open Door 18057
+
+        transports.add(new Transport(
+                new Position(3589, 3214, 0),
+                new Position(3589, 3215, 0),
+                Integer.MAX_VALUE,
+                0,
+                g -> {
+                    g.objects().withName("Rocky surface").nearest().interact("Search");
+                    new Chatbox(g).chat();
+                    g.objects().withId(18054).nearest().interact("Open"); //TODO may require a check against with baseId
+                }
+        ));
+
+        if (bot.varb(7255) >= 62) {
+            transports.add(parseTransportLine("3492 9862 0 3513 9811 0 Enter Cave entrance 12771"));
+        }
+
         return transports;
+    }
+
+    private static Transport meyerditchFloorTransport(Position source) {
+        return new Transport(
+                source,
+                new Position(3588, 3173, 0),
+                Integer.MAX_VALUE,
+                0,
+                g -> {
+                    if (g.objects().withId(18122).nearest().id() == 18123) {
+                        g.objects().withId(18122).nearest().interact("Search");
+                        new Chatbox(g).chat("Yes.");
+                        g.waitUntil(() -> g.objects().withId(18122).nearest().id() != 18123);
+                    }
+
+                    g.objects().withId(18122).nearest().interact("Climb-down");
+                }
+        );
     }
 
     private static Transport objectWarningTransport(Position source, Position target, int id, String action, int interfaceId, int widgetId) {
@@ -168,9 +219,9 @@ public class TransportLoader {
                 new Position(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2])),
                 new Position(Integer.parseInt(parts[3]), Integer.parseInt(parts[4]), Integer.parseInt(parts[5])),
                 Integer.parseInt(parts[parts.length - 1]),
-                parts[6].replace('_', ' '));
+                parts[6].replace('_', ' ')
+        );
     }
-
 
     private static Transport trapdoorTransport(Position source, Position target, int closedId, int openId) {
         return new Transport(source, target, Integer.MAX_VALUE, 0, bot -> {

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class TeleportLoader {
     public static final int[] RING_OF_DUELING = {2552, 2554, 2556, 2558, 2560, 2562, 2564, 2566};
-    public static final int[] GAMES_NECKLACE = {3863, 3855, 3857, 3859, 3861, 3863, 3865, 3867};
+    public static final int[] GAMES_NECKLACE = {3853, 3863, 3855, 3857, 3859, 3861, 3863, 3865, 3867};
     public static final int[] COMBAT_BRACELET = {11972, 11974, 11118, 11120, 11122, 11124};
     public static final int[] RING_OF_WEALTH = {11980, 11982, 11984, 11986, 11988};
     public static final int[] AMULET_OF_GLORY = {1706, 1708, 1710, 1712, 11976, 11978};
@@ -43,8 +43,7 @@ public class TeleportLoader {
             teleports.add(new Teleport(new Position(2520, 3571, 0), 2, () -> jewleryAction(gamesNecklace(), "Barbarian Outpost")));
             teleports.add(new Teleport(new Position(2964, 4382, 2), 2, () -> jewleryAction(gamesNecklace(), "Corporeal Beast")));
             teleports.add(new Teleport(new Position(3244, 9501, 2), 2, () -> jewleryAction(gamesNecklace(), "Tears of Guthix")));
-            teleports.add(new Teleport(new Position(1624, 3938, 0), 1, () -> jewleryAction(gamesNecklace(), "Barbarian Outpost")));
-            teleports.add(new Teleport(new Position(2520, 3571, 0), 1, () -> jewleryAction(gamesNecklace(), "Barbarian Outpost")));
+            teleports.add(new Teleport(new Position(1624, 3938, 0), 1, () -> jewleryAction(gamesNecklace(), "Wintertodt Camp")));
         }
 
         if (combatBracelet() != null) {
