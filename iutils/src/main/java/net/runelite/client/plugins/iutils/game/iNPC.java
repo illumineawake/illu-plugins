@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.iutils.bot;
+package net.runelite.client.plugins.iutils.game;
 
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
@@ -15,15 +15,15 @@ public class iNPC extends iActor {
     private final NPC npc;
     private final NPCComposition definition;
 
-    public iNPC(Bot bot, NPC npc, NPCComposition definition) {
-        super(bot, npc);
+    public iNPC(Game game, NPC npc, NPCComposition definition) {
+        super(game, npc);
         this.npc = npc;
         this.definition = definition;
     }
 
     @Override
     public Client client() {
-        return bot.client();
+        return game.client();
     }
 
     public NPCComposition definition() {
@@ -63,8 +63,8 @@ public class iNPC extends iActor {
     }
 
     @Override
-    public Bot bot() {
-        return bot;
+    public Game bot() {
+        return game;
     }
 
     @Override

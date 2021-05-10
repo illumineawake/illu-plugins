@@ -1,13 +1,13 @@
 package net.runelite.client.plugins.iutils.scene;
 
 import net.runelite.api.Client;
-import net.runelite.client.plugins.iutils.bot.Bot;
+import net.runelite.client.plugins.iutils.game.Game;
 
 public interface Locatable {
     /**
-     * The {@link Bot} instance this object belongs to.
+     * The {@link Game} instance this object belongs to.
      */
-    Bot bot();
+    Game bot();
 
     Client client();
 

@@ -1,7 +1,7 @@
 package net.runelite.client.plugins.iutils.walking;
 
 import net.runelite.api.Skill;
-import net.runelite.client.plugins.iutils.bot.Bot;
+import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.ui.Chatbox;
 
@@ -13,7 +13,7 @@ import java.util.List;
 public class TransportLoader {
     public static final int COINS = 995;
 
-    public static List<Transport> buildTransports(Bot bot) {
+    public static List<Transport> buildTransports(Game game) {
         var transports = new ArrayList<Transport>();
 
         try {
@@ -30,7 +30,7 @@ public class TransportLoader {
         }
 
         // Edgeville
-        if (bot.modifiedLevel(Skill.AGILITY) >= 21) {
+        if (game.modifiedLevel(Skill.AGILITY) >= 21) {
             transports.add(objectTransport(new Position(3142, 3513, 0), new Position(3137, 3516, 0), 16530, "Climb-into"));
             transports.add(objectTransport(new Position(3137, 3516, 0), new Position(3142, 3513, 0), 16529, "Climb-into"));
         }
@@ -50,15 +50,15 @@ public class TransportLoader {
         transports.add(itemObjectTransport(new Position(2512, 3466, 0), new Position(2511, 3463, 0), 954, 2020));
 
         // Crabclaw isle
-        if (bot.inventory().withId(COINS).quantity() >= 10000) {
+        if (game.inventory().withId(COINS).quantity() >= 10000) {
             transports.add(npcTransport(new Position(1782, 3458, 0), new Position(1778, 3417, 0), 7483, "Travel"));
         }
 
         transports.add(npcTransport(new Position(1779, 3418, 0), new Position(1784, 3458, 0), 7484, "Travel"));
 
         // Port Sarim
-        if (bot.varb(4897) == 0) {
-            if (bot.varb(8063) >= 7) { // todo: lower?
+        if (game.varb(4897) == 0) {
+            if (game.varb(8063) >= 7) { // todo: lower?
                 transports.add(npcChatTransport(new Position(3054, 3245, 0), new Position(1824, 3691, 0), 8484, "Can you take me to Great Kourend?"));
             } else {
                 transports.add(npcChatTransport(new Position(3054, 3245, 0), new Position(1824, 3691, 0), 8484, "That's great, can you take me there please?"));
@@ -83,7 +83,7 @@ public class TransportLoader {
         // Meyerditch
         transports.add(new Transport(
                 new Position(3638, 3251, 0),
-                bot.varb(6396) >= 105 ? new Position(3629, 9644, 0) : new Position(3626, 9618, 0),
+                game.varb(6396) >= 105 ? new Position(3629, 9644, 0) : new Position(3626, 9618, 0),
                 0, 0,
                 g -> {
                     if (g.varb(2590) < 1) {
@@ -106,7 +106,7 @@ public class TransportLoader {
 
         transports.add(trapdoorTransport(new Position(3606, 3215, 0), new Position(3603, 9611, 0), 32577, 32578));
 
-        if (bot.varb(2573) >= 320) {
+        if (game.varb(2573) >= 320) {
             transports.add(parseTransportLine("3649 3220 0 3631 3219 0 Enter Door 32660"));
             transports.add(parseTransportLine("3631 3219 0 3649 3219 0 Enter Door 32659"));
             transports.add(parseTransportLine("3649 3219 0 3631 3219 0 Enter Door 32660"));
@@ -129,7 +129,7 @@ public class TransportLoader {
          */
 
         // Tree Gnome Village
-        if (bot.varp(111) > 0) {
+        if (game.varp(111) > 0) {
             transports.add(npcTransport(new Position(2504, 3192, 0), new Position(2515, 3159, 0), 4968, "Follow"));
             transports.add(npcTransport(new Position(2515, 3159, 0), new Position(2504, 3192, 0), 4968, "Follow"));
         }
@@ -139,7 +139,7 @@ public class TransportLoader {
         transports.add(objectWarningTransport(new Position(3443, 3458, 0), new Position(3443, 3457, 0), 3507, "Open", 580, 17));
 
         // Canifis
-        if (bot.varp(387) >= 110) {
+        if (game.varp(387) >= 110) {
             transports.add(objectTransport(new Position(3495, 3465, 0), new Position(3477, 9845, 0), 5055, "Open"));
         }
 
@@ -170,7 +170,7 @@ public class TransportLoader {
                 }
         ));
 
-        if (bot.varb(7255) >= 62) {
+        if (game.varb(7255) >= 62) {
             transports.add(parseTransportLine("3492 9862 0 3513 9811 0 Enter Cave entrance 12771"));
         }
 

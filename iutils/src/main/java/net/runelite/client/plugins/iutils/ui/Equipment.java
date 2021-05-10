@@ -3,27 +3,27 @@ package net.runelite.client.plugins.iutils.ui;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.client.plugins.iutils.api.EquipmentSlot;
-import net.runelite.client.plugins.iutils.bot.Bot;
+import net.runelite.client.plugins.iutils.game.Game;
 
 import javax.inject.Inject;
 import java.util.Arrays;
 
 public class Equipment {
-    private final Bot bot;
+    private final Game game;
     private final ItemContainer equipment;
 
     @Inject
-    public Equipment(Bot bot) {
-        this.bot = bot;
-        this.equipment = bot.container(94);
+    public Equipment(Game game) {
+        this.game = game;
+        this.equipment = game.container(94);
     }
 
     public boolean isEquipped(int id) {
-        return Arrays.stream(bot.container(94).getItems()).anyMatch(i -> i.getId() == id);
+        return Arrays.stream(game.container(94).getItems()).anyMatch(i -> i.getId() == id);
     }
 
     public int quantity(int id) {
-        return Arrays.stream(bot.container(94).getItems()).filter(i -> i.getId() == id).mapToInt(Item::getQuantity).sum();
+        return Arrays.stream(game.container(94).getItems()).filter(i -> i.getId() == id).mapToInt(Item::getQuantity).sum();
     }
 
     /**
@@ -31,7 +31,7 @@ public class Equipment {
      * @return item at slot or null
      */
     public Item slot(int slot) {
-        return bot.container(94).getItem(slot);
+        return game.container(94).getItem(slot);
     }
 
     public Item slot(EquipmentSlot slot) {

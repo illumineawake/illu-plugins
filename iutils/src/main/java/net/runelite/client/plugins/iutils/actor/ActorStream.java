@@ -1,6 +1,6 @@
 package net.runelite.client.plugins.iutils.actor;
 
-import net.runelite.client.plugins.iutils.bot.iActor;
+import net.runelite.client.plugins.iutils.game.iActor;
 import net.runelite.client.plugins.iutils.scene.LocatableStream;
 
 import java.util.Arrays;

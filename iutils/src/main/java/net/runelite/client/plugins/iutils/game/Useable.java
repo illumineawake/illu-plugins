@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.iutils.bot;
+package net.runelite.client.plugins.iutils.game;
 
 public interface Useable {
     void useOn(iObject object);

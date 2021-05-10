@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.iutils.bot;
+package net.runelite.client.plugins.iutils.game;
 
 import net.runelite.api.ItemComposition;
 import net.runelite.api.MenuAction;
@@ -12,18 +12,18 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class InventoryItem implements Interactable, Useable {
-    private final Bot bot;
+    private final Game game;
     private final WidgetItem widgetItem;
     private final ItemComposition definition;
 
-    public InventoryItem(Bot bot, WidgetItem widgetItem, ItemComposition definition) {
-        this.bot = bot;
+    public InventoryItem(Game game, WidgetItem widgetItem, ItemComposition definition) {
+        this.game = game;
         this.widgetItem = widgetItem;
         this.definition = definition;
     }
 
-    public Bot bot() {
-        return bot;
+    public Game bot() {
+        return game;
     }
 
     public int id() {
@@ -84,7 +84,7 @@ public class InventoryItem implements Interactable, Useable {
 
     public void interact(int action) {
         bot().clientThread.invoke(() -> {
-            bot.client().invokeMenuAction("",
+            game.client().invokeMenuAction("",
                     "",
                     id(),
                     getActionId(action),
@@ -96,33 +96,33 @@ public class InventoryItem implements Interactable, Useable {
 
     @Override
     public void useOn(InventoryItem item) {
-        bot.clientThread.invoke(() -> {
-            bot.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-            bot.client.setSelectedItemSlot(item.slot());
-            bot.client.setSelectedItemID(item.id());
-            bot.client.invokeMenuAction("", "", id(),
+        game.clientThread.invoke(() -> {
+            game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+            game.client.setSelectedItemSlot(item.slot());
+            game.client.setSelectedItemID(item.id());
+            game.client.invokeMenuAction("", "", id(),
                     MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId(), slot(), WidgetInfo.INVENTORY.getId());
         });
     }
 
     @Override
     public void useOn(iObject object) {
-        bot.clientThread.invoke(() -> {
-            bot.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-            bot.client.setSelectedItemSlot(slot());
-            bot.client.setSelectedItemID(id());
-            bot.client.invokeMenuAction("", "", object.id(),
+        game.clientThread.invoke(() -> {
+            game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+            game.client.setSelectedItemSlot(slot());
+            game.client.setSelectedItemID(id());
+            game.client.invokeMenuAction("", "", object.id(),
                     MenuAction.ITEM_USE_ON_GAME_OBJECT.getId(), object.menuPoint().getX(), object.menuPoint().getY());
         });
     }
 
     @Override
     public void useOn(iNPC npc) {
-        bot.clientThread.invoke(() -> {
-            bot.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-            bot.client.setSelectedItemSlot(slot());
-            bot.client.setSelectedItemID(id());
-            bot.client.invokeMenuAction("", "", npc.index(),
+        game.clientThread.invoke(() -> {
+            game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+            game.client.setSelectedItemSlot(slot());
+            game.client.setSelectedItemID(id());
+            game.client.invokeMenuAction("", "", npc.index(),
                     MenuAction.ITEM_USE_ON_NPC.getId(), 0, 0);
         });
     }

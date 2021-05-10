@@ -1,7 +1,7 @@
 package net.runelite.client.plugins.iutils.walking;
 
-import net.runelite.client.plugins.iutils.bot.Bot;
-import net.runelite.client.plugins.iutils.bot.InventoryItem;
+import net.runelite.client.plugins.iutils.game.Game;
+import net.runelite.client.plugins.iutils.game.InventoryItem;
 import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.ui.Chatbox;
 
@@ -21,12 +21,12 @@ public class TeleportLoader {
     public static final int[] DIGSITE_PENDANT = {11190, 11191, 11192, 11193, 11194};
     public static final int DRAKANS_MEDALLION = 22400;
     public static final int[] SKILLS_NECKLACE = {11111, 11109, 11107, 11105, 11970, 11968};
-    private final Bot bot;
+    private final Game game;
     private final Chatbox chatbox;
 
-    public TeleportLoader(Bot bot) {
-        this.bot = bot;
-        this.chatbox = new Chatbox(bot);
+    public TeleportLoader(Game game) {
+        this.game = game;
+        this.chatbox = new Chatbox(game);
     }
 
     public List<Teleport> buildTeleports() {
@@ -116,54 +116,54 @@ public class TeleportLoader {
     }
 
     private InventoryItem ringOfDueling() {
-        return bot.inventory().withId(RING_OF_DUELING).first();
+        return game.inventory().withId(RING_OF_DUELING).first();
     }
 
     private InventoryItem gamesNecklace() {
-        return bot.inventory().withId(GAMES_NECKLACE).first();
+        return game.inventory().withId(GAMES_NECKLACE).first();
     }
 
     private InventoryItem botsNecklace() {
-        return bot.inventory().withId(GAMES_NECKLACE).first();
+        return game.inventory().withId(GAMES_NECKLACE).first();
     }
 
     private InventoryItem combatBracelet() {
-        return bot.inventory().withId(COMBAT_BRACELET).first();
+        return game.inventory().withId(COMBAT_BRACELET).first();
     }
 
     private InventoryItem skillsNecklace() {
-        return bot.inventory().withId(SKILLS_NECKLACE).first();
+        return game.inventory().withId(SKILLS_NECKLACE).first();
     }
 
     private InventoryItem ringOfWealth() {
-        return bot.inventory().withId(RING_OF_WEALTH).first();
+        return game.inventory().withId(RING_OF_WEALTH).first();
     }
 
     private InventoryItem amuletOfGlory() {
-        return bot.inventory().withId(AMULET_OF_GLORY).first();
+        return game.inventory().withId(AMULET_OF_GLORY).first();
     }
 
     private InventoryItem necklaceOfPassage() {
-        return bot.inventory().withId(NECKLACE_OF_PASSAGE).first();
+        return game.inventory().withId(NECKLACE_OF_PASSAGE).first();
     }
 
     private InventoryItem burningAmulet() {
-        return bot.inventory().withId(BURNING_AMULET).first();
+        return game.inventory().withId(BURNING_AMULET).first();
     }
 
     private InventoryItem xericsTalisman() {
-        return bot.inventory().withId(XERICS_TALISMAN).first();
+        return game.inventory().withId(XERICS_TALISMAN).first();
     }
 
     private InventoryItem slayerRing() {
-        return bot.inventory().withId(SLAYER_RING).first();
+        return game.inventory().withId(SLAYER_RING).first();
     }
 
     private InventoryItem digsitePendant() {
-        return bot.inventory().withId(DIGSITE_PENDANT).first();
+        return game.inventory().withId(DIGSITE_PENDANT).first();
     }
 
     private InventoryItem drakansMedallion() {
-        return bot.inventory().withId(DRAKANS_MEDALLION).first();
+        return game.inventory().withId(DRAKANS_MEDALLION).first();
     }
 }

@@ -1,6 +1,6 @@
 package net.runelite.client.plugins.iutils.actor;
 
-import net.runelite.client.plugins.iutils.bot.iPlayer;
+import net.runelite.client.plugins.iutils.game.iPlayer;
 
 import java.util.Arrays;
 import java.util.stream.Stream;

@@ -1,6 +1,6 @@
 package net.runelite.client.plugins.iutils.ui;
 
-import net.runelite.client.plugins.iutils.bot.InventoryItem;
+import net.runelite.client.plugins.iutils.game.InventoryItem;
 import net.runelite.client.plugins.iutils.util.RandomizedStreamAdapter;
 
 import java.util.Arrays;

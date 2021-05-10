@@ -3,32 +3,32 @@ package net.runelite.client.plugins.iutils.ui;
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.plugins.iutils.bot.Bot;
-import net.runelite.client.plugins.iutils.bot.InventoryItem;
-import net.runelite.client.plugins.iutils.bot.iWidget;
+import net.runelite.client.plugins.iutils.game.Game;
+import net.runelite.client.plugins.iutils.game.InventoryItem;
+import net.runelite.client.plugins.iutils.game.iWidget;
 
 public class Bank {
-    public final Bot bot;
+    public final Game game;
 
-    public Bank(Bot bot) {
-        this.bot = bot;
+    public Bank(Game game) {
+        this.game = game;
     }
 
     public void depositInventory() {
         checkBankOpen();
 
-        if (bot.inventory().count() != 0) {
-            bot.widget(12, 41).interact(0);
-            bot.waitUntil(() -> bot.inventory().count() == 0);
+        if (game.inventory().count() != 0) {
+            game.widget(12, 41).interact(0);
+            game.waitUntil(() -> game.inventory().count() == 0);
         }
     }
 
     public void depositEquipment() {
         checkBankOpen();
 
-        if (bot.equipment().count() != 0) {
-            bot.widget(12, 43).interact(0);
-            bot.waitUntil(() -> bot.equipment().count() == 0);
+        if (game.equipment().count() != 0) {
+            game.widget(12, 43).interact(0);
+            game.waitUntil(() -> game.equipment().count() == 0);
         }
     }
 
@@ -37,10 +37,10 @@ public class Bank {
             throw new IllegalStateException("bank isn't open");
         }
 
-        if (bot.widget(12, 113).nestedInterface() == 664) {
+        if (game.widget(12, 113).nestedInterface() == 664) {
             System.out.println("[Bank] Closing bank tutorial");
-            bot.widget(664, 9).select();
-            bot.waitUntil(() -> bot.widget(12, 113).nestedInterface() == -1);
+            game.widget(664, 9).select();
+            game.waitUntil(() -> game.widget(12, 113).nestedInterface() == -1);
         }
     }
 
@@ -56,7 +56,7 @@ public class Bank {
     public int withdraw(int id, int quantity, boolean noted) {
         checkBankOpen();
 
-        ItemComposition definition = bot.getFromClientThread(() -> bot.client().getItemComposition(id));
+        ItemComposition definition = game.getFromClientThread(() -> game.client().getItemComposition(id));
 
         var inventoryCapacity = inventoryCapacity(noted ? definition.getLinkedNoteId() : id);
 
@@ -66,7 +66,7 @@ public class Bank {
 
         setNotedMode(noted);
 
-        for (iWidget item : bot.widget(WidgetInfo.BANK_ITEM_CONTAINER).items()) {
+        for (iWidget item : game.widget(WidgetInfo.BANK_ITEM_CONTAINER).items()) {
             if (item.itemId() == 6512 || item.itemId() == -1 || item.hidden()) {
                 continue;
             }
@@ -89,12 +89,12 @@ public class Bank {
                     item.interact(4); // last
                 } else {
                     item.interact(5);
-                    bot.tick(3);
-                    bot.chooseNumber(quantity);
+                    game.tick(3);
+                    game.chooseNumber(quantity);
                 }
 
 //                bot.waitChange(() -> bot.inventory().withId(id).quantity());
-                bot.tick();
+                game.tick();
                 return Math.min(inventoryCapacity, quantity);
             }
         }
@@ -106,20 +106,20 @@ public class Bank {
     private void setNotedMode(boolean noted) {
         if (noted != withdrawNoted()) {
             if (!noted) {
-                bot.widget(12, 21).interact(0);
+                game.widget(12, 21).interact(0);
             } else {
-                bot.widget(12, 23).interact(0);
+                game.widget(12, 23).interact(0);
             }
 
-            bot.waitUntil(() -> noted == withdrawNoted());
+            game.waitUntil(() -> noted == withdrawNoted());
         }
     }
 
     private void completeBankTutorial() {
-        if (bot.widget(12, 113).nestedInterface() == 664) {
+        if (game.widget(12, 113).nestedInterface() == 664) {
             System.out.println("[Bank] Closing bank tutorial");
-            bot.widget(664, 9).select();
-            bot.waitUntil(() -> bot.widget(12, 113).nestedInterface() == -1);
+            game.widget(664, 9).select();
+            game.waitUntil(() -> game.widget(12, 113).nestedInterface() == -1);
         }
     }
 
@@ -128,7 +128,7 @@ public class Bank {
             throw new IllegalStateException("bank not open");
         }
 
-        for (iWidget item : bot.widget(WidgetInfo.BANK_ITEM_CONTAINER).items()) {
+        for (iWidget item : game.widget(WidgetInfo.BANK_ITEM_CONTAINER).items()) {
             if (item.itemId() == 6512 || item.itemId() == -1 || item.hidden()) {
                 continue;
             }
@@ -141,15 +141,15 @@ public class Bank {
     }
 
     public boolean isOpen() {
-        return bot.getFromClientThread(() -> bot.container(InventoryID.BANK) != null);
+        return game.getFromClientThread(() -> game.container(InventoryID.BANK) != null);
     }
 
     public boolean withdrawNoted() {
-        return bot.varb(3958) == 1;
+        return game.varb(3958) == 1;
     }
 
     public int withdrawDefaultQuantity() {
-        switch (bot.varb(6590)) {
+        switch (game.varb(6590)) {
             case 0:
                 return 1;
             case 1:
@@ -161,21 +161,21 @@ public class Bank {
             case 4:
                 return Integer.MAX_VALUE;
             default:
-                throw new IllegalStateException("unknown withdraw quantity type " + bot.varb(6590));
+                throw new IllegalStateException("unknown withdraw quantity type " + game.varb(6590));
         }
     }
 
     public int withdrawXDefaultQuantity() {
-        return bot.varb(3960);
+        return game.varb(3960);
     }
 
     private int inventoryCapacity(int id) {
-        boolean stackable = bot.getFromClientThread(() -> bot.client.getItemComposition(id).isStackable());
+        boolean stackable = game.getFromClientThread(() -> game.client.getItemComposition(id).isStackable());
         if (stackable) {
-            InventoryItem item = bot.inventory().withId(id).first();
+            InventoryItem item = game.inventory().withId(id).first();
             return item == null ? Integer.MAX_VALUE : Integer.MAX_VALUE - item.quantity();
         } else {
-            return 28 - bot.inventory().size();
+            return 28 - game.inventory().size();
         }
     }
 }

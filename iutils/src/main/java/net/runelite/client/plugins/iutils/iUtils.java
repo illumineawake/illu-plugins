@@ -21,8 +21,8 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.iutils.bot.Bot;
-import net.runelite.client.plugins.iutils.bot.iObject;
+import net.runelite.client.plugins.iutils.game.Game;
+import net.runelite.client.plugins.iutils.game.iObject;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 public class iUtils extends Plugin {
 
     @Inject
-    public Bot bot;
+    public Game game;
 
     @Inject
     private Client client;

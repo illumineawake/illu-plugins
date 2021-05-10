@@ -1,20 +1,20 @@
 package net.runelite.client.plugins.iutils.api;
 
 import net.runelite.api.Skill;
-import net.runelite.client.plugins.iutils.bot.Bot;
-import net.runelite.client.plugins.iutils.bot.iNPC;
+import net.runelite.client.plugins.iutils.game.Game;
+import net.runelite.client.plugins.iutils.game.iNPC;
 import net.runelite.client.plugins.iutils.ui.Prayer;
 
 import javax.inject.Inject;
 
 public class Combat {
-    private final Bot bot;
+    private final Game game;
     private final Prayers prayers;
 
     @Inject
-    public Combat(Bot bot) {
-        this.bot = bot;
-        this.prayers = new Prayers(bot);
+    public Combat(Game game) {
+        this.game = game;
+        this.prayers = new Prayers(game);
     }
 
     public void kill(iNPC npc, Prayer... prayers) {
@@ -25,12 +25,12 @@ public class Combat {
         npc.interact("Attack");
 
         try {
-            while (bot.npcs().withIndex(npc.index()).withAction("Attack").exists()) {
+            while (game.npcs().withIndex(npc.index()).withAction("Attack").exists()) {
                 heal();
                 restorePrayer();
                 restoreStats();
                 attack(npc);
-                bot.tick();
+                game.tick();
             }
         } finally {
             for (var prayer : prayers) {
@@ -41,10 +41,10 @@ public class Combat {
 
     private void attack(iNPC npc) {
         // todo: target doen't necessarily mean in combat (could be chat)
-        iNPC target = (iNPC)bot.localPlayer().target();
+        iNPC target = (iNPC) game.localPlayer().target();
 
         if (target == null || target.index() != npc.index()) {
-            if (bot.localPlayer().target() != null)
+            if (game.localPlayer().target() != null)
                 System.out.println("Target doesn't equal npc: " + npc.toString() + " my target: " + target.toString());
             npc.interact("Attack");
         }
@@ -53,7 +53,7 @@ public class Combat {
     private boolean needsStatRestore() {
         var matters = new Skill[]{Skill.ATTACK, Skill.DEFENCE, Skill.STRENGTH};
         for (var skill : matters) {
-            if (bot.modifiedLevel(skill) < bot.baseLevel(skill)) {
+            if (game.modifiedLevel(skill) < game.baseLevel(skill)) {
                 return true;
             }
         }
@@ -61,38 +61,38 @@ public class Combat {
     }
 
     private void restoreStats() {
-        if (bot.inventory().withNamePart("restore").exists() && needsStatRestore()) {
-            bot.inventory().withNamePart("restore").first().interact("Drink");
+        if (game.inventory().withNamePart("restore").exists() && needsStatRestore()) {
+            game.inventory().withNamePart("restore").first().interact("Drink");
         }
     }
 
     private void restorePrayer() {
-        if (bot.modifiedLevel(Skill.PRAYER) < bot.baseLevel(Skill.PRAYER) / 2) {
+        if (game.modifiedLevel(Skill.PRAYER) < game.baseLevel(Skill.PRAYER) / 2) {
             //todo add super restores?
-            if (bot.inventory().withNamePart("Prayer potion(").exists()) {
-                bot.inventory().withNamePart("Prayer potion(").first().interact("Drink");
+            if (game.inventory().withNamePart("Prayer potion(").exists()) {
+                game.inventory().withNamePart("Prayer potion(").first().interact("Drink");
             }
         }
     }
 
     public void heal() {
-        if (bot.modifiedLevel(Skill.HITPOINTS) < bot.baseLevel(Skill.HITPOINTS) / 2) {
-            var food = bot.inventory().withAction("Eat").first();
+        if (game.modifiedLevel(Skill.HITPOINTS) < game.baseLevel(Skill.HITPOINTS) / 2) {
+            var food = game.inventory().withAction("Eat").first();
             if (food != null) {
                 food.interact("Eat");
-                bot.tick();
+                game.tick();
             }
         }
     }
 
     public void setAutoRetaliate(boolean autoRetaliate) {
         if (autoRetaliate() != autoRetaliate) {
-            bot.widget(593, 30).interact("Auto retaliate");
-            bot.waitUntil(() -> autoRetaliate() == autoRetaliate);
+            game.widget(593, 30).interact("Auto retaliate");
+            game.waitUntil(() -> autoRetaliate() == autoRetaliate);
         }
     }
 
     public boolean autoRetaliate() {
-        return bot.varp(172) == 0;
+        return game.varp(172) == 0;
     }
 }

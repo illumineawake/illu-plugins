@@ -1,6 +1,6 @@
 package net.runelite.client.plugins.iutils.scene;
 
-import net.runelite.client.plugins.iutils.bot.iObject;
+import net.runelite.client.plugins.iutils.game.iObject;
 
 import java.util.Arrays;
 import java.util.Objects;

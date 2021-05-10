@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.iutils.bot;
+package net.runelite.client.plugins.iutils.game;
 
 import net.runelite.api.*;
 import net.runelite.client.plugins.iutils.api.Interactable;
@@ -11,22 +11,22 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class iGroundItem implements Locatable, Interactable {
-    private final Bot bot;
+    private final Game game;
     private final TileItem tileItem;
     private final ItemComposition definition;
 
-    public iGroundItem(Bot bot, TileItem tileItem, ItemComposition definition) {
-        this.bot = bot;
+    public iGroundItem(Game game, TileItem tileItem, ItemComposition definition) {
+        this.game = game;
         this.tileItem = tileItem;
         this.definition = definition;
     }
 
-    public Bot bot() {
-        return bot;
+    public Game bot() {
+        return game;
     }
 
     public Client client() {
-        return bot.client;
+        return game.client;
     }
 
     @Override

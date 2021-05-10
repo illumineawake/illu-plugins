@@ -1,7 +1,7 @@
 package net.runelite.client.plugins.iutils.ui;
 
 import net.runelite.client.plugins.iutils.api.Magic;
-import net.runelite.client.plugins.iutils.bot.Bot;
+import net.runelite.client.plugins.iutils.game.Game;
 
 import javax.inject.Inject;
 
@@ -9,21 +9,21 @@ import javax.inject.Inject;
  * @author kylestev
  */
 public class StandardSpellbook {
-    private final Bot bot;
+    private final Game game;
 
     @Inject
-    public StandardSpellbook(Bot bot) {
-        this.bot = bot;
+    public StandardSpellbook(Game game) {
+        this.game = game;
     }
 
     public void castSpell(Magic spell) {
-        bot.widget(218, spell.widgetChild).interact("Cast");
+        game.widget(218, spell.widgetChild).interact("Cast");
     }
 
     public void lumbridgeHomeTeleport() {
         // TODO: check response to update timer in Profile
         castSpell(Magic.LUMBRIDGE_HOME_TELEPORT);
-        bot.waitUntil(() -> bot.localPlayer().position().regionID() == 12850, 20000);
-        bot.tick(5);
+        game.waitUntil(() -> game.localPlayer().position().regionID() == 12850, 20000);
+        game.tick(5);
     }
 }

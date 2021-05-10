@@ -41,7 +41,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.itest.tasks.MovingTask;
 import net.runelite.client.plugins.itest.tasks.TimeoutTask;
 import net.runelite.client.plugins.iutils.WalkUtils;
-import net.runelite.client.plugins.iutils.bot.Bot;
+import net.runelite.client.plugins.iutils.game.Bot;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.plugins.iutils.scene.RectangularArea;
 import net.runelite.client.plugins.iutils.walking.Walking;

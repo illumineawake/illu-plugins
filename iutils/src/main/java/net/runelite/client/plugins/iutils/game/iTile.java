@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.iutils.bot;
+package net.runelite.client.plugins.iutils.game;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
@@ -14,7 +14,7 @@ import static net.runelite.api.Constants.CHUNK_SIZE;
 
 @Slf4j
 public class iTile implements Locatable {
-    final Bot bot;
+    final Game game;
     final Tile tile;
     //    List<GroundItem> items = new ArrayList<>();
     iObject regularObject;
@@ -22,20 +22,20 @@ public class iTile implements Locatable {
     iObject wallDecoration;
     iObject floorDecoration;
 
-    iTile(Bot bot, Tile tile) {
-        this.bot = bot;
+    iTile(Game game, Tile tile) {
+        this.game = game;
         this.tile = tile;
         //tile.getGameObjects()).filter(Objects::nonNull).findFirst().orElse(null)
     }
 
     //    @Override
-    public Bot bot() {
-        return bot;
+    public Game bot() {
+        return game;
     }
 
     @Override
     public Client client() {
-        return bot.client;
+        return game.client;
     }
 
     @Override
@@ -56,11 +56,11 @@ public class iTile implements Locatable {
 
             return new Position(chunkX, chunkY, rotation);
         }
-        return bot.localPlayer().position();
+        return game.localPlayer().position();
     }
 
     public void walkTo() {
-        bot.clientThread.invoke(() -> bot.walkUtils.sceneWalk(position(), 0, 0));
+        game.clientThread.invoke(() -> game.walkUtils.sceneWalk(position(), 0, 0));
     }
 
 //    public List<GroundItem> items() {
@@ -80,18 +80,18 @@ public class iTile implements Locatable {
         switch (category) {
             case REGULAR:
                 GameObject go = Arrays.stream(tile.getGameObjects()).filter(Objects::nonNull).findFirst().orElse(null);
-                return (go == null) ? null : new iObject(bot, go,
-                        bot.getFromClientThread(() -> client().getObjectDefinition(go.getId()))
+                return (go == null) ? null : new iObject(game, go,
+                        game.getFromClientThread(() -> client().getObjectDefinition(go.getId()))
                 );
             case WALL:
                 WallObject wo = tile.getWallObject();
-                return (wo == null) ? null :  new iObject(bot, wo, bot.getFromClientThread(() -> client().getObjectDefinition(wo.getId())));
+                return (wo == null) ? null :  new iObject(game, wo, game.getFromClientThread(() -> client().getObjectDefinition(wo.getId())));
             case WALL_DECORATION:
                 DecorativeObject dec = tile.getDecorativeObject();
-                return (dec == null) ? null :  new iObject(bot, dec, bot.getFromClientThread(() -> client().getObjectDefinition(dec.getId())));
+                return (dec == null) ? null :  new iObject(game, dec, game.getFromClientThread(() -> client().getObjectDefinition(dec.getId())));
             case FLOOR_DECORATION:
                 GroundObject ground = tile.getGroundObject();
-                return (ground == null) ? null :  new iObject(bot, ground, bot.getFromClientThread(() -> client().getObjectDefinition(ground.getId())));
+                return (ground == null) ? null :  new iObject(game, ground, game.getFromClientThread(() -> client().getObjectDefinition(ground.getId())));
             default:
                 return null;
         }

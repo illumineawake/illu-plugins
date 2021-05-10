@@ -1,7 +1,7 @@
 package net.runelite.client.plugins.iutils.ui;
 
 import net.runelite.client.plugins.iutils.api.EquipmentSlot;
-import net.runelite.client.plugins.iutils.bot.EquipmentItem;
+import net.runelite.client.plugins.iutils.game.EquipmentItem;
 import net.runelite.client.plugins.iutils.util.RandomizedStreamAdapter;
 
 import java.util.Arrays;

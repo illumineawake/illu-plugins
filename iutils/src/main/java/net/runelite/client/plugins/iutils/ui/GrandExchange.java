@@ -3,48 +3,47 @@ package net.runelite.client.plugins.iutils.ui;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GrandExchangeOffer;
 import net.runelite.api.GrandExchangeOfferState;
-import net.runelite.api.Item;
-import net.runelite.client.plugins.iutils.bot.Bot;
+import net.runelite.client.plugins.iutils.game.Game;
 
 // TODO: selling, several offers at once, custom prices, collect to inventory
 @Slf4j
 public class GrandExchange {
-    private final Bot bot;
+    private final Game game;
 
-    public GrandExchange(Bot bot) {
-        this.bot = bot;
+    public GrandExchange(Game game) {
+        this.game = game;
     }
 
     public void sell(int item, int price) {
         if (!isOpen()) {
-            bot.npcs().withName("Grand Exchange Clerk").nearest().interact("Exchange");
-            bot.waitUntil(this::isOpen);
+            game.npcs().withName("Grand Exchange Clerk").nearest().interact("Exchange");
+            game.waitUntil(this::isOpen);
         }
 
-        var baseId = bot.getFromClientThread(() -> bot.client().getItemComposition(item).getNote() == 799 ? item - 1 : item);
-        bot.widget(467, 0, bot.inventory().withId(item).first().slot()).interact(0);
-        bot.waitUntil(() -> currentSellItem() == baseId);
+        var baseId = game.getFromClientThread(() -> game.client().getItemComposition(item).getNote() == 799 ? item - 1 : item);
+        game.widget(467, 0, game.inventory().withId(item).first().slot()).interact(0);
+        game.waitUntil(() -> currentSellItem() == baseId);
 
         if (price != currentPrice()) {
-            bot.widget(465, 24, 12).interact(0);
-            bot.tick(2);
-            bot.chooseNumber(price);
-            bot.tick(2);
+            game.widget(465, 24, 12).interact(0);
+            game.tick(2);
+            game.chooseNumber(price);
+            game.tick(2);
         }
 
-        bot.widget(465, 27).interact(0);
-        bot.tick(5);
+        game.widget(465, 27).interact(0);
+        game.tick(5);
         collectToInv();
     }
 
     public void buy(int item, int quantity) {
         if (!isOpen()) {
             log.info("Opening Grand Exchange");
-            bot.npcs().withName("Grand Exchange Clerk").nearest().interact("Exchange");
-            bot.waitUntil(this::isOpen);
+            game.npcs().withName("Grand Exchange Clerk").nearest().interact("Exchange");
+            game.waitUntil(this::isOpen);
         }
 
-        if (bot.inventory().withId(995).first() == null) {
+        if (game.inventory().withId(995).first() == null) {
             throw new IllegalStateException("you'll need some coins to buy stuff");
         }
         log.info("Buying: {} quantity: {}" , item, quantity);
@@ -52,52 +51,52 @@ public class GrandExchange {
 
         startBuyOffer(slot);
 
-        bot.chooseItem(item);
-        bot.waitUntil(() -> currentBuyItem() == item);
+        game.chooseItem(item);
+        game.waitUntil(() -> currentBuyItem() == item);
 
         if (quantity != currentQuantity()) { // todo: use +/- buttons
-            bot.widget(465, 24, 7).interact(0);
-            bot.tick();
+            game.widget(465, 24, 7).interact(0);
+            game.tick();
 
-            bot.chooseNumber(quantity);
-            bot.tick();
+            game.chooseNumber(quantity);
+            game.tick();
         }
 
         var price = Math.min(
                 (int) Math.ceil(10 * currentPrice()),
-                bot.inventory().withId(995).first().quantity() / quantity
+                game.inventory().withId(995).first().quantity() / quantity
         );
 
         if (price != currentPrice()) {
-            bot.widget(465, 24, 12).interact(0);
-            bot.tick();
+            game.widget(465, 24, 12).interact(0);
+            game.tick();
 
-            bot.chooseNumber(price);
-            bot.tick();
+            game.chooseNumber(price);
+            game.tick();
         }
 
-        bot.tick();
+        game.tick();
 
-        bot.widget(465, 27).interact(0);
+        game.widget(465, 27).interact(0);
 
-        bot.waitUntil(() -> bot.grandExchangeOffer(slot) != null);
+        game.waitUntil(() -> game.grandExchangeOffer(slot) != null);
 
         var ticks = 0;
 
-        while (bot.grandExchangeOffer(slot).getQuantitySold() != quantity && ticks++ < 10) {
-            bot.tick();
+        while (game.grandExchangeOffer(slot).getQuantitySold() != quantity && ticks++ < 10) {
+            game.tick();
         }
 
-        if (bot.grandExchangeOffer(slot).getQuantitySold() == quantity) {
+        if (game.grandExchangeOffer(slot).getQuantitySold() == quantity) {
             collectToBank();
             return;
         }
 
-        if (bot.grandExchangeOffer(slot).getQuantitySold() != quantity) {
-            bot.widget(465, 7, 2).interact(1);
-            bot.tick(4);
+        if (game.grandExchangeOffer(slot).getQuantitySold() != quantity) {
+            game.widget(465, 7, 2).interact(1);
+            game.tick(4);
             collectToInv();
-            throw new IllegalStateException("timed out waiting for offer to complete: " + bot.grandExchangeOffer(slot).getQuantitySold() + " / " + quantity);
+            throw new IllegalStateException("timed out waiting for offer to complete: " + game.grandExchangeOffer(slot).getQuantitySold() + " / " + quantity);
         }
     }
 
@@ -106,47 +105,47 @@ public class GrandExchange {
             throw new IllegalStateException("grand exchange window is closed");
         }
 
-        if (bot.inventory().withId(995).first() == null) {
+        if (game.inventory().withId(995).first() == null) {
             throw new IllegalStateException("you'll need some coins to buy stuff");
         }
 
         int slot = freeSlot();
         startBuyOffer(slot);
-        bot.tick(4);
-        bot.chooseItem(item);
-        bot.waitUntil(() -> currentBuyItem() == item);
+        game.tick(4);
+        game.chooseItem(item);
+        game.waitUntil(() -> currentBuyItem() == item);
 
         if (quantity != currentQuantity()) { // todo: use +/- buttons
-            bot.widget(465, 24, 7).interact(0);
-            bot.tick(4);
-            bot.chooseNumber(quantity);
-            bot.tick(3);
+            game.widget(465, 24, 7).interact(0);
+            game.tick(4);
+            game.chooseNumber(quantity);
+            game.tick(3);
         }
 
         int price = (int) Math.ceil(priceMultiplier * currentPrice());
-        price = Math.min(price, bot.inventory().withId(995).first().quantity() / quantity);
+        price = Math.min(price, game.inventory().withId(995).first().quantity() / quantity);
 
         if (price != currentPrice()) { // todo: use +/- buttons
-            bot.widget(465, 24, 12).interact(0);
-            bot.tick(4);
-            bot.chooseNumber(price);
-            bot.tick(3);
+            game.widget(465, 24, 12).interact(0);
+            game.tick(4);
+            game.chooseNumber(price);
+            game.tick(3);
         }
 
-        bot.widget(465, 27).interact(0);
+        game.widget(465, 27).interact(0);
 
-        bot.waitUntil(() -> bot.grandExchangeOffer(slot) != null);
+        game.waitUntil(() -> game.grandExchangeOffer(slot) != null);
 
         long start = System.currentTimeMillis();
 
-        while (bot.grandExchangeOffer(slot).getQuantitySold() != quantity && System.currentTimeMillis() - start < timeout) {
-            bot.tick();
+        while (game.grandExchangeOffer(slot).getQuantitySold() != quantity && System.currentTimeMillis() - start < timeout) {
+            game.tick();
         }
 
-        if (bot.grandExchangeOffer(slot).getQuantitySold() != quantity) {
-            System.out.println("[Grand Exchange] Timed out waiting for offer to complete: " + bot.grandExchangeOffer(slot).getQuantitySold() + " / " + quantity);
-            bot.widget(465, 14).interact(0);
-            bot.tick(4);
+        if (game.grandExchangeOffer(slot).getQuantitySold() != quantity) {
+            System.out.println("[Grand Exchange] Timed out waiting for offer to complete: " + game.grandExchangeOffer(slot).getQuantitySold() + " / " + quantity);
+            game.widget(465, 14).interact(0);
+            game.tick(4);
             collectToBank();
             return false;
         }
@@ -156,18 +155,18 @@ public class GrandExchange {
     }
 
     public void collectToBank() {
-        bot.widget(465, 6, 0).interact(1);
-        bot.tick(4);
+        game.widget(465, 6, 0).interact(1);
+        game.tick(4);
     }
 
     public void collectToInventory() {
-        bot.widget(465, 6, 0).interact(0);
-        bot.sleepApproximately(2000);
+        game.widget(465, 6, 0).interact(0);
+        game.sleepApproximately(2000);
     }
 
     public void collectToInv() {
-        bot.widget(465, 6, 0).interact(0);
-        bot.sleepApproximately(2000);
+        game.widget(465, 6, 0).interact(0);
+        game.sleepApproximately(2000);
     }
 
     public void startBuyOffer(int slot) {
@@ -176,23 +175,23 @@ public class GrandExchange {
         }
 
         if (currentOpenSlot() != 0) {
-            bot.widget(465, 4).interact(0);
-            bot.tick();
+            game.widget(465, 4).interact(0);
+            game.tick();
         }
 
-        if (bot.grandExchangeOffer(slot).getState() != GrandExchangeOfferState.EMPTY) {
+        if (game.grandExchangeOffer(slot).getState() != GrandExchangeOfferState.EMPTY) {
             throw new IllegalArgumentException("slot not free");
         }
 
-        bot.widget(465, 7 + slot, 3).interact(0);
-        bot.waitUntil(() -> currentOpenSlot() != 0);
+        game.widget(465, 7 + slot, 3).interact(0);
+        game.waitUntil(() -> currentOpenSlot() != 0);
     }
 
     private int freeSlot() {
         for (int slot = 0; slot < 8; slot++) {
-            GrandExchangeOffer offer = bot.grandExchangeOffer(slot);
+            GrandExchangeOffer offer = game.grandExchangeOffer(slot);
             if (offer == null || offer.getState() == GrandExchangeOfferState.EMPTY) {
-                System.out.println(bot.grandExchangeOffer(slot));
+                System.out.println(game.grandExchangeOffer(slot));
                 return slot;
             }
         }
@@ -201,31 +200,31 @@ public class GrandExchange {
     }
 
     private OfferType offerCreationType() {
-        return bot.varb(4397) == 0 ? OfferType.BUY_OFFER_CREATION : OfferType.SELL_OFFER_CREATION;
+        return game.varb(4397) == 0 ? OfferType.BUY_OFFER_CREATION : OfferType.SELL_OFFER_CREATION;
     }
 
     public boolean isOpen() {
-        return bot.screenContainer().nestedInterface() == 465;
+        return game.screenContainer().nestedInterface() == 465;
     }
 
     public int currentOpenSlot() {
-        return bot.varb(4439);
+        return game.varb(4439);
     }
 
     public int currentBuyItem() {
-        return bot.varp(1151);
+        return game.varp(1151);
     }
 
     public int currentSellItem() {
-        return bot.varp(1151);
+        return game.varp(1151);
     }
 
     public int currentQuantity() {
-        return bot.varb(4396);
+        return game.varb(4396);
     }
 
     public int currentPrice() {
-        return bot.varb(4398);
+        return game.varb(4398);
     }
 
     public enum OfferType {

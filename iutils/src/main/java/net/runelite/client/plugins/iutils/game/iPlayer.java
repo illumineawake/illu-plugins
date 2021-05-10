@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.iutils.bot;
+package net.runelite.client.plugins.iutils.game;
 
 import net.runelite.api.*;
 
@@ -11,15 +11,15 @@ public class iPlayer extends iActor {
     private final Player player;
     private final PlayerComposition definition;
 
-    public iPlayer(Bot bot, Player player, PlayerComposition definition) {
-        super(bot, player);
+    public iPlayer(Game game, Player player, PlayerComposition definition) {
+        super(game, player);
         this.player = player;
         this.definition = definition;
     }
 
     @Override
     public Client client() {
-        return bot.client();
+        return game.client();
     }
 
     public PlayerComposition definition() { return definition; }

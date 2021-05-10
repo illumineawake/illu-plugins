@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.iutils.bot;
+package net.runelite.client.plugins.iutils.game;
 
 import net.runelite.api.Actor;
 import net.runelite.api.AnimationID;
@@ -10,15 +10,15 @@ import net.runelite.client.plugins.iutils.scene.Position;
 
 public abstract class iActor implements Locatable, Interactable {
     protected final Actor actor;
-    protected final Bot bot;
+    protected final Game game;
 
-    public iActor(Bot bot, Actor actor) {
-        this.bot = bot;
+    public iActor(Game game, Actor actor) {
+        this.game = game;
         this.actor = actor;
     }
 
-    public Bot bot() {
-        return bot;
+    public Game bot() {
+        return game;
     }
 
     @Override
@@ -38,10 +38,10 @@ public abstract class iActor implements Locatable, Interactable {
         }
         System.out.println(interacting.toString());
         if (interacting instanceof NPC)
-            return bot.getFromClientThread(() -> new iNPC(bot(), (NPC) interacting, client().getNpcDefinition(((NPC) interacting).getId())));
+            return game.getFromClientThread(() -> new iNPC(bot(), (NPC) interacting, client().getNpcDefinition(((NPC) interacting).getId())));
         else if (interacting instanceof Player) {
             Player player = (Player) interacting;
-            return bot.getFromClientThread(() ->  new iPlayer(bot(), player, player.getPlayerComposition()));
+            return game.getFromClientThread(() ->  new iPlayer(bot(), player, player.getPlayerComposition()));
         } else
             throw new AssertionError("not possible, Actor is either an Npc or Player");
     }

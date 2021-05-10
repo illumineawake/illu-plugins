@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.iutils.bot;
+package net.runelite.client.plugins.iutils.game;
 
 import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
@@ -10,20 +10,20 @@ import java.util.Arrays;
 import java.util.List;
 
 public class EquipmentItem implements Interactable {
-    private final Bot bot;
+    private final Game game;
     private final Item item;
     private final ItemComposition definition;
     private final EquipmentSlot equipmentSlot;
 
-    public EquipmentItem(Bot bot, Item item, ItemComposition definition, EquipmentSlot equipmentSlot) {
-        this.bot = bot;
+    public EquipmentItem(Game game, Item item, ItemComposition definition, EquipmentSlot equipmentSlot) {
+        this.game = game;
         this.item = item;
         this.definition = definition;
         this.equipmentSlot = equipmentSlot;
     }
 
-    public Bot bot() {
-        return bot;
+    public Game bot() {
+        return game;
     }
 
     public int id() {
@@ -78,7 +78,7 @@ public class EquipmentItem implements Interactable {
 
     public void interact(int action) {
         bot().clientThread.invoke(() -> {
-            bot.client().invokeMenuAction("",
+            game.client().invokeMenuAction("",
                     "",
                     action,
                     MenuAction.CC_OP.getId(),

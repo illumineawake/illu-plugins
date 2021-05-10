@@ -1,6 +1,6 @@
 package net.runelite.client.plugins.iutils.walking;
 
-import net.runelite.client.plugins.iutils.bot.Bot;
+import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.scene.Area;
 import net.runelite.client.plugins.iutils.scene.RectangularArea;
 
@@ -44,7 +44,7 @@ public class BankLocations {
     public static final Area BURGH_DE_ROTT_BANK = new RectangularArea(3492, 3213, 3496, 3210);
     public static final Area VER_SINHAZA_BANK = new RectangularArea(3649, 3208, 3652, 3209);
 
-    public static void walkToBank(Bot bot) {
+    public static void walkToBank(Game game) {
         var validBanks = new ArrayList<Area>();
         validBanks.add(LUMBRIDGE_BANK);
         validBanks.add(VARROCK_WEST_BANK);
@@ -80,14 +80,14 @@ public class BankLocations {
         validBanks.add(HALLOWED_SEPULCHRE_BANK);
         validBanks.add(VER_SINHAZA_BANK);
 
-        if (bot.varp(302) >= 61) {
+        if (game.varp(302) >= 61) {
             validBanks.add(CANIFIS_BANK);
         }
 
-        if (bot.varb(1990) >= 200) {
+        if (game.varb(1990) >= 200) {
             validBanks.add(BURGH_DE_ROTT_BANK);
         }
 
-        new Walking(bot).walkTo(Area.union(validBanks.toArray(new Area[0])));
+        new Walking(game).walkTo(Area.union(validBanks.toArray(new Area[0])));
     }
 }

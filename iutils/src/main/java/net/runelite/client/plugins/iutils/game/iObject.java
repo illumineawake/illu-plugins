@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.iutils.bot;
+package net.runelite.client.plugins.iutils.game;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
@@ -15,23 +15,23 @@ import java.util.stream.Collectors;
 @Slf4j
 public class iObject implements Locatable, Interactable {
 
-    private final Bot bot;
+    private final Game game;
     private final TileObject tileObject;
     private final ObjectComposition definition;
 
-    public iObject(Bot bot, TileObject tileObject, ObjectComposition definition) {
-        this.bot = bot;
+    public iObject(Game game, TileObject tileObject, ObjectComposition definition) {
+        this.game = game;
         this.tileObject = tileObject;
         this.definition = definition;
     }
 
     //	@Override
-    public Bot bot() {
-        return bot;
+    public Game bot() {
+        return game;
     }
 
     public Client client() {
-        return bot.client;
+        return game.client;
     }
 
     @Override

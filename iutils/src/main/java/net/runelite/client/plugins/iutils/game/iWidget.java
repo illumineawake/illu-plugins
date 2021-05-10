@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.iutils.bot;
+package net.runelite.client.plugins.iutils.game;
 
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
@@ -12,21 +12,21 @@ import java.util.stream.Collectors;
 
 public class iWidget implements Interactable, Useable {
 
-    private final Bot bot;
+    private final Game game;
     private final Widget widget;
     Map<Integer, iWidget> children = new HashMap<>();
 
-    public iWidget(Bot bot, Widget widget) {
-        this.bot = bot;
+    public iWidget(Game game, Widget widget) {
+        this.game = game;
         this.widget = widget;
     }
 
-    public Bot bot() {
-        return bot;
+    public Game bot() {
+        return game;
     }
 
     public Client client() {
-        return bot.client();
+        return game.client();
     }
 
     public int id() {
@@ -37,7 +37,7 @@ public class iWidget implements Interactable, Useable {
         return widget.getItemId();
     }
 
-    public int index() { return bot.getFromClientThread(() -> widget.getIndex()); }
+    public int index() { return game.getFromClientThread(() -> widget.getIndex()); }
 
     public int x() {
         return widget.getOriginalX();
@@ -55,7 +55,7 @@ public class iWidget implements Interactable, Useable {
         if (widget == null) {
             System.out.println("Widget is null");
         }
-        return bot.getFromClientThread(widget::isHidden);
+        return game.getFromClientThread(widget::isHidden);
     }
 
     public List<WidgetItem> getWidgetItems() {
@@ -82,7 +82,7 @@ public class iWidget implements Interactable, Useable {
 //        return widget.getDynamicChildren(); }
 
     public int nestedInterface() {
-        Widget[] nested = bot.getFromClientThread(widget::getNestedChildren);
+        Widget[] nested = game.getFromClientThread(widget::getNestedChildren);
 
         if (nested.length == 0) {
             return -1;
@@ -152,30 +152,30 @@ public class iWidget implements Interactable, Useable {
 
     @Override
     public void useOn(InventoryItem item) {
-        bot.clientThread.invoke(() -> {
-            bot.client.setSelectedSpellWidget(id());
-            bot.client.setSelectedSpellChildIndex(-1);
-            bot.client.invokeMenuAction("", "", item.id(),
+        game.clientThread.invoke(() -> {
+            game.client.setSelectedSpellWidget(id());
+            game.client.setSelectedSpellChildIndex(-1);
+            game.client.invokeMenuAction("", "", item.id(),
                     MenuAction.ITEM_USE_ON_WIDGET.getId(), item.slot(), WidgetInfo.INVENTORY.getId());
         });
     }
 
     @Override
     public void useOn(iNPC npc) {
-        bot.clientThread.invoke(() -> {
-            bot.client.setSelectedSpellWidget(id());
-            bot.client.setSelectedSpellChildIndex(-1);
-            bot.client.invokeMenuAction("", "", npc.index(),
+        game.clientThread.invoke(() -> {
+            game.client.setSelectedSpellWidget(id());
+            game.client.setSelectedSpellChildIndex(-1);
+            game.client.invokeMenuAction("", "", npc.index(),
                     MenuAction.SPELL_CAST_ON_NPC.getId(), 0, 0);
         });
     }
 
     @Override
     public void useOn(iObject object) {
-        bot.clientThread.invoke(() -> {
-            bot.client.setSelectedSpellWidget(id());
-            bot.client.setSelectedSpellChildIndex(-1);
-            bot.client.invokeMenuAction("", "", object.id(),
+        game.clientThread.invoke(() -> {
+            game.client.setSelectedSpellWidget(id());
+            game.client.setSelectedSpellChildIndex(-1);
+            game.client.invokeMenuAction("", "", object.id(),
                     MenuAction.SPELL_CAST_ON_GAME_OBJECT.getId(), object.menuPoint().getX(), object.menuPoint().getY());
         });
     }

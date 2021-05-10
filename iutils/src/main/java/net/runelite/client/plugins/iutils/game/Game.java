@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.iutils.bot;
+package net.runelite.client.plugins.iutils.game;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
@@ -33,7 +33,7 @@ import static net.runelite.client.plugins.iutils.iUtils.sleep;
 
 @Slf4j
 @Singleton
-public class Bot {
+public class Game {
 
     @Inject
     public Client client;

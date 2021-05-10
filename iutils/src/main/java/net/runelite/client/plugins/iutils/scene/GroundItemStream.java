@@ -1,6 +1,6 @@
 package net.runelite.client.plugins.iutils.scene;
 
-import net.runelite.client.plugins.iutils.bot.iGroundItem;
+import net.runelite.client.plugins.iutils.game.iGroundItem;
 
 import java.util.Arrays;
 import java.util.Objects;
