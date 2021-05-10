@@ -361,6 +361,10 @@ public class Game {
         return client.getGrandExchangeOffers()[slot];
     }
 
+    public boolean membersWorld() {
+        return client().getWorldType().contains(WorldType.MEMBERS);
+    }
+
     ///////////////////////////////////////////////////
     //                    Other                      //
     ///////////////////////////////////////////////////

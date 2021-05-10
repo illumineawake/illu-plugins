@@ -20,7 +20,8 @@ public class GrandExchange {
             game.waitUntil(this::isOpen);
         }
 
-        var baseId = game.getFromClientThread(() -> game.client().getItemComposition(item).getNote() == 799 ? item - 1 : item);
+        var baseId = game.getFromClientThread(() -> game.client().getItemComposition(item).getNote() == 799 ?
+                game.client().getItemComposition(item).getLinkedNoteId() : item);
         game.widget(467, 0, game.inventory().withId(item).first().slot()).interact(0);
         game.waitUntil(() -> currentSellItem() == baseId);
 

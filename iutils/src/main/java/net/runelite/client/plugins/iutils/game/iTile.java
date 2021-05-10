@@ -50,11 +50,12 @@ public class iTile implements Locatable {
             int z = client().getPlane();
             int chunkData = instanceTemplateChunks[z][localPoint.getSceneX() / CHUNK_SIZE][localPoint.getSceneY() / CHUNK_SIZE];
 
-            int rotation = chunkData >> 1 & 0x3;
-            int chunkY = (chunkData >> 3 & 0x7FF) * CHUNK_SIZE;
-            int chunkX = (chunkData >> 14 & 0x3FF) * CHUNK_SIZE;
+            int rotation = chunkData >> 1 & 0x3; //TODO
+            int chunkX = (chunkData >> 14 & 0x3FF) * CHUNK_SIZE + (localPoint.getSceneX() % CHUNK_SIZE);
+            int chunkY = (chunkData >> 3 & 0x7FF) * CHUNK_SIZE + (localPoint.getSceneY() % CHUNK_SIZE);
+            int chunkZ = (chunkData >> 24 & 0x3);
 
-            return new Position(chunkX, chunkY, rotation);
+            return new Position(chunkX, chunkY, chunkZ);
         }
         return game.localPlayer().position();
     }

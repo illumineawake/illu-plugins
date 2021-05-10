@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class QuestScript extends Plugin implements Runnable {
-    private static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3159, 3493, 3169, 3485);
+    protected static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3160, 3493, 3169, 3485);
 
     @Inject protected Game game;
     @Inject protected Walking walking;
@@ -84,7 +84,18 @@ public abstract class QuestScript extends Plugin implements Runnable {
                 .map(i -> new ItemQuantity(i.id, i.quantity - bank().quantity(i.id) - game.inventory().withId(i.id).quantity()))
                 .filter(i -> i.quantity > 0)
                 .collect(Collectors.toList())
-                .forEach(i -> grandExchange().buy(i.id, i.quantity));
+                .forEach(i -> {
+                    var quantity = i.quantity;
+
+                    if (game.equipment().withId(i.id).exists()) {
+                        game.equipment().withId(i.id).first().interact("Remove");
+                        quantity -= game.equipment().withId(i.id).first().quantity();
+                    }
+
+                    if (quantity > 0) {
+                        grandExchange().buy(i.id, quantity);
+                    }
+                });
 
         bank().depositInventory();
     }
@@ -314,12 +325,12 @@ public abstract class QuestScript extends Plugin implements Runnable {
         game.inventory().withId(item).first().useOn(game.objects().withName(object).nearest());
     }
 
-    protected void interactNpc(RectangularArea area, String npc, String action) {
+    protected void interactNpc(Area area, String npc, String action) {
         walking.walkTo(area);
         game.npcs().withName(npc).nearest().interact(action);
     }
 
-    protected void interactNpc(RectangularArea area, int npc, String action) {
+    protected void interactNpc(Area area, int npc, String action) {
         walking.walkTo(area);
         game.npcs().withId(npc).nearest().interact(action);
     }
