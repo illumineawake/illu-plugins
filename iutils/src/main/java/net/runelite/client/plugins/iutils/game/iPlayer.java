@@ -143,7 +143,7 @@ public class iPlayer extends iActor {
     }
 
     public void interact(int action) {
-        bot().clientThread.invoke(() -> {
+        game().clientThread.invoke(() -> {
             int menuAction;
 
             switch (action) {

@@ -34,7 +34,7 @@ public interface iUtilsConfig extends Config
 	@ConfigSection(
 			keyName = "delayConfig",
 			name = "Sleep Delay Configuration",
-			description = "Configure how the bot handles sleep delays",
+			description = "Configure how the game handles sleep delays",
 			closedByDefault = true,
 			position = 0
 	)

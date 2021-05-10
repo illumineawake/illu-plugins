@@ -174,6 +174,41 @@ public class TransportLoader {
             transports.add(parseTransportLine("3492 9862 0 3513 9811 0 Enter Cave entrance 12771"));
         }
 
+        var icyeneGraveyardSources = List.of(new Position(3684, 3176, 0), new Position(3684, 3175, 0), new Position(3684, 3174, 0));
+        var icyeneGraveyardTarget = game.varb(7255) <= 44 ? new Position(3684, 3181, 0) : new Position(3684, 3176, 0);
+
+        var meiyerditchSources = List.of(new Position(3605, 3161, 1), new Position(3605, 3163, 1));
+        var meyerditchTarget = new Position(3605, 3161, 1);
+
+        var burghDeRottSource = new Position(3525, 3170, 0);
+        var burghDeRottTarget = new Position(3525, 3170, 0);
+
+        if (game.varb(7255) < 42) {
+            transports.add(objectTransport(burghDeRottSource, meyerditchTarget, 12945, "Board"));
+
+            for (var meiyerditchSource : meiyerditchSources) {
+                transports.add(objectTransport(meiyerditchSource, burghDeRottTarget, 17961, "Board"));
+            }
+        } else {
+            transports.add(objectChatTransport(burghDeRottSource, meyerditchTarget, 12945, "Board", "Meiyerditch."));
+            transports.add(objectChatTransport(burghDeRottSource, icyeneGraveyardTarget, 12945, "Board", "Icyene Graveyard."));
+
+            for (var meiyerditchSource : meiyerditchSources) {
+                transports.add(objectChatTransport(meiyerditchSource, burghDeRottTarget, 17961, "Board", "Burgh de Rott."));
+                transports.add(objectChatTransport(meiyerditchSource, icyeneGraveyardTarget, 17961, "Board", "Icyene Graveyard."));
+            }
+
+            for (var source : icyeneGraveyardSources) {
+                transports.add(objectChatTransport(source, burghDeRottTarget, 39520, "Board", "Burgh de Rott."));
+                transports.add(objectChatTransport(source, meyerditchTarget, 39520, "Board", "Meiyerditch."));
+            }
+        }
+
+
+        // darkmeyer wall (needs long rope)
+//        3672 3376 0 3670 3375 0 Climb Wall 39541
+//        3672 3374 0 3670 3375 0 Climb Wall 39541
+
         return transports;
     }
 
@@ -224,43 +259,49 @@ public class TransportLoader {
     }
 
     private static Transport trapdoorTransport(Position source, Position target, int closedId, int openId) {
-        return new Transport(source, target, Integer.MAX_VALUE, 0, bot -> {
-            if (bot.objects().withId(closedId).inside(source.areaWithin(1)).exists()) {
-                bot.objects().withId(closedId).inside(source.areaWithin(1)).nearest().interact("Open");
-                bot.waitUntil(() -> !bot.objects().withId(closedId).inside(source.areaWithin(1)).exists());
+        return new Transport(source, target, Integer.MAX_VALUE, 0, game -> {
+            if (game.objects().withId(closedId).inside(source.areaWithin(1)).exists()) {
+                game.objects().withId(closedId).inside(source.areaWithin(1)).nearest().interact("Open");
+                game.waitUntil(() -> !game.objects().withId(closedId).inside(source.areaWithin(1)).exists());
             }
-            bot.objects().withId(openId).nearest().interact("Climb-down");
-            bot.tick(1);
+            game.objects().withId(openId).nearest().interact("Climb-down");
+            game.tick(1);
         });
     }
 
     private static Transport npcTransport(Position source, Position target, int id, String action) {
-        return new Transport(source, target, 10, 0, bot -> bot.npcs().withId(id).nearest(source).interact(action));
+        return new Transport(source, target, 10, 0, game -> game.npcs().withId(id).nearest(source).interact(action));
     }
 
     private static Transport npcChatTransport(Position source, Position target, int id, String... options) {
-        return new Transport(source, target, 10, 0, bot -> {
-            bot.npcs().withId(id).nearest(target).interact("Talk-to");
-            new Chatbox(bot).chat(options);
+        return new Transport(source, target, 10, 0, game -> {
+            game.npcs().withId(id).nearest(target).interact("Talk-to");
+            new Chatbox(game).chat(options);
         });
     }
 
     private static Transport npcActionTransport(Position source, Position target, int id, String action) {
-        return new Transport(source, target, 10, 0, bot -> bot.npcs().withId(id).nearest(target).interact(action));
+        return new Transport(source, target, 10, 0, game -> game.npcs().withId(id).nearest(target).interact(action));
     }
 
     private static Transport objectTransport(Position source, Position target, int id, String action) {
-        return new Transport(source, target, Integer.MAX_VALUE, 0, bot -> bot.objects().withId(id).nearest(source).interact(action));
+        return new Transport(source, target, Integer.MAX_VALUE, 0, game -> game.objects().withId(id).nearest(source).interact(action));
     }
 
-    private static Transport objectChatTransport(Position source, Position target, String id, String action, String... options) {
-        return new Transport(source, target, Integer.MAX_VALUE, 0, bot -> {
-            bot.objects().withName(id).nearest(source).interact(action);
-            new Chatbox(bot).chat(options);
+    private static Transport objectChatTransport(Position source, Position target, int id, String action, String... options) {
+        return new Transport(source, target, Integer.MAX_VALUE, 0, game -> {
+            game.objects().withId(id).nearest(source).interact(action);
+            var chatbox = new Chatbox(game);
+
+            if (game.waitUntil(() -> chatbox.chatState() != Chatbox.ChatState.CLOSED, 8)) { // in case still doing the previous transport
+                chatbox.chat(options);
+            }
+
+            game.tick(8);
         });
     }
 
     private static Transport itemObjectTransport(Position source, Position target, int item, int object) {
-        return new Transport(source, target, Integer.MAX_VALUE, 0, bot -> bot.inventory().withId(item).first().useOn(bot.objects().withId(object).nearest(source)));
+        return new Transport(source, target, Integer.MAX_VALUE, 0, game -> game.inventory().withId(item).first().useOn(game.objects().withId(object).nearest(source)));
     }
 }

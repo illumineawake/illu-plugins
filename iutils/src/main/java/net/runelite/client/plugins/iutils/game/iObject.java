@@ -26,7 +26,7 @@ public class iObject implements Locatable, Interactable {
     }
 
     //	@Override
-    public Game bot() {
+    public Game game() {
         return game;
     }
 
@@ -128,7 +128,7 @@ public class iObject implements Locatable, Interactable {
                 getActionId(action),
                 menuPoint().getX(),
                 menuPoint().getY());
-        bot().clientThread.invoke(() -> {
+        game().clientThread.invoke(() -> {
             client().invokeMenuAction("",
                     "",
                     id(),

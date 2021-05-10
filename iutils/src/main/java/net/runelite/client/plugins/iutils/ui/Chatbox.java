@@ -59,16 +59,16 @@ public class Chatbox {
     }
 
 //    public void chooseOption(String part) {
-//        bot.tick();
+//        game.tick();
 //
 //        if (chatState() != ChatState.OPTIONS_CHAT) {
 //            throw new IllegalStateException("not an options chat");
 //        }
-//        List<iWidget> widgets = bot.widget(219, 1).items();
+//        List<iWidget> widgets = game.widget(219, 1).items();
 //        for (iWidget widget : widgets) {
 //            if (widget.text() != null && widget.text().contains(part)) {
 //                widget.select();
-//                bot.waitChange(this::chatState, 6);
+//                game.waitChange(this::chatState, 6);
 //                return; // todo: wait
 //            }
 //        }

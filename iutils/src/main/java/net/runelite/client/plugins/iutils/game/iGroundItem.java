@@ -21,7 +21,7 @@ public class iGroundItem implements Locatable, Interactable {
         this.definition = definition;
     }
 
-    public Game bot() {
+    public Game game() {
         return game;
     }
 
@@ -83,7 +83,7 @@ public class iGroundItem implements Locatable, Interactable {
     }
 
     public void interact(int action) {
-        bot().clientThread.invoke(() -> {
+        game().clientThread.invoke(() -> {
             client().invokeMenuAction("",
                     "",
                     id(),

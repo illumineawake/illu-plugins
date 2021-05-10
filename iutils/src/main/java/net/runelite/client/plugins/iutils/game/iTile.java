@@ -29,7 +29,7 @@ public class iTile implements Locatable {
     }
 
     //    @Override
-    public Game bot() {
+    public Game game() {
         return game;
     }
 

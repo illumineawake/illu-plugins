@@ -39,7 +39,7 @@ public class Combat {
         }
     }
 
-    private void attack(iNPC npc) {
+    public void attack(iNPC npc) {
         // todo: target doen't necessarily mean in combat (could be chat)
         iNPC target = (iNPC) game.localPlayer().target();
 
@@ -60,13 +60,13 @@ public class Combat {
         return false;
     }
 
-    private void restoreStats() {
+    public void restoreStats() {
         if (game.inventory().withNamePart("restore").exists() && needsStatRestore()) {
             game.inventory().withNamePart("restore").first().interact("Drink");
         }
     }
 
-    private void restorePrayer() {
+    public void restorePrayer() {
         if (game.modifiedLevel(Skill.PRAYER) < game.baseLevel(Skill.PRAYER) / 2) {
             //todo add super restores?
             if (game.inventory().withNamePart("Prayer potion(").exists()) {

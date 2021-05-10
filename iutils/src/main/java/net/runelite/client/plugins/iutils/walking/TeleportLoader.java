@@ -123,10 +123,6 @@ public class TeleportLoader {
         return game.inventory().withId(GAMES_NECKLACE).first();
     }
 
-    private InventoryItem botsNecklace() {
-        return game.inventory().withId(GAMES_NECKLACE).first();
-    }
-
     private InventoryItem combatBracelet() {
         return game.inventory().withId(COMBAT_BRACELET).first();
     }

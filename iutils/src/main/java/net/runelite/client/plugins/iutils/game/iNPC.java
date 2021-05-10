@@ -63,7 +63,7 @@ public class iNPC extends iActor {
     }
 
     @Override
-    public Game bot() {
+    public Game game() {
         return game;
     }
 
@@ -109,7 +109,7 @@ public class iNPC extends iActor {
     }
 
     public void interact(int action) {
-        bot().clientThread.invoke(() -> {
+        game().clientThread.invoke(() -> {
             int menuAction;
 
             switch (action) {

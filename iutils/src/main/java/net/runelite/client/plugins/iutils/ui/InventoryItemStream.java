@@ -80,7 +80,7 @@ public class InventoryItemStream extends RandomizedStreamAdapter<InventoryItem, 
     public void forEachWaiting(Consumer<InventoryItem> action) {
         forEach(item -> {
             action.accept(item);
-//            item.bot().sleepApproximately(300); TODO: implement sleep
+//            item.game().sleepApproximately(300); TODO: implement sleep
         });
     }
 

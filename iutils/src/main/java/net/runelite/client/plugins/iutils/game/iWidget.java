@@ -21,7 +21,7 @@ public class iWidget implements Interactable, Useable {
         this.widget = widget;
     }
 
-    public Game bot() {
+    public Game game() {
         return game;
     }
 
@@ -74,7 +74,7 @@ public class iWidget implements Interactable, Useable {
 
         for (Widget slot : widget.getDynamicChildren()) {
             if (slot != null) {
-                items.add(new iWidget(bot(), slot));
+                items.add(new iWidget(game(), slot));
             }
         }
         return items;
@@ -114,7 +114,7 @@ public class iWidget implements Interactable, Useable {
     }
 
     public void interact(int action) {
-        bot().clientThread.invoke(() -> {
+        game().clientThread.invoke(() -> {
             //TODO action might not require + 1 and param0 need to confirm returns -1 or child
             client().invokeMenuAction("", "",
                     action + 1,
@@ -126,7 +126,7 @@ public class iWidget implements Interactable, Useable {
     }
 
     public void select() {
-        bot().clientThread.invoke(() -> {
+        game().clientThread.invoke(() -> {
             client().invokeMenuAction("", "",
                     0,
                     MenuAction.WIDGET_TYPE_6.getId(),

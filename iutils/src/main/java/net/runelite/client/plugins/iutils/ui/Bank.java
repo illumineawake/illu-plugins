@@ -93,7 +93,7 @@ public class Bank {
                     game.chooseNumber(quantity);
                 }
 
-//                bot.waitChange(() -> bot.inventory().withId(id).quantity());
+//                game.waitChange(() -> game.inventory().withId(id).quantity());
                 game.tick();
                 return Math.min(inventoryCapacity, quantity);
             }

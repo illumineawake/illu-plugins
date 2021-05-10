@@ -47,7 +47,18 @@ public abstract class QuestScript extends Plugin implements Runnable {
             return;
         }
 
-        game.inventory().withName(name).first().interact(0);
+        var item = game.inventory().withName(name).first();
+
+        if (item.actions().contains("Wield")) {
+            game.inventory().withName(name).first().interact("Wield");
+        } else if (item.actions().contains("Wear")) {
+            game.inventory().withName(name).first().interact("Wear");
+        } else if (item.actions().contains("Equip")) {
+            game.inventory().withName(name).first().interact("Equip");
+        } else {
+            throw new IllegalStateException("no known equip action for item");
+        }
+
         game.waitUntil(() -> game.equipment().withName(name).exists());
     }
 
@@ -179,15 +190,21 @@ public abstract class QuestScript extends Plugin implements Runnable {
         return false;
     }
 
-    protected void chatNpc(Area location, String npcName, String... chatOptions) {
-        walking.walkTo(location);
+    protected void chatNpc(Area area, String npcName, String... chatOptions) {
+        if (area != null) {
+            walking.walkTo(area);
+        }
+
         game.npcs().withName(npcName).nearest().interact("Talk-to");
         chatbox.chat(chatOptions);
         game.tick();
     }
 
-    protected void chatNpc(Area location, int npcId, String... chatOptions) {
-        walking.walkTo(location);
+    protected void chatNpc(Area area, int npcId, String... chatOptions) {
+        if (area != null) {
+            walking.walkTo(area);
+        }
+
         game.npcs().withId(npcId).nearest().interact("Talk-to");
         chatbox.chat(chatOptions);
         game.tick();
@@ -232,7 +249,7 @@ public abstract class QuestScript extends Plugin implements Runnable {
     }
 
     protected void chat(int n) {
-        for (int i = 0; i < n; i++) {
+        for (var i = 0; i < n; i++) {
             chat();
         }
     }
@@ -248,7 +265,9 @@ public abstract class QuestScript extends Plugin implements Runnable {
     }
 
     protected void useItemItem(String item1, String item2) {
-        game.inventory().withName(item1).first().useOn(game.inventory().withName(item2).first());
+        var a = game.inventory().withName(item1).first();
+        var b = game.inventory().withName(item2).filter(i -> i.slot() != a.slot()).first();
+        a.useOn(b);
     }
 
     protected void useItemItem(int item1, String item2) {
@@ -275,8 +294,19 @@ public abstract class QuestScript extends Plugin implements Runnable {
     }
 
     protected void useItemObject(Area area, String item, String object) {
-        walking.walkTo(area);
+        if (area != null) {
+            walking.walkTo(area);
+        }
+
         game.inventory().withName(item).first().useOn(game.objects().withName(object).nearest());
+    }
+
+    protected void useItemObject(Area area, String item, int object) {
+        if (area != null) {
+            walking.walkTo(area);
+        }
+
+        game.inventory().withName(item).first().useOn(game.objects().withId(object).nearest());
     }
 
     protected void useItemObject(Area area, int item, String object) {

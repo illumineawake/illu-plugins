@@ -22,7 +22,7 @@ public class InventoryItem implements Interactable, Useable {
         this.definition = definition;
     }
 
-    public Game bot() {
+    public Game game() {
         return game;
     }
 
@@ -83,7 +83,7 @@ public class InventoryItem implements Interactable, Useable {
     }
 
     public void interact(int action) {
-        bot().clientThread.invoke(() -> {
+        game().clientThread.invoke(() -> {
             game.client().invokeMenuAction("",
                     "",
                     id(),

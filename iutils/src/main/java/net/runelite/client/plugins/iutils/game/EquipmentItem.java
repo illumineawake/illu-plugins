@@ -22,7 +22,7 @@ public class EquipmentItem implements Interactable {
         this.equipmentSlot = equipmentSlot;
     }
 
-    public Game bot() {
+    public Game game() {
         return game;
     }
 
@@ -77,7 +77,7 @@ public class EquipmentItem implements Interactable {
     }
 
     public void interact(int action) {
-        bot().clientThread.invoke(() -> {
+        game().clientThread.invoke(() -> {
             game.client().invokeMenuAction("",
                     "",
                     action,

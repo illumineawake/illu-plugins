@@ -7,7 +7,7 @@ public interface Locatable {
     /**
      * The {@link Game} instance this object belongs to.
      */
-    Game bot();
+    Game game();
 
     Client client();
 
@@ -22,7 +22,7 @@ public interface Locatable {
      * the position in the chunk template.
      */
     default Position templatePosition() {
-        var tile = bot().tile(position());
+        var tile = game().tile(position());
 
         if (tile == null) {
             return position();
