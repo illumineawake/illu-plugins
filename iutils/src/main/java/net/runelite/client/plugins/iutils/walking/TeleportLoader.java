@@ -33,14 +33,14 @@ public class TeleportLoader {
         var teleports = new ArrayList<Teleport>();
 
         if (ringOfDueling() != null) {
-            teleports.add(new Teleport(new Position(3315, 3235, 0), 2, () -> jewleryAction(ringOfDueling(), "Duel Arena")));
+            teleports.add(new Teleport(new Position(3315, 3235, 0), 6, () -> jewleryAction(ringOfDueling(), "Duel Arena")));
             teleports.add(new Teleport(new Position(2440, 3090, 0), 2, () -> jewleryAction(ringOfDueling(), "Castle Wars")));
             teleports.add(new Teleport(new Position(3151, 3635, 0), 2, () -> jewleryAction(ringOfDueling(), "Ferox Enclave")));
         }
 
         if (gamesNecklace() != null) {
-            teleports.add(new Teleport(new Position(2898, 3553, 0), 2, () -> jewleryAction(gamesNecklace(), "Burtrope")));
-            teleports.add(new Teleport(new Position(2520, 3571, 0), 2, () -> jewleryAction(gamesNecklace(), "Barbarian Outpost")));
+            teleports.add(new Teleport(new Position(2898, 3553, 0), 2, () -> jewleryAction(gamesNecklace(), "Burthorpe")));
+            teleports.add(new Teleport(new Position(2520, 3571, 0), 6, () -> jewleryAction(gamesNecklace(), "Barbarian Outpost")));
             teleports.add(new Teleport(new Position(2964, 4382, 2), 2, () -> jewleryAction(gamesNecklace(), "Corporeal Beast")));
             teleports.add(new Teleport(new Position(3244, 9501, 2), 2, () -> jewleryAction(gamesNecklace(), "Tears of Guthix")));
             teleports.add(new Teleport(new Position(1624, 3938, 0), 1, () -> jewleryAction(gamesNecklace(), "Wintertodt Camp")));
@@ -54,17 +54,17 @@ public class TeleportLoader {
         }
 
         if (skillsNecklace() != null) {
-            teleports.add(new Teleport(new Position(2611, 3390, 0), 2, () -> jewleryAction(skillsNecklace(), "Fishing Guild")));
-            teleports.add(new Teleport(new Position(3050, 9763, 0), 2, () -> jewleryAction(skillsNecklace(), "Mining Guild")));
-            teleports.add(new Teleport(new Position(2933, 3295, 0), 2, () -> jewleryAction(skillsNecklace(), "Crafting Guild")));
-            teleports.add(new Teleport(new Position(3143, 3440, 0), 2, () -> jewleryAction(skillsNecklace(), "Cooking Guild")));
-            teleports.add(new Teleport(new Position(1662, 3505, 0), 2, () -> jewleryAction(skillsNecklace(), "Woodcutting Guild")));
-            teleports.add(new Teleport(new Position(1249, 3718, 0), 2, () -> jewleryAction(skillsNecklace(), "Farming Guild")));
+            teleports.add(new Teleport(new Position(2611, 3390, 0), 6, () -> jewleryAction(skillsNecklace(), "Fishing Guild")));
+            teleports.add(new Teleport(new Position(3050, 9763, 0), 6, () -> jewleryAction(skillsNecklace(), "Mining Guild")));
+            teleports.add(new Teleport(new Position(2933, 3295, 0), 6, () -> jewleryAction(skillsNecklace(), "Crafting Guild")));
+            teleports.add(new Teleport(new Position(3143, 3440, 0), 6, () -> jewleryAction(skillsNecklace(), "Cooking Guild")));
+            teleports.add(new Teleport(new Position(1662, 3505, 0), 6, () -> jewleryAction(skillsNecklace(), "Woodcutting Guild")));
+            teleports.add(new Teleport(new Position(1249, 3718, 0), 6, () -> jewleryAction(skillsNecklace(), "Farming Guild")));
         }
 
         if (ringOfWealth() != null) {
             teleports.add(new Teleport(new Position(3163, 3478, 0), 2, () -> jewleryAction(ringOfWealth(), "Grand Exchange")));
-            teleports.add(new Teleport(new Position(2996, 3375, 0), 2, () -> jewleryAction(ringOfWealth(), "Falador")));
+            //teleports.add(new Teleport(new Position(2996, 3375, 0), 2, () -> jewleryAction(ringOfWealth(), "Falador")));
 //            teleports.add(new Teleport(new Position, 2, () -> jewleryAction(ringOfWealth(), "Miscellania")));
             teleports.add(new Teleport(new Position(2829, 10167, 0), 2, () -> jewleryAction(ringOfWealth(), "Dondakan")));
         }

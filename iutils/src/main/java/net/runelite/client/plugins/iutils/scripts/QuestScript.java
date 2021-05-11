@@ -59,7 +59,7 @@ public abstract class QuestScript extends Plugin implements Runnable {
             throw new IllegalStateException("no known equip action for item");
         }
 
-        game.waitUntil(() -> game.equipment().withName(name).exists());
+        game.waitUntil(() -> game.equipment().withName(name).exists(), 6);
     }
 
     protected void obtain(ItemQuantity... items) {
@@ -147,18 +147,14 @@ public abstract class QuestScript extends Plugin implements Runnable {
 
     protected GrandExchange grandExchange() {
         if (!GRAND_EXCHANGE.contains(game.localPlayer().position())) {
-            System.out.println(GRAND_EXCHANGE.toString() + " doesn't contain player: " + game.localPlayer().position());
             walking.walkTo(GRAND_EXCHANGE);
         }
 
-        if (!game.inventory().withId(995).exists()) {
-            bank().withdraw(995, Integer.MAX_VALUE, false);
-        }
+        bank().withdraw(995, Integer.MAX_VALUE, false);
 
         var grandExchange = new GrandExchange(game);
 
         if (!grandExchange.isOpen()) {
-
             game.npcs().withName("Grand Exchange Clerk").nearest().interact("Exchange");
             game.waitUntil(grandExchange::isOpen);
         }
@@ -336,7 +332,7 @@ public abstract class QuestScript extends Plugin implements Runnable {
     }
 
     public void waitNpc(String name) {
-        game.waitUntil(() -> game.npcs().withName("Restless ghost").exists());
+        game.waitUntil(() -> game.npcs().withName(name).exists());
     }
 
     public boolean hasItem(String name, int quantity) {

@@ -13,6 +13,24 @@ import java.util.List;
 public class TransportLoader {
     public static final int COINS = 995;
 
+    public static class SpiritTree {
+        private Position position;
+        private String location;
+
+        public SpiritTree(Position position, String location) {
+            this.position = position;
+            this.location = location;
+        }
+    }
+
+    public static final List<SpiritTree> SPIRIT_TREES = List.of(
+            new SpiritTree(new Position(2542, 3170, 0), "Tree gnome Village"),
+            new SpiritTree(new Position(2461, 3444, 0), "Gnome Stronghold"),
+            new SpiritTree(new Position(2555, 3259, 0), "Battlefield of Khazard"),
+            new SpiritTree(new Position(3185, 3508, 0), "Grand Exchange"),
+            new SpiritTree(new Position(2488, 2850, 0), "Feldip Hills")
+    );
+
     public static List<Transport> buildTransports(Game game) {
         var transports = new ArrayList<Transport>();
 
@@ -129,14 +147,29 @@ public class TransportLoader {
          */
 
         // Tree Gnome Village
+        transports.add(objectChatTransport(new Position(2461, 3382, 0), new Position(2461, 3385, 0), 190, "Sorry, I'm a bit busy."));
         if (game.varp(111) > 0) {
             transports.add(npcTransport(new Position(2504, 3192, 0), new Position(2515, 3159, 0), 4968, "Follow"));
             transports.add(npcTransport(new Position(2515, 3159, 0), new Position(2504, 3192, 0), 4968, "Follow"));
         }
 
+        //Spirit Tree's
+        if(game.varp(111) == 9){
+            for (var source : SPIRIT_TREES) {
+                for (var target : SPIRIT_TREES) {
+                    transports.add(spritTreeTransport(source.position, target.position, target.location));
+                }
+            }
+        }
+
         // Mort Myre Swamp
-        transports.add(objectWarningTransport(new Position(3444, 3458, 0), new Position(3444, 3457, 0), 3506, "Open", 580, 17));
-        transports.add(objectWarningTransport(new Position(3443, 3458, 0), new Position(3443, 3457, 0), 3507, "Open", 580, 17));
+        if (game.varb(3870) != 7) {
+            transports.add(objectWarningTransport(new Position(3444, 3458, 0), new Position(3444, 3457, 0), 3506, "Open", 580, 17));
+            transports.add(objectWarningTransport(new Position(3443, 3458, 0), new Position(3444, 3457, 0), 3507, "Open", 580, 17));
+        } else {
+            transports.add(objectTransport(new Position(3444, 3458, 0), new Position(3444, 3457, 0), 3506, "Open"));
+            transports.add(objectTransport(new Position(3443, 3458, 0), new Position(3443, 3457, 0), 3507, "Open"));
+        }
 
         // Canifis
         if (game.varp(387) >= 110) {
@@ -230,6 +263,23 @@ public class TransportLoader {
         );
     }
 
+    private static Transport spritTreeTransport(Position source, Position target, String location) {
+        return new Transport(
+                source,
+                target,
+                Integer.MAX_VALUE,
+                0,
+                game -> {
+                    game.objects().withName("Spirit tree").nearest(source).interact("Travel");
+                    game.waitUntil(() -> game.screenContainer().nestedInterface() == 187);
+
+                    if (game.screenContainer().nestedInterface() == 187) {
+                        new Chatbox(game).selectMenu(location);
+                        game.waitUntil(() -> target.contains(game.localPlayer().position()));
+                    }
+                });
+    }
+
     private static Transport objectWarningTransport(Position source, Position target, int id, String action, int interfaceId, int widgetId) {
         return new Transport(
                 source,
@@ -285,7 +335,9 @@ public class TransportLoader {
     }
 
     private static Transport objectTransport(Position source, Position target, int id, String action) {
-        return new Transport(source, target, Integer.MAX_VALUE, 0, game -> game.objects().withId(id).nearest(source).interact(action));
+        return new Transport(source, target, Integer.MAX_VALUE, 0, game -> {
+            game.objects().withId(id).nearest(source).interact(action);
+        });
     }
 
     private static Transport objectChatTransport(Position source, Position target, int id, String action, String... options) {

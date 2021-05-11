@@ -1,6 +1,7 @@
 package net.runelite.client.plugins.iutils.walking;
 
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Skill;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.iTile;
 import net.runelite.client.plugins.iutils.scene.Area;
@@ -255,7 +256,7 @@ public class Walking {
         // TODO: if the player isn't on the transport source tile, interacting with the transport may cause the
         //   player to walk to a different source tile for the same transport, which has a different destination
         game.waitUntil(() -> game.localPlayer().templatePosition().distanceTo(transport.target) <= transport.targetRadius, 10);
-        game.tick(2);
+        game.tick(3);
     }
 
     private boolean stepAlong(List<Position> path) {
@@ -322,6 +323,14 @@ public class Walking {
 
             if (game.varb(25) == 1) {
                 setRun(true); // don't waste stamina effect
+            }
+
+            if (game.modifiedLevel(Skill.HITPOINTS) < 8 || game.modifiedLevel(Skill.HITPOINTS) < game.baseLevel(Skill.HITPOINTS) - 22) {
+                var food = game.inventory().withAction("Eat").first();
+
+                if (food != null) {
+                    food.interact("Eat");
+                }
             }
         }
 

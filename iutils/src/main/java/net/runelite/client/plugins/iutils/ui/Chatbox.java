@@ -41,9 +41,9 @@ public class Chatbox {
     }
 
     public void chat(String... options) {
-        game.waitUntil(() -> chatState() != ChatState.CLOSED);
+        game.waitUntil(() -> chatState() != ChatState.CLOSED, 6);
 
-        for (String option : options) {
+        for (var option : options) {
             continueChats();
             chooseOption(option);
         }
