@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class QuestScript extends Plugin implements Runnable {
+public abstract class UtilsScript extends Plugin implements Runnable {
     protected static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3160, 3493, 3169, 3485);
 
     @Inject protected Game game;
