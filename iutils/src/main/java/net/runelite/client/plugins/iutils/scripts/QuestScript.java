@@ -296,6 +296,10 @@ public abstract class QuestScript extends Plugin implements Runnable {
         return game.inventory().withName(item).exists() || game.equipment().withName(item).exists();
     }
 
+    protected boolean hasItem(int itemId) {
+        return game.inventory().withId(itemId).exists() || game.equipment().withId(itemId).exists();
+    }
+
     protected void waitItem(String item) {
         game.waitUntil(() -> game.inventory().withName(item).size() > 0);
     }
@@ -356,10 +360,13 @@ public abstract class QuestScript extends Plugin implements Runnable {
         public final int id;
         public int quantity;
 
-
         public ItemQuantity(int id, int quantity) {
             this.id = id;
             this.quantity = quantity;
+        }
+
+        public String toString() {
+            return "Item: " + id + ", Quantity: " + quantity;
         }
     }
 }
