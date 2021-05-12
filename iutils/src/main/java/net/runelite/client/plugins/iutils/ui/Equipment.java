@@ -7,6 +7,7 @@ import net.runelite.client.plugins.iutils.game.Game;
 
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Equipment {
     private final Game game;
@@ -19,11 +20,17 @@ public class Equipment {
     }
 
     public boolean isEquipped(int id) {
-        return Arrays.stream(game.container(94).getItems()).anyMatch(i -> i.getId() == id);
+        return game.container(94) != null && Arrays.stream(game.container(94).getItems()).anyMatch(i -> i.getId() == id);
     }
 
     public int quantity(int id) {
-        return Arrays.stream(game.container(94).getItems()).filter(i -> i.getId() == id).mapToInt(Item::getQuantity).sum();
+        if (game.container(94) == null) return 0;
+
+        return Arrays.stream(game.container(94).getItems())
+                .filter(Objects::nonNull)
+                .filter(i -> i.getId() == id)
+                .mapToInt(Item::getQuantity)
+                .sum();
     }
 
     /**

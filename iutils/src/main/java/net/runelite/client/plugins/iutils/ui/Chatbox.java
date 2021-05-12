@@ -1,6 +1,7 @@
 package net.runelite.client.plugins.iutils.ui;
 
 import net.runelite.api.Skill;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.iutils.game.Game;
 
 import javax.inject.Inject;
@@ -85,7 +86,7 @@ public class Chatbox {
             throw new IllegalStateException("not an options chat, " + chatState());
         }
 
-        for (var i = 0; i < 6; i++) {
+        for (var i = 0; i < game.widget(219, 1).items().size(); i++) {
             if (game.widget(219, 1, i).text() != null && game.widget(219, 1, i).text().contains(part)) {
                 game.widget(219, 1, i).select();
                 game.waitChange(this::chatState, 6);
