@@ -486,7 +486,17 @@ public class iRooftopAgilityPlugin extends Plugin
 						{
 							if (markOfGraceTile.getGroundItems().contains(markOfGrace)) //failsafe sometimes onItemDespawned doesn't capture mog despawn
 							{
-								return MARK_OF_GRACE;
+								if (config.course().name().equals("Ardougne") && config.alchMogStack() > 1)
+								{
+									if (markOfGrace.getQuantity() >= config.alchMogStack())
+									{
+										return MARK_OF_GRACE;
+									}
+								}
+								else
+								{
+									return MARK_OF_GRACE;
+								}
 							}
 							else
 							{
@@ -542,7 +552,17 @@ public class iRooftopAgilityPlugin extends Plugin
 			{
 				if (markOfGraceTile.getGroundItems().contains(markOfGrace)) //failsafe sometimes onItemDespawned doesn't capture mog despawn
 				{
-					return MARK_OF_GRACE;
+					if (config.course().name().equals("Ardougne") && config.mogStack() > 1)
+					{
+						if (markOfGrace.getQuantity() >= config.mogStack())
+						{
+							return MARK_OF_GRACE;
+						}
+					}
+					else
+					{
+						return MARK_OF_GRACE;
+					}
 				}
 				else
 				{
