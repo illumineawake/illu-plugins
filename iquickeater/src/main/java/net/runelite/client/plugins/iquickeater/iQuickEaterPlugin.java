@@ -47,6 +47,7 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
@@ -158,7 +159,13 @@ public class iQuickEaterPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		nextEatHP = calc.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
+		if (client != null || !config.usePercent())
+		{
+			getNextEatHP();
+		} else
+		{
+			nextEatHP = -1;
+		}
 		drinkPrayer = calc.getRandomIntBetweenRange(config.minPrayerPoints(), config.maxPrayerPoints());
 	}
 
@@ -196,7 +203,14 @@ public class iQuickEaterPlugin extends Plugin
 			}
 		}
 	}
-
+	@Subscribe
+	private void onConfigChanged(ConfigChanged event)
+	{
+		if (event.getKey().equals("minEatHP") || event.getKey().equals("maxEatHP") || event.getKey().equals("usePercent"))
+		{
+			getNextEatHP();
+		}
+	}
 	@Subscribe
 	private void onGameTick(GameTick event)
 	{
@@ -216,6 +230,10 @@ public class iQuickEaterPlugin extends Plugin
 			{
 				return;
 			}
+			if (nextEatHP < 1)
+			{
+				getNextEatHP();
+			}
 			if (client.getBoostedSkillLevel(Skill.HITPOINTS) <= nextEatHP)
 			{
 				WidgetItem eatItem = inventory.getItemMenu(itemManager, "Eat", 33,
@@ -223,7 +241,7 @@ public class iQuickEaterPlugin extends Plugin
 				if (eatItem != null)
 				{
 					useItem(eatItem);
-					nextEatHP = calc.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
+					getNextEatHP();
 					log.debug("Next Eat HP: {}", nextEatHP);
 					return;
 				}
@@ -231,7 +249,7 @@ public class iQuickEaterPlugin extends Plugin
 				{
 					WidgetItem drinkItem = inventory.getWidgetItem(DRINK_SET);
 					useItem(drinkItem);
-					nextEatHP = calc.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
+					getNextEatHP();
 					log.debug("Next Eat HP: {}", nextEatHP);
 					return;
 				}
@@ -314,6 +332,10 @@ public class iQuickEaterPlugin extends Plugin
 		{
 			drinkTimeout = 4;
 		}
+		if (event.getGameState() == GameState.LOGIN_SCREEN)
+		{
+			nextEatHP = -1;
+		}
 	}
 
 	@Subscribe
@@ -389,5 +411,19 @@ public class iQuickEaterPlugin extends Plugin
 			utils.sendGameMessage(skill + " is below threshold but we have nothing to regain " + skill);
 		}
 		return false;
+	}
+
+	private void getNextEatHP()
+	{
+		float hpLevel = client.getRealSkillLevel(Skill.HITPOINTS);
+		float minHP = (config.minEatHP() / (float) 100) * hpLevel;
+		float maxHP = (config.maxEatHP() / (float) 100) * hpLevel;
+		if (hpLevel > 0) {
+			if (config.usePercent()) {
+				nextEatHP = Math.max(1, calc.getRandomIntBetweenRange(Math.round(minHP), Math.round(maxHP)));
+			} else {
+				nextEatHP = calc.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
+			}
+		}
 	}
 }

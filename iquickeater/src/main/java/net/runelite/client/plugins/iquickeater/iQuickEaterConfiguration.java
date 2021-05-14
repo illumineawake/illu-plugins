@@ -28,11 +28,12 @@ package net.runelite.client.plugins.iquickeater;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Range;
 
 @ConfigGroup("iQuickEater")
 public interface iQuickEaterConfiguration extends Config
 {
-
+	@Range(min=1, max=99)
 	@ConfigItem(
 		keyName = "minEatHP",
 		name = "Minimum Eat HP",
@@ -44,6 +45,7 @@ public interface iQuickEaterConfiguration extends Config
 		return 10;
 	}
 
+	@Range(min=1, max=100)
 	@ConfigItem(
 		keyName = "maxEatHP",
 		name = "Maximum Eat HP",
@@ -56,10 +58,18 @@ public interface iQuickEaterConfiguration extends Config
 	}
 
 	@ConfigItem(
+		keyName = "usePercent",
+		name = "Use percentage instead of flat values",
+		description = "This will take the value of minimum and maximum eat HP to be a percentage instead.",
+		position = 2
+	)
+	default boolean usePercent() { return false; }
+
+	@ConfigItem(
 		keyName = "drinkAntiPoison",
 		name = "Drink Anti-Poison/Dote Potions",
 		description = "Enable to drink Anti-Poisons or Antidotes when poisoned",
-		position = 2
+		position = 4
 	)
 	default boolean drinkAntiPoison()
 	{
@@ -70,7 +80,7 @@ public interface iQuickEaterConfiguration extends Config
 		keyName = "drinkPrayer",
 		name = "Drink Prayer restoration Potions",
 		description = "Enable to drink Prayer/Super Restore pots below given Prayer levels",
-		position = 3
+		position = 5
 	)
 	default boolean drinkPrayer()
 	{
@@ -83,7 +93,7 @@ public interface iQuickEaterConfiguration extends Config
 		description = "Minimum Prayer points to drink at. i.e. will always drink",
 		hidden = true,
 		unhide = "drinkPrayer",
-		position = 4
+		position = 6
 	)
 	default int minPrayerPoints()
 	{
@@ -96,7 +106,7 @@ public interface iQuickEaterConfiguration extends Config
 		description = "Highest Prayer points to consider drinking. Value MUST be higher than minimum Prayer config. If Prayer drops below this value bot may randomly decide to eat.",
 		hidden = true,
 		unhide = "drinkPrayer",
-		position = 5
+		position = 7
 	)
 	default int maxPrayerPoints()
 	{
@@ -107,7 +117,7 @@ public interface iQuickEaterConfiguration extends Config
 		keyName = "drinkStrength",
 		name = "Enable Drink Strength Pots",
 		description = "Enable to drink pots to restore strength",
-		position = 6
+		position = 8
 	)
 	default boolean drinkStrength()
 	{
@@ -118,7 +128,7 @@ public interface iQuickEaterConfiguration extends Config
 		keyName = "strengthPoints",
 		name = "Strength Points",
 		description = "Drink strength boosting pot below this level",
-		position = 7,
+		position = 9,
 		hidden = true,
 		unhide = "drinkStrength"
 	)
@@ -131,7 +141,7 @@ public interface iQuickEaterConfiguration extends Config
 		keyName = "drinkAttack",
 		name = "Enable Drink Attack Pots",
 		description = "Enable to drink pots to restore attack",
-		position = 8
+		position = 10
 	)
 	default boolean drinkAttack()
 	{
@@ -142,7 +152,7 @@ public interface iQuickEaterConfiguration extends Config
 		keyName = "attackPoints",
 		name = "Attack Points",
 		description = "Drink attack boosting pot below this level",
-		position = 9,
+		position = 11,
 		hidden = true,
 		unhide = "drinkAttack"
 	)
@@ -155,7 +165,7 @@ public interface iQuickEaterConfiguration extends Config
 		keyName = "drinkDefence",
 		name = "Enable Drink Defence Pots",
 		description = "Enable to drink pots to restore defence",
-		position = 10
+		position = 12
 	)
 	default boolean drinkDefence()
 	{
@@ -166,7 +176,7 @@ public interface iQuickEaterConfiguration extends Config
 		keyName = "defencePoints",
 		name = "Defence Points",
 		description = "Drink defence boosting pot below this level",
-		position = 11,
+		position = 13,
 		hidden = true,
 		unhide = "drinkDefence"
 	)
@@ -179,7 +189,7 @@ public interface iQuickEaterConfiguration extends Config
 		keyName = "drinkRanged",
 		name = "Enable Drink Ranged Pots",
 		description = "Enable to drink pots to restore ranged",
-		position = 12
+		position = 14
 	)
 	default boolean drinkRanged()
 	{
@@ -190,7 +200,7 @@ public interface iQuickEaterConfiguration extends Config
 		keyName = "rangedPoints",
 		name = "Ranged Points",
 		description = "Drink ranged boosting pot below this level",
-		position = 13,
+		position = 15,
 		hidden = true,
 		unhide = "drinkRanged"
 	)
@@ -203,7 +213,7 @@ public interface iQuickEaterConfiguration extends Config
 		keyName = "drinkMagic",
 		name = "Enable Drink Magic Pots",
 		description = "Enable to drink pots to restore magic",
-		position = 14
+		position = 16
 	)
 	default boolean drinkMagic()
 	{
@@ -214,7 +224,7 @@ public interface iQuickEaterConfiguration extends Config
 		keyName = "magicPoints",
 		name = "Magic Points",
 		description = "Drink magic boosting pot below this level",
-		position = 15,
+		position = 17,
 		hidden = true,
 		unhide = "drinkMagic"
 	)
@@ -227,7 +237,7 @@ public interface iQuickEaterConfiguration extends Config
 		keyName = "drinkStamina",
 		name = "Drink Stamina Potions",
 		description = "Enable to drink Stamina Potions below given energy level",
-		position = 16
+		position = 18
 	)
 	default boolean drinkStamina()
 	{
@@ -265,7 +275,7 @@ public interface iQuickEaterConfiguration extends Config
 		keyName = "drinkAntiFire",
 		name = "Drink Anti-Fire Potions",
 		description = "Enable to drink Anti-Fire when burnt",
-		position = 2
+		position = 3
 	)
 	default boolean drinkAntiFire()
 	{
