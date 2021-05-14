@@ -1,11 +1,13 @@
 package net.runelite.client.plugins.iutils.ui;
 
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Skill;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.iutils.game.Game;
 
 import javax.inject.Inject;
 
+@Slf4j
 public class Chatbox {
     private final Game game;
 
@@ -41,8 +43,24 @@ public class Chatbox {
         }
     }
 
+    public void chat() {
+        game.waitUntil(() -> chatState() != ChatState.CLOSED, 100);
+        continueChats();
+    }
+
     public void chat(String... options) {
-        game.waitUntil(() -> chatState() != ChatState.CLOSED, 6);
+        game.waitUntil(() -> chatState() != ChatState.CLOSED, 100);
+
+        for (var option : options) {
+            continueChats();
+            chooseOption(option);
+        }
+
+        continueChats();
+    }
+
+    public void chat(int... options) {
+        game.waitUntil(() -> chatState() != ChatState.CLOSED, 100);
 
         for (var option : options) {
             continueChats();
@@ -95,6 +113,25 @@ public class Chatbox {
         }
 
         throw new IllegalStateException("no option " + part + " found");
+    }
+
+    public void chooseOption(int option) {
+        if (chatState() == ChatState.CLOSED) {
+            throw new IllegalStateException("chat closed before option: " + option);
+        }
+
+        if (chatState() != ChatState.OPTIONS_CHAT) {
+            throw new IllegalStateException("not an options chat, " + chatState());
+        }
+
+            if (game.widget(219, 1, option).text() != null) {
+                log.info("int option chat found: {}", game.widget(219, 1, option).text());
+                game.widget(219, 1, option).select();
+                game.waitChange(this::chatState, 6);
+                return;
+            }
+
+        throw new IllegalStateException("no option " + option + " found");
     }
 
     public void continueChat() {

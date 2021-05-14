@@ -197,6 +197,26 @@ public abstract class UtilsScript extends Plugin implements Runnable {
         return false;
     }
 
+    protected void chatNpc(Area area, String npcName) {
+        if (area != null) {
+            walking.walkTo(area);
+        }
+
+        game.npcs().withName(npcName).nearest().interact("Talk-to");
+        chatbox.chat();
+        game.tick();
+    }
+
+    protected void chatNpc(Area area, int npcId) {
+        if (area != null) {
+            walking.walkTo(area);
+        }
+
+        game.npcs().withId(npcId).nearest().interact("Talk-to");
+        chatbox.chat();
+        game.tick();
+    }
+
     protected void chatNpc(Area area, String npcName, String... chatOptions) {
         if (area != null) {
             walking.walkTo(area);
@@ -208,6 +228,26 @@ public abstract class UtilsScript extends Plugin implements Runnable {
     }
 
     protected void chatNpc(Area area, int npcId, String... chatOptions) {
+        if (area != null) {
+            walking.walkTo(area);
+        }
+
+        game.npcs().withId(npcId).nearest().interact("Talk-to");
+        chatbox.chat(chatOptions);
+        game.tick();
+    }
+
+    protected void chatNpc(Area area, String npcName, int... chatOptions) {
+        if (area != null) {
+            walking.walkTo(area);
+        }
+
+        game.npcs().withName(npcName).nearest().interact("Talk-to");
+        chatbox.chat(chatOptions);
+        game.tick();
+    }
+
+    protected void chatNpc(Area area, int npcId, int... chatOptions) {
         if (area != null) {
             walking.walkTo(area);
         }
