@@ -86,6 +86,15 @@ public class Game {
 //        log.info("Game tick {}", System.currentTimeMillis());
 //    }
 
+    public void tick(int tickMin, int tickMax) {
+        Random r = new Random();
+        int result = r.nextInt((tickMax + 1) - tickMin) + tickMin;
+
+        for (int i = 0; i < result; i++) {
+            tick();
+        }
+    }
+
     public void tick(int ticks) {
         for (int i = 0; i < ticks; i++) {
             tick();
@@ -256,7 +265,6 @@ public class Game {
     }
 
     public iWidget widget(int group, int file, int child) {
-//        Widget widget = Objects.requireNonNull(client.getWidget(group, file)).getDynamicChildren()[child];
         return getFromClientThread(() ->
             new iWidget(this, client.getWidget(group, file).getDynamicChildren()[child]));
     }
