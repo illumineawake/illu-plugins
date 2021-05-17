@@ -295,10 +295,34 @@ public interface iRooftopAgilityConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "mogStack",
+			name = "Ardougne marks stack",
+			description = "The number of marks of grace to be stacked before it is picked up at Ardougne.",
+			position = 20,
+			title = "agilityTitle",
+			hidden = false,
+			hide = "highAlch",
+			hideValue = "true"
+	)
+	default int mogStack() { return 0; }
+
+	@ConfigItem(
+			keyName = "alchMogStack",
+			name = "Ardougne marks stack",
+			description = "The number of marks of grace to be stacked before it is picked up at Ardougne.",
+			position = 21,
+			title = "agilityTitle",
+			hidden = true,
+			unhide = "highAlch",
+			unhideValue = "true"
+	)
+	default int alchMogStack() { return 0; }
+
+	@ConfigItem(
 		keyName = "lowHP",
 		name = "Stop at HP",
 		description = "Stop if HP goes below given threshold",
-		position = 20,
+		position = 22,
 		title = "agilityTitle"
 	)
 	default int lowHP()
@@ -310,7 +334,7 @@ public interface iRooftopAgilityConfig extends Config
 		keyName = "enableUI",
 		name = "Enable UI",
 		description = "Enable to turn on in game UI",
-		position = 21,
+		position = 23,
 		title = "agilityTitle"
 	)
 	default boolean enableUI()
@@ -322,7 +346,7 @@ public interface iRooftopAgilityConfig extends Config
 		keyName = "camelotTeleport",
 		name = "Use Camelot Teleport",
 		description = "Use Camelot Teleport if you have hard diaries completed. Requires Air Runes or (Air Staff equipped) and Law Runes in inventory",
-		position = 22,
+		position = 24,
 		title = "agilityTitle"
 	)
 	default boolean camelotTeleport()
