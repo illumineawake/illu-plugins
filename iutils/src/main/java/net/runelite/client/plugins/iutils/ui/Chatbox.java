@@ -6,6 +6,7 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.iutils.game.Game;
 
 import javax.inject.Inject;
+import java.util.List;
 
 @Slf4j
 public class Chatbox {
@@ -70,6 +71,15 @@ public class Chatbox {
         continueChats();
     }
 
+    public void chats(List<String> options) {
+        game.waitUntil(() -> chatState() != ChatState.CLOSED);
+
+        while (chatState() != ChatState.CLOSED) {
+            continueChats();
+            chooseOptions(options);
+        }
+    }
+
     public void continueChats() {
         while (chatState() != ChatState.CLOSED && chatState() != ChatState.OPTIONS_CHAT && chatState() != ChatState.MAKE) {
             continueChat();
@@ -77,23 +87,32 @@ public class Chatbox {
         }
     }
 
-//    public void chooseOption(String part) {
-//        game.tick();
-//
-//        if (chatState() != ChatState.OPTIONS_CHAT) {
-//            throw new IllegalStateException("not an options chat");
-//        }
-//        List<iWidget> widgets = game.widget(219, 1).items();
-//        for (iWidget widget : widgets) {
-//            if (widget.text() != null && widget.text().contains(part)) {
-//                widget.select();
-//                game.waitChange(this::chatState, 6);
-//                return; // todo: wait
-//            }
-//        }
-//
-//        throw new IllegalStateException("no option " + part + " found");
-//    }
+    public void continueChat() {
+        switch (chatState()) {
+            case CLOSED:
+                throw new IllegalStateException("there's no chat");
+            case OPTIONS_CHAT:
+                throw new IllegalStateException("can't continue, this is an options chat");
+            case PLAYER_CHAT:
+                game.widget(217, 3).select();
+                break;
+            case NPC_CHAT:
+                game.widget(231, 3).select();
+                break;
+            case ITEM_CHAT:
+                game.widget(11, 4).select();
+                break;
+            case SPECIAL:
+                game.widget(193, 0, 1).select();
+                break;
+            case MODEL:
+                game.widget(229, 2).select();
+                break;
+            case SPRITE:
+                game.widget(633, 0, 1).select();
+                break;
+        }
+    }
 
     public void chooseOption(String part) {
         if (chatState() == ChatState.CLOSED) {
@@ -124,41 +143,30 @@ public class Chatbox {
             throw new IllegalStateException("not an options chat, " + chatState());
         }
 
-            if (game.widget(219, 1, option).text() != null) {
-                log.info("int option chat found: {}", game.widget(219, 1, option).text());
-                game.widget(219, 1, option).select();
-                game.waitChange(this::chatState, 6);
-                return;
-            }
+        if (game.widget(219, 1, option).text() != null) {
+            log.info("int option chat found: {}", game.widget(219, 1, option).text());
+            game.widget(219, 1, option).select();
+            game.waitChange(this::chatState, 6);
+            return;
+        }
 
         throw new IllegalStateException("no option " + option + " found");
     }
 
-    public void continueChat() {
-        switch (chatState()) {
-            case CLOSED:
-                throw new IllegalStateException("there's no chat");
-            case OPTIONS_CHAT:
-                throw new IllegalStateException("can't continue, this is an options chat");
-            case PLAYER_CHAT:
-                game.widget(217, 3).select();
-                break;
-            case NPC_CHAT:
-                game.widget(231, 3).select();
-                break;
-            case ITEM_CHAT:
-                game.widget(11, 4).select();
-                break;
-            case SPECIAL:
-                game.widget(193, 0, 1).select();
-                break;
-            case MODEL:
-                game.widget(229, 2).select();
-                break;
-            case SPRITE:
-                game.widget(633, 0, 1).select();
-                break;
+    public void chooseOptions(List<String> options) {
+        if (chatState() == ChatState.CLOSED || chatState() != ChatState.OPTIONS_CHAT) {
+            return;
         }
+
+        for (var i = 0; i < game.widget(219, 1).items().size(); i++) {
+            if (game.widget(219, 1, i).text() != null && options.contains(game.widget(219, 1, i).text())) {
+                game.widget(219, 1, i).select();
+                game.waitChange(this::chatState, 6);
+                return;
+            }
+        }
+
+        throw new IllegalStateException("no option found: " + options.toString());
     }
 
     public void selectMenu(String option) { //TODO untested
