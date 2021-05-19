@@ -265,8 +265,12 @@ public class Game {
     }
 
     public iWidget widget(int group, int file, int child) {
-        return getFromClientThread(() ->
-            new iWidget(this, client.getWidget(group, file).getDynamicChildren()[child]));
+        log.info("Requested widget is: {}, {}, {}", group, file, child);
+
+        if (client.getWidget(group, file) == null) {
+            return null;
+        }
+        return new iWidget(this, client.getWidget(group, file).getDynamicChildren()[child]);
     }
 
     public iWidget widget(WidgetInfo widgetInfo) {
