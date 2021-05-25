@@ -328,6 +328,12 @@ public class Game {
             keyboard.pressKey(VK_ENTER);
     }
 
+    public void chooseString(String text) {
+        keyboard.typeString(text);
+        sleep(calc.getRandomIntBetweenRange(80, 250));
+        keyboard.pressKey(VK_ENTER);
+    }
+
     /**
      * Sends an item choice to the server.
      */

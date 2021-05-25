@@ -20,7 +20,7 @@ public class Chatbox {
     }
 
     public ChatState chatState() {
-        switch (game.widget(162, 562).nestedInterface()) {
+        switch (game.widget(162, 559).nestedInterface()) {
             case -1:
                 return ChatState.CLOSED;
             case 11:
