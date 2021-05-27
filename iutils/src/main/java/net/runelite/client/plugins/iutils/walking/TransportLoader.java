@@ -48,7 +48,7 @@ public class TransportLoader {
         }
 
         // Edgeville
-        if (game.modifiedLevel(Skill.AGILITY) >= 21) {
+        if (game.modifiedLevel(Skill.AGILITY) >= 21 && game.membersWorld()) {
             transports.add(objectTransport(new Position(3142, 3513, 0), new Position(3137, 3516, 0), 16530, "Climb-into"));
             transports.add(objectTransport(new Position(3137, 3516, 0), new Position(3142, 3513, 0), 16529, "Climb-into"));
         }
@@ -154,7 +154,7 @@ public class TransportLoader {
         }
 
         //Spirit Tree's
-        if(game.varp(111) == 9){
+        if(game.varp(111) == 9 && game.membersWorld()){
             for (var source : SPIRIT_TREES) {
                 for (var target : SPIRIT_TREES) {
                     transports.add(spritTreeTransport(source.position, target.position, target.location));
