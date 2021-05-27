@@ -9,6 +9,7 @@ import net.runelite.client.plugins.iutils.api.Magic;
 import net.runelite.client.plugins.iutils.api.Prayers;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.InventoryItem;
+import net.runelite.client.plugins.iutils.game.ItemQuantity;
 import net.runelite.client.plugins.iutils.game.iNPC;
 import net.runelite.client.plugins.iutils.scene.Area;
 import net.runelite.client.plugins.iutils.scene.RectangularArea;
@@ -17,7 +18,10 @@ import net.runelite.client.plugins.iutils.walking.BankLocations;
 import net.runelite.client.plugins.iutils.walking.Walking;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -80,6 +84,11 @@ public abstract class UtilsScript extends Plugin implements Runnable {
     }
 
     protected void obtainBank(ItemQuantity... items) {
+        if (items.length == 0) {
+            return;
+        }
+
+        List<ItemQuantity> buyItems = new ArrayList<>();
         Arrays.stream(items)
                 .map(i -> new ItemQuantity(i.id, i.quantity - bank().quantity(i.id) - game.inventory().withId(i.id).quantity()))
                 .filter(i -> i.quantity > 0)
@@ -93,10 +102,12 @@ public abstract class UtilsScript extends Plugin implements Runnable {
                     }
 
                     if (quantity > 0) {
-                        grandExchange().buy(i.id, quantity);
+                        buyItems.add(i);
                     }
                 });
-
+        if (!buyItems.isEmpty()) {
+            grandExchange().buy(buyItems);
+        }
         bank().depositInventory();
     }
 
@@ -151,7 +162,6 @@ public abstract class UtilsScript extends Plugin implements Runnable {
         }
 
         bank().withdraw(995, Integer.MAX_VALUE, false);
-
         var grandExchange = new GrandExchange(game);
 
         if (!grandExchange.isOpen()) {
@@ -400,19 +410,5 @@ public abstract class UtilsScript extends Plugin implements Runnable {
     protected void waitAnimationEnd(int id) {
         game.waitUntil(() -> game.localPlayer().animation() == id);
         game.waitUntil(() -> game.localPlayer().animation() == -1);
-    }
-
-    public static class ItemQuantity {
-        public final int id;
-        public int quantity;
-
-        public ItemQuantity(int id, int quantity) {
-            this.id = id;
-            this.quantity = quantity;
-        }
-
-        public String toString() {
-            return "Item: " + id + ", Quantity: " + quantity;
-        }
     }
 }

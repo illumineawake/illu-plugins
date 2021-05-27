@@ -4,6 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GrandExchangeOffer;
 import net.runelite.api.GrandExchangeOfferState;
 import net.runelite.client.plugins.iutils.game.Game;
+import net.runelite.client.plugins.iutils.game.ItemQuantity;
+import net.runelite.client.plugins.iutils.scripts.UtilsScript;
+
+import java.util.List;
 
 // TODO: selling, several offers at once, custom prices, collect to inventory
 @Slf4j
@@ -35,6 +39,12 @@ public class GrandExchange {
         game.widget(465, 27).interact(0);
         game.tick(5);
         collectToInv();
+    }
+
+    public void buy(List<ItemQuantity> items) {
+        for (ItemQuantity item : items) {
+            buy(item.id, item.quantity);
+        }
     }
 
     public void buy(int item, int quantity) {
@@ -158,11 +168,6 @@ public class GrandExchange {
     public void collectToBank() {
         game.widget(465, 6, 0).interact(1);
         game.tick(4);
-    }
-
-    public void collectToInventory() {
-        game.widget(465, 6, 0).interact(0);
-        game.sleepApproximately(2000);
     }
 
     public void collectToInv() {

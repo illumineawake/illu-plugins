@@ -19,7 +19,7 @@ public class Bank {
 
         if (game.inventory().count() != 0) {
             game.widget(12, 41).interact(0);
-            game.waitUntil(() -> game.inventory().count() == 0);
+            game.waitUntil(() -> game.inventory().count() == 0, 5);
         }
     }
 
@@ -28,7 +28,7 @@ public class Bank {
 
         if (game.equipment().count() != 0) {
             game.widget(12, 43).interact(0);
-            game.waitUntil(() -> game.equipment().count() == 0);
+            game.tick();
         }
     }
 
@@ -40,7 +40,7 @@ public class Bank {
         if (game.widget(12, 113).nestedInterface() == 664) {
             System.out.println("[Bank] Closing bank tutorial");
             game.widget(664, 9).select();
-            game.waitUntil(() -> game.widget(12, 113).nestedInterface() == -1);
+            game.tick();
         }
     }
 
