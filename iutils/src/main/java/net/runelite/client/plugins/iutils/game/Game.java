@@ -322,6 +322,21 @@ public class Game {
         return client.getItemContainer(inventoryID);
     }
 
+    /**
+     * Opens the container interface using the given index.
+     *
+     * @param index the index of the interface to open. Interface index's are in order of how they appear in game by default
+     *              e.g. inventory is 3, logout is 10
+     */
+    public void openInterface(int index)
+    {
+        if (client == null || client.getGameState() != GameState.LOGGED_IN)
+        {
+            return;
+        }
+        clientThread.invoke(() -> client.runScript(915, index)); //open inventory
+    }
+
     public void chooseNumber(int number) {
             keyboard.typeString(String.valueOf(number));
             sleep(calc.getRandomIntBetweenRange(80, 250));

@@ -36,7 +36,6 @@ public abstract class iActor implements Locatable, Interactable {
         if (interacting == null) {
             return null;
         }
-        System.out.println(interacting.toString());
         if (interacting instanceof NPC)
             return game.getFromClientThread(() -> new iNPC(game(), (NPC) interacting, client().getNpcDefinition(((NPC) interacting).getId())));
         else if (interacting instanceof Player) {

@@ -198,7 +198,7 @@ public abstract class UtilsScript extends Plugin implements Runnable {
     }
 
     protected void chatNpc(Area area, String npcName) {
-        if (area != null) {
+        if (area != null && !area.contains(game.localPlayer().position())) {
             walking.walkTo(area);
         }
 
@@ -208,7 +208,7 @@ public abstract class UtilsScript extends Plugin implements Runnable {
     }
 
     protected void chatNpc(Area area, int npcId) {
-        if (area != null) {
+        if (area != null && !area.contains(game.localPlayer().position())) {
             walking.walkTo(area);
         }
 
@@ -218,7 +218,7 @@ public abstract class UtilsScript extends Plugin implements Runnable {
     }
 
     protected void chatNpc(Area area, String npcName, String... chatOptions) {
-        if (area != null) {
+        if (area != null && !area.contains(game.localPlayer().position())) {
             walking.walkTo(area);
         }
 
@@ -228,7 +228,7 @@ public abstract class UtilsScript extends Plugin implements Runnable {
     }
 
     protected void chatNpc(Area area, int npcId, String... chatOptions) {
-        if (area != null) {
+        if (area != null && !area.contains(game.localPlayer().position())) {
             walking.walkTo(area);
         }
 
@@ -238,7 +238,7 @@ public abstract class UtilsScript extends Plugin implements Runnable {
     }
 
     protected void chatNpc(Area area, String npcName, int... chatOptions) {
-        if (area != null) {
+        if (area != null && !area.contains(game.localPlayer().position())) {
             walking.walkTo(area);
         }
 
@@ -248,7 +248,7 @@ public abstract class UtilsScript extends Plugin implements Runnable {
     }
 
     protected void chatNpc(Area area, int npcId, int... chatOptions) {
-        if (area != null) {
+        if (area != null && !area.contains(game.localPlayer().position())) {
             walking.walkTo(area);
         }
 
@@ -302,13 +302,19 @@ public abstract class UtilsScript extends Plugin implements Runnable {
     }
 
     protected void interactObject(Area area, String object, String action) {
-        walking.walkTo(area);
+        if (!area.contains(game.localPlayer().position())) {
+            walking.walkTo(area);
+        }
         game.objects().withName(object).withAction(action).nearest().interact(action);
+        game.tick();
     }
 
     protected void interactObject(Area area, int id, String action) {
-        walking.walkTo(area);
+        if (!area.contains(game.localPlayer().position())) {
+            walking.walkTo(area);
+        }
         game.objects().withId(id).withAction(action).nearest().interact(action);
+        game.tick();
     }
 
     protected void useItemItem(String item1, String item2) {
@@ -345,7 +351,7 @@ public abstract class UtilsScript extends Plugin implements Runnable {
     }
 
     protected void useItemObject(Area area, String item, String object) {
-        if (area != null) {
+        if (area != null && !area.contains(game.localPlayer().position())) {
             walking.walkTo(area);
         }
 
@@ -353,7 +359,7 @@ public abstract class UtilsScript extends Plugin implements Runnable {
     }
 
     protected void useItemObject(Area area, String item, int object) {
-        if (area != null) {
+        if (area != null && !area.contains(game.localPlayer().position())) {
             walking.walkTo(area);
         }
 

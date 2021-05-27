@@ -99,6 +99,16 @@ public class iPlayer extends iActor {
         return player.getHealthScale();
     }
 
+    public int idlePoseAnimation() {
+        return player.getIdlePoseAnimation();
+    }
+
+    public int poseAnimation() {
+        return player.getPoseAnimation();
+    }
+
+    public boolean isIdle() { return game.localPlayer().idlePoseAnimation() == game.localPlayer().poseAnimation() && player.getAnimation() == -1;}
+
     public boolean isFriend() {
         return player.isFriend();
     }

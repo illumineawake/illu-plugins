@@ -408,8 +408,6 @@ public class Walking {
     }
 
     public boolean isStill() {
-        var position = game.localPlayer().templatePosition();
-        game.tick();
-        return game.localPlayer().templatePosition().equals(position);
+        return game.localPlayer().idlePoseAnimation() == game.localPlayer().poseAnimation();
     }
 }
