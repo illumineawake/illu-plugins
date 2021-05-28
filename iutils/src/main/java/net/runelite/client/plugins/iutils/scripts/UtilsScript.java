@@ -7,10 +7,7 @@ import net.runelite.client.plugins.iutils.api.Combat;
 import net.runelite.client.plugins.iutils.api.EquipmentSlot;
 import net.runelite.client.plugins.iutils.api.Magic;
 import net.runelite.client.plugins.iutils.api.Prayers;
-import net.runelite.client.plugins.iutils.game.Game;
-import net.runelite.client.plugins.iutils.game.InventoryItem;
-import net.runelite.client.plugins.iutils.game.ItemQuantity;
-import net.runelite.client.plugins.iutils.game.iNPC;
+import net.runelite.client.plugins.iutils.game.*;
 import net.runelite.client.plugins.iutils.scene.Area;
 import net.runelite.client.plugins.iutils.scene.RectangularArea;
 import net.runelite.client.plugins.iutils.ui.*;
@@ -28,13 +25,20 @@ import java.util.stream.Collectors;
 public abstract class UtilsScript extends Plugin implements Runnable {
     protected static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3160, 3493, 3169, 3485);
 
-    @Inject protected Game game;
-    @Inject protected Walking walking;
-    @Inject protected Chatbox chatbox;
-    @Inject protected Equipment equipment;
-    @Inject protected Combat combat;
-    @Inject protected StandardSpellbook standardSpellbook;
-    @Inject protected Prayers prayers;
+    @Inject
+    protected Game game;
+    @Inject
+    protected Walking walking;
+    @Inject
+    protected Chatbox chatbox;
+    @Inject
+    protected Equipment equipment;
+    @Inject
+    protected Combat combat;
+    @Inject
+    protected StandardSpellbook standardSpellbook;
+    @Inject
+    protected Prayers prayers;
 
     protected void equip(int... ids) {
         obtain(Arrays.stream(ids)
@@ -89,8 +93,11 @@ public abstract class UtilsScript extends Plugin implements Runnable {
         }
 
         List<ItemQuantity> buyItems = new ArrayList<>();
+        log.info("Start ticking: {}", game.client.getTickCount());
+        List<iWidget> bankItems = bank().items();
+        log.info("End ticking: {}", game.client.getTickCount());
         Arrays.stream(items)
-                .map(i -> new ItemQuantity(i.id, i.quantity - bank().quantity(i.id) - game.inventory().withId(i.id).quantity()))
+                .map(i -> new ItemQuantity(i.id, i.quantity - bankItemQuantity(bankItems, i.id) - game.inventory().withId(i.id).quantity()))
                 .filter(i -> i.quantity > 0)
                 .collect(Collectors.toList())
                 .forEach(i -> {
@@ -109,6 +116,15 @@ public abstract class UtilsScript extends Plugin implements Runnable {
             grandExchange().buy(buyItems);
         }
         bank().depositInventory();
+    }
+
+    private int bankItemQuantity(List<iWidget> bankItems, int id) {
+        iWidget bankItem = bankItems.stream()
+                .filter(i -> i.itemId() == id)
+                .findFirst()
+                .orElse(null);
+
+        return bankItem == null ? 0 : bankItem.quantity();
     }
 
     protected boolean inventoryHasItems(ItemQuantity... items) {
@@ -151,6 +167,7 @@ public abstract class UtilsScript extends Plugin implements Runnable {
                 game.objects().withName("Bank chest").nearest().interact("Use");
             }
             game.waitUntil(bank::isOpen, 10);
+            game.tick();
         }
 
         return bank;

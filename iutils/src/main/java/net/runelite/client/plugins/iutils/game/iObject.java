@@ -77,9 +77,6 @@ public class iObject implements Locatable, Interactable {
     public ObjectComposition definition() {
         int[] imposter = definition.getImpostorIds();
         if (imposter != null && imposter.length > 0 && definition.getImpostor() != null) {
-//            if (definition.getImpostor() != null && definition.getImpostor().getName() != null) {
-            System.out.println("Using imposter ID ");
-            System.out.println(definition.getImpostor().getId() + " " + definition.getImpostor().getId());
             return definition.getImpostor();
         }
         return definition;
@@ -87,7 +84,6 @@ public class iObject implements Locatable, Interactable {
 
     public Point menuPoint() {
         if (tileObject instanceof GameObject) {
-            System.out.println("Is GO");
             GameObject temp = (GameObject) tileObject;
             return temp.getSceneMinLocation();
         }
@@ -123,19 +119,10 @@ public class iObject implements Locatable, Interactable {
     }
 
     public void interact(int action) {
-        log.info("Interacting with: {} {} {} {}",
-                id(),
+        game().interactionManager().interact(id(),
                 getActionId(action),
                 menuPoint().getX(),
-                menuPoint().getY());
-        game().clientThread.invoke(() -> {
-            client().invokeMenuAction("",
-                    "",
-                    id(),
-                    getActionId(action),
-                    menuPoint().getX(),
-                    menuPoint().getY()
-            );
-        });
+                menuPoint().getY()
+        );
     }
 }

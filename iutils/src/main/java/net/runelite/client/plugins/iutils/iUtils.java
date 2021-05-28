@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
+import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.callback.ClientThread;
@@ -23,6 +24,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.iObject;
+import net.runelite.client.plugins.iutils.game.iWidget;
 import net.runelite.http.api.ge.GrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
 import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
@@ -62,7 +64,7 @@ public class iUtils extends Plugin {
     private ClientThread clientThread;
 
     @Inject
-    private iUtilsConfig config;
+    public iUtilsConfig config;
 
     @Inject
     private MouseUtils mouse;
@@ -99,6 +101,7 @@ public class iUtils extends Plugin {
     public final static Set<TileObject> objects = new HashSet<>();
     public final static Set<TileItem> tileItems = new HashSet<>();
     public final static Set<NPC> npcs = new HashSet<>();
+    public final static List<iWidget> bankitems = new ArrayList<>();
 
     public boolean randomEvent;
     public static boolean iterating;
@@ -149,6 +152,7 @@ public class iUtils extends Plugin {
             objects.clear();
             npcs.clear();
             tileItems.clear();
+            bankitems.clear();
         }
     }
 
@@ -169,10 +173,14 @@ public class iUtils extends Plugin {
     }
 
     @Subscribe
-    public void onGameObjectSpawned(GameObjectSpawned event) { objects.add(event.getGameObject()); }
+    public void onGameObjectSpawned(GameObjectSpawned event) {
+        objects.add(event.getGameObject());
+    }
 
     @Subscribe
-    public void onGameObjectDespawned(GameObjectDespawned event) { objects.remove(event.getGameObject()); }
+    public void onGameObjectDespawned(GameObjectDespawned event) {
+        objects.remove(event.getGameObject());
+    }
 
     @Subscribe
     public void onDecorativeObjectSpawned(DecorativeObjectSpawned event) {
@@ -180,7 +188,9 @@ public class iUtils extends Plugin {
     }
 
     @Subscribe
-    public void onDecorativeObjectDespawned(DecorativeObjectDespawned event) { objects.remove(event.getDecorativeObject()); }
+    public void onDecorativeObjectDespawned(DecorativeObjectDespawned event) {
+        objects.remove(event.getDecorativeObject());
+    }
 
     @Subscribe
     public void onGroundObjectSpawned(GroundObjectSpawned event) {
@@ -193,10 +203,14 @@ public class iUtils extends Plugin {
     }
 
     @Subscribe
-    private void onItemSpawned(ItemSpawned event) { tileItems.add(event.getItem()); }
+    private void onItemSpawned(ItemSpawned event) {
+        tileItems.add(event.getItem());
+    }
 
     @Subscribe
-    private void onItemDespawned(ItemDespawned event) { tileItems.remove(event.getItem()); }
+    private void onItemDespawned(ItemDespawned event) {
+        tileItems.remove(event.getItem());
+    }
 
     @Subscribe
     public void npcSpawned(NpcSpawned event) {
@@ -206,6 +220,29 @@ public class iUtils extends Plugin {
     @Subscribe
     public void npcDespawned(NpcDespawned event) {
         npcs.remove(event.getNpc());
+    }
+
+    @Subscribe
+    private void onItemContainerChanged(ItemContainerChanged event) {
+        if (event.getContainerId() == InventoryID.BANK.getId()) {
+            bankitems.clear();
+            Widget[] items = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER).getDynamicChildren();
+
+            for (Widget item : items) {
+                if (item.getItemId() == 6512 || item.getItemId() == -1 || item.isHidden()) {
+                    continue;
+                }
+                bankitems.add(new iWidget(game, item));
+            }
+
+        }
+    }
+
+    @Subscribe
+    private void onWidgetClosed(WidgetClosed event) {
+        if (event.getGroupId() == 15) {
+            bankitems.clear();
+        }
     }
 
     public void doTestActionGameTick(Runnable runnable, Point point, long ticksToDelay) {

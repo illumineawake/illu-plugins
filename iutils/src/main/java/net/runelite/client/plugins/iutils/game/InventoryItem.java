@@ -83,15 +83,12 @@ public class InventoryItem implements Interactable, Useable {
     }
 
     public void interact(int action) {
-        game().clientThread.invoke(() -> {
-            game.client().invokeMenuAction("",
-                    "",
-                    id(),
-                    getActionId(action),
-                    slot(),
-                    WidgetInfo.INVENTORY.getId()
-            );
-        });
+        game().interactionManager().interact(
+                id(),
+                getActionId(action),
+                slot(),
+                WidgetInfo.INVENTORY.getId()
+        );
     }
 
     @Override

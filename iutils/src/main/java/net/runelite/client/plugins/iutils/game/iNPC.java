@@ -131,7 +131,7 @@ public class iNPC extends iActor {
                 default:
                     throw new IllegalArgumentException("action = " + action);
             }
-            client().invokeMenuAction("", "", index(), menuAction, 0, 0);
+            game().interactionManager().interact(index(), menuAction, 0, 0);
         });
     }
 

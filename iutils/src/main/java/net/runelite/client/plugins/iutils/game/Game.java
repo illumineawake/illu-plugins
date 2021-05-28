@@ -4,13 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
-import net.runelite.client.plugins.iutils.CalculationUtils;
-import net.runelite.client.plugins.iutils.KeyboardUtils;
-import net.runelite.client.plugins.iutils.WalkUtils;
+import net.runelite.client.plugins.iutils.*;
 import net.runelite.client.plugins.iutils.actor.NpcStream;
 import net.runelite.client.plugins.iutils.actor.PlayerStream;
 import net.runelite.client.plugins.iutils.api.EquipmentSlot;
-import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.plugins.iutils.scene.GameObjectStream;
 import net.runelite.client.plugins.iutils.scene.GroundItemStream;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
@@ -56,13 +53,17 @@ public class Game {
     @Inject
     private ExecutorService executorService;
 
-    private boolean tickEvent;
-
     iTile[][][] tiles = new iTile[4][104][104];
     Position base;
+    private final InteractionManager interactionManager = new InteractionManager(this);
+
 
     public Client client() {
         return client;
+    }
+
+    public iUtilsConfig config() {
+        return utils.config;
     }
 
     public ClientThread clientThread() {
@@ -81,10 +82,6 @@ public class Game {
             return supplier.get();
         }
     }
-
-//    public void onGameTick(GameTick event) {
-//        log.info("Game tick {}", System.currentTimeMillis());
-//    }
 
     public void tick(int tickMin, int tickMax) {
         Random r = new Random();
@@ -111,6 +108,15 @@ public class Game {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public void sleepDelay() {
+        sleepExact(calc.randomDelay(config().sleepWeightedDistribution(),
+                config().sleepMin(),
+                config().sleepMax(),
+                config().sleepDeviation(),
+                config().sleepTarget())
+        );
     }
 
     public iPlayer localPlayer() {
@@ -305,12 +311,12 @@ public class Game {
                 equipped.put(items[i], equipmentSlot(i));
             }
         }
-            return getFromClientThread(() -> new EquipmentItemStream(equipped.entrySet().stream()
-                    .map(i -> new EquipmentItem(this, i.getKey(), client().getItemDefinition(i.getKey().getId()), i.getValue()))
-                    .collect(Collectors.toList())
-                    .stream())
-                    .filter(Objects::nonNull)
-            );
+        return getFromClientThread(() -> new EquipmentItemStream(equipped.entrySet().stream()
+                .map(i -> new EquipmentItem(this, i.getKey(), client().getItemDefinition(i.getKey().getId()), i.getValue()))
+                .collect(Collectors.toList())
+                .stream())
+                .filter(Objects::nonNull)
+        );
     }
 
     public ItemContainer container(InventoryID inventoryID) {
@@ -328,19 +334,17 @@ public class Game {
      * @param index the index of the interface to open. Interface index's are in order of how they appear in game by default
      *              e.g. inventory is 3, logout is 10
      */
-    public void openInterface(int index)
-    {
-        if (client == null || client.getGameState() != GameState.LOGGED_IN)
-        {
+    public void openInterface(int index) {
+        if (client == null || client.getGameState() != GameState.LOGGED_IN) {
             return;
         }
         clientThread.invoke(() -> client.runScript(915, index)); //open inventory
     }
 
     public void chooseNumber(int number) {
-            keyboard.typeString(String.valueOf(number));
-            sleep(calc.getRandomIntBetweenRange(80, 250));
-            keyboard.pressKey(VK_ENTER);
+        keyboard.typeString(String.valueOf(number));
+        sleep(calc.getRandomIntBetweenRange(80, 250));
+        keyboard.pressKey(VK_ENTER);
     }
 
     public void chooseString(String text) {
@@ -376,7 +380,9 @@ public class Game {
         return getFromClientThread(() -> client.getVarpValue(id));
     }
 
-    public int energy() { return client.getEnergy(); }
+    public int energy() {
+        return client.getEnergy();
+    }
 
     public int experience(Skill skill) {
         return client.getSkillExperience(skill);
@@ -481,6 +487,10 @@ public class Game {
         }
 
         return null;
+    }
+
+    public InteractionManager interactionManager() {
+        return interactionManager;
     }
 
     public static class BaseObject {

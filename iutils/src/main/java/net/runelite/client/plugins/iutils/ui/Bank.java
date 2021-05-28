@@ -5,7 +5,13 @@ import net.runelite.api.ItemComposition;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.InventoryItem;
+import net.runelite.client.plugins.iutils.game.ItemQuantity;
 import net.runelite.client.plugins.iutils.game.iWidget;
+import net.runelite.client.plugins.iutils.iUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class Bank {
     public final Game game;
@@ -123,15 +129,40 @@ public class Bank {
         }
     }
 
+//    public HashMap<Integer, Integer> items() {
+//        HashMap<Integer, Integer> itemMap = new HashMap<>();
+//        if (!isOpen()) {
+//            throw new IllegalStateException("bank not open");
+//        }
+//
+//        List<iWidget> allItems = game.widget(WidgetInfo.BANK_ITEM_CONTAINER).items();
+//
+//        for (iWidget item : allItems) {
+//            if (item.itemId() == 6512 || item.itemId() == -1 || item.hidden()) {
+//                continue;
+//            }
+//            System.out.println("Bank item id: " + item.itemId());
+//            itemMap.put(item.itemId(), item.quantity());
+//        }
+//
+//        return itemMap;
+//    }
+
+    public List<iWidget> items() {
+        System.out.println("Bank size: " + iUtils.bankitems.size());
+        return iUtils.bankitems;
+    }
+
     public int quantity(int id) {
         if (!isOpen()) {
             throw new IllegalStateException("bank not open");
         }
-
-        for (iWidget item : game.widget(WidgetInfo.BANK_ITEM_CONTAINER).items()) {
+        List<iWidget> items = game.widget(WidgetInfo.BANK_ITEM_CONTAINER).items();
+        for (iWidget item : items) {
             if (item.itemId() == 6512 || item.itemId() == -1 || item.hidden()) {
                 continue;
             }
+            System.out.println("Bank item id: " + item.itemId());
             if (item.itemId() == id) {
                 return item.quantity();
             }

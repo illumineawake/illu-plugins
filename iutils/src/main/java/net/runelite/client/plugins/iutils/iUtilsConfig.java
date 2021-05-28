@@ -42,7 +42,7 @@ public interface iUtilsConfig extends Config
 
 	@Range(
 			min = 0,
-			max = 550
+			max = 5000
 	)
 	@ConfigItem(
 			keyName = "sleepMin",
@@ -58,7 +58,7 @@ public interface iUtilsConfig extends Config
 
 	@Range(
 			min = 0,
-			max = 550
+			max = 5000
 	)
 	@ConfigItem(
 			keyName = "sleepMax",
@@ -74,7 +74,7 @@ public interface iUtilsConfig extends Config
 
 	@Range(
 			min = 0,
-			max = 550
+			max = 5000
 	)
 	@ConfigItem(
 			keyName = "sleepTarget",
@@ -90,7 +90,7 @@ public interface iUtilsConfig extends Config
 
 	@Range(
 			min = 0,
-			max = 550
+			max = 5000
 	)
 	@ConfigItem(
 			keyName = "sleepDeviation",
