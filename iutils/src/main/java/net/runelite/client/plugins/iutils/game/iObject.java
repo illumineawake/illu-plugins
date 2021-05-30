@@ -119,7 +119,7 @@ public class iObject implements Locatable, Interactable {
     }
 
     public void interact(int action) {
-        game().interactionManager().interact(id(),
+        game.interactionManager().interact(id(),
                 getActionId(action),
                 menuPoint().getX(),
                 menuPoint().getY()

@@ -619,8 +619,32 @@ public class iUtils extends Plugin {
         action.onClientTick(event);
     }
 
+    private void checkIdleLogout() {
+        if (!config.noAFK()) {
+            return;
+        }
+
+        // Check clientside AFK first, because this is required for the server to disconnect you for being afk
+        int idleClientTicks = client.getKeyboardIdleTicks();
+
+        if (client.getMouseIdleTicks() < idleClientTicks) {
+            idleClientTicks = client.getMouseIdleTicks();
+        }
+
+        if (idleClientTicks > 12500) {
+            Random r = new Random();
+            log.info("Resetting idle");
+
+            if (r.nextBoolean())
+                client.setKeyboardIdleTicks(0);
+            else
+                client.setMouseIdleTicks(0);
+        }
+    }
+
     @Subscribe
     public void onGameTick(GameTick event) {
+        checkIdleLogout();
         tickActions = 0;
         action.onGameTick(event);
     }

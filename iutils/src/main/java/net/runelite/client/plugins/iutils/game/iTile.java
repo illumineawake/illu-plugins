@@ -16,7 +16,6 @@ import static net.runelite.api.Constants.CHUNK_SIZE;
 public class iTile implements Locatable {
     final Game game;
     final Tile tile;
-    //    List<GroundItem> items = new ArrayList<>();
     iObject regularObject;
     iObject wall;
     iObject wallDecoration;
@@ -25,7 +24,6 @@ public class iTile implements Locatable {
     iTile(Game game, Tile tile) {
         this.game = game;
         this.tile = tile;
-        //tile.getGameObjects()).filter(Objects::nonNull).findFirst().orElse(null)
     }
 
     //    @Override
@@ -61,7 +59,7 @@ public class iTile implements Locatable {
     }
 
     public void walkTo() {
-        game.clientThread.invoke(() -> game.walkUtils.sceneWalk(position(), 0, 0));
+        game.interactionManager().submit(() -> game.walkUtils.sceneWalk(position(), 0, 0));
     }
 
 //    public List<GroundItem> items() {

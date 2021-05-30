@@ -37,7 +37,10 @@ public class iWidget implements Interactable, Useable {
         return widget.getItemId();
     }
 
-    public int index() { return game.getFromClientThread(() -> widget.getIndex()); }
+    public int index() {
+//        return game.getFromClientThread(() -> widget.getIndex());
+        return widget.getIndex();
+    }
 
     public int x() {
         return widget.getOriginalX();
@@ -47,9 +50,13 @@ public class iWidget implements Interactable, Useable {
         return widget.getOriginalY();
     }
 
-    public String text() { return widget.getText(); }
+    public String text() {
+        return widget.getText();
+    }
 
-    public int quantity() { return widget.getItemQuantity(); }
+    public int quantity() {
+        return widget.getItemQuantity();
+    }
 
     public boolean hidden() {
         if (widget == null) {
@@ -110,30 +117,34 @@ public class iWidget implements Interactable, Useable {
         }
 
         throw new IllegalArgumentException("no action " + action + " on widget " + widget.getParentId() + "." + widget.getId());
-        //        throw new IllegalArgumentException("no action " + action + " on widget " + widget.getParentId() + "." + file + (child == -1 ? "" : "[" + child + "]"));
     }
 
     public void interact(int action) {
-        game().clientThread.invoke(() -> {
-            //TODO action might not require + 1 and param0 need to confirm returns -1 or child
-            client().invokeMenuAction("", "",
-                    action + 1,
-                    MenuAction.CC_OP.getId(),
-                    index(),
-                    id()
-            );
-        });
+        game().clientThread.invoke(() ->
+                client().invokeMenuAction("", "",
+                        action + 1,
+                        MenuAction.CC_OP.getId(),
+                        index(),
+                        id()
+                )
+        );
     }
 
     public void select() {
-        game().clientThread.invoke(() -> {
-            client().invokeMenuAction("", "",
-                    0,
-                    MenuAction.WIDGET_TYPE_6.getId(),
-                    index(),
-                    id()
-            );
-        });
+//        game.interactionManager().interact(
+//                0,
+//                MenuAction.WIDGET_TYPE_6.getId(),
+//                index(),
+//                id()
+//        );
+        game().clientThread.invoke(() ->
+                client().invokeMenuAction("", "",
+                        0,
+                        MenuAction.WIDGET_TYPE_6.getId(),
+                        index(),
+                        id()
+                )
+        );
     }
 
     public Widget child(int child) { //TODO untested
@@ -152,31 +163,31 @@ public class iWidget implements Interactable, Useable {
 
     @Override
     public void useOn(InventoryItem item) {
-        game.clientThread.invoke(() -> {
+        game.interactionManager().submit(() -> game.clientThread.invoke(() -> {
             game.client.setSelectedSpellWidget(id());
             game.client.setSelectedSpellChildIndex(-1);
             game.client.invokeMenuAction("", "", item.id(),
                     MenuAction.ITEM_USE_ON_WIDGET.getId(), item.slot(), WidgetInfo.INVENTORY.getId());
-        });
+        }));
     }
 
     @Override
     public void useOn(iNPC npc) {
-        game.clientThread.invoke(() -> {
+        game.interactionManager().submit(() -> game.clientThread.invoke(() -> {
             game.client.setSelectedSpellWidget(id());
             game.client.setSelectedSpellChildIndex(-1);
             game.client.invokeMenuAction("", "", npc.index(),
                     MenuAction.SPELL_CAST_ON_NPC.getId(), 0, 0);
-        });
+        }));
     }
 
     @Override
     public void useOn(iObject object) {
-        game.clientThread.invoke(() -> {
+        game.interactionManager().submit(() -> game.clientThread.invoke(() -> {
             game.client.setSelectedSpellWidget(id());
             game.client.setSelectedSpellChildIndex(-1);
             game.client.invokeMenuAction("", "", object.id(),
                     MenuAction.SPELL_CAST_ON_GAME_OBJECT.getId(), object.menuPoint().getX(), object.menuPoint().getY());
-        });
+        }));
     }
 }

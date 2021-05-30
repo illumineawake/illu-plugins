@@ -83,7 +83,7 @@ public class InventoryItem implements Interactable, Useable {
     }
 
     public void interact(int action) {
-        game().interactionManager().interact(
+        game.interactionManager().interact(
                 id(),
                 getActionId(action),
                 slot(),
@@ -93,34 +93,40 @@ public class InventoryItem implements Interactable, Useable {
 
     @Override
     public void useOn(InventoryItem item) {
-        game.clientThread.invoke(() -> {
-            game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-            game.client.setSelectedItemSlot(item.slot());
-            game.client.setSelectedItemID(item.id());
-            game.client.invokeMenuAction("", "", id(),
-                    MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId(), slot(), WidgetInfo.INVENTORY.getId());
+        game.interactionManager().submit(() -> {
+            game.clientThread.invoke(() -> {
+                game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+                game.client.setSelectedItemSlot(item.slot());
+                game.client.setSelectedItemID(item.id());
+                game.client.invokeMenuAction("", "", id(),
+                        MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId(), slot(), WidgetInfo.INVENTORY.getId());
+            });
         });
     }
 
     @Override
     public void useOn(iObject object) {
-        game.clientThread.invoke(() -> {
-            game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-            game.client.setSelectedItemSlot(slot());
-            game.client.setSelectedItemID(id());
-            game.client.invokeMenuAction("", "", object.id(),
-                    MenuAction.ITEM_USE_ON_GAME_OBJECT.getId(), object.menuPoint().getX(), object.menuPoint().getY());
+        game.interactionManager().submit(() -> {
+            game.clientThread.invoke(() -> {
+                game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+                game.client.setSelectedItemSlot(slot());
+                game.client.setSelectedItemID(id());
+                game.client.invokeMenuAction("", "", object.id(),
+                        MenuAction.ITEM_USE_ON_GAME_OBJECT.getId(), object.menuPoint().getX(), object.menuPoint().getY());
+            });
         });
     }
 
     @Override
     public void useOn(iNPC npc) {
-        game.clientThread.invoke(() -> {
-            game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-            game.client.setSelectedItemSlot(slot());
-            game.client.setSelectedItemID(id());
-            game.client.invokeMenuAction("", "", npc.index(),
-                    MenuAction.ITEM_USE_ON_NPC.getId(), 0, 0);
+        game.interactionManager().submit(() -> {
+            game.clientThread.invoke(() -> {
+                game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+                game.client.setSelectedItemSlot(slot());
+                game.client.setSelectedItemID(id());
+                game.client.invokeMenuAction("", "", npc.index(),
+                        MenuAction.ITEM_USE_ON_NPC.getId(), 0, 0);
+            });
         });
     }
 //

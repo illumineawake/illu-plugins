@@ -22,6 +22,10 @@ public class StandardSpellbook {
 
     public void lumbridgeHomeTeleport() {
         // TODO: check response to update timer in Profile
+        if (game.localPlayer().position().regionID() == 12850) {
+            return;
+        }
+
         castSpell(Magic.LUMBRIDGE_HOME_TELEPORT);
         game.waitUntil(() -> game.localPlayer().position().regionID() == 12850, 30);
         game.tick(5);

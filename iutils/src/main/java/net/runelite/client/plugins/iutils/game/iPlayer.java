@@ -117,20 +117,6 @@ public class iPlayer extends iActor {
         return player.isFriendsChatMember();
     }
 
-//    public boolean hidden() {
-//        return hidden;
-//    }
-
-//    @Override
-//    public List<HitSplat> hitSplats() {
-//        return hitsplats;
-//    }
-
-//    @Override
-//    public HealthBar healthBar() {
-//        return healthbar;
-//    }
-
     @Override
     public List<String> actions() {
         return Arrays.stream(player.getActions())
@@ -152,40 +138,31 @@ public class iPlayer extends iActor {
         throw new IllegalArgumentException("action \"" + action + "\" not found on NPC " + index());
     }
 
-    public void interact(int action) {
-        game().clientThread.invoke(() -> {
-            int menuAction;
+    private int getActionId(int action) {
+        switch (action) {
+            case 0:
+                return MenuAction.PLAYER_FIRST_OPTION.getId();
+            case 1:
+                return MenuAction.PLAYER_SECOND_OPTION.getId();
+            case 2:
+                return MenuAction.PLAYER_THIRD_OPTION.getId();
+            case 3:
+                return MenuAction.PLAYER_FOURTH_OPTION.getId();
+            case 4:
+                return MenuAction.PLAYER_FIFTH_OPTION.getId();
+            case 5:
+                return MenuAction.PLAYER_SIXTH_OPTION.getId();
+            case 6:
+                return MenuAction.PLAYER_SEVENTH_OPTION.getId();
+            case 7:
+                return MenuAction.PLAYER_EIGTH_OPTION.getId();
+            default:
+                throw new IllegalArgumentException("action = " + action);
+        }
+    }
 
-            switch (action) {
-                case 0:
-                    menuAction = MenuAction.PLAYER_FIRST_OPTION.getId();
-                    break;
-                case 1:
-                    menuAction = MenuAction.PLAYER_SECOND_OPTION.getId();
-                    break;
-                case 2:
-                    menuAction = MenuAction.PLAYER_THIRD_OPTION.getId();
-                    break;
-                case 3:
-                    menuAction = MenuAction.PLAYER_FOURTH_OPTION.getId();
-                    break;
-                case 4:
-                    menuAction = MenuAction.PLAYER_FIFTH_OPTION.getId();
-                    break;
-                case 5:
-                    menuAction = MenuAction.PLAYER_SIXTH_OPTION.getId();
-                    break;
-                case 6:
-                    menuAction = MenuAction.PLAYER_SEVENTH_OPTION.getId();
-                    break;
-                case 7:
-                    menuAction = MenuAction.PLAYER_EIGTH_OPTION.getId();
-                    break;
-                default:
-                    throw new IllegalArgumentException("action = " + action);
-            }
-            client().invokeMenuAction("", "", index(), menuAction, 0, 0);
-        });
+    public void interact(int action) {
+            game.interactionManager().interact(index(), getActionId(action), 0, 0);
     }
 
     public String toString() {

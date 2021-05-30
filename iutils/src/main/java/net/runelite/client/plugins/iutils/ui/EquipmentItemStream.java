@@ -47,7 +47,7 @@ public class EquipmentItemStream extends RandomizedStreamAdapter<EquipmentItem, 
      * {@link EquipmentItem#name()}s contain any of the given name parts
      */
     public EquipmentItemStream withNamePart(String... names) {
-        return filter(o -> Arrays.stream(names).anyMatch(name -> o.name().contains(name)));
+        return filter(o -> Arrays.stream(names).anyMatch(name -> o.name().toLowerCase().contains(name.toLowerCase())));
     }
 
     /**

@@ -1,7 +1,8 @@
 package net.runelite.client.plugins.iutils.game;
 
-import net.runelite.api.widgets.WidgetInfo;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class InteractionManager {
 
     private final Game game;

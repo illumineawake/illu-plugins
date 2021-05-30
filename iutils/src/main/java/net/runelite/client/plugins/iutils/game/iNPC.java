@@ -108,31 +108,25 @@ public class iNPC extends iActor {
         throw new IllegalArgumentException("action \"" + action + "\" not found on NPC " + id());
     }
 
-    public void interact(int action) {
-        game().clientThread.invoke(() -> {
-            int menuAction;
+    private int getActionId(int action) {
+        switch (action) {
+            case 0:
+                return MenuAction.NPC_FIRST_OPTION.getId();
+            case 1:
+                return MenuAction.NPC_SECOND_OPTION.getId();
+            case 2:
+                return MenuAction.NPC_THIRD_OPTION.getId();
+            case 3:
+                return MenuAction.NPC_FOURTH_OPTION.getId();
+            case 4:
+                return MenuAction.NPC_FIFTH_OPTION.getId();
+            default:
+                throw new IllegalArgumentException("action = " + action);
+        }
+    }
 
-            switch (action) {
-                case 0:
-                    menuAction = MenuAction.NPC_FIRST_OPTION.getId();
-                    break;
-                case 1:
-                    menuAction = MenuAction.NPC_SECOND_OPTION.getId();
-                    break;
-                case 2:
-                    menuAction = MenuAction.NPC_THIRD_OPTION.getId();
-                    break;
-                case 3:
-                    menuAction = MenuAction.NPC_FOURTH_OPTION.getId();
-                    break;
-                case 4:
-                    menuAction = MenuAction.NPC_FIFTH_OPTION.getId();
-                    break;
-                default:
-                    throw new IllegalArgumentException("action = " + action);
-            }
-            game().interactionManager().interact(index(), menuAction, 0, 0);
-        });
+    public void interact(int action) {
+        game().interactionManager().interact(index(), getActionId(action), 0, 0);
     }
 
     public String toString() {

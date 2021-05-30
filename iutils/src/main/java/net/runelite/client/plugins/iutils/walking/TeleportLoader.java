@@ -1,12 +1,18 @@
 package net.runelite.client.plugins.iutils.walking;
 
+import lombok.AllArgsConstructor;
+import net.runelite.api.ItemID;
+import net.runelite.api.Skill;
+import net.runelite.client.plugins.iutils.Spells;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.InventoryItem;
 import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.ui.Chatbox;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TeleportLoader {
     public static final int[] RING_OF_DUELING = {2552, 2554, 2556, 2558, 2560, 2562, 2564, 2566};
@@ -110,6 +116,7 @@ public class TeleportLoader {
         return teleports;
     }
 
+    //Jewellery
     private void jewelleryAction(InventoryItem item, String target) { // TODO
         item.interact("Rub");
         chatbox.chat(target);
@@ -161,5 +168,32 @@ public class TeleportLoader {
 
     private InventoryItem drakansMedallion() {
         return game.inventory().withId(DRAKANS_MEDALLION).first();
+    }
+
+    //Magic
+    private boolean varrockTeleport() {
+        return game.modifiedLevel(Skill.MAGIC) > 25 &&
+             hasRunes(
+                     new RuneRequirement(1, ItemID.AIR_RUNE),
+                     new RuneRequirement(1, ItemID.LAW_RUNE),
+                     new RuneRequirement(3, ItemID.FIRE_RUNE));
+    }
+
+    private boolean hasRunes(RuneRequirement... runes) {
+        return false;
+    }
+
+    @AllArgsConstructor
+    public static class RuneRequirement {
+        public int quantity;
+        public int runeId;
+
+        public int getQuantity(){
+            return this.quantity;
+        }
+
+        public int getRuneId(){
+            return this.runeId;
+        }
     }
 }

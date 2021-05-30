@@ -128,10 +128,22 @@ public interface iUtilsConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "noAFK",
+			name = "Prevent AFK",
+			description = "Enable to prevent logging out due to AFK.",
+			position = 7
+	)
+	default boolean noAFK()
+	{
+		return true;
+	}
+
+
+	@ConfigItem(
 			keyName = "test",
 			name = "Test ID",
 			description = "",
-			position = 7
+			position = 10
 	)
 	default int test()
 	{

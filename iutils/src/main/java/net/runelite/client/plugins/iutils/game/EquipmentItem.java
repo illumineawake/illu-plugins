@@ -77,15 +77,12 @@ public class EquipmentItem implements Interactable {
     }
 
     public void interact(int action) {
-        game().clientThread.invoke(() -> {
-            game.client().invokeMenuAction("",
-                    "",
-                    action,
-                    MenuAction.CC_OP.getId(),
-                    -1,
-                    equipmentSlot.widgetInfo.getId()
-            );
-        });
+        game.interactionManager().interact(
+                action,
+                MenuAction.CC_OP.getId(),
+                -1,
+                equipmentSlot.widgetInfo.getId()
+        );
     }
 
     public String toString() {

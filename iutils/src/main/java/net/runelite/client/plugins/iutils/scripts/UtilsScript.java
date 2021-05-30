@@ -15,10 +15,7 @@ import net.runelite.client.plugins.iutils.walking.BankLocations;
 import net.runelite.client.plugins.iutils.walking.Walking;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -97,7 +94,9 @@ public abstract class UtilsScript extends Plugin implements Runnable {
         List<iWidget> bankItems = bank().items();
         log.info("End ticking: {}", game.client.getTickCount());
         Arrays.stream(items)
-                .map(i -> new ItemQuantity(i.id, i.quantity - bankItemQuantity(bankItems, i.id) - game.inventory().withId(i.id).quantity()))
+                .filter(Objects::nonNull)
+                .map(i -> new ItemQuantity(i.id,
+                        i.quantity - bankItemQuantity(bankItems, i.id) - game.inventory().withId(i.id).quantity()))
                 .filter(i -> i.quantity > 0)
                 .collect(Collectors.toList())
                 .forEach(i -> {

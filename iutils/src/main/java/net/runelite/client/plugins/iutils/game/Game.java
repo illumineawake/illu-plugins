@@ -110,13 +110,17 @@ public class Game {
         }
     }
 
-    public void sleepDelay() {
-        sleepExact(calc.randomDelay(config().sleepWeightedDistribution(),
+    public long sleepDelay() {
+        long sleepLength = calc.randomDelay(
+                config().sleepWeightedDistribution(),
                 config().sleepMin(),
                 config().sleepMax(),
                 config().sleepDeviation(),
-                config().sleepTarget())
+                config().sleepTarget()
         );
+        sleepExact(sleepLength);
+
+        return sleepLength;
     }
 
     public iPlayer localPlayer() {

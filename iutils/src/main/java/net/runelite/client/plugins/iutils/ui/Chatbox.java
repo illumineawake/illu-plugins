@@ -113,6 +113,10 @@ public class Chatbox {
             case SPRITE:
                 game.widget(633, 0, 1).select();
                 break;
+            case LEVEL_UP:
+                game.widget(233, 3).select();
+            default:
+                throw new IllegalStateException("unknown continue chat " + chatState());
         }
     }
 
@@ -276,7 +280,7 @@ public class Chatbox {
                 break;
         }
 
-        game.waitUntil(() -> game.screenContainer().nestedInterface() != 240);
+        game.waitUntil(() -> game.screenContainer().nestedInterface() != 240, 10);
     }
 
     public void make(int index, int quantity) {
