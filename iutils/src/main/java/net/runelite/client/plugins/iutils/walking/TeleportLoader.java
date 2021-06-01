@@ -1,19 +1,27 @@
 package net.runelite.client.plugins.iutils.walking;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.iutils.Spells;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.InventoryItem;
 import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.ui.Chatbox;
+import net.runelite.client.plugins.iutils.ui.StandardSpellbook;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 
+import static net.runelite.client.plugins.iutils.walking.TeleportSpell.VARROCK_TELEPORT;
+
+@Slf4j
 public class TeleportLoader {
     public static final int[] RING_OF_DUELING = {2552, 2554, 2556, 2558, 2560, 2562, 2564, 2566};
     public static final int[] GAMES_NECKLACE = {3853, 3863, 3855, 3857, 3859, 3861, 3863, 3865, 3867};
@@ -29,14 +37,17 @@ public class TeleportLoader {
     public static final int[] SKILLS_NECKLACE = {11111, 11109, 11107, 11105, 11970, 11968};
     private final Game game;
     private final Chatbox chatbox;
+    protected StandardSpellbook standardSpellbook;
 
     public TeleportLoader(Game game) {
         this.game = game;
         this.chatbox = new Chatbox(game);
+        this.standardSpellbook = new StandardSpellbook(game);
     }
 
     public List<Teleport> buildTeleports() {
         var teleports = new ArrayList<Teleport>();
+        var playerPosition = game.localPlayer().position();
 
         if (ringOfDueling() != null) {
             teleports.add(new Teleport(new Position(3315, 3235, 0), 6, () -> jewelleryAction(ringOfDueling(), "Duel Arena")));
@@ -113,6 +124,14 @@ public class TeleportLoader {
 //            teleports.add(new Teleport(new Position(3592, 3337, 0), 0, () -> jewleryAction(drakansMedallion(), "Darkmeyer")));
 //        }
 
+        for (TeleportSpell teleportSpell : TeleportSpell.values()) {
+            if (!teleportSpell.canUse(game)) continue;
+            if (teleportSpell.getLocation().distanceTo(playerPosition) > 20) {
+                log.info("Adding teleport method: " + teleportSpell.getSpellName());
+                teleports.add(new Teleport(teleportSpell.getLocation(), 5, () -> cast(teleportSpell.getSpellName())));
+            }
+        }
+
         return teleports;
     }
 
@@ -171,29 +190,9 @@ public class TeleportLoader {
     }
 
     //Magic
-    private boolean varrockTeleport() {
-        return game.modifiedLevel(Skill.MAGIC) > 25 &&
-             hasRunes(
-                     new RuneRequirement(1, ItemID.AIR_RUNE),
-                     new RuneRequirement(1, ItemID.LAW_RUNE),
-                     new RuneRequirement(3, ItemID.FIRE_RUNE));
+    private void cast(String spellName) { // TODO
+        log.info("Casting teleport - {}", spellName);
+        standardSpellbook.castSpell(Spells.getWidget(spellName));
     }
 
-    private boolean hasRunes(RuneRequirement... runes) {
-        return false;
-    }
-
-    @AllArgsConstructor
-    public static class RuneRequirement {
-        public int quantity;
-        public int runeId;
-
-        public int getQuantity(){
-            return this.quantity;
-        }
-
-        public int getRuneId(){
-            return this.runeId;
-        }
-    }
 }

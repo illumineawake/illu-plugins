@@ -22,9 +22,6 @@ public enum RuneElement {
     NATURE("Nature"),
     SOUL("Soul");
 
-    @Inject
-    private Game game;
-
     private String[] alternativeNames;
 
     RuneElement(String... alternativeNames) {
@@ -35,11 +32,11 @@ public enum RuneElement {
         return alternativeNames;
     }
 
-    public int getCount() {
-        if (haveStaff()) {
+    public int getCount(Game game) {
+        if (haveStaff(game)) {
             return Integer.MAX_VALUE;
         }
-        List<InventoryItem> runes = game.inventory().withNamePart("Rune").all();
+        List<InventoryItem> runes = game.inventory().withNamePart("rune").all();
         List<InventoryItem> items = new ArrayList<>();
 
         for (InventoryItem rune : runes) {
@@ -55,7 +52,7 @@ public enum RuneElement {
         return items.stream().mapToInt(InventoryItem::quantity).sum() + RunePouch.getQuantity(game,this);
     }
 
-    private boolean haveStaff() {
+    private boolean haveStaff(Game game) {
         EquipmentItem item = game.equipment().withNamePart("staff").first();
 
         if (item != null) {

@@ -3,9 +3,9 @@ package net.runelite.client.plugins.iutils.scripts;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Skill;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.iutils.Spells;
 import net.runelite.client.plugins.iutils.api.Combat;
 import net.runelite.client.plugins.iutils.api.EquipmentSlot;
-import net.runelite.client.plugins.iutils.api.Magic;
 import net.runelite.client.plugins.iutils.api.Prayers;
 import net.runelite.client.plugins.iutils.game.*;
 import net.runelite.client.plugins.iutils.scene.Area;
@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class UtilsScript extends Plugin implements Runnable {
-    protected static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3160, 3493, 3169, 3485);
-
+    protected static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3212, 3425, 3213, 3426);
+//protected static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3160, 3493, 3169, 3485);
     @Inject
     protected Game game;
     @Inject
@@ -290,21 +290,21 @@ public abstract class UtilsScript extends Plugin implements Runnable {
         }
     }
 
-    protected void castSpellNpc(String name, Magic spell) {
+    protected void castSpellNpc(String name, Spells spell) {
         var npc = game.npcs().withName(name).nearest();
         castSpellNpc(npc, spell);
     }
 
-    protected void castSpellNpc(iNPC npc, Magic spell) {
+    protected void castSpellNpc(iNPC npc, Spells spell) {
         if (npc != null) {
-            game.widget(218, spell.widgetChild).useOn(npc);
+            game.widget(spell.getInfo()).useOn(npc);
             game.tick();
         }
     }
 
-    protected void castSpellItem(InventoryItem it, Magic spell) {
+    protected void castSpellItem(InventoryItem it, Spells spell) {
         if (it != null) {
-            game.widget(218, spell.widgetChild).useOn(it);
+            game.widget(spell.getInfo()).useOn(it);
             game.tick();
         }
     }

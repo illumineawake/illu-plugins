@@ -141,19 +141,24 @@ public class iWorldWalkerPlugin extends UtilsScript {
     @Override
     public void run() {
         if (client != null && client.getLocalPlayer() != null) {
-//            obtainBank(getTaskItems());
             while (startBot) {
+                log.info("Looping");
                 try {
                     walking.walkTo(new Position(getLocation()));
-                    return;
+                    startBot = false;
                 } catch (Throwable e) {
                     log.info("Caught an exception in stacktrace, restarting in 5 seconds");
                     log.info("Is thread interrupted: {}", Thread.currentThread().isInterrupted());
                     e.printStackTrace();
                     Util.sleep(5000);
                 }
+                if (!startBot) {
+                    log.info("Finished path");
+                    break;
+                }
             }
         }
+        resetVals();
     }
 
     @Subscribe

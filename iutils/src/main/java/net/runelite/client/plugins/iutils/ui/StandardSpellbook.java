@@ -1,6 +1,7 @@
 package net.runelite.client.plugins.iutils.ui;
 
-import net.runelite.client.plugins.iutils.api.Magic;
+import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.plugins.iutils.Spells;
 import net.runelite.client.plugins.iutils.game.Game;
 
 import javax.inject.Inject;
@@ -16,8 +17,12 @@ public class StandardSpellbook {
         this.game = game;
     }
 
-    public void castSpell(Magic spell) {
-        game.widget(218, spell.widgetChild).interact("Cast");
+    public void castSpell(Spells spell) {
+        castSpell(spell.getInfo());
+    }
+
+    public void castSpell(WidgetInfo spellInfo) {
+        game.widget(spellInfo).interact("Cast");
     }
 
     public void lumbridgeHomeTeleport() {
@@ -26,7 +31,7 @@ public class StandardSpellbook {
             return;
         }
 
-        castSpell(Magic.LUMBRIDGE_HOME_TELEPORT);
+        castSpell(Spells.LUMBRIDGE_TELEPORT);
         game.waitUntil(() -> game.localPlayer().position().regionID() == 12850, 30);
         game.tick(5);
     }
