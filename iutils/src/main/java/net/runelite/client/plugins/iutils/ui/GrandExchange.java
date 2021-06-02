@@ -5,7 +5,6 @@ import net.runelite.api.GrandExchangeOffer;
 import net.runelite.api.GrandExchangeOfferState;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.ItemQuantity;
-import net.runelite.client.plugins.iutils.scripts.UtilsScript;
 
 import java.util.List;
 

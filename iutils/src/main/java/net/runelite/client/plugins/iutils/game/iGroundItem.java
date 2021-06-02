@@ -1,6 +1,9 @@
 package net.runelite.client.plugins.iutils.game;
 
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.ItemComposition;
+import net.runelite.api.MenuAction;
+import net.runelite.api.TileItem;
 import net.runelite.client.plugins.iutils.api.Interactable;
 import net.runelite.client.plugins.iutils.scene.Locatable;
 import net.runelite.client.plugins.iutils.scene.Position;

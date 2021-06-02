@@ -24,8 +24,6 @@
 
 package net.runelite.client.plugins.blackjackillumine;
 
-import net.runelite.client.config.*;
-
 @ConfigGroup("blackjack")
 public interface BlackjackIllumineConfig extends Config
 {

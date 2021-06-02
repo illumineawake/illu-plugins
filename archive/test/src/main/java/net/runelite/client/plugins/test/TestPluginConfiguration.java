@@ -25,8 +25,6 @@
  */
 package net.runelite.client.plugins.test;
 
-import net.runelite.client.config.*;
-
 import java.util.function.Consumer;
 
 @ConfigGroup("Test")

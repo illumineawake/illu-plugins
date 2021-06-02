@@ -131,23 +131,22 @@ public interface iUtilsConfig extends Config
 			keyName = "noAFK",
 			name = "Prevent AFK",
 			description = "Enable to prevent logging out due to AFK.",
-			position = 7
+			position = 10
 	)
 	default boolean noAFK()
 	{
 		return true;
 	}
 
-
 	@ConfigItem(
-			keyName = "test",
-			name = "Test ID",
-			description = "",
-			position = 10
+			keyName = "teleport",
+			name = "Allow teleports",
+			description = "Enable to allow web walker to utilise teleports e.g. runes, tablets, jewellery",
+			position = 20
 	)
-	default int test()
+	default boolean teleport()
 	{
-		return 0;
+		return true;
 	}
 
 	@ConfigItem(

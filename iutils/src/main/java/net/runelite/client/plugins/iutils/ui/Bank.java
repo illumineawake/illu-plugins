@@ -5,12 +5,9 @@ import net.runelite.api.ItemComposition;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.InventoryItem;
-import net.runelite.client.plugins.iutils.game.ItemQuantity;
 import net.runelite.client.plugins.iutils.game.iWidget;
 import net.runelite.client.plugins.iutils.iUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Bank {

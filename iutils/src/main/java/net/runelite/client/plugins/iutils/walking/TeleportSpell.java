@@ -1,10 +1,16 @@
 package net.runelite.client.plugins.iutils.walking;
 
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Skill;
 import net.runelite.client.plugins.iutils.api.SpellBook;
 import net.runelite.client.plugins.iutils.game.Game;
+import net.runelite.client.plugins.iutils.game.ItemQuantity;
 import net.runelite.client.plugins.iutils.scene.Position;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
 public enum TeleportSpell {
 
     VARROCK_TELEPORT(SpellBook.Type.STANDARD, 25, new Position(3212, 3424, 0), false, "Varrock Teleport", new RuneRequirement(1, RuneElement.LAW), new RuneRequirement(3, RuneElement.AIR), new RuneRequirement(1, RuneElement.FIRE)),
@@ -42,7 +48,22 @@ public enum TeleportSpell {
 
     public Position getLocation() { return location; }
 
-    public boolean canUse(Game game) {
+    public List<ItemQuantity> recipe(Game game) {
+        List<ItemQuantity> items = new ArrayList<>();
+
+        for (RuneRequirement pair : recipe) {
+            int amountRequiredForSpell = pair.getFirst();
+            RuneElement runeElement = pair.getSecond();
+            int amount = amountRequiredForSpell - runeElement.getCount(game);
+            if (amount > 0) {
+                log.info("Adding rune(s): ID: {}, quantity: {}", pair.getSecond().getRuneId(), amount);
+                items.add(new ItemQuantity(pair.getSecond().getRuneId(), amount));
+            }
+        }
+        return items;
+    }
+
+    public boolean hasRequirements(Game game) {
         if (SpellBook.getCurrentSpellBook(game) != spellBookType) {
             return false;
         }
@@ -52,10 +73,15 @@ public enum TeleportSpell {
         if (requiredLevel > game.modifiedLevel(Skill.MAGIC)) {
             return false;
         }
-        if (Game.getWildernessLevelFrom(game.client().getLocalPlayer().getWorldLocation()) > 20) {
+        if (this == ARDOUGNE_TELEPORT && game.varp(165) < 30) { //TODO may cause issues
             return false;
         }
-        if (this == ARDOUGNE_TELEPORT && game.varp(165) < 30) { //TODO may cause issues
+
+        return true;
+    }
+
+    public boolean canUse(Game game) {
+        if (!hasRequirements(game)) {
             return false;
         }
 

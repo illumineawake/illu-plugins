@@ -26,7 +26,6 @@
 package net.runelite.client.plugins.essencehighlighter;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.client.game.SkillIconManager;
 import net.runelite.client.ui.overlay.Overlay;

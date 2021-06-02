@@ -15,13 +15,16 @@ import net.runelite.client.plugins.iutils.walking.BankLocations;
 import net.runelite.client.plugins.iutils.walking.Walking;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class UtilsScript extends Plugin implements Runnable {
     protected static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3212, 3425, 3213, 3426);
-//protected static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3160, 3493, 3169, 3485);
+
     @Inject
     protected Game game;
     @Inject
@@ -74,6 +77,16 @@ public abstract class UtilsScript extends Plugin implements Runnable {
 
         obtainBank(items);
         withdraw(items);
+    }
+
+    protected void obtain(List<ItemQuantity> items) {
+        ItemQuantity[] itemArray = items.toArray(ItemQuantity[]::new);
+        if (hasItems(itemArray)) {
+            return;
+        }
+
+        obtainBank(itemArray);
+        withdraw(itemArray);
     }
 
     protected void withdraw(ItemQuantity... items) {

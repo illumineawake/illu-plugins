@@ -1,10 +1,6 @@
 package net.runelite.client.plugins.iutils.walking;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ItemID;
-import net.runelite.api.Skill;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.iutils.Spells;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.InventoryItem;
@@ -12,14 +8,8 @@ import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.ui.Chatbox;
 import net.runelite.client.plugins.iutils.ui.StandardSpellbook;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.BooleanSupplier;
-
-import static net.runelite.client.plugins.iutils.walking.TeleportSpell.VARROCK_TELEPORT;
 
 @Slf4j
 public class TeleportLoader {
@@ -47,6 +37,11 @@ public class TeleportLoader {
 
     public List<Teleport> buildTeleports() {
         var teleports = new ArrayList<Teleport>();
+
+        if (!game.config().teleport()) {
+            return teleports;
+        }
+
         var playerPosition = game.localPlayer().position();
 
         if (game.membersWorld()) {
@@ -82,8 +77,8 @@ public class TeleportLoader {
 
             if (ringOfWealth() != null) {
                 teleports.add(new Teleport(new Position(3163, 3478, 0), 2, () -> jewelleryAction(ringOfWealth(), "Grand Exchange")));
-                //teleports.add(new Teleport(new Position(2996, 3375, 0), 2, () -> jewleryAction(ringOfWealth(), "Falador")));
-//            teleports.add(new Teleport(new Position, 2, () -> jewleryAction(ringOfWealth(), "Miscellania")));
+                //teleports.add(new Teleport(new Position(2996, 3375, 0), 2, () -> jewelleryAction(ringOfWealth(), "Falador")));
+//            teleports.add(new Teleport(new Position, 2, () -> jewelleryAction(ringOfWealth(), "Miscellania")));
                 teleports.add(new Teleport(new Position(2829, 10167, 0), 2, () -> jewelleryAction(ringOfWealth(), "Dondakan")));
             }
 
@@ -121,14 +116,16 @@ public class TeleportLoader {
             }
 
 //        if (drakansMedallion() != null) {
-//            teleports.add(new Teleport(new Position(3649, 3230, 0), 0, () -> jewleryAction(drakansMedallion(), "Ver Sinhaza")));
-//            teleports.add(new Teleport(new Position(3592, 3337, 0), 0, () -> jewleryAction(drakansMedallion(), "Darkmeyer")));
+//            teleports.add(new Teleport(new Position(3649, 3230, 0), 0, () -> jewelleryAction(drakansMedallion(), "Ver Sinhaza")));
+//            teleports.add(new Teleport(new Position(3592, 3337, 0), 0, () -> jewelleryAction(drakansMedallion(), "Darkmeyer")));
 //        }
 
-            for (TeleportTab teleportTab : TeleportTab.values()) {
-                if (teleportTab.canUse(game)) {
-                    log.info("Adding teleport tab: {}", teleportTab.getTabletName());
-                    teleports.add(new Teleport(teleportTab.getLocation(), 5, () -> inventoryAction(teleportTab.getTabletName(), "Break")));
+            if (Game.getWildernessLevelFrom(game.client().getLocalPlayer().getWorldLocation()) <= 20) {
+                for (TeleportTab teleportTab : TeleportTab.values()) {
+                    if (teleportTab.canUse(game) && teleportTab.getLocation().distanceTo(playerPosition) > 20) {
+                        log.info("Adding teleport tab: {}", teleportTab.getTabletName());
+                        teleports.add(new Teleport(teleportTab.getLocation(), 5, () -> inventoryAction(teleportTab.getTabletName(), "Break")));
+                    }
                 }
             }
         }
@@ -204,6 +201,7 @@ public class TeleportLoader {
         standardSpellbook.castSpell(Spells.getWidget(spellName));
     }
 
+    //Inventory items - tablets, scrolls, equipment(?)
     private void inventoryAction(String itemName, String action) {
         game.inventory().withName(itemName).withAction(action).first().interact(action);
     }

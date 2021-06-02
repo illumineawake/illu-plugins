@@ -12,7 +12,6 @@ import net.runelite.client.util.ColorUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;

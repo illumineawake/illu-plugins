@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.plugins.iutils.game.Game;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Arrays;
 
 @Slf4j

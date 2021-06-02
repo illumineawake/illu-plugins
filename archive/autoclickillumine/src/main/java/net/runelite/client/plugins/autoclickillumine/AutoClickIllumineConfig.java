@@ -5,8 +5,6 @@
  */
 package net.runelite.client.plugins.autoclickillumine;
 
-import net.runelite.client.config.*;
-
 @ConfigGroup("autoClickIllumineConfig")
 public interface AutoClickIllumineConfig extends Config
 {

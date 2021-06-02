@@ -36,7 +36,6 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
-import net.runelite.client.plugins.*;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import org.pf4j.Extension;

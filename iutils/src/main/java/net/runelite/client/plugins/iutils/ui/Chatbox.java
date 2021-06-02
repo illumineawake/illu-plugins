@@ -2,7 +2,6 @@ package net.runelite.client.plugins.iutils.ui;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Skill;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.iutils.game.Game;
 
 import javax.inject.Inject;
