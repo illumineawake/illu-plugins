@@ -30,8 +30,10 @@ public enum TeleportTab {
     private final int tabletId;
 
     public boolean canUse(Game game) {
-        if (!game.membersWorld())
         if (this == SALVE_GRAVEYARD_TELEPORT_TAB && game.varp(302) < 61) {
+            return false;
+        }
+        if (this == ARDOUGNE_TELEPORT_TAB && game.varp(165) < 30) {
             return false;
         }
 

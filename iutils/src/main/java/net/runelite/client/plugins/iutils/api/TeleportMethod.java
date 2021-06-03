@@ -1,5 +1,7 @@
-package net.runelite.client.plugins.iutils.game;
+package net.runelite.client.plugins.iutils.api;
 
+import net.runelite.client.plugins.iutils.game.Game;
+import net.runelite.client.plugins.iutils.game.ItemQuantity;
 import net.runelite.client.plugins.iutils.walking.TeleportSpell;
 import net.runelite.client.plugins.iutils.walking.TeleportTab;
 
