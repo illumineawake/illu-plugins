@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class UtilsScript extends Plugin implements Runnable {
-    protected static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3212, 3425, 3213, 3426);
+    protected static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3156, 3492, 3168, 3484);
 
     @Inject
     protected Game game;
