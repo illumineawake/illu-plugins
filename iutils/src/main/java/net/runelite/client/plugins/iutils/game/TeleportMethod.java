@@ -8,14 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TeleportMethod {
-    @Inject private Game game;
 
+    private Game game;
     private TeleportLocation teleportLocation;
     private int quantity;
 
-    public TeleportMethod(TeleportLocation teleportLocation, int quantity) {
+    public TeleportMethod(Game game, TeleportLocation teleportLocation, int quantity) {
         this.teleportLocation = teleportLocation;
         this.quantity = quantity;
+        this.game = game;
     }
 
     public List<ItemQuantity> getItems() {

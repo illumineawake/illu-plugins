@@ -61,7 +61,6 @@ public class Game {
     Position base;
     private final InteractionManager interactionManager = new InteractionManager(this);
 
-
     public Client client() {
         return client;
     }
