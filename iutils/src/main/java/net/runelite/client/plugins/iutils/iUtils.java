@@ -40,6 +40,8 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
+import static java.awt.event.KeyEvent.*;
+
 /**
  *
  */
@@ -83,6 +85,9 @@ public class iUtils extends Plugin {
 
     @Inject
     private InterfaceUtils interfaceUtils;
+
+    @Inject
+    private KeyboardUtils keyboard;
 
     @Inject
     private ChatMessageManager chatMessageManager;
@@ -635,10 +640,14 @@ public class iUtils extends Plugin {
             Random r = new Random();
             log.info("Resetting idle");
 
-            if (r.nextBoolean())
-                client.setKeyboardIdleTicks(0);
-            else
-                client.setMouseIdleTicks(0);
+            if (r.nextBoolean()) {
+                keyboard.pressKey(VK_LEFT);
+            } else {
+                keyboard.pressKey(VK_RIGHT);
+            }
+
+            client.setKeyboardIdleTicks(0);
+            client.setMouseIdleTicks(0);
         }
     }
 

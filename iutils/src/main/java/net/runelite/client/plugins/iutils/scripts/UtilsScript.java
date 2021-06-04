@@ -171,8 +171,9 @@ public abstract class UtilsScript extends Plugin implements Runnable {
 
         if (!bank.isOpen()) {
             BankLocations.walkToBank(game);
-            if (game.npcs().withName("Banker").exists()) {
-                game.npcs().withName("Banker").nearest().interact("Bank");
+            if (game.npcs().withName("Banker").withAction("Bank").exists()) {
+                log.info("{}", game.npcs().withName("Banker").nearest().id());
+                game.npcs().withName("Banker").withAction("Bank").nearest().interact("Bank");
             } else if (game.objects().withName("Bank booth").withAction("Bank").exists()) {
                 game.objects().withName("Bank booth").withAction("Bank").nearest().interact("Bank");
             } else {
