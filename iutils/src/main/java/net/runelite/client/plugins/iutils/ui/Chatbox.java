@@ -114,6 +114,7 @@ public class Chatbox {
                 break;
             case LEVEL_UP:
                 game.widget(233, 3).select();
+                break;
             default:
                 throw new IllegalStateException("unknown continue chat " + chatState());
         }
@@ -167,6 +168,7 @@ public class Chatbox {
         }
 
         if (game.widget(219, 1, option).text() != null) {
+            log.info("Selecting chat option from integer: {}", game.widget(219, 1, option).text());
             game.widget(219, 1, option).select();
             game.waitChange(this::chatState, 6);
             return;

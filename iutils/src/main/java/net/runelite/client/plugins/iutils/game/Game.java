@@ -367,12 +367,17 @@ public class Game {
         clientThread.invoke(() -> client.runScript(754, item, 84));
     }
 
-
     /**
      * The widget which contains all screens (bank, grand exchange, trade, etc.)
      */
     public iWidget screenContainer() {
-        return client.isResized() ? widget(164, 15) : widget(548, 23); //Modern or fixed TODO support classic resizable
+        if (client.isResized()) {
+            if (varb(4607) == 0) {
+                return widget(161, 15); //classic resizable
+            }
+            return widget(164, 15); //modern resizable
+        }
+        return widget(548, 23); //fixed
     }
 
     ///////////////////////////////////////////////////

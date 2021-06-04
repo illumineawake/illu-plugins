@@ -132,7 +132,7 @@ public class TeleportLoader {
 
         for (TeleportSpell teleportSpell : TeleportSpell.values()) {
             if (!teleportSpell.canUse(game)) continue;
-            if (teleportSpell.getLocation().distanceTo(playerPosition) > 20) {
+            if (teleportSpell.getLocation().distanceTo(playerPosition) > 50) {
                 log.info("Adding teleport method: " + teleportSpell.getSpellName());
                 teleports.add(new Teleport(teleportSpell.getLocation(), 5, () -> cast(teleportSpell.getSpellName())));
             }
