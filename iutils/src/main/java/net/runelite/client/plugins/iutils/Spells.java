@@ -124,6 +124,7 @@ public enum Spells
 	KOUREND_CASTLE_TELEPORT("Kourend Castle Teleport", WidgetInfo.SPELL_TELEPORT_TO_KOUREND),
 	LOW_LEVEL_ALCHEMY("Low Level Alchemy", WidgetInfo.SPELL_LOW_LEVEL_ALCHEMY),
 	LUMBRIDGE_TELEPORT("Lumbridge Teleport", WidgetInfo.SPELL_LUMBRIDGE_TELEPORT),
+	LUMBRIDGE_HOME_TELEPORT("Lumbridge Home Teleport", WidgetInfo.SPELL_LUMBRIDGE_HOME_TELEPORT),
 	LVL1_ENCHANT("Lvl-1 Enchant", WidgetInfo.SPELL_LVL_1_ENCHANT),
 	LVL2_ENCHANT("Lvl-2 Enchant", WidgetInfo.SPELL_LVL_2_ENCHANT),
 	LVL3_ENCHANT("Lvl-3 Enchant", WidgetInfo.SPELL_LVL_3_ENCHANT),

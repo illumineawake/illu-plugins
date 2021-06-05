@@ -2,10 +2,12 @@ package net.runelite.client.plugins.iutils.api;
 
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.ItemQuantity;
+import net.runelite.client.plugins.iutils.game.iWidget;
+import net.runelite.client.plugins.iutils.ui.Bank;
+import net.runelite.client.plugins.iutils.walking.BankLocations;
 import net.runelite.client.plugins.iutils.walking.TeleportSpell;
 import net.runelite.client.plugins.iutils.walking.TeleportTab;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,9 +27,16 @@ public class TeleportMethod {
         List<ItemQuantity> items = new ArrayList<>();
         TeleportTab tabLocation = this.teleportLocation.getTeleportTab();
         TeleportSpell locationSpell = this.teleportLocation.getTeleportSpell();
+        int[][] itemIds = this.teleportLocation.getItemIds();
 
-        if (tabLocation.canUse(game) && game.membersWorld()) {
-            return List.of(new ItemQuantity(tabLocation.getTabletId(), this.quantity));
+        if (game.membersWorld()) {
+            if (tabLocation.canUse(game)) {
+                return List.of(new ItemQuantity(tabLocation.getTabletId(), this.quantity));
+            }
+
+            if (itemIds != null && itemIds.length > 0) {
+                return List.of(new ItemQuantity(itemIds[0][0], 1));
+            }
         }
 
         if (locationSpell != null && locationSpell.hasRequirements(game)) {
@@ -38,5 +47,91 @@ public class TeleportMethod {
         }
 
         return items;
+    }
+
+    public boolean getTeleport(boolean checkBank) {
+        if (hasTeleport()) {
+            return true;
+        }
+
+        if (checkBank) {
+            TeleportTab tabLocation = this.teleportLocation.getTeleportTab();
+            TeleportSpell locationSpell = this.teleportLocation.getTeleportSpell();
+            int[][] itemIds = this.teleportLocation.getItemIds();
+
+            var bankItems = bank().items();
+
+            if (bank().withdraw(tabLocation.getTabletId(), 1, false) != 0) {
+                return true;
+            }
+
+            if (locationSpell != null) {
+                List<ItemQuantity> recipe = locationSpell.recipe(game);
+                if (bank().contains(recipe)) {
+                    for (ItemQuantity item : recipe) {
+                        bank().withdraw(item.id, item.quantity, false);
+                    }
+                    return true;
+                }
+            }
+
+            if (itemIds != null && itemIds.length > 0) {
+                for (int[] itemId : itemIds) {
+                    for (int id : itemId) {
+                        for (iWidget bankItem : bankItems) {
+                            if (bankItem.itemId() == id) {
+                                return bank().withdraw(id, 1, false) != 0;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean hasTeleport() {
+        TeleportTab tabLocation = this.teleportLocation.getTeleportTab();
+        TeleportSpell locationSpell = this.teleportLocation.getTeleportSpell();
+        int[][] itemIds = this.teleportLocation.getItemIds();
+
+        if (tabLocation.canUse(game) && game.membersWorld()) {
+            return true;
+        }
+
+        if (locationSpell != null && locationSpell.canUse(game)) {
+            return true;
+        }
+
+        if (itemIds != null && itemIds.length > 0) {
+            for (int[] itemId : itemIds) {
+                if (game.equipment().withId(itemId).exists() || game.inventory().withId(itemId).exists()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    protected Bank bank() {
+        var bank = new Bank(game);
+
+        if (!bank.isOpen()) {
+            BankLocations.walkToBank(game);
+            if (game.npcs().withName("Banker").withAction("Bank").exists()) {
+                game.npcs().withName("Banker").withAction("Bank").nearest().interact("Bank");
+            } else if (game.objects().withName("Bank booth").withAction("Bank").exists()) {
+                game.objects().withName("Bank booth").withAction("Bank").nearest().interact("Bank");
+            } else {
+                game.objects().withName("Bank chest").nearest().interact("Use");
+            }
+            game.waitUntil(bank::isOpen, 10);
+            game.tick();
+        }
+
+        return bank;
     }
 }

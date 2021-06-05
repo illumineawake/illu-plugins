@@ -6,6 +6,7 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.iutils.api.Interactable;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -52,6 +53,16 @@ public class iWidget implements Interactable, Useable {
 
     public String text() {
         return widget.getText();
+    }
+
+    public String name() {
+        if (widget.getName().contains(">")) {
+            String result = StringUtils.substringBetween(widget.getName()
+                    , ">"
+                    , "<");
+            return result;
+        }
+        return widget.getName();
     }
 
     public int quantity() {

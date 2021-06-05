@@ -5,9 +5,11 @@ import net.runelite.api.ItemComposition;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.InventoryItem;
+import net.runelite.client.plugins.iutils.game.ItemQuantity;
 import net.runelite.client.plugins.iutils.game.iWidget;
 import net.runelite.client.plugins.iutils.iUtils;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Bank {
@@ -106,6 +108,16 @@ public class Bank {
         return 0;
     }
 
+    public boolean contains(ItemQuantity... items) {
+        return Arrays.stream(items).allMatch(i -> items().stream()
+                .anyMatch(b -> b.itemId() == i.id && b.quantity() >= i.quantity));
+    }
+
+    public boolean contains(List<ItemQuantity> items) {
+        return items.stream().allMatch(i -> items().stream()
+                .anyMatch(b -> b.itemId() == i.id && b.quantity() >= i.quantity));
+    }
+
     private void setNotedMode(boolean noted) {
         if (noted != withdrawNoted()) {
             if (!noted) {
@@ -146,7 +158,6 @@ public class Bank {
 //    }
 
     public List<iWidget> items() {
-        System.out.println("Bank size: " + iUtils.bankitems.size());
         return iUtils.bankitems;
     }
 

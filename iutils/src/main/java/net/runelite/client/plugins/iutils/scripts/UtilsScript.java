@@ -4,9 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Skill;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.iutils.Spells;
-import net.runelite.client.plugins.iutils.api.Combat;
-import net.runelite.client.plugins.iutils.api.EquipmentSlot;
-import net.runelite.client.plugins.iutils.api.Prayers;
+import net.runelite.client.plugins.iutils.api.*;
 import net.runelite.client.plugins.iutils.game.*;
 import net.runelite.client.plugins.iutils.scene.Area;
 import net.runelite.client.plugins.iutils.scene.RectangularArea;
@@ -82,10 +80,12 @@ public abstract class UtilsScript extends Plugin implements Runnable {
     protected void obtain(List<ItemQuantity> items) {
         ItemQuantity[] itemArray = items.toArray(ItemQuantity[]::new);
         if (hasItems(itemArray)) {
+            log.info(".");
             return;
         }
-
+    log.info("..");
         obtainBank(itemArray);
+        log.info("...");
         withdraw(itemArray);
     }
 
@@ -103,9 +103,7 @@ public abstract class UtilsScript extends Plugin implements Runnable {
         }
 
         List<ItemQuantity> buyItems = new ArrayList<>();
-        log.info("Start ticking: {}", game.client.getTickCount());
         List<iWidget> bankItems = bank().items();
-        log.info("End ticking: {}", game.client.getTickCount());
         Arrays.stream(items)
                 .filter(Objects::nonNull)
                 .map(i -> new ItemQuantity(i.id,
@@ -124,7 +122,9 @@ public abstract class UtilsScript extends Plugin implements Runnable {
                         buyItems.add(i);
                     }
                 });
+        log.info("here");
         if (!buyItems.isEmpty()) {
+            log.info("BuyItems: {}", buyItems.toString());
             grandExchange().buy(buyItems);
         }
         bank().depositInventory();
@@ -148,7 +148,7 @@ public abstract class UtilsScript extends Plugin implements Runnable {
         return true;
     }
 
-    protected boolean hasItems(ItemQuantity... items) { //TODO needs fixing
+    protected boolean hasItems(ItemQuantity... items) {
         for (var item : items) {
             if (equipment.quantity(item.id) < item.quantity && game.inventory().withId(item.id).quantity() < item.quantity) {
                 return false;
@@ -172,7 +172,6 @@ public abstract class UtilsScript extends Plugin implements Runnable {
         if (!bank.isOpen()) {
             BankLocations.walkToBank(game);
             if (game.npcs().withName("Banker").withAction("Bank").exists()) {
-                log.info("{}", game.npcs().withName("Banker").nearest().id());
                 game.npcs().withName("Banker").withAction("Bank").nearest().interact("Bank");
             } else if (game.objects().withName("Bank booth").withAction("Bank").exists()) {
                 game.objects().withName("Bank booth").withAction("Bank").nearest().interact("Bank");
@@ -188,6 +187,10 @@ public abstract class UtilsScript extends Plugin implements Runnable {
 
     protected GrandExchange grandExchange() {
         if (!GRAND_EXCHANGE.contains(game.localPlayer().position())) {
+            if (GRAND_EXCHANGE.distanceTo(game.localPlayer().position()) > 50) {
+                TeleportMethod varrockTeleport = new TeleportMethod(game, TeleportLocation.VARROCK, 1);
+                varrockTeleport.getTeleport(true);
+            }
             walking.walkTo(GRAND_EXCHANGE);
         }
 

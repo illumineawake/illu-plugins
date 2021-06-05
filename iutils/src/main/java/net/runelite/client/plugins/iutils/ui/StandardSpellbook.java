@@ -31,8 +31,8 @@ public class StandardSpellbook {
             return;
         }
 
-        castSpell(Spells.TELEOTHER_LUMBRIDGE);
+        castSpell(Spells.LUMBRIDGE_HOME_TELEPORT);
         game.waitUntil(() -> game.localPlayer().position().regionID() == 12850, 30);
-        game.tick(5);
+        game.tick(3);
     }
 }

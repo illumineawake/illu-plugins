@@ -16,8 +16,8 @@ public class TeleportLoader {
     public static final int[] RING_OF_DUELING = {2552, 2554, 2556, 2558, 2560, 2562, 2564, 2566};
     public static final int[] GAMES_NECKLACE = {3853, 3863, 3855, 3857, 3859, 3861, 3863, 3865, 3867};
     public static final int[] COMBAT_BRACELET = {11972, 11974, 11118, 11120, 11122, 11124};
-    public static final int[] RING_OF_WEALTH = {11980, 11982, 11984, 11986, 11988};
-    public static final int[] AMULET_OF_GLORY = {1706, 1708, 1710, 1712, 11976, 11978};
+    public static final int[] RING_OF_WEALTH = {11982, 11980, 11984, 11986, 11988};
+    public static final int[] AMULET_OF_GLORY = {1712, 1706, 1708, 1710, 11976, 11978};
     public static final int[] NECKLACE_OF_PASSAGE = {21146, 21149, 21151, 21153, 21155};
     public static final int[] BURNING_AMULET = {21166, 21171, 21173, 21175, 21167};
     public static final int XERICS_TALISMAN = 13393;
