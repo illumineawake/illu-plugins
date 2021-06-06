@@ -71,7 +71,7 @@ public class iWidget implements Interactable, Useable {
 
     public boolean hidden() {
         if (widget == null) {
-            System.out.println("Widget is null");
+            return true;
         }
         return game.getFromClientThread(widget::isHidden);
     }

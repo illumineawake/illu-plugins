@@ -560,6 +560,17 @@ public interface iWorldWalkerConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "closeMap",
+			name = "Close Map",
+			description = "Enable to close the world map after selecting your destination",
+			position = 147
+	)
+	default boolean closeMap()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "enableUI",
 		name = "Enable UI",
 		description = "Enable to turn on in game UI",

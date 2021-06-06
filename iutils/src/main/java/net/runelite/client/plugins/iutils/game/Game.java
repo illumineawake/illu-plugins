@@ -274,7 +274,7 @@ public class Game {
     }
 
     public iWidget widget(int group, int file) {
-        return getFromClientThread(() -> new iWidget(this, client.getWidget(group, file)));
+        return new iWidget(this, client.getWidget(group, file));
     }
 
     public iWidget widget(int group, int file, int child) {

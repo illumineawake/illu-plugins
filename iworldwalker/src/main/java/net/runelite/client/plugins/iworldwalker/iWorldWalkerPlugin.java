@@ -47,8 +47,7 @@ import net.runelite.client.plugins.iutils.WalkUtils;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.plugins.iutils.scene.Position;
-import net.runelite.client.plugins.iutils.scripts.UtilsScript;
-import net.runelite.client.plugins.iutils.util.Util;
+import net.runelite.client.plugins.iutils.scripts.iScript;
 import net.runelite.client.plugins.iutils.walking.Walking;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.worldmap.WorldMapOverlay;
@@ -70,7 +69,7 @@ import java.util.List;
         tags = {"illumine", "walk", "web", "travel", "bot"}
 )
 @Slf4j
-public class iWorldWalkerPlugin extends UtilsScript {
+public class iWorldWalkerPlugin extends iScript {
     @Inject
     private Client client;
 
@@ -137,30 +136,51 @@ public class iWorldWalkerPlugin extends UtilsScript {
 
     @Override
     protected void shutDown() {
-        resetVals();
+
     }
 
     @Override
-    public void run() {
-        if (client != null && client.getLocalPlayer() != null) {
-            while (startBot) {
-                log.info("Looping");
-                try {
-                    walking.walkTo(new Position(getLocation()));
-                    startBot = false;
-                } catch (Throwable e) {
-                    log.info("Caught an exception in stacktrace, restarting in 5 seconds");
-                    log.info("Is thread interrupted: {}", Thread.currentThread().isInterrupted());
-                    e.printStackTrace();
-                    Util.sleep(5000);
-                }
-                if (!startBot) {
-                    log.info("Finished path");
-                    break;
+    protected void onStart() {
+        log.info("Starting World Walker");
+        player = client.getLocalPlayer();
+        if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN) {
+            beforeLoc = client.getLocalPlayer().getLocalLocation();
+            timeout = 0;
+            state = null;
+            botTimer = Instant.now();
+            overlayManager.add(overlay);
+            if (config.category().equals(Category.CUSTOM)) {
+                customLocation = getCustomLoc();
+                if (customLocation != null) {
+                    log.info("Custom location set to: {}", customLocation);
+                } else {
+                    utils.sendGameMessage("Invalid custom location provided: " + config.customLocation());
+                    log.info("Invalid custom location provided: {}", config.customLocation());
+                    stop();
                 }
             }
+        } else {
+            stop();
         }
-        resetVals();
+    }
+
+    @Override
+    protected void onStop() {
+        log.info("Stopping World Walker");
+        overlayManager.remove(overlay);
+        botTimer = null;
+        customLocation = null;
+        mapPoint = null;
+        state = null;
+    }
+
+    @Override
+    protected void loop() {
+        if (client != null && client.getLocalPlayer() != null) {
+            log.info("Looping");
+            walking.walkTo(new Position(getLocation()));
+            stop();
+        }
     }
 
     @Subscribe
@@ -170,40 +190,12 @@ public class iWorldWalkerPlugin extends UtilsScript {
         }
         log.debug("button {} pressed!", configButtonClicked.getKey());
         if (configButtonClicked.getKey().equals("startButton")) {
-            if (!startBot) {
-                player = client.getLocalPlayer();
-                if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN) {
-                    startVals();
-                    if (config.category().equals(Category.CUSTOM)) {
-                        customLocation = getCustomLoc();
-                        if (customLocation != null) {
-                            log.info("Custom location set to: {}", customLocation);
-                        } else {
-                            utils.sendGameMessage("Invalid custom location provided: " + config.customLocation());
-                            log.info("Invalid custom location provided: {}", config.customLocation());
-                            resetVals();
-                        }
-                    }
-                    thread = new Thread(this);
-                    thread.start();
-                } else {
-                    log.info("Start World Walker logged in!");
-                    resetVals();
-                }
+            if (!started()) {
+                start();
             } else {
-                resetVals();
+                stop();
             }
         }
-    }
-
-    private void startVals() {
-        log.debug("starting World Walker plugin");
-        startBot = true;
-        beforeLoc = client.getLocalPlayer().getLocalLocation();
-        timeout = 0;
-        state = null;
-        botTimer = Instant.now();
-        overlayManager.add(overlay);
     }
 
     private WorldPoint getCustomLoc() {
@@ -272,22 +264,10 @@ public class iWorldWalkerPlugin extends UtilsScript {
                     } else {
                         utils.sendGameMessage("Invalid custom location provided: " + config.customLocation());
                         log.info("Invalid custom location provided: {}", config.customLocation());
-                        resetVals();
+                        stop();
                     }
                 }
         }
-    }
-
-    private void resetVals() {
-        log.debug("stopping World Walker plugin");
-        overlayManager.remove(overlay);
-        startBot = false;
-        botTimer = null;
-        customLocation = null;
-        mapPoint = null;
-        state = null;
-        thread.interrupt();
-        thread = null;
     }
 
     private long sleepDelay() {
@@ -427,13 +407,14 @@ public class iWorldWalkerPlugin extends UtilsScript {
                 thread = null;
             }
             mapPoint = calculateMapPoint(client.isMenuOpen() ? lastMenuOpenedPoint : client.getMouseCanvasPosition());
-            startVals();
-            thread = new Thread(this);
-            thread.start();
+            if (config.closeMap() && !game.widget(595, 38).hidden()) {
+                game.widget(595, 38).interact("Close");
+            }
+            start();
         }
         if (event.getMenuOption().equals("illu-Clear Destination")) {
             mapPoint = null;
-            resetVals();
+            stop();
         }
     }
 

@@ -1,5 +1,6 @@
 package net.runelite.client.plugins.iutils.scripts;
 
+import com.google.inject.Injector;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Skill;
 import net.runelite.client.plugins.Plugin;
@@ -20,7 +21,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class UtilsScript extends Plugin implements Runnable {
+public abstract class UtilsScript extends Plugin {
     protected static final RectangularArea GRAND_EXCHANGE = new RectangularArea(3156, 3492, 3168, 3484);
 
     @Inject
@@ -37,6 +38,8 @@ public abstract class UtilsScript extends Plugin implements Runnable {
     protected StandardSpellbook standardSpellbook;
     @Inject
     protected Prayers prayers;
+    @Inject
+    protected Injector injector;
 
     protected void equip(int... ids) {
         obtain(Arrays.stream(ids)
@@ -83,7 +86,7 @@ public abstract class UtilsScript extends Plugin implements Runnable {
             log.info(".");
             return;
         }
-    log.info("..");
+        log.info("..");
         obtainBank(itemArray);
         log.info("...");
         withdraw(itemArray);
