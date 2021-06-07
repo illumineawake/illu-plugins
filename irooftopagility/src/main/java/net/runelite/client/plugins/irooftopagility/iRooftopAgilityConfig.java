@@ -272,38 +272,65 @@ public interface iRooftopAgilityConfig extends Config {
         return true;
     }
 
-    @ConfigItem(
-            keyName = "lowHP",
-            name = "Stop at HP",
-            description = "Stop if HP goes below given threshold",
-            position = 20,
-            title = "agilityTitle"
-    )
-    default int lowHP() {
-        return 9;
-    }
+	@ConfigItem(
+			keyName = "mogStack",
+			name = "Ardougne marks stack",
+			description = "The number of marks of grace to be stacked before it is picked up at Ardougne.",
+			position = 20,
+			title = "agilityTitle",
+			hidden = false,
+			hide = "highAlch",
+			hideValue = "true"
+	)
+	default int mogStack() { return 0; }
 
-    @ConfigItem(
-            keyName = "enableUI",
-            name = "Enable UI",
-            description = "Enable to turn on in game UI",
-            position = 21,
-            title = "agilityTitle"
-    )
-    default boolean enableUI() {
-        return true;
-    }
+	@ConfigItem(
+			keyName = "alchMogStack",
+			name = "Ardougne marks stack",
+			description = "The number of marks of grace to be stacked before it is picked up at Ardougne.",
+			position = 21,
+			title = "agilityTitle",
+			hidden = true,
+			unhide = "highAlch",
+			unhideValue = "true"
+	)
+	default int alchMogStack() { return 0; }
 
-    @ConfigItem(
-            keyName = "camelotTeleport",
-            name = "Use Camelot Teleport",
-            description = "Use Camelot Teleport if you have hard diaries completed. Requires Air Runes or (Air Staff equipped) and Law Runes in inventory",
-            position = 22,
-            title = "agilityTitle"
-    )
-    default boolean camelotTeleport() {
-        return false;
-    }
+	@ConfigItem(
+		keyName = "lowHP",
+		name = "Stop at HP",
+		description = "Stop if HP goes below given threshold",
+		position = 22,
+		title = "agilityTitle"
+	)
+	default int lowHP()
+	{
+		return 9;
+	}
+
+	@ConfigItem(
+		keyName = "enableUI",
+		name = "Enable UI",
+		description = "Enable to turn on in game UI",
+		position = 23,
+		title = "agilityTitle"
+	)
+	default boolean enableUI()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "camelotTeleport",
+		name = "Use Camelot Teleport",
+		description = "Use Camelot Teleport if you have hard diaries completed. Requires Air Runes or (Air Staff equipped) and Law Runes in inventory",
+		position = 24,
+		title = "agilityTitle"
+	)
+	default boolean camelotTeleport()
+	{
+		return false;
+	}
 
     @ConfigItem(
             keyName = "startButton",
