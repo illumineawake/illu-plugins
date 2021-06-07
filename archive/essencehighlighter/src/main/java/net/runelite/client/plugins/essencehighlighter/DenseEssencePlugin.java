@@ -46,148 +46,137 @@ import static net.runelite.api.NullItemID.NULL_8975;
 
 @Extension
 @PluginDescriptor(
-	name = "Dense Essence Highlighter",
-	enabledByDefault = false,
-	description = "Show minimap icons and clickboxes for abyssal rifts",
-	tags = {"abyssal", "minimap", "overlay", "rifts", "rc", "runecrafting"},
-	type = PluginType.SKILLING
+        name = "Dense Essence Highlighter",
+        enabledByDefault = false,
+        description = "Show minimap icons and clickboxes for abyssal rifts",
+        tags = {"abyssal", "minimap", "overlay", "rifts", "rc", "runecrafting"},
+        type = PluginType.SKILLING
 )
 
 @Slf4j
-public class DenseEssencePlugin extends Plugin
-{
+public class DenseEssencePlugin extends Plugin {
 
 
-	private static final int DENSE_RUNESTONE_SOUTH_ID = NullObjectID.NULL_10796;
-	private static final int DENSE_RUNESTONE_NORTH_ID = NullObjectID.NULL_8981;
-	/*private static final int BLOOD_ALTAR_ID = NullObjectID.NULL_27978;
-	private static final int DARK_ALTAR_ID = NullObjectID.NULL_27979;*/
-	private static final int Dense_runestone_ID = NULL_8975;
-	/* added */
-	private static final int DENSE_RUNESTONE_SOUTH_DEPLETED = 4928;
-	private static final int DENSE_RUNESTONE_NORTH_DEPLETED = 4927;
+    private static final int DENSE_RUNESTONE_SOUTH_ID = NullObjectID.NULL_10796;
+    private static final int DENSE_RUNESTONE_NORTH_ID = NullObjectID.NULL_8981;
+    /*private static final int BLOOD_ALTAR_ID = NullObjectID.NULL_27978;
+    private static final int DARK_ALTAR_ID = NullObjectID.NULL_27979;*/
+    private static final int Dense_runestone_ID = NULL_8975;
+    /* added */
+    private static final int DENSE_RUNESTONE_SOUTH_DEPLETED = 4928;
+    private static final int DENSE_RUNESTONE_NORTH_DEPLETED = 4927;
 
-	@Getter(AccessLevel.PACKAGE)
-	private final Set<DecorativeObject> abyssObjects = new HashSet<>();
-
-
-	@Getter(AccessLevel.PACKAGE)
-	private NPC darkMage;
-
-	@Getter(AccessLevel.PACKAGE)
-	private GameObject denseRunestoneSouth;
-
-	@Getter(AccessLevel.PACKAGE)
-	private GameObject BLOOD_ALTAr;
-	@Getter(AccessLevel.PACKAGE)
-	private GameObject Dark_ALTAR;
+    @Getter(AccessLevel.PACKAGE)
+    private final Set<DecorativeObject> abyssObjects = new HashSet<>();
 
 
-	@Getter(AccessLevel.PACKAGE)
-	private GameObject Dense_runestone;
+    @Getter(AccessLevel.PACKAGE)
+    private NPC darkMage;
 
-	@Getter(AccessLevel.PACKAGE)
-	private GameObject denseRunestoneNorth;
+    @Getter(AccessLevel.PACKAGE)
+    private GameObject denseRunestoneSouth;
 
-	@Getter(AccessLevel.PACKAGE)
-	private boolean denseRunestoneSouthMineable;
-
-	@Getter(AccessLevel.PACKAGE)
-	private boolean denseRunestoneNorthMineable;
-
-
-	@Inject
-	private Client client;
-
-	@Inject
-	private OverlayManager overlayManager;
+    @Getter(AccessLevel.PACKAGE)
+    private GameObject BLOOD_ALTAr;
+    @Getter(AccessLevel.PACKAGE)
+    private GameObject Dark_ALTAR;
 
 
-	@Inject
-	private DenseEssenceHighlighter DenseEssenceHighlighter;
+    @Getter(AccessLevel.PACKAGE)
+    private GameObject Dense_runestone;
+
+    @Getter(AccessLevel.PACKAGE)
+    private GameObject denseRunestoneNorth;
+
+    @Getter(AccessLevel.PACKAGE)
+    private boolean denseRunestoneSouthMineable;
+
+    @Getter(AccessLevel.PACKAGE)
+    private boolean denseRunestoneNorthMineable;
 
 
-	@Inject
-	private EssenceConfig config;
+    @Inject
+    private Client client;
 
-	@Inject
-	private Notifier notifier;
-
-
-	//here maybe
-	@Provides
-	EssenceConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(EssenceConfig.class);
-	}
-
-	@Override
-	protected void startUp() throws Exception
-	{
-
-		overlayManager.add(DenseEssenceHighlighter);
+    @Inject
+    private OverlayManager overlayManager;
 
 
-		if (client.getGameState() == GameState.LOGGED_IN)
-		{
-			updateDenseRunestoneState();
-		}
-	}
-
-	@Override
-	protected void shutDown() throws Exception
-	{
-		overlayManager.remove(DenseEssenceHighlighter);
-
-		denseRunestoneNorth = null;
-		denseRunestoneSouth = null;
+    @Inject
+    private DenseEssenceHighlighter DenseEssenceHighlighter;
 
 
-	}
+    @Inject
+    private EssenceConfig config;
 
-	@Subscribe
-	public void onConfigChanged(ConfigChanged event)
-	{
-		if (event.getGroup().equals("essenceehighlighter"))
-		{
-
-			overlayManager.add(DenseEssenceHighlighter);
-
-		}
-	}
+    @Inject
+    private Notifier notifier;
 
 
-	@Subscribe
-	public void onGameStateChanged(GameStateChanged event)
-	{
-		GameState gameState = event.getGameState();
-		switch (gameState)
-		{
-			case LOADING:
+    //here maybe
+    @Provides
+    EssenceConfig provideConfig(ConfigManager configManager) {
+        return configManager.getConfig(EssenceConfig.class);
+    }
 
-				denseRunestoneNorth = null;
-				denseRunestoneSouth = null;
-				break;
-			case CONNECTION_LOST:
-			case HOPPING:
-			case LOGIN_SCREEN:
-				darkMage = null;
-				break;
-		}
-	}
+    @Override
+    protected void startUp() throws Exception {
+
+        overlayManager.add(DenseEssenceHighlighter);
 
 
-	@Subscribe
-	public void onGameObjectSpawned(GameObjectSpawned event)
-	{
-		GameObject obj = event.getGameObject();
-		int id = obj.getId();
+        if (client.getGameState() == GameState.LOGGED_IN) {
+            updateDenseRunestoneState();
+        }
+    }
 
-		switch (id)
-		{
-			case DENSE_RUNESTONE_SOUTH_ID:
-				denseRunestoneSouth = obj;
-				break;
+    @Override
+    protected void shutDown() throws Exception {
+        overlayManager.remove(DenseEssenceHighlighter);
+
+        denseRunestoneNorth = null;
+        denseRunestoneSouth = null;
+
+
+    }
+
+    @Subscribe
+    public void onConfigChanged(ConfigChanged event) {
+        if (event.getGroup().equals("essenceehighlighter")) {
+
+            overlayManager.add(DenseEssenceHighlighter);
+
+        }
+    }
+
+
+    @Subscribe
+    public void onGameStateChanged(GameStateChanged event) {
+        GameState gameState = event.getGameState();
+        switch (gameState) {
+            case LOADING:
+
+                denseRunestoneNorth = null;
+                denseRunestoneSouth = null;
+                break;
+            case CONNECTION_LOST:
+            case HOPPING:
+            case LOGIN_SCREEN:
+                darkMage = null;
+                break;
+        }
+    }
+
+
+    @Subscribe
+    public void onGameObjectSpawned(GameObjectSpawned event) {
+        GameObject obj = event.getGameObject();
+        int id = obj.getId();
+
+        switch (id) {
+            case DENSE_RUNESTONE_SOUTH_ID:
+                denseRunestoneSouth = obj;
+                break;
 			/*case BLOOD_ALTAR_ID:
 				BLOOD_ALTAr = obj;
 				break;
@@ -195,63 +184,57 @@ public class DenseEssencePlugin extends Plugin
 			case DARK_ALTAR_ID:
 				Dark_ALTAR = obj;
 				break;*/
-			case Dense_runestone_ID:
-				Dense_runestone = obj;
-				break;
+            case Dense_runestone_ID:
+                Dense_runestone = obj;
+                break;
 
-			case DENSE_RUNESTONE_NORTH_ID:
-				denseRunestoneNorth = obj;
-				break;
+            case DENSE_RUNESTONE_NORTH_ID:
+                denseRunestoneNorth = obj;
+                break;
 
 
-		}
-	}
+        }
+    }
 
-	@Subscribe
-	public void onGameObjectDespawned(GameObjectDespawned event)
-	{
-		switch (event.getGameObject().getId())
-		{
-			case DENSE_RUNESTONE_SOUTH_ID:
-				denseRunestoneSouth = null;
-				break;
+    @Subscribe
+    public void onGameObjectDespawned(GameObjectDespawned event) {
+        switch (event.getGameObject().getId()) {
+            case DENSE_RUNESTONE_SOUTH_ID:
+                denseRunestoneSouth = null;
+                break;
 			/*case BLOOD_ALTAR_ID:
 				BLOOD_ALTAr = null;
 				break;
 			case DARK_ALTAR_ID:
 				Dark_ALTAR = null;*/
 
-			case Dense_runestone_ID:
-				Dense_runestone = null;
+            case Dense_runestone_ID:
+                Dense_runestone = null;
 
-			case DENSE_RUNESTONE_NORTH_ID:
-				denseRunestoneNorth = null;
-				break;
-		}
-	}
+            case DENSE_RUNESTONE_NORTH_ID:
+                denseRunestoneNorth = null;
+                break;
+        }
+    }
 
-	@Subscribe
-	public void onVarbitChanged(VarbitChanged event)
-	{
-		updateDenseRunestoneState();
-	}
+    @Subscribe
+    public void onVarbitChanged(VarbitChanged event) {
+        updateDenseRunestoneState();
+    }
 
-	private void updateDenseRunestoneState()
-	{
-		//denseRunestoneSouthMineable = client.getVar(DENSE_RUNESTONE_SOUTH_DEPLETED) == 0;
-		denseRunestoneSouthMineable = client.getVarbitValue(DENSE_RUNESTONE_SOUTH_DEPLETED) == 0;
-		//denseRunestoneNorthMineable = client.getVar(Varbits.DENSE_RUNESTONE_NORTH_DEPLETED) == 0;
-		denseRunestoneNorthMineable = client.getVarbitValue(DENSE_RUNESTONE_NORTH_DEPLETED) == 0;
-	}
+    private void updateDenseRunestoneState() {
+        //denseRunestoneSouthMineable = client.getVar(DENSE_RUNESTONE_SOUTH_DEPLETED) == 0;
+        denseRunestoneSouthMineable = client.getVarbitValue(DENSE_RUNESTONE_SOUTH_DEPLETED) == 0;
+        //denseRunestoneNorthMineable = client.getVar(Varbits.DENSE_RUNESTONE_NORTH_DEPLETED) == 0;
+        denseRunestoneNorthMineable = client.getVarbitValue(DENSE_RUNESTONE_NORTH_DEPLETED) == 0;
+    }
 
 
-	@Subscribe
-	public void onNpcDespawned(NpcDespawned event)
-	{
-		final NPC npc = event.getNpc();
-		if (npc == darkMage)
-		{
-			darkMage = null;
-		}
-	}
+    @Subscribe
+    public void onNpcDespawned(NpcDespawned event) {
+        final NPC npc = event.getNpc();
+        if (npc == darkMage) {
+            darkMage = null;
+        }
+    }
 }

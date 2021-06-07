@@ -57,273 +57,237 @@ import java.time.Instant;
 @Extension
 @PluginDependency(iUtils.class)
 @PluginDescriptor(
-	name = "iBlackjack Helper",
-	enabledByDefault = false,
-	description = "Illumine - Blackjack helper plugin. Handles knocking out and pickpocketing bandits",
-	tags = {"illumine", "thieving", "blackjack", "helper", "bot"}
+        name = "iBlackjack Helper",
+        enabledByDefault = false,
+        description = "Illumine - Blackjack helper plugin. Handles knocking out and pickpocketing bandits",
+        tags = {"illumine", "thieving", "blackjack", "helper", "bot"}
 )
 @Slf4j
-public class iBlackjackPlugin extends Plugin
-{
-	@Inject
-	private Injector injector;
+public class iBlackjackPlugin extends Plugin {
+    @Inject
+    private Injector injector;
 
-	@Inject
-	private Client client;
+    @Inject
+    private Client client;
 
-	@Inject
-	private iBlackjackConfig config;
+    @Inject
+    private iBlackjackConfig config;
 
-	@Inject
-	private OverlayManager overlayManager;
+    @Inject
+    private OverlayManager overlayManager;
 
-	@Inject
-	private iBlackjackOverlay overlay;
+    @Inject
+    private iBlackjackOverlay overlay;
 
-	@Inject
-	private iUtils utils;
+    @Inject
+    private iUtils utils;
 
-	@Inject
-	private CalculationUtils calc;
+    @Inject
+    private CalculationUtils calc;
 
-	@Inject
-	private InventoryUtils inventory;
+    @Inject
+    private InventoryUtils inventory;
 
-	@Inject
-	public ChinBreakHandler chinBreakHandler;
+    @Inject
+    public ChinBreakHandler chinBreakHandler;
 
-	@Inject
-	private ConfigManager configManager;
+    @Inject
+    private ConfigManager configManager;
 
-	private TaskSet tasks = new TaskSet();
-	public static LocalPoint beforeLoc = new LocalPoint(0, 0);
-	MenuEntry targetMenu;
-	Instant botTimer;
-	Player player;
+    private TaskSet tasks = new TaskSet();
+    public static LocalPoint beforeLoc = new LocalPoint(0, 0);
+    MenuEntry targetMenu;
+    Instant botTimer;
+    Player player;
 
-	public static final int POLLNIVNEACH_REGION = 13358;
-	public static final String SUCCESS_BLACKJACK = "You smack the bandit over the head and render them unconscious.";
-	public static final String FAILED_BLACKJACK = "Your blow only glances off the bandit's head.";
-	public static long nextKnockoutTick = 0;
-	public static int selectedNPCIndex;
-	public static int eatHP;
-	public static boolean inCombat;
-	public static boolean startBot;
-	public static long sleepLength;
-	public static int tickLength;
-	public static int timeout;
-	public String status = "starting...";
-	public int totalCoins;
-	public int coinsPH;
-	public int startCoins;
-	private int failureCount;
+    public static final int POLLNIVNEACH_REGION = 13358;
+    public static final String SUCCESS_BLACKJACK = "You smack the bandit over the head and render them unconscious.";
+    public static final String FAILED_BLACKJACK = "Your blow only glances off the bandit's head.";
+    public static long nextKnockoutTick = 0;
+    public static int selectedNPCIndex;
+    public static int eatHP;
+    public static boolean inCombat;
+    public static boolean startBot;
+    public static long sleepLength;
+    public static int tickLength;
+    public static int timeout;
+    public String status = "starting...";
+    public int totalCoins;
+    public int coinsPH;
+    public int startCoins;
+    private int failureCount;
 
-	@Provides
-	iBlackjackConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(iBlackjackConfig.class);
-	}
+    @Provides
+    iBlackjackConfig provideConfig(ConfigManager configManager) {
+        return configManager.getConfig(iBlackjackConfig.class);
+    }
 
-	@Override
-	protected void startUp()
-	{
-		chinBreakHandler.registerPlugin(this);
-	}
+    @Override
+    protected void startUp() {
+        chinBreakHandler.registerPlugin(this);
+    }
 
-	@Override
-	protected void shutDown()
-	{
-		resetVals();
-		chinBreakHandler.unregisterPlugin(this);
-	}
+    @Override
+    protected void shutDown() {
+        resetVals();
+        chinBreakHandler.unregisterPlugin(this);
+    }
 
 
-	private void loadTasks()
-	{
-		tasks.clear();
-		tasks.addAll(
-			injector.getInstance(TimeoutTask.class),
-			injector.getInstance(MovingTask.class),
-			injector.getInstance(HopTask.class),
-			injector.getInstance(ShopTask.class),
-			injector.getInstance(ReturnTask.class),
-			injector.getInstance(PickpocketTask.class),
-			injector.getInstance(EatTask.class),
-			injector.getInstance(LeaveRoomTask.class),
-			injector.getInstance(ResetCombatTask.class),
-			injector.getInstance(KnockoutTask.class),
-			injector.getInstance(DropTask.class),
-			injector.getInstance(SelectNPCTask.class),
-			injector.getInstance(BreakTask.class)
-		);
-	}
+    private void loadTasks() {
+        tasks.clear();
+        tasks.addAll(
+                injector.getInstance(TimeoutTask.class),
+                injector.getInstance(MovingTask.class),
+                injector.getInstance(HopTask.class),
+                injector.getInstance(ShopTask.class),
+                injector.getInstance(ReturnTask.class),
+                injector.getInstance(PickpocketTask.class),
+                injector.getInstance(EatTask.class),
+                injector.getInstance(LeaveRoomTask.class),
+                injector.getInstance(ResetCombatTask.class),
+                injector.getInstance(KnockoutTask.class),
+                injector.getInstance(DropTask.class),
+                injector.getInstance(SelectNPCTask.class),
+                injector.getInstance(BreakTask.class)
+        );
+    }
 
-	public void resetVals()
-	{
-		log.debug("stopping Blackjack plugin");
-		overlayManager.remove(overlay);
-		chinBreakHandler.stopPlugin(this);
-		startBot = false;
-		botTimer = null;
-		tasks.clear();
-	}
+    public void resetVals() {
+        log.debug("stopping Blackjack plugin");
+        overlayManager.remove(overlay);
+        chinBreakHandler.stopPlugin(this);
+        startBot = false;
+        botTimer = null;
+        tasks.clear();
+    }
 
-	@Subscribe
-	private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked)
-	{
-		if (!configButtonClicked.getGroup().equalsIgnoreCase("iBlackjack"))
-		{
-			return;
-		}
-		log.debug("button {} pressed!", configButtonClicked.getKey());
-		if (configButtonClicked.getKey().equals("startButton"))
-		{
-			if (!startBot)
-			{
-				Player player = client.getLocalPlayer();
-				if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
-				{
-					log.info("starting Blackjack plugin");
-					loadTasks();
-					startBot = true;
-					inCombat = false;
-					nextKnockoutTick = 0;
-					selectedNPCIndex = 0;
-					failureCount = 0;
-					chinBreakHandler.startPlugin(this);
-					timeout = 0;
-					eatHP = calc.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
-					targetMenu = null;
-					botTimer = Instant.now();
-					overlayManager.add(overlay);
-					beforeLoc = client.getLocalPlayer().getLocalLocation();
-					WidgetItem coinsWidgetItem = inventory.getWidgetItem(ItemID.COINS_995);
-					totalCoins = 0;
-					startCoins = (coinsWidgetItem != null) ? coinsWidgetItem.getQuantity() : 0;
-					coinsPH = 0;
-				}
-				else
-				{
-					log.info("Start logged in");
-				}
-			}
-			else
-			{
-				resetVals();
-			}
-		}
-	}
+    @Subscribe
+    private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked) {
+        if (!configButtonClicked.getGroup().equalsIgnoreCase("iBlackjack")) {
+            return;
+        }
+        log.debug("button {} pressed!", configButtonClicked.getKey());
+        if (configButtonClicked.getKey().equals("startButton")) {
+            if (!startBot) {
+                Player player = client.getLocalPlayer();
+                if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN) {
+                    log.info("starting Blackjack plugin");
+                    loadTasks();
+                    startBot = true;
+                    inCombat = false;
+                    nextKnockoutTick = 0;
+                    selectedNPCIndex = 0;
+                    failureCount = 0;
+                    chinBreakHandler.startPlugin(this);
+                    timeout = 0;
+                    eatHP = calc.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
+                    targetMenu = null;
+                    botTimer = Instant.now();
+                    overlayManager.add(overlay);
+                    beforeLoc = client.getLocalPlayer().getLocalLocation();
+                    WidgetItem coinsWidgetItem = inventory.getWidgetItem(ItemID.COINS_995);
+                    totalCoins = 0;
+                    startCoins = (coinsWidgetItem != null) ? coinsWidgetItem.getQuantity() : 0;
+                    coinsPH = 0;
+                } else {
+                    log.info("Start logged in");
+                }
+            } else {
+                resetVals();
+            }
+        }
+    }
 
-	public void updateStats()
-	{
-		WidgetItem coinsWidgetItem = inventory.getWidgetItem(ItemID.COINS_995);
-		totalCoins = (coinsWidgetItem != null) ? coinsWidgetItem.getQuantity() : 0;
-		coinsPH = (int) getPerHour((totalCoins - startCoins));
-	}
+    public void updateStats() {
+        WidgetItem coinsWidgetItem = inventory.getWidgetItem(ItemID.COINS_995);
+        totalCoins = (coinsWidgetItem != null) ? coinsWidgetItem.getQuantity() : 0;
+        coinsPH = (int) getPerHour((totalCoins - startCoins));
+    }
 
-	public long getPerHour(int quantity)
-	{
-		Duration timeSinceStart = Duration.between(botTimer, Instant.now());
-		if (!timeSinceStart.isZero())
-		{
-			return (int) ((double) quantity * (double) Duration.ofHours(1).toMillis() / (double) timeSinceStart.toMillis());
-		}
-		return 0;
-	}
+    public long getPerHour(int quantity) {
+        Duration timeSinceStart = Duration.between(botTimer, Instant.now());
+        if (!timeSinceStart.isZero()) {
+            return (int) ((double) quantity * (double) Duration.ofHours(1).toMillis() / (double) timeSinceStart.toMillis());
+        }
+        return 0;
+    }
 
-	@Subscribe
-	private void onGameTick(GameTick event)
-	{
-		if (!startBot || chinBreakHandler.isBreakActive(this))
-		{
-			return;
-		}
-		player = client.getLocalPlayer();
-		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN
-			&& client.getLocalPlayer().getWorldLocation().getRegionID() == POLLNIVNEACH_REGION)
-		{
-			updateStats();
-			if (chinBreakHandler.shouldBreak(this))
-			{
-				status = "Taking a break";
-				chinBreakHandler.startBreak(this);
-				timeout = 5;
-			}
-			if (timeout > 0)
-			{
-				timeout--;
-				return;
-			}
-			Task task = tasks.getValidTask();
+    @Subscribe
+    private void onGameTick(GameTick event) {
+        if (!startBot || chinBreakHandler.isBreakActive(this)) {
+            return;
+        }
+        player = client.getLocalPlayer();
+        if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN
+                && client.getLocalPlayer().getWorldLocation().getRegionID() == POLLNIVNEACH_REGION) {
+            updateStats();
+            if (chinBreakHandler.shouldBreak(this)) {
+                status = "Taking a break";
+                chinBreakHandler.startBreak(this);
+                timeout = 5;
+            }
+            if (timeout > 0) {
+                timeout--;
+                return;
+            }
+            Task task = tasks.getValidTask();
 
-			if (task != null)
-			{
-				status = task.getTaskDescription();
-				task.onGameTick(event);
-			}
-			else
-			{
-				status = "Task not found";
-				log.debug(status);
-			}
-			beforeLoc = player.getLocalLocation();
-		}
-	}
+            if (task != null) {
+                status = task.getTaskDescription();
+                task.onGameTick(event);
+            } else {
+                status = "Task not found";
+                log.debug(status);
+            }
+            beforeLoc = player.getLocalLocation();
+        }
+    }
 
-	@Subscribe
-	private void onChatMessage(ChatMessage event)
-	{
-		log.info("event: {}, {}", event.getMessage(), event.getType());
-		if (!startBot)
-		{
-			return;
-		}
-		final String msg = event.getMessage();
+    @Subscribe
+    private void onChatMessage(ChatMessage event) {
+        log.info("event: {}, {}", event.getMessage(), event.getType());
+        if (!startBot) {
+            return;
+        }
+        final String msg = event.getMessage();
 
-		if (event.getType() == ChatMessageType.SPAM && (msg.equals(SUCCESS_BLACKJACK) || (msg.equals(FAILED_BLACKJACK))))
-		{
-			failureCount = 0;
-			final int ticks = (config.random()) ? RandomUtils.nextInt(3, 4) : 4;
-			nextKnockoutTick = client.getTickCount() + ticks;
-		}
-		if (event.getType() == ChatMessageType.GAMEMESSAGE && (msg.contains("during combat")))
-		{
-			log.info("In combat!");
-			inCombat = true;
-		}
-		if (event.getType() == ChatMessageType.GAMEMESSAGE && (msg.contains("Perhaps I shouldn't do this here")))
-		{
-			log.info("Seen by another bandit, reset NPC");
-			utils.sendGameMessage("You've been seen by another bandit, select a new NPC or location.");
-			selectedNPCIndex = 0;
-			nextKnockoutTick = 0;
-		}
-		if (event.getType() == ChatMessageType.ENGINE && (msg.contains("I can't reach that")))
-		{
-			if (failureCount >= 3)
-			{
-				log.info("Failed to reach target too many times, stopping");
-				utils.sendGameMessage("Failed to reach target too many times, stopping");
-				selectedNPCIndex = 0;
-				nextKnockoutTick = 0;
-				failureCount = 0;
-			}
-			failureCount++;
-		}
-	}
+        if (event.getType() == ChatMessageType.SPAM && (msg.equals(SUCCESS_BLACKJACK) || (msg.equals(FAILED_BLACKJACK)))) {
+            failureCount = 0;
+            final int ticks = (config.random()) ? RandomUtils.nextInt(3, 4) : 4;
+            nextKnockoutTick = client.getTickCount() + ticks;
+        }
+        if (event.getType() == ChatMessageType.GAMEMESSAGE && (msg.contains("during combat"))) {
+            log.info("In combat!");
+            inCombat = true;
+        }
+        if (event.getType() == ChatMessageType.GAMEMESSAGE && (msg.contains("Perhaps I shouldn't do this here"))) {
+            log.info("Seen by another bandit, reset NPC");
+            utils.sendGameMessage("You've been seen by another bandit, select a new NPC or location.");
+            selectedNPCIndex = 0;
+            nextKnockoutTick = 0;
+        }
+        if (event.getType() == ChatMessageType.ENGINE && (msg.contains("I can't reach that"))) {
+            if (failureCount >= 3) {
+                log.info("Failed to reach target too many times, stopping");
+                utils.sendGameMessage("Failed to reach target too many times, stopping");
+                selectedNPCIndex = 0;
+                nextKnockoutTick = 0;
+                failureCount = 0;
+            }
+            failureCount++;
+        }
+    }
 
-	@Subscribe
-	private void onMenuOptionClicked(MenuOptionClicked event)
-	{
-		if (!startBot)
-		{
-			return;
-		}
-		if (event.getMenuOption().equals("Knock-Out") && selectedNPCIndex == 0)
-		{
-			final int ticks = (config.random()) ? RandomUtils.nextInt(3, 4) : 4;
-			nextKnockoutTick = client.getTickCount() + ticks;
-			selectedNPCIndex = event.getId();
-		}
-	}
+    @Subscribe
+    private void onMenuOptionClicked(MenuOptionClicked event) {
+        if (!startBot) {
+            return;
+        }
+        if (event.getMenuOption().equals("Knock-Out") && selectedNPCIndex == 0) {
+            final int ticks = (config.random()) ? RandomUtils.nextInt(3, 4) : 4;
+            nextKnockoutTick = client.getTickCount() + ticks;
+            selectedNPCIndex = event.getId();
+        }
+    }
 }

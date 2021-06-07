@@ -65,6 +65,7 @@ public class EquipmentItemStream extends RandomizedStreamAdapter<EquipmentItem, 
     public EquipmentItemStream withSlot(EquipmentSlot... slots) {
         return filter(o -> Arrays.stream(slots).anyMatch(slot -> o.slot() == slot.index));
     }
+
     /**
      * Returns a stream consisting of the elements of this stream with
      * any of the given {@link EquipmentItem#slot()}s

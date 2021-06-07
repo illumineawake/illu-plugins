@@ -8,21 +8,42 @@ import java.util.concurrent.Future;
 
 @Slf4j
 public abstract class iScript extends UtilsScript {
-    private IScriptRunner scriptRunner;
+    private IScriptHandler scriptHandler;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private Future<?> future;
     private volatile boolean started;
 
+    /**
+     * Start script handler, will stop any script handlers already running first
+     */
     public void start() {
-        if (scriptRunner != null) {
+        if (scriptHandler != null) {
+            log.info("Script already running, stopping it first!");
+            stop();
+        }
+        scriptHandler = new IScriptHandler(this);
+
+        if (future == null || future.isCancelled() || future.isDone()) {
+            future = executorService.submit(scriptHandler);
+            started = true;
+        } else {
+            stop();
+        }
+    }
+
+    /**
+     * Starts or stops script handler depending on handler state
+     */
+    public void execute() {
+        if (scriptHandler != null) {
             log.info("Script already running, stopping it first!");
             stop();
             return;
         }
-        scriptRunner = new IScriptRunner(this);
+        scriptHandler = new IScriptHandler(this);
 
         if (future == null || future.isCancelled() || future.isDone()) {
-            future = executorService.submit(scriptRunner);
+            future = executorService.submit(scriptHandler);
             started = true;
         } else {
             stop();
@@ -40,7 +61,7 @@ public abstract class iScript extends UtilsScript {
         } else {
             log.info("Couldn't find future to stop");
         }
-        scriptRunner = null;
+        scriptHandler = null;
         started = false;
     }
 

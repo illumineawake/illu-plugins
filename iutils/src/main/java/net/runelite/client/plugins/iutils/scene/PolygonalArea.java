@@ -3,8 +3,7 @@ package net.runelite.client.plugins.iutils.scene;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class PolygonalArea implements Area
-{
+public class PolygonalArea implements Area {
     public final List<Position> points;
 
     public PolygonalArea(List<Position> points) {

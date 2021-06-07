@@ -14,54 +14,44 @@ import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.startB
 import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.status;
 
 @Slf4j
-public class BankItemsTask extends Task
-{
+public class BankItemsTask extends Task {
 
-	@Inject
-	ActionQueue action;
+    @Inject
+    ActionQueue action;
 
-	@Inject
-	InventoryUtils inventory;
+    @Inject
+    InventoryUtils inventory;
 
-	@Inject
-	BankUtils bank;
+    @Inject
+    BankUtils bank;
 
-	@Override
-	public boolean validate()
-	{
-		return action.delayedActions.isEmpty() && !inventory.containsItem(config.herbID()) &&
-			bank.isOpen();
-	}
+    @Override
+    public boolean validate() {
+        return action.delayedActions.isEmpty() && !inventory.containsItem(config.herbID()) &&
+                bank.isOpen();
+    }
 
-	@Override
-	public String getTaskDescription()
-	{
-		return iHerbCleanerPlugin.status;
-	}
+    @Override
+    public String getTaskDescription() {
+        return iHerbCleanerPlugin.status;
+    }
 
-	@Override
-	public void onGameTick(GameTick event)
-	{
-		long sleep = 0;
-		if (!inventory.isEmpty())
-		{
-			status = "Depositing items";
-			bank.depositAll();
-		}
-		else
-		{
-			status = "Withdrawing items";
-			if (bank.contains(config.herbID(), 1))
-			{
-				bank.withdrawAllItem(config.herbID());
-			}
-			else
-			{
-				status = "Out of herbs to clean, stopping";
-				utils.sendGameMessage(status);
-				startBot = false;
-			}
-		}
-		log.info(status);
-	}
+    @Override
+    public void onGameTick(GameTick event) {
+        long sleep = 0;
+        if (!inventory.isEmpty()) {
+            status = "Depositing items";
+            bank.depositAll();
+        } else {
+            status = "Withdrawing items";
+            if (bank.contains(config.herbID(), 1)) {
+                bank.withdrawAllItem(config.herbID());
+            } else {
+                status = "Out of herbs to clean, stopping";
+                utils.sendGameMessage(status);
+                startBot = false;
+            }
+        }
+        log.info(status);
+    }
 }

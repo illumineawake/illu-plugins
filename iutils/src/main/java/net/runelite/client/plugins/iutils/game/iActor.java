@@ -40,7 +40,7 @@ public abstract class iActor implements Locatable, Interactable {
             return game.getFromClientThread(() -> new iNPC(game(), (NPC) interacting, client().getNpcDefinition(((NPC) interacting).getId())));
         else if (interacting instanceof Player) {
             Player player = (Player) interacting;
-            return game.getFromClientThread(() ->  new iPlayer(game(), player, player.getPlayerComposition()));
+            return game.getFromClientThread(() -> new iPlayer(game(), player, player.getPlayerComposition()));
         } else
             throw new AssertionError("not possible, Actor is either an Npc or Player");
     }
@@ -70,30 +70,38 @@ public abstract class iActor implements Locatable, Interactable {
 
     /**
      * Gets the health of the actor in {@link #getHealthScale()} units.
-     *
+     * <p>
      * The server does not transmit actors' real health, only this value
      * between zero and {@link #getHealthScale()}. Some actors may be
      * missing this info, in which case -1 is returned.
      */
-    public int getHealthRatio() { return actor.getHealthRatio(); }
+    public int getHealthRatio() {
+        return actor.getHealthRatio();
+    }
 
     /**
      * Gets the maximum value {@link #getHealthRatio()} can return
-     *
+     * <p>
      * For actors with the default size health bar this is 30, but
      * for bosses with a larger health bar this can be a larger number.
      * Some actors may be missing this info, in which case -1 is returned.
      */
-    public int getHealthScale() { return actor.getHealthScale(); }
+    public int getHealthScale() {
+        return actor.getHealthScale();
+    }
 
-    public boolean isMoving() { return actor.isMoving(); }
+    public boolean isMoving() {
+        return actor.isMoving();
+    }
 
     /**
      * Returns true if this Actor has died
      *
      * @return
      */
-    public boolean isDead() { return actor.isDead(); }
+    public boolean isDead() {
+        return actor.isDead();
+    }
 
     /**
      * The name of the actor, or {@code null} if it has none.

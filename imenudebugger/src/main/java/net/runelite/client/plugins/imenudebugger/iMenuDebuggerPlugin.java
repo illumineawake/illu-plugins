@@ -54,127 +54,110 @@ import static net.runelite.client.plugins.iutils.iUtils.iterating;
 @Extension
 @PluginDependency(iUtils.class)
 @PluginDescriptor(
-	name = "iMenu Debugger Plugin",
-	enabledByDefault = false,
-	description = "Illumine - Menu Debugger plugin. Has no function other than debugging",
-	tags = {"illumine", "menu", "debug", "bot"}
+        name = "iMenu Debugger Plugin",
+        enabledByDefault = false,
+        description = "Illumine - Menu Debugger plugin. Has no function other than debugging",
+        tags = {"illumine", "menu", "debug", "bot"}
 )
 @Slf4j
-public class iMenuDebuggerPlugin extends Plugin
-{
-	@Inject
-	private Client client;
+public class iMenuDebuggerPlugin extends Plugin {
+    @Inject
+    private Client client;
 
-	@Inject
-	private iMenuDebuggerConfig config;
+    @Inject
+    private iMenuDebuggerConfig config;
 
-	@Inject
-	private iUtils utils;
+    @Inject
+    private iUtils utils;
 
-	@Inject
-	private PlayerUtils playerUtils;
+    @Inject
+    private PlayerUtils playerUtils;
 
-	@Inject
-	private ConfigManager configManager;
+    @Inject
+    private ConfigManager configManager;
 
-	@Inject
-	private ItemManager itemManager;
+    @Inject
+    private ItemManager itemManager;
 
-	@Inject
-	private ExecutorService executorService;
+    @Inject
+    private ExecutorService executorService;
 
-	MenuEntry testMenu;
-	MenuEntry testMenu2;
-	Player player;
-	GameObject testGameObject;
-	Instant lootTimer;
-	List<Item> inventorySnapshot = new ArrayList<>();
-	LocalPoint beforeLoc;
+    MenuEntry testMenu;
+    MenuEntry testMenu2;
+    Player player;
+    GameObject testGameObject;
+    Instant lootTimer;
+    List<Item> inventorySnapshot = new ArrayList<>();
+    LocalPoint beforeLoc;
 
-	int timeout;
+    int timeout;
 
-	@Provides
-	iMenuDebuggerConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(iMenuDebuggerConfig.class);
-	}
+    @Provides
+    iMenuDebuggerConfig provideConfig(ConfigManager configManager) {
+        return configManager.getConfig(iMenuDebuggerConfig.class);
+    }
 
-	@Override
-	protected void startUp()
-	{
+    @Override
+    protected void startUp() {
 
-	}
+    }
 
-	@Override
-	protected void shutDown()
-	{
-		inventorySnapshot.clear();
-	}
+    @Override
+    protected void shutDown() {
+        inventorySnapshot.clear();
+    }
 
-	@Subscribe
-	public void onGameTick(GameTick event)
-	{
-		player = client.getLocalPlayer();
-		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
-		{
-			if (timeout > 0)
-			{
-				timeout--;
-				return;
-			}
-			if (!iterating)
-			{
-				if (!playerUtils.isMoving())
-				{
-					timeout = 10;
-				}
-			}
-			beforeLoc = player.getLocalLocation();
-		}
-	}
+    @Subscribe
+    public void onGameTick(GameTick event) {
+        player = client.getLocalPlayer();
+        if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN) {
+            if (timeout > 0) {
+                timeout--;
+                return;
+            }
+            if (!iterating) {
+                if (!playerUtils.isMoving()) {
+                    timeout = 10;
+                }
+            }
+            beforeLoc = player.getLocalLocation();
+        }
+    }
 
-	@Subscribe
-	private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked)
-	{
-		if (!configButtonClicked.getGroup().equalsIgnoreCase("Test"))
-		{
-			return;
-		}
-		log.debug("button {} pressed!", configButtonClicked.getKey());
-		switch (configButtonClicked.getKey())
-		{
-			case "startButton":
-				log.info("button clicked");
-		}
-	}
+    @Subscribe
+    private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked) {
+        if (!configButtonClicked.getGroup().equalsIgnoreCase("Test")) {
+            return;
+        }
+        log.debug("button {} pressed!", configButtonClicked.getKey());
+        switch (configButtonClicked.getKey()) {
+            case "startButton":
+                log.info("button clicked");
+        }
+    }
 
-	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event)
-	{
-		log.info("Menu Entry before override: {}", event.toString());
-		if (config.printChat())
-		{
-			utils.sendGameMessage("MenuOption value: " + event.getMenuOption());
-			utils.sendGameMessage("MenuTarget value: " + event.getMenuTarget());
-			utils.sendGameMessage("Id value: " + event.getId());
-			utils.sendGameMessage("MenuAction value: " + event.getMenuAction());
-			utils.sendGameMessage("ActionParam value: " + event.getActionParam());
-			utils.sendGameMessage("WidgetId value: " + event.getWidgetId());
-			utils.sendGameMessage("selectedItemIndex value: " + event.getSelectedItemIndex());
-		}
-		if (testMenu == null)
-		{
-			return;
-		}
-		if (utils.getRandomEvent()) //for random events
-		{
-			log.debug("Test plugin not overriding due to random event");
-			return;
-		}
-		else
-		{
-			event.setMenuEntry(testMenu);
-			testMenu = null; //this allow the player to interact with the client without their clicks being overridden
-		}
-	}
+    @Subscribe
+    public void onMenuOptionClicked(MenuOptionClicked event) {
+        log.info("Menu Entry before override: {}", event.toString());
+        if (config.printChat()) {
+            utils.sendGameMessage("MenuOption value: " + event.getMenuOption());
+            utils.sendGameMessage("MenuTarget value: " + event.getMenuTarget());
+            utils.sendGameMessage("Id value: " + event.getId());
+            utils.sendGameMessage("MenuAction value: " + event.getMenuAction());
+            utils.sendGameMessage("ActionParam value: " + event.getActionParam());
+            utils.sendGameMessage("WidgetId value: " + event.getWidgetId());
+            utils.sendGameMessage("selectedItemIndex value: " + event.getSelectedItemIndex());
+        }
+        if (testMenu == null) {
+            return;
+        }
+        if (utils.getRandomEvent()) //for random events
+        {
+            log.debug("Test plugin not overriding due to random event");
+            return;
+        } else {
+            event.setMenuEntry(testMenu);
+            testMenu = null; //this allow the player to interact with the client without their clicks being overridden
+        }
+    }
 }

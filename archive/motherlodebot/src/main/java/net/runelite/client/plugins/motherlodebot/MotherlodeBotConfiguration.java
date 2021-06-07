@@ -29,8 +29,7 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 
 @ConfigGroup("MotherlodeBot")
-public interface MotherlodeBotConfiguration extends Config
-{
+public interface MotherlodeBotConfiguration extends Config {
 
 
 }

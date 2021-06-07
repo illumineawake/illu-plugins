@@ -84,13 +84,13 @@ public class iTile implements Locatable {
                 );
             case WALL:
                 WallObject wo = tile.getWallObject();
-                return (wo == null) ? null :  new iObject(game, wo, game.getFromClientThread(() -> client().getObjectDefinition(wo.getId())));
+                return (wo == null) ? null : new iObject(game, wo, game.getFromClientThread(() -> client().getObjectDefinition(wo.getId())));
             case WALL_DECORATION:
                 DecorativeObject dec = tile.getDecorativeObject();
-                return (dec == null) ? null :  new iObject(game, dec, game.getFromClientThread(() -> client().getObjectDefinition(dec.getId())));
+                return (dec == null) ? null : new iObject(game, dec, game.getFromClientThread(() -> client().getObjectDefinition(dec.getId())));
             case FLOOR_DECORATION:
                 GroundObject ground = tile.getGroundObject();
-                return (ground == null) ? null :  new iObject(game, ground, game.getFromClientThread(() -> client().getObjectDefinition(ground.getId())));
+                return (ground == null) ? null : new iObject(game, ground, game.getFromClientThread(() -> client().getObjectDefinition(ground.getId())));
             default:
                 return null;
         }

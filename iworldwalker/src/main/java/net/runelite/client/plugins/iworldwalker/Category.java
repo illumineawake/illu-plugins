@@ -8,24 +8,22 @@ package net.runelite.client.plugins.iworldwalker;
 import lombok.Getter;
 
 @Getter
-public enum Category
-{
-	NONE("None"),
-	BANKS("Banks"),
-	BARCRAWL("Barcrawl"),
-	CITIES("Cities"),
-	FARMING("Farming"),
-	GUILDS("Guilds"),
-	SKILLING("Skilling"),
-	SLAYER("Slayer"),
-	MISC("Misc"),
-	CUSTOM("Custom");
+public enum Category {
+    NONE("None"),
+    BANKS("Banks"),
+    BARCRAWL("Barcrawl"),
+    CITIES("Cities"),
+    FARMING("Farming"),
+    GUILDS("Guilds"),
+    SKILLING("Skilling"),
+    SLAYER("Slayer"),
+    MISC("Misc"),
+    CUSTOM("Custom");
 
-	private final String name;
+    private final String name;
 
-	Category(String name)
-	{
-		this.name = name;
-	}
+    Category(String name) {
+        this.name = name;
+    }
 
 }

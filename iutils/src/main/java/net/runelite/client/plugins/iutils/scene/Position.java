@@ -6,9 +6,9 @@ import net.runelite.api.coords.WorldPoint;
 import javax.inject.Inject;
 import java.util.Objects;
 
-public class Position implements Area
-{
-    @Inject private Client client;
+public class Position implements Area {
+    @Inject
+    private Client client;
     public final int x;
     public final int y;
     public final int z;
@@ -19,11 +19,11 @@ public class Position implements Area
         this.z = z;
     }
 
-	public Position(WorldPoint worldPoint) {
-		this.x = worldPoint.getX();
-		this.y = worldPoint.getY();
-		this.z = worldPoint.getPlane();
-	}
+    public Position(WorldPoint worldPoint) {
+        this.x = worldPoint.getX();
+        this.y = worldPoint.getY();
+        this.z = worldPoint.getPlane();
+    }
 
     public static Position unpack(int packed) {
         return new Position(packed >> 14 & 0x3fff, packed & 0x3fff, packed >> 28);
@@ -57,13 +57,13 @@ public class Position implements Area
         return Math.max(Math.abs(other.x - x), Math.abs(other.y - y));
     }
 
-	public int distanceTo(WorldPoint other) {
-		if (z != other.getPlane()) {
-			return Integer.MAX_VALUE;
-		}
+    public int distanceTo(WorldPoint other) {
+        if (z != other.getPlane()) {
+            return Integer.MAX_VALUE;
+        }
 
-		return Math.max(Math.abs(other.getX() - x), Math.abs(other.getY() - y));
-	}
+        return Math.max(Math.abs(other.getX() - x), Math.abs(other.getY() - y));
+    }
 
     public boolean inside(Area area) {
         return area.contains(this);

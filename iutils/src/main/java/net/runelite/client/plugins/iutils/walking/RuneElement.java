@@ -14,13 +14,13 @@ import java.util.List;
 @Slf4j
 public enum RuneElement {
 
-    AIR(ItemID.AIR_RUNE,"Air", "Smoke", "Mist", "Dust"),
-    EARTH(ItemID.EARTH_RUNE,"Earth", "Lava", "Mud", "Dust"),
-    FIRE(ItemID.FIRE_RUNE,"Fire", "Lava", "Smoke", "Steam"),
-    WATER(ItemID.WATER_RUNE,"Water", "Mud", "Steam", "Mist"),
-    LAW(ItemID.LAW_RUNE,"Law"),
-    NATURE(ItemID.NATURE_RUNE,"Nature"),
-    SOUL(ItemID.SOUL_RUNE,"Soul");
+    AIR(ItemID.AIR_RUNE, "Air", "Smoke", "Mist", "Dust"),
+    EARTH(ItemID.EARTH_RUNE, "Earth", "Lava", "Mud", "Dust"),
+    FIRE(ItemID.FIRE_RUNE, "Fire", "Lava", "Smoke", "Steam"),
+    WATER(ItemID.WATER_RUNE, "Water", "Mud", "Steam", "Mist"),
+    LAW(ItemID.LAW_RUNE, "Law"),
+    NATURE(ItemID.NATURE_RUNE, "Nature"),
+    SOUL(ItemID.SOUL_RUNE, "Soul");
 
     private String[] alternativeNames;
     private int runeId;
@@ -33,6 +33,7 @@ public enum RuneElement {
     public String[] getAlternativeNames() {
         return alternativeNames;
     }
+
     public int getRuneId() {
         return runeId;
     }
@@ -54,7 +55,7 @@ public enum RuneElement {
             }
         }
 
-        return items.stream().mapToInt(InventoryItem::quantity).sum() + RunePouch.getQuantity(game,this);
+        return items.stream().mapToInt(InventoryItem::quantity).sum() + RunePouch.getQuantity(game, this);
     }
 
     private boolean haveStaff(Game game) {

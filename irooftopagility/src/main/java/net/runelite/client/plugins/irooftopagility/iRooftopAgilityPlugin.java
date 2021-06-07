@@ -62,620 +62,519 @@ import static net.runelite.client.plugins.irooftopagility.iRooftopAgilityState.*
 @Extension
 @PluginDependency(iUtils.class)
 @PluginDescriptor(
-	name = "iRooftop Agility",
-	enabledByDefault = false,
-	description = "Illumine auto rooftop agility plugin",
-	tags = {"agility"}
+        name = "iRooftop Agility",
+        enabledByDefault = false,
+        description = "Illumine auto rooftop agility plugin",
+        tags = {"agility"}
 )
 @Slf4j
-public class iRooftopAgilityPlugin extends Plugin
-{
-	@Inject
-	private Client client;
+public class iRooftopAgilityPlugin extends Plugin {
+    @Inject
+    private Client client;
 
-	@Inject
-	private iUtils utils;
+    @Inject
+    private iUtils utils;
 
-	@Inject
-	private MouseUtils mouse;
+    @Inject
+    private MouseUtils mouse;
 
-	@Inject
-	private PlayerUtils playerUtils;
+    @Inject
+    private PlayerUtils playerUtils;
 
-	@Inject
-	private InventoryUtils inventory;
+    @Inject
+    private InventoryUtils inventory;
 
-	@Inject
-	private CalculationUtils calc;
+    @Inject
+    private CalculationUtils calc;
 
-	@Inject
-	private MenuUtils menu;
+    @Inject
+    private MenuUtils menu;
 
-	@Inject
-	private ObjectUtils object;
+    @Inject
+    private ObjectUtils object;
 
-	@Inject
-	private BankUtils bank;
+    @Inject
+    private BankUtils bank;
 
-	@Inject
-	private iRooftopAgilityConfig config;
+    @Inject
+    private iRooftopAgilityConfig config;
 
-	@Inject
-	PluginManager pluginManager;
+    @Inject
+    PluginManager pluginManager;
 
-	@Inject
-	private OverlayManager overlayManager;
+    @Inject
+    private OverlayManager overlayManager;
 
-	@Inject
-	iRooftopAgilityOverlay overlay;
+    @Inject
+    iRooftopAgilityOverlay overlay;
 
-	@Inject
-	ItemManager itemManager;
+    @Inject
+    ItemManager itemManager;
 
-	@Inject
-	private ChinBreakHandler chinBreakHandler;
+    @Inject
+    private ChinBreakHandler chinBreakHandler;
 
-	Player player;
-	iRooftopAgilityState state;
-	Instant botTimer;
-	TileItem markOfGrace;
-	Tile markOfGraceTile;
-	MenuEntry targetMenu;
-	LocalPoint beforeLoc = new LocalPoint(0, 0); //initiate to mitigate npe
-	WidgetItem alchItem;
-	Portals priffPortal;
-	Set<Integer> inventoryItems = new HashSet<>();
-	GameObject spawnedPortal;
-	private Game game;
+    Player player;
+    iRooftopAgilityState state;
+    Instant botTimer;
+    TileItem markOfGrace;
+    Tile markOfGraceTile;
+    MenuEntry targetMenu;
+    LocalPoint beforeLoc = new LocalPoint(0, 0); //initiate to mitigate npe
+    WidgetItem alchItem;
+    Portals priffPortal;
+    Set<Integer> inventoryItems = new HashSet<>();
+    GameObject spawnedPortal;
+    private Game game;
 
-	private final Set<Integer> REGION_IDS = Set.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878, 10547, 13105, 9012, 9013, 12895, 13151, 13152, 11050, 10794);
-	WorldPoint CAMELOT_TELE_LOC = new WorldPoint(2705, 3463, 0);
-	Set<Integer> AIR_STAFFS = Set.of(ItemID.STAFF_OF_AIR, ItemID.AIR_BATTLESTAFF, ItemID.DUST_BATTLESTAFF, ItemID.MIST_BATTLESTAFF,
-		ItemID.SMOKE_BATTLESTAFF, ItemID.MYSTIC_AIR_STAFF, ItemID.MYSTIC_DUST_STAFF, ItemID.MYSTIC_SMOKE_STAFF, ItemID.MYSTIC_MIST_STAFF);
+    private final Set<Integer> REGION_IDS = Set.of(9781, 12853, 12597, 12084, 12339, 12338, 10806, 10297, 10553, 13358, 13878, 10547, 13105, 9012, 9013, 12895, 13151, 13152, 11050, 10794);
+    WorldPoint CAMELOT_TELE_LOC = new WorldPoint(2705, 3463, 0);
+    Set<Integer> AIR_STAFFS = Set.of(ItemID.STAFF_OF_AIR, ItemID.AIR_BATTLESTAFF, ItemID.DUST_BATTLESTAFF, ItemID.MIST_BATTLESTAFF,
+            ItemID.SMOKE_BATTLESTAFF, ItemID.MYSTIC_AIR_STAFF, ItemID.MYSTIC_DUST_STAFF, ItemID.MYSTIC_SMOKE_STAFF, ItemID.MYSTIC_MIST_STAFF);
 
-	int timeout;
-	int alchTimeout;
-	int mogSpawnCount;
-	int mogCollectCount;
-	int mogInventoryCount = -1;
-	int marksPerHour;
-	long sleepLength;
-	boolean startAgility;
-	boolean restockBank;
-	boolean setHighAlch;
-	boolean alchClick;
+    int timeout;
+    int alchTimeout;
+    int mogSpawnCount;
+    int mogCollectCount;
+    int mogInventoryCount = -1;
+    int marksPerHour;
+    long sleepLength;
+    boolean startAgility;
+    boolean restockBank;
+    boolean setHighAlch;
+    boolean alchClick;
 
-	public iRooftopAgilityPlugin(Game game) {
-		this.game = game;
-	}
+    public iRooftopAgilityPlugin(Game game) {
+        this.game = game;
+    }
 
 
-	@Override
-	protected void startUp()
-	{
-		chinBreakHandler.registerPlugin(this);
-	}
+    @Override
+    protected void startUp() {
+        chinBreakHandler.registerPlugin(this);
+    }
 
-	@Override
-	protected void shutDown()
-	{
-		resetVals();
-		chinBreakHandler.unregisterPlugin(this);
-	}
+    @Override
+    protected void shutDown() {
+        resetVals();
+        chinBreakHandler.unregisterPlugin(this);
+    }
 
-	@Provides
-	iRooftopAgilityConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(iRooftopAgilityConfig.class);
-	}
+    @Provides
+    iRooftopAgilityConfig provideConfig(ConfigManager configManager) {
+        return configManager.getConfig(iRooftopAgilityConfig.class);
+    }
 
-	private void test() {
+    private void test() {
 
-	}
+    }
 
-	private void resetVals()
-	{
-		overlayManager.remove(overlay);
-		chinBreakHandler.stopPlugin(this);
-		markOfGraceTile = null;
-		markOfGrace = null;
-		startAgility = false;
-		botTimer = null;
-		mogSpawnCount = 0;
-		mogCollectCount = 0;
-		mogInventoryCount = -1;
-		marksPerHour = 0;
-		alchTimeout = 0;
-		inventoryItems.clear();
-	}
+    private void resetVals() {
+        overlayManager.remove(overlay);
+        chinBreakHandler.stopPlugin(this);
+        markOfGraceTile = null;
+        markOfGrace = null;
+        startAgility = false;
+        botTimer = null;
+        mogSpawnCount = 0;
+        mogCollectCount = 0;
+        mogInventoryCount = -1;
+        marksPerHour = 0;
+        alchTimeout = 0;
+        inventoryItems.clear();
+    }
 
-	@Subscribe
-	private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked)
-	{
-		if (!configButtonClicked.getGroup().equalsIgnoreCase("iRooftopAgility"))
-		{
-			return;
-		}
-		log.info("button {} pressed!", configButtonClicked.getKey());
-		switch (configButtonClicked.getKey())
-		{
-			case "startButton":
-				if (!startAgility)
-				{
-					startAgility = true;
-					chinBreakHandler.startPlugin(this);
-					state = null;
-					targetMenu = null;
-					botTimer = Instant.now();
-					restockBank = config.bankRestock();
-					inventoryItems.addAll(Set.of(ItemID.NATURE_RUNE, ItemID.MARK_OF_GRACE));
-					if (config.alchItemID() != 0)
-					{
-						inventoryItems.addAll(Set.of(config.alchItemID(), (config.alchItemID() + 1)));
-					}
-					overlayManager.add(overlay);
-				}
-				else
-				{
-					resetVals();
-				}
-				break;
-		}
-	}
+    @Subscribe
+    private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked) {
+        if (!configButtonClicked.getGroup().equalsIgnoreCase("iRooftopAgility")) {
+            return;
+        }
+        log.info("button {} pressed!", configButtonClicked.getKey());
+        switch (configButtonClicked.getKey()) {
+            case "startButton":
+                if (!startAgility) {
+                    startAgility = true;
+                    chinBreakHandler.startPlugin(this);
+                    state = null;
+                    targetMenu = null;
+                    botTimer = Instant.now();
+                    restockBank = config.bankRestock();
+                    inventoryItems.addAll(Set.of(ItemID.NATURE_RUNE, ItemID.MARK_OF_GRACE));
+                    if (config.alchItemID() != 0) {
+                        inventoryItems.addAll(Set.of(config.alchItemID(), (config.alchItemID() + 1)));
+                    }
+                    overlayManager.add(overlay);
+                } else {
+                    resetVals();
+                }
+                break;
+        }
+    }
 
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (event.getGroup().equals("iRooftopAgility"))
-		{
-			switch (event.getKey())
-			{
-				case "bankRestock":
-					restockBank = config.bankRestock();
-					break;
-				case "alchItemID":
-					inventoryItems.clear();
-					inventoryItems.addAll(Set.of(ItemID.NATURE_RUNE, ItemID.MARK_OF_GRACE, config.alchItemID(), (config.alchItemID() + 1)));
-					break;
-			}
-		}
-	}
+    @Subscribe
+    private void onConfigChanged(ConfigChanged event) {
+        if (event.getGroup().equals("iRooftopAgility")) {
+            switch (event.getKey()) {
+                case "bankRestock":
+                    restockBank = config.bankRestock();
+                    break;
+                case "alchItemID":
+                    inventoryItems.clear();
+                    inventoryItems.addAll(Set.of(ItemID.NATURE_RUNE, ItemID.MARK_OF_GRACE, config.alchItemID(), (config.alchItemID() + 1)));
+                    break;
+            }
+        }
+    }
 
-	private long sleepDelay()
-	{
-		sleepLength = calc.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
-		return sleepLength;
-	}
+    private long sleepDelay() {
+        sleepLength = calc.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
+        return sleepLength;
+    }
 
-	private int tickDelay()
-	{
-		int tickLength = (int) calc.randomDelay(config.tickDelayWeightedDistribution(), config.tickDelayMin(), config.tickDelayMax(), config.tickDelayDeviation(), config.tickDelayTarget());
-		log.debug("tick delay for {} ticks", tickLength);
-		return tickLength;
-	}
+    private int tickDelay() {
+        int tickLength = (int) calc.randomDelay(config.tickDelayWeightedDistribution(), config.tickDelayMin(), config.tickDelayMax(), config.tickDelayDeviation(), config.tickDelayTarget());
+        log.debug("tick delay for {} ticks", tickLength);
+        return tickLength;
+    }
 
-	public long getMarksPH()
-	{
-		Duration timeSinceStart = Duration.between(botTimer, Instant.now());
-		if (!timeSinceStart.isZero())
-		{
-			return (int) ((double) mogCollectCount * (double) Duration.ofHours(1).toMillis() / (double) timeSinceStart.toMillis());
-		}
-		return 0;
-	}
+    public long getMarksPH() {
+        Duration timeSinceStart = Duration.between(botTimer, Instant.now());
+        if (!timeSinceStart.isZero()) {
+            return (int) ((double) mogCollectCount * (double) Duration.ofHours(1).toMillis() / (double) timeSinceStart.toMillis());
+        }
+        return 0;
+    }
 
-	private boolean shouldCastTeleport()
-	{
-		return config.camelotTeleport() && client.getBoostedSkillLevel(Skill.MAGIC) >= 45 &&
-			CAMELOT_TELE_LOC.distanceTo(client.getLocalPlayer().getWorldLocation()) <= 3 &&
-			(inventory.containsItem(ItemID.LAW_RUNE) && inventory.containsStackAmount(ItemID.AIR_RUNE, 5) ||
-				inventory.containsItem(ItemID.LAW_RUNE) && playerUtils.isItemEquipped(AIR_STAFFS));
-	}
+    private boolean shouldCastTeleport() {
+        return config.camelotTeleport() && client.getBoostedSkillLevel(Skill.MAGIC) >= 45 &&
+                CAMELOT_TELE_LOC.distanceTo(client.getLocalPlayer().getWorldLocation()) <= 3 &&
+                (inventory.containsItem(ItemID.LAW_RUNE) && inventory.containsStackAmount(ItemID.AIR_RUNE, 5) ||
+                        inventory.containsItem(ItemID.LAW_RUNE) && playerUtils.isItemEquipped(AIR_STAFFS));
+    }
 
-	private boolean shouldAlch()
-	{
-		return config.highAlch() &&
-			config.alchItemID() != 0 &&
-			client.getBoostedSkillLevel(Skill.MAGIC) >= 55;
-	}
+    private boolean shouldAlch() {
+        return config.highAlch() &&
+                config.alchItemID() != 0 &&
+                client.getBoostedSkillLevel(Skill.MAGIC) >= 55;
+    }
 
-	private void highAlchItem()
-	{
-		if (!setHighAlch)
-		{
-			targetMenu = new MenuEntry("Cast", "<col=00ff00>High Level Alchemy</col>", 0,
-				MenuAction.WIDGET_TYPE_2.getId(), -1, 14286887, false);
-			Widget spellWidget = client.getWidget(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY);
-			if (spellWidget != null)
-			{
-				menu.setEntry(targetMenu);
-				mouse.delayMouseClick(spellWidget.getBounds(), sleepDelay());
-			}
-			else
-			{
-				menu.setEntry(targetMenu);
-				mouse.delayClickRandomPointCenter(-200, 200, sleepDelay());
-			}
-			setHighAlch = true;
-		}
-		else
-		{
-			alchItem = inventory.getWidgetItem(List.of(config.alchItemID(), (config.alchItemID() + 1)));
-			targetMenu = new MenuEntry("Cast", "<col=00ff00>High Level Alchemy</col><col=ffffff> ->",
-				alchItem.getId(),
-				MenuAction.ITEM_USE_ON_WIDGET.getId(),
-				alchItem.getIndex(), 9764864,
-				false);
-			menu.setEntry(targetMenu);
-			mouse.delayMouseClick(alchItem.getCanvasBounds(), sleepDelay());
-			alchTimeout = 4 + tickDelay();
-		}
-	}
+    private void highAlchItem() {
+        if (!setHighAlch) {
+            targetMenu = new MenuEntry("Cast", "<col=00ff00>High Level Alchemy</col>", 0,
+                    MenuAction.WIDGET_TYPE_2.getId(), -1, 14286887, false);
+            Widget spellWidget = client.getWidget(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY);
+            if (spellWidget != null) {
+                menu.setEntry(targetMenu);
+                mouse.delayMouseClick(spellWidget.getBounds(), sleepDelay());
+            } else {
+                menu.setEntry(targetMenu);
+                mouse.delayClickRandomPointCenter(-200, 200, sleepDelay());
+            }
+            setHighAlch = true;
+        } else {
+            alchItem = inventory.getWidgetItem(List.of(config.alchItemID(), (config.alchItemID() + 1)));
+            targetMenu = new MenuEntry("Cast", "<col=00ff00>High Level Alchemy</col><col=ffffff> ->",
+                    alchItem.getId(),
+                    MenuAction.ITEM_USE_ON_WIDGET.getId(),
+                    alchItem.getIndex(), 9764864,
+                    false);
+            menu.setEntry(targetMenu);
+            mouse.delayMouseClick(alchItem.getCanvasBounds(), sleepDelay());
+            alchTimeout = 4 + tickDelay();
+        }
+    }
 
-	private boolean shouldRestock()
-	{
-		if (!config.highAlch() ||
-			config.alchItemID() == 0 ||
-			!restockBank ||
-			client.getBoostedSkillLevel(Skill.MAGIC) < 55)
-		{
-			return false;
-		}
-		return !inventory.containsItem(ItemID.NATURE_RUNE) || !inventory.containsItem(Set.of(config.alchItemID(), (config.alchItemID() + 1)));
-	}
+    private boolean shouldRestock() {
+        if (!config.highAlch() ||
+                config.alchItemID() == 0 ||
+                !restockBank ||
+                client.getBoostedSkillLevel(Skill.MAGIC) < 55) {
+            return false;
+        }
+        return !inventory.containsItem(ItemID.NATURE_RUNE) || !inventory.containsItem(Set.of(config.alchItemID(), (config.alchItemID() + 1)));
+    }
 
-	private void restockItems()
-	{
-		if (bank.isOpen())
-		{
-			//if (client.getVarbitValue(Varbits.BANK_NOTE_FLAG.getId()) != 1)
-			if (client.getVarbitValue(3958) != 1)
-			{
-				targetMenu = new MenuEntry("Note", "", 1, MenuAction.CC_OP.getId(), -1, 786455, false);
-				menu.setEntry(targetMenu);
-				mouse.delayClickRandomPointCenter(-200, 200, sleepDelay());
-				return;
-			}
-			if ((!bank.contains(ItemID.NATURE_RUNE, 1) && !inventory.containsItem(ItemID.NATURE_RUNE)) ||
-				(!bank.contains(config.alchItemID(), 1) && !inventory.containsItem(Set.of(config.alchItemID(), config.alchItemID() + 1))))
-			{
-				log.debug("out of alching items");
-				restockBank = false;
-				return;
-			}
-			else
-			{
-				WidgetItem food = inventory.getWidgetItemMenu(itemManager, "Eat", 33);
-				if (food != null)
-				{
-					inventoryItems.add(food.getId());
-				}
-				if (inventory.containsExcept(inventoryItems))
-				{
-					log.debug("depositing items");
-					bank.depositAllExcept(inventoryItems);
-					timeout = tickDelay();
-					return;
-				}
-				if (!inventory.isFull())
-				{
-					if (!inventory.containsItem(ItemID.NATURE_RUNE))
-					{
-						log.debug("withdrawing Nature runes");
-						bank.withdrawAllItem(ItemID.NATURE_RUNE);
-						return;
-					}
-					if (!inventory.containsItem(Set.of(config.alchItemID(), config.alchItemID() + 1)))
-					{
-						log.debug("withdrawing Config Alch Item");
-						bank.withdrawAllItem(config.alchItemID());
-						return;
-					}
-				}
-				else
-				{
-					log.debug("inventory is full but trying to withdraw items");
-				}
-			}
-		}
-		else
-		{
-			GameObject bankBooth = object.findNearestGameObject(getCurrentObstacle().getBankID());
-			if (bankBooth != null)
-			{
-				targetMenu = new MenuEntry("", "", bankBooth.getId(),
-					MenuAction.GAME_OBJECT_SECOND_OPTION.getId(), bankBooth.getSceneMinLocation().getX(),
-					bankBooth.getSceneMinLocation().getY(), false);
-				menu.setEntry(targetMenu);
-				mouse.delayMouseClick(bankBooth.getConvexHull().getBounds(), sleepDelay());
-				timeout = tickDelay();
-			}
-		}
-	}
+    private void restockItems() {
+        if (bank.isOpen()) {
+            //if (client.getVarbitValue(Varbits.BANK_NOTE_FLAG.getId()) != 1)
+            if (client.getVarbitValue(3958) != 1) {
+                targetMenu = new MenuEntry("Note", "", 1, MenuAction.CC_OP.getId(), -1, 786455, false);
+                menu.setEntry(targetMenu);
+                mouse.delayClickRandomPointCenter(-200, 200, sleepDelay());
+                return;
+            }
+            if ((!bank.contains(ItemID.NATURE_RUNE, 1) && !inventory.containsItem(ItemID.NATURE_RUNE)) ||
+                    (!bank.contains(config.alchItemID(), 1) && !inventory.containsItem(Set.of(config.alchItemID(), config.alchItemID() + 1)))) {
+                log.debug("out of alching items");
+                restockBank = false;
+                return;
+            } else {
+                WidgetItem food = inventory.getWidgetItemMenu(itemManager, "Eat", 33);
+                if (food != null) {
+                    inventoryItems.add(food.getId());
+                }
+                if (inventory.containsExcept(inventoryItems)) {
+                    log.debug("depositing items");
+                    bank.depositAllExcept(inventoryItems);
+                    timeout = tickDelay();
+                    return;
+                }
+                if (!inventory.isFull()) {
+                    if (!inventory.containsItem(ItemID.NATURE_RUNE)) {
+                        log.debug("withdrawing Nature runes");
+                        bank.withdrawAllItem(ItemID.NATURE_RUNE);
+                        return;
+                    }
+                    if (!inventory.containsItem(Set.of(config.alchItemID(), config.alchItemID() + 1))) {
+                        log.debug("withdrawing Config Alch Item");
+                        bank.withdrawAllItem(config.alchItemID());
+                        return;
+                    }
+                } else {
+                    log.debug("inventory is full but trying to withdraw items");
+                }
+            }
+        } else {
+            GameObject bankBooth = object.findNearestGameObject(getCurrentObstacle().getBankID());
+            if (bankBooth != null) {
+                targetMenu = new MenuEntry("", "", bankBooth.getId(),
+                        MenuAction.GAME_OBJECT_SECOND_OPTION.getId(), bankBooth.getSceneMinLocation().getX(),
+                        bankBooth.getSceneMinLocation().getY(), false);
+                menu.setEntry(targetMenu);
+                mouse.delayMouseClick(bankBooth.getConvexHull().getBounds(), sleepDelay());
+                timeout = tickDelay();
+            }
+        }
+    }
 
-	private iRooftopAgilityObstacles getCurrentObstacle()
-	{
-		return iRooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
-	}
+    private iRooftopAgilityObstacles getCurrentObstacle() {
+        return iRooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
+    }
 
-	private void findObstacle()
-	{
-		iRooftopAgilityObstacles obstacle = getCurrentObstacle();
-		if (obstacle != null)
-		{
-			log.debug(String.valueOf(obstacle.getObstacleId()));
-			if (obstacle.getObstacleType() == iRooftopAgilityObstacleType.DECORATION)
-			{
-				DecorativeObject decObstacle = object.findNearestDecorObject(obstacle.getObstacleId());
-				if (decObstacle != null)
-				{
-					targetMenu = new MenuEntry("", "", decObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
-					menu.setEntry(targetMenu);
-					Rectangle clickPoint = (decObstacle.getConvexHull() != null) ? decObstacle.getConvexHull().getBounds() :
-						new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
-					mouse.delayMouseClick(clickPoint, sleepDelay());
-					return;
-				}
-			}
-			if (obstacle.getObstacleType() == iRooftopAgilityObstacleType.GROUND_OBJECT)
-			{
-				GroundObject groundObstacle = object.findNearestGroundObject(obstacle.getObstacleId());
-				if (groundObstacle != null)
-				{
-					targetMenu = new MenuEntry("", "", groundObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
-					menu.setEntry(targetMenu);
-					Rectangle clickPoint = (groundObstacle.getConvexHull() != null) ? groundObstacle.getConvexHull().getBounds() :
-						new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
-					mouse.delayMouseClick(clickPoint, sleepDelay());
-					return;
-				}
-			}
-			GameObject objObstacle = object.findNearestGameObject(obstacle.getObstacleId());
-			if (objObstacle != null)
-			{
-				targetMenu = new MenuEntry("", "", objObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
-				menu.setEntry(targetMenu);
-				Rectangle clickPoint = (objObstacle.getConvexHull() != null) ? objObstacle.getConvexHull().getBounds() :
-					new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
-				mouse.delayMouseClick(clickPoint, sleepDelay());
-				return;
-			}
-		}
-		else
-		{
-			log.debug("Not in obstacle area");
-		}
-	}
+    private void findObstacle() {
+        iRooftopAgilityObstacles obstacle = getCurrentObstacle();
+        if (obstacle != null) {
+            log.debug(String.valueOf(obstacle.getObstacleId()));
+            if (obstacle.getObstacleType() == iRooftopAgilityObstacleType.DECORATION) {
+                DecorativeObject decObstacle = object.findNearestDecorObject(obstacle.getObstacleId());
+                if (decObstacle != null) {
+                    targetMenu = new MenuEntry("", "", decObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
+                    menu.setEntry(targetMenu);
+                    Rectangle clickPoint = (decObstacle.getConvexHull() != null) ? decObstacle.getConvexHull().getBounds() :
+                            new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
+                    mouse.delayMouseClick(clickPoint, sleepDelay());
+                    return;
+                }
+            }
+            if (obstacle.getObstacleType() == iRooftopAgilityObstacleType.GROUND_OBJECT) {
+                GroundObject groundObstacle = object.findNearestGroundObject(obstacle.getObstacleId());
+                if (groundObstacle != null) {
+                    targetMenu = new MenuEntry("", "", groundObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
+                    menu.setEntry(targetMenu);
+                    Rectangle clickPoint = (groundObstacle.getConvexHull() != null) ? groundObstacle.getConvexHull().getBounds() :
+                            new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
+                    mouse.delayMouseClick(clickPoint, sleepDelay());
+                    return;
+                }
+            }
+            GameObject objObstacle = object.findNearestGameObject(obstacle.getObstacleId());
+            if (objObstacle != null) {
+                targetMenu = new MenuEntry("", "", objObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
+                menu.setEntry(targetMenu);
+                Rectangle clickPoint = (objObstacle.getConvexHull() != null) ? objObstacle.getConvexHull().getBounds() :
+                        new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
+                mouse.delayMouseClick(clickPoint, sleepDelay());
+                return;
+            }
+        } else {
+            log.debug("Not in obstacle area");
+        }
+    }
 
-	private Portals getCurrentPortal()
-	{
-		//We provide the current varbit value and the enum returns the correlating Portal. i.e. we now have access to the ID of the active portal
-		return Portals.getPortal(client.getVarbitValue(9298));
-	}
+    private Portals getCurrentPortal() {
+        //We provide the current varbit value and the enum returns the correlating Portal. i.e. we now have access to the ID of the active portal
+        return Portals.getPortal(client.getVarbitValue(9298));
+    }
 
-	public iRooftopAgilityState getState()
-	{
-		if (timeout > 0)
-		{
-			if (alchTimeout <= 0 && shouldAlch() && inventory.containsItem(ItemID.NATURE_RUNE) &&
-				inventory.containsItem(Set.of(config.alchItemID(), (config.alchItemID() + 1))))
-			{
-				timeout--;
-				return HIGH_ALCH;
-			}
-			if (alchClick)
-			{
-				iRooftopAgilityObstacles currentObstacle = getCurrentObstacle();
-				if (currentObstacle != null)
-				{
-					if (markOfGrace != null && markOfGraceTile != null && config.mogPickup() && (!inventory.isFull() || inventory.containsItem(ItemID.MARK_OF_GRACE)))
-					{
-						if (currentObstacle.getLocation().distanceTo(markOfGraceTile.getWorldLocation()) == 0)
-						{
-							if (markOfGraceTile.getGroundItems().contains(markOfGrace)) //failsafe sometimes onItemDespawned doesn't capture mog despawn
-							{
-								return MARK_OF_GRACE;
-							}
-							else
-							{
-								log.info("Mark of grace not found and markOfGrace was not null");
-								markOfGrace = null;
-							}
-						}
-					}
-					if (currentObstacle.getBankID() == 0 || !shouldRestock())
-					{
-						timeout--;
-						return (shouldCastTeleport()) ? CAST_CAMELOT_TELEPORT : FIND_OBSTACLE;
-					}
-				}
-			}
-			return TIMEOUT;
-		}
-		if (shouldCastTeleport())
-		{
-			return CAST_CAMELOT_TELEPORT;
-		}
-		if (playerUtils.isMoving(beforeLoc))
-		{
-			if (alchTimeout <= 0 && shouldAlch() && (inventory.containsItem(ItemID.NATURE_RUNE) &&
-				inventory.containsItem(Set.of(config.alchItemID(), (config.alchItemID() + 1)))))
-			{
-				timeout = tickDelay();
-				return HIGH_ALCH;
-			}
-			timeout = tickDelay();
-			return MOVING;
-		}
-		iRooftopAgilityObstacles currentObstacle = iRooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
-		if (currentObstacle == null)
-		{
-			timeout = tickDelay();
-			return MOVING;
-		}
-		if (currentObstacle.getBankID() > 0 && shouldRestock())
-		{
-			if (object.findNearestGameObject(currentObstacle.getBankID()) != null)
-			{
-				return RESTOCK_ITEMS;
-			}
-			else
-			{
-				log.debug("should restock but couldn't find bank");
-			}
-		}
-		if (markOfGrace != null && markOfGraceTile != null && config.mogPickup() && (!inventory.isFull() || inventory.containsItem(ItemID.MARK_OF_GRACE)))
-		{
-			if (currentObstacle.getLocation().distanceTo(markOfGraceTile.getWorldLocation()) == 0)
-			{
-				if (markOfGraceTile.getGroundItems().contains(markOfGrace)) //failsafe sometimes onItemDespawned doesn't capture mog despawn
-				{
-					return MARK_OF_GRACE;
-				}
-				else
-				{
-					log.info("Mark of grace not found and markOfGrace was not null");
-					markOfGrace = null;
-				}
-			}
-		}
-		if (client.getVarbitValue(9298) != 0)
-		{
-			log.info("Portal spawned");
-			priffPortal = getCurrentPortal();
-			spawnedPortal = object.findNearestGameObject(priffPortal.getPortalID());
-			if (spawnedPortal != null)
-			{
-				if (currentObstacle.getLocation().distanceTo(spawnedPortal.getWorldLocation()) == 0)
-				{
-					return PRIFF_PORTAL;
-				}
-			}
-		}
-		if (chinBreakHandler.shouldBreak(this))
-		{
-			return HANDLE_BREAK;
-		}
-		if (!playerUtils.isMoving(beforeLoc))
-		{
-			return FIND_OBSTACLE;
-		}
-		return ANIMATING;
-	}
+    public iRooftopAgilityState getState() {
+        if (timeout > 0) {
+            if (alchTimeout <= 0 && shouldAlch() && inventory.containsItem(ItemID.NATURE_RUNE) &&
+                    inventory.containsItem(Set.of(config.alchItemID(), (config.alchItemID() + 1)))) {
+                timeout--;
+                return HIGH_ALCH;
+            }
+            if (alchClick) {
+                iRooftopAgilityObstacles currentObstacle = getCurrentObstacle();
+                if (currentObstacle != null) {
+                    if (markOfGrace != null && markOfGraceTile != null && config.mogPickup() && (!inventory.isFull() || inventory.containsItem(ItemID.MARK_OF_GRACE))) {
+                        if (currentObstacle.getLocation().distanceTo(markOfGraceTile.getWorldLocation()) == 0) {
+                            if (markOfGraceTile.getGroundItems().contains(markOfGrace)) //failsafe sometimes onItemDespawned doesn't capture mog despawn
+                            {
+                                return MARK_OF_GRACE;
+                            } else {
+                                log.info("Mark of grace not found and markOfGrace was not null");
+                                markOfGrace = null;
+                            }
+                        }
+                    }
+                    if (currentObstacle.getBankID() == 0 || !shouldRestock()) {
+                        timeout--;
+                        return (shouldCastTeleport()) ? CAST_CAMELOT_TELEPORT : FIND_OBSTACLE;
+                    }
+                }
+            }
+            return TIMEOUT;
+        }
+        if (shouldCastTeleport()) {
+            return CAST_CAMELOT_TELEPORT;
+        }
+        if (playerUtils.isMoving(beforeLoc)) {
+            if (alchTimeout <= 0 && shouldAlch() && (inventory.containsItem(ItemID.NATURE_RUNE) &&
+                    inventory.containsItem(Set.of(config.alchItemID(), (config.alchItemID() + 1))))) {
+                timeout = tickDelay();
+                return HIGH_ALCH;
+            }
+            timeout = tickDelay();
+            return MOVING;
+        }
+        iRooftopAgilityObstacles currentObstacle = iRooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
+        if (currentObstacle == null) {
+            timeout = tickDelay();
+            return MOVING;
+        }
+        if (currentObstacle.getBankID() > 0 && shouldRestock()) {
+            if (object.findNearestGameObject(currentObstacle.getBankID()) != null) {
+                return RESTOCK_ITEMS;
+            } else {
+                log.debug("should restock but couldn't find bank");
+            }
+        }
+        if (markOfGrace != null && markOfGraceTile != null && config.mogPickup() && (!inventory.isFull() || inventory.containsItem(ItemID.MARK_OF_GRACE))) {
+            if (currentObstacle.getLocation().distanceTo(markOfGraceTile.getWorldLocation()) == 0) {
+                if (markOfGraceTile.getGroundItems().contains(markOfGrace)) //failsafe sometimes onItemDespawned doesn't capture mog despawn
+                {
+                    return MARK_OF_GRACE;
+                } else {
+                    log.info("Mark of grace not found and markOfGrace was not null");
+                    markOfGrace = null;
+                }
+            }
+        }
+        if (client.getVarbitValue(9298) != 0) {
+            log.info("Portal spawned");
+            priffPortal = getCurrentPortal();
+            spawnedPortal = object.findNearestGameObject(priffPortal.getPortalID());
+            if (spawnedPortal != null) {
+                if (currentObstacle.getLocation().distanceTo(spawnedPortal.getWorldLocation()) == 0) {
+                    return PRIFF_PORTAL;
+                }
+            }
+        }
+        if (chinBreakHandler.shouldBreak(this)) {
+            return HANDLE_BREAK;
+        }
+        if (!playerUtils.isMoving(beforeLoc)) {
+            return FIND_OBSTACLE;
+        }
+        return ANIMATING;
+    }
 
-	@Subscribe
-	private void onGameTick(GameTick tick)
-	{
-		if (!startAgility || chinBreakHandler.isBreakActive(this))
-		{
-			return;
-		}
-		player = client.getLocalPlayer();
-		if (alchTimeout > 0)
-		{
-			alchTimeout--;
-		}
-		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN && client.getBoostedSkillLevel(Skill.HITPOINTS) > config.lowHP())
-		{
-			if (!client.isResized())
-			{
-				utils.sendGameMessage("illu - client must be set to resizable");
-				startAgility = false;
-				return;
-			}
-			if (!REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
-			{
-				log.debug("not in agility course region");
-				return;
-			}
-			marksPerHour = (int) getMarksPH();
-			playerUtils.handleRun(40, 20);
-			state = getState();
-			beforeLoc = client.getLocalPlayer().getLocalLocation();
-			switch (state)
-			{
-				case TIMEOUT:
-					timeout--;
-					break;
-				case MARK_OF_GRACE:
-					log.debug("Picking up mark of grace");
-					targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
-					menu.setEntry(targetMenu);
-					mouse.delayClickRandomPointCenter(-200, 200, sleepDelay());
-					break;
-				case FIND_OBSTACLE:
-					findObstacle();
-					break;
-				case HIGH_ALCH:
-					highAlchItem();
-					break;
-				case RESTOCK_ITEMS:
-					restockItems();
-					break;
-				case MOVING:
-					break;
-				case CAST_CAMELOT_TELEPORT:
-					targetMenu = new MenuEntry("", "", 2, MenuAction.CC_OP.getId(), -1,
-						14286879, false);
-					Widget spellWidget = client.getWidget(WidgetInfo.SPELL_CAMELOT_TELEPORT);
-					if (spellWidget != null)
-					{
-						menu.setEntry(targetMenu);
-						mouse.delayMouseClick(spellWidget.getBounds(), sleepDelay());
-					}
-					else
-					{
-						menu.setEntry(targetMenu);
-						mouse.delayClickRandomPointCenter(-200, 200, sleepDelay());
-					}
-					timeout = 2 + tickDelay();
-					break;
-				case PRIFF_PORTAL:
-					log.info("Using Priff portal");
-					targetMenu = new MenuEntry("", "", spawnedPortal.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
-						spawnedPortal.getSceneMinLocation().getX(), spawnedPortal.getSceneMinLocation().getY(), false);
-					menu.setEntry(targetMenu);
-					mouse.delayMouseClick(spawnedPortal.getConvexHull().getBounds(), sleepDelay());
-					break;
-				case HANDLE_BREAK:
-					chinBreakHandler.startBreak(this);
-					timeout = 10;
-					break;
-			}
-		}
-		else
-		{
-			log.debug("client/ player is null or bot isn't started");
-			return;
-		}
-	}
+    @Subscribe
+    private void onGameTick(GameTick tick) {
+        if (!startAgility || chinBreakHandler.isBreakActive(this)) {
+            return;
+        }
+        player = client.getLocalPlayer();
+        if (alchTimeout > 0) {
+            alchTimeout--;
+        }
+        if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN && client.getBoostedSkillLevel(Skill.HITPOINTS) > config.lowHP()) {
+            if (!client.isResized()) {
+                utils.sendGameMessage("illu - client must be set to resizable");
+                startAgility = false;
+                return;
+            }
+            if (!REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID())) {
+                log.debug("not in agility course region");
+                return;
+            }
+            marksPerHour = (int) getMarksPH();
+            playerUtils.handleRun(40, 20);
+            state = getState();
+            beforeLoc = client.getLocalPlayer().getLocalLocation();
+            switch (state) {
+                case TIMEOUT:
+                    timeout--;
+                    break;
+                case MARK_OF_GRACE:
+                    log.debug("Picking up mark of grace");
+                    targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
+                    menu.setEntry(targetMenu);
+                    mouse.delayClickRandomPointCenter(-200, 200, sleepDelay());
+                    break;
+                case FIND_OBSTACLE:
+                    findObstacle();
+                    break;
+                case HIGH_ALCH:
+                    highAlchItem();
+                    break;
+                case RESTOCK_ITEMS:
+                    restockItems();
+                    break;
+                case MOVING:
+                    break;
+                case CAST_CAMELOT_TELEPORT:
+                    targetMenu = new MenuEntry("", "", 2, MenuAction.CC_OP.getId(), -1,
+                            14286879, false);
+                    Widget spellWidget = client.getWidget(WidgetInfo.SPELL_CAMELOT_TELEPORT);
+                    if (spellWidget != null) {
+                        menu.setEntry(targetMenu);
+                        mouse.delayMouseClick(spellWidget.getBounds(), sleepDelay());
+                    } else {
+                        menu.setEntry(targetMenu);
+                        mouse.delayClickRandomPointCenter(-200, 200, sleepDelay());
+                    }
+                    timeout = 2 + tickDelay();
+                    break;
+                case PRIFF_PORTAL:
+                    log.info("Using Priff portal");
+                    targetMenu = new MenuEntry("", "", spawnedPortal.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
+                            spawnedPortal.getSceneMinLocation().getX(), spawnedPortal.getSceneMinLocation().getY(), false);
+                    menu.setEntry(targetMenu);
+                    mouse.delayMouseClick(spawnedPortal.getConvexHull().getBounds(), sleepDelay());
+                    break;
+                case HANDLE_BREAK:
+                    chinBreakHandler.startBreak(this);
+                    timeout = 10;
+                    break;
+            }
+        } else {
+            log.debug("client/ player is null or bot isn't started");
+            return;
+        }
+    }
 
-	@Subscribe
-	private void onGameStateChanged(GameStateChanged event)
-	{
-		if (event.getGameState() == GameState.LOGGED_IN && startAgility)
-		{
-			markOfGraceTile = null;
-			markOfGrace = null;
-			state = TIMEOUT;
-			timeout = 2;
-		}
-	}
+    @Subscribe
+    private void onGameStateChanged(GameStateChanged event) {
+        if (event.getGameState() == GameState.LOGGED_IN && startAgility) {
+            markOfGraceTile = null;
+            markOfGrace = null;
+            state = TIMEOUT;
+            timeout = 2;
+        }
+    }
 
-	@Subscribe
-	private void onMenuOptionClicked(MenuOptionClicked event)
-	{
-		if (!startAgility)
-		{
-			return;
-		}
-		if (targetMenu != null)
-		{
-			log.debug("MenuEntry string event: " + targetMenu.toString());
-			alchClick = (targetMenu.getOption().equals("Cast"));
-			timeout = tickDelay();
-		}
-	}
+    @Subscribe
+    private void onMenuOptionClicked(MenuOptionClicked event) {
+        if (!startAgility) {
+            return;
+        }
+        if (targetMenu != null) {
+            log.debug("MenuEntry string event: " + targetMenu.toString());
+            alchClick = (targetMenu.getOption().equals("Cast"));
+            timeout = tickDelay();
+        }
+    }
 
     /*@Subscribe
     private void onGameObjectSpawned(GameObjectSpawned event) {
@@ -702,58 +601,49 @@ public class iRooftopAgilityPlugin extends Plugin
         }
     }*/
 
-	@Subscribe
-	private void onItemSpawned(ItemSpawned event)
-	{
-		if (!startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) ||
-			!config.mogPickup())
-		{
-			return;
-		}
+    @Subscribe
+    private void onItemSpawned(ItemSpawned event) {
+        if (!startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) ||
+                !config.mogPickup()) {
+            return;
+        }
 
-		TileItem item = event.getItem();
-		Tile tile = event.getTile();
+        TileItem item = event.getItem();
+        Tile tile = event.getTile();
 
-		if (item.getId() == ItemID.MARK_OF_GRACE)
-		{
-			log.debug("Mark of grace spawned");
-			markOfGrace = item;
-			markOfGraceTile = tile;
-			WidgetItem mogInventory = inventory.getWidgetItem(ItemID.MARK_OF_GRACE);
-			mogInventoryCount = (mogInventory != null) ? mogInventory.getQuantity() : 0;
-			mogSpawnCount++;
-		}
-	}
+        if (item.getId() == ItemID.MARK_OF_GRACE) {
+            log.debug("Mark of grace spawned");
+            markOfGrace = item;
+            markOfGraceTile = tile;
+            WidgetItem mogInventory = inventory.getWidgetItem(ItemID.MARK_OF_GRACE);
+            mogInventoryCount = (mogInventory != null) ? mogInventory.getQuantity() : 0;
+            mogSpawnCount++;
+        }
+    }
 
-	@Subscribe
-	private void onItemDespawned(ItemDespawned event)
-	{
-		if (!startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !config.mogPickup())
-		{
-			return;
-		}
+    @Subscribe
+    private void onItemDespawned(ItemDespawned event) {
+        if (!startAgility || !REGION_IDS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) || !config.mogPickup()) {
+            return;
+        }
 
-		TileItem item = event.getItem();
+        TileItem item = event.getItem();
 
-		if (item.getId() == ItemID.MARK_OF_GRACE)
-		{
-			log.debug("Mark of grace despawned");
-			markOfGrace = null;
-			markOfGraceTile = null;
-		}
-	}
+        if (item.getId() == ItemID.MARK_OF_GRACE) {
+            log.debug("Mark of grace despawned");
+            markOfGrace = null;
+            markOfGraceTile = null;
+        }
+    }
 
-	@Subscribe
-	public void onItemContainerChanged(ItemContainerChanged event)
-	{
-		if (event.getContainerId() != 93 || mogInventoryCount == -1)
-		{
-			return;
-		}
-		if (event.getItemContainer().count(ItemID.MARK_OF_GRACE) > mogInventoryCount)
-		{
-			mogCollectCount++;
-			mogInventoryCount = -1;
-		}
-	}
+    @Subscribe
+    public void onItemContainerChanged(ItemContainerChanged event) {
+        if (event.getContainerId() != 93 || mogInventoryCount == -1) {
+            return;
+        }
+        if (event.getItemContainer().count(ItemID.MARK_OF_GRACE) > mogInventoryCount) {
+            mogCollectCount++;
+            mogInventoryCount = -1;
+        }
+    }
 }

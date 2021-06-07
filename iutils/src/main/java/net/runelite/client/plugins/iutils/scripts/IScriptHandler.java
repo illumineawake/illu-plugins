@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.plugins.iutils.util.Util;
 
 @Slf4j
-public class IScriptRunner implements Runnable {
+public class IScriptHandler implements Runnable {
     private final iScript script;
 
-    public IScriptRunner(iScript script) {
+    public IScriptHandler(iScript script) {
         this.script = script;
     }
 

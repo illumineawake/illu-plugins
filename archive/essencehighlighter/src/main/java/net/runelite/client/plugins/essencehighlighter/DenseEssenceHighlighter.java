@@ -39,291 +39,248 @@ import static net.runelite.api.ItemID.*;
 
 
 @Slf4j
-public class DenseEssenceHighlighter extends Overlay
-{
-
-	private static final int Z_OFFSET = 200;
-
-
-	// green color /
-
-	private static final Color CLICKBOX_BORDER_COLOR = new Color(0, 0, 0, 30);
-	private static final Color CLICKBOX_FILL_COLOR = new Color(0, 255, 0, 80);
-	private static final Color CLICKBOX_BORDER_HOVER_COLOR = new Color(0, 0, 0, 100);
-
-
-	// red color //
+public class DenseEssenceHighlighter extends Overlay {
 
-	private static final Color CLICKBOX_BORDER_COLORd = new Color(0, 0, 0, 77);
-	private static final Color CLICKBOX_FILL_COLORd = new Color(255, 0, 0, 50);
-	private static final Color CLICKBOX_BORDER_HOVER_COLORd = new Color(0, 0, 0, 100);
+    private static final int Z_OFFSET = 200;
 
 
-	private final Client client;
-	private final DenseEssencePlugin plugin;
-	private final EssenceConfig config;
-	private final SkillIconManager skillIconManager;
+    // green color /
 
+    private static final Color CLICKBOX_BORDER_COLOR = new Color(0, 0, 0, 30);
+    private static final Color CLICKBOX_FILL_COLOR = new Color(0, 255, 0, 80);
+    private static final Color CLICKBOX_BORDER_HOVER_COLOR = new Color(0, 0, 0, 100);
 
-	@Inject
-	private DenseEssenceHighlighter(
-		Client client, DenseEssencePlugin plugin, EssenceConfig config, SkillIconManager skillIconManager)
-	{
-		this.client = client;
-		this.plugin = plugin;
-		this.config = config;
-		this.skillIconManager = skillIconManager;
 
+    // red color //
 
-		setLayer(OverlayLayer.ABOVE_SCENE);
-		setPosition(OverlayPosition.DYNAMIC);
-	}
+    private static final Color CLICKBOX_BORDER_COLORd = new Color(0, 0, 0, 77);
+    private static final Color CLICKBOX_FILL_COLORd = new Color(255, 0, 0, 50);
+    private static final Color CLICKBOX_BORDER_HOVER_COLORd = new Color(0, 0, 0, 100);
 
 
-	private boolean hasdenseess()
-	{
-		ItemContainer container = client.getItemContainer(InventoryID.INVENTORY);
-		if (container == null)
-		{
-			return false;
-		}
-		for (Item item : container.getItems())
-		{
-			if (item.getId() == DENSE_ESSENCE_BLOCK)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+    private final Client client;
+    private final DenseEssencePlugin plugin;
+    private final EssenceConfig config;
+    private final SkillIconManager skillIconManager;
 
 
-	private boolean hasdarkess()
-	{
-		ItemContainer container = client.getItemContainer(InventoryID.INVENTORY);
-		if (container == null)
-		{
-			return false;
-		}
-		for (Item item : container.getItems())
-		{
-			if (item.getId() == DARK_ESSENCE_BLOCK)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+    @Inject
+    private DenseEssenceHighlighter(
+            Client client, DenseEssencePlugin plugin, EssenceConfig config, SkillIconManager skillIconManager) {
+        this.client = client;
+        this.plugin = plugin;
+        this.config = config;
+        this.skillIconManager = skillIconManager;
 
 
-	private boolean hasfragments()
-	{
-		ItemContainer container = client.getItemContainer(InventoryID.INVENTORY);
-		if (container == null)
-		{
-			return false;
-		}
-		for (Item item : container.getItems())
-		{
-			if (item.getId() == DARK_ESSENCE_FRAGMENTS)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+        setLayer(OverlayLayer.ABOVE_SCENE);
+        setPosition(OverlayPosition.DYNAMIC);
+    }
 
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
+    private boolean hasdenseess() {
+        ItemContainer container = client.getItemContainer(InventoryID.INVENTORY);
+        if (container == null) {
+            return false;
+        }
+        for (Item item : container.getItems()) {
+            if (item.getId() == DENSE_ESSENCE_BLOCK) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
-		boolean northStoneMineable = plugin.isDenseRunestoneNorthMineable();
-		boolean southStoneMineable = plugin.isDenseRunestoneSouthMineable();
+    private boolean hasdarkess() {
+        ItemContainer container = client.getItemContainer(InventoryID.INVENTORY);
+        if (container == null) {
+            return false;
+        }
+        for (Item item : container.getItems()) {
+            if (item.getId() == DARK_ESSENCE_BLOCK) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
-		GameObject northStone = plugin.getDenseRunestoneNorth();
-		GameObject southStone = plugin.getDenseRunestoneSouth();
-		GameObject BLOOD_ALTAr = plugin.getBLOOD_ALTAr();
-		GameObject DARK_ALTAR = plugin.getDark_ALTAR();
+    private boolean hasfragments() {
+        ItemContainer container = client.getItemContainer(InventoryID.INVENTORY);
+        if (container == null) {
+            return false;
+        }
+        for (Item item : container.getItems()) {
+            if (item.getId() == DARK_ESSENCE_FRAGMENTS) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
-		if (BLOOD_ALTAr != null)
-		{
+    @Override
+    public Dimension render(Graphics2D graphics) {
 
 
-			if (config.highlightDenseBloodALTAR())
-			{
+        boolean northStoneMineable = plugin.isDenseRunestoneNorthMineable();
+        boolean southStoneMineable = plugin.isDenseRunestoneSouthMineable();
 
-				if (!hasfragments() & !hasdarkess())
-				{
 
-					renderbloodaltardone(graphics, BLOOD_ALTAr);
-				}
+        GameObject northStone = plugin.getDenseRunestoneNorth();
+        GameObject southStone = plugin.getDenseRunestoneSouth();
+        GameObject BLOOD_ALTAr = plugin.getBLOOD_ALTAr();
+        GameObject DARK_ALTAR = plugin.getDark_ALTAR();
 
-				if (hasdarkess() & !hasfragments())
-				{
-					renderbloodaltar(graphics, BLOOD_ALTAr);
-				}
 
-				if (hasfragments() & !hasdarkess())
-				{
+        if (BLOOD_ALTAr != null) {
 
 
-					renderbloodaltar(graphics, BLOOD_ALTAr);
-				}
+            if (config.highlightDenseBloodALTAR()) {
 
-				if (hasfragments() && hasdarkess())
-				{
+                if (!hasfragments() & !hasdarkess()) {
 
-					renderbloodaltar(graphics, BLOOD_ALTAr);
+                    renderbloodaltardone(graphics, BLOOD_ALTAr);
+                }
 
-				}
+                if (hasdarkess() & !hasfragments()) {
+                    renderbloodaltar(graphics, BLOOD_ALTAr);
+                }
 
+                if (hasfragments() & !hasdarkess()) {
 
-			}
 
+                    renderbloodaltar(graphics, BLOOD_ALTAr);
+                }
 
-		}
-		if (DARK_ALTAR != null)
-		{
+                if (hasfragments() && hasdarkess()) {
 
-			if (hasdenseess())
-			{
-				renderbloodaltar(graphics, DARK_ALTAR);
-			}
+                    renderbloodaltar(graphics, BLOOD_ALTAr);
 
-			if (hasdarkess() && hasfragments())
-			{
+                }
 
-				renderbloodaltardone(graphics, DARK_ALTAR);
-				// System.out.println("none");
-			}
 
-			if (hasdarkess() & !hasfragments())
-			{
-				renderbloodaltar(graphics, DARK_ALTAR);
-			}
-			if (hasfragments() & !hasdarkess())
-			{
-				renderbloodaltar(graphics, DARK_ALTAR);
-			}
+            }
 
-		}
 
+        }
+        if (DARK_ALTAR != null) {
 
-		if (northStoneMineable && northStone != null)
-		{
+            if (hasdenseess()) {
+                renderbloodaltar(graphics, DARK_ALTAR);
+            }
 
-			//     System.out.println(ESS_COUNT);
-			renderStone(graphics, northStone);
-		}
-		else
-		{
-			renderStoned(graphics, northStone);
+            if (hasdarkess() && hasfragments()) {
 
-		}
+                renderbloodaltardone(graphics, DARK_ALTAR);
+                // System.out.println("none");
+            }
 
+            if (hasdarkess() & !hasfragments()) {
+                renderbloodaltar(graphics, DARK_ALTAR);
+            }
+            if (hasfragments() & !hasdarkess()) {
+                renderbloodaltar(graphics, DARK_ALTAR);
+            }
 
-		if (southStoneMineable && southStone != null)
-		{
-			renderStone(graphics, southStone);
-		}
-		else
-		{
-			renderStoned(graphics, southStone);
-		}
+        }
 
-		return null;
-	}
 
-	private void renderStone(Graphics2D graphics, GameObject gameObject)
-	{
-		if (config.showDenseRunestoneClickbox())
-		{
-			Shape clickbox = gameObject.getClickbox();
-			Point mousePosition = client.getMouseCanvasPosition();
-			OverlayUtil.renderHoverableArea(
-				graphics, clickbox, mousePosition,
-				CLICKBOX_FILL_COLOR, CLICKBOX_BORDER_COLOR, CLICKBOX_BORDER_HOVER_COLOR);
-		}
+        if (northStoneMineable && northStone != null) {
 
+            //     System.out.println(ESS_COUNT);
+            renderStone(graphics, northStone);
+        } else {
+            renderStoned(graphics, northStone);
 
-		if (config.showDenseRunestoneClickbox())
-		{
-			Shape clickbox = gameObject.getClickbox();
-			Point mousePosition = client.getMouseCanvasPosition();
-			OverlayUtil.renderHoverableArea(
-				graphics, clickbox, mousePosition,
-				CLICKBOX_FILL_COLOR, CLICKBOX_BORDER_COLOR, CLICKBOX_BORDER_HOVER_COLOR);
-		}
+        }
 
 
-		if (config.showDenseRunestoneIndicator())
-		{
-			LocalPoint gameObjectLocation = gameObject.getLocalLocation();
-			OverlayUtil.renderImageLocation(
-				client, graphics, gameObjectLocation,
-				skillIconManager.getSkillImage(Skill.MINING, false), Z_OFFSET);
+        if (southStoneMineable && southStone != null) {
+            renderStone(graphics, southStone);
+        } else {
+            renderStoned(graphics, southStone);
+        }
 
-		}
-	}
+        return null;
+    }
 
+    private void renderStone(Graphics2D graphics, GameObject gameObject) {
+        if (config.showDenseRunestoneClickbox()) {
+            Shape clickbox = gameObject.getClickbox();
+            Point mousePosition = client.getMouseCanvasPosition();
+            OverlayUtil.renderHoverableArea(
+                    graphics, clickbox, mousePosition,
+                    CLICKBOX_FILL_COLOR, CLICKBOX_BORDER_COLOR, CLICKBOX_BORDER_HOVER_COLOR);
+        }
 
-	private void renderbloodaltardone(Graphics2D graphics, GameObject gameObject)
-	{
-		if (config.highlightDenseBloodALTAR())
-		{
-			Shape clickbox = gameObject.getClickbox();
-			Point mousePosition = client.getMouseCanvasPosition();
-			OverlayUtil.renderHoverableArea(
-				graphics, clickbox, mousePosition,
-				CLICKBOX_FILL_COLOR, CLICKBOX_BORDER_COLOR, CLICKBOX_BORDER_HOVER_COLOR);
-		}
 
+        if (config.showDenseRunestoneClickbox()) {
+            Shape clickbox = gameObject.getClickbox();
+            Point mousePosition = client.getMouseCanvasPosition();
+            OverlayUtil.renderHoverableArea(
+                    graphics, clickbox, mousePosition,
+                    CLICKBOX_FILL_COLOR, CLICKBOX_BORDER_COLOR, CLICKBOX_BORDER_HOVER_COLOR);
+        }
 
-	}
 
+        if (config.showDenseRunestoneIndicator()) {
+            LocalPoint gameObjectLocation = gameObject.getLocalLocation();
+            OverlayUtil.renderImageLocation(
+                    client, graphics, gameObjectLocation,
+                    skillIconManager.getSkillImage(Skill.MINING, false), Z_OFFSET);
 
-	private void renderbloodaltar(Graphics2D graphics, GameObject gameObject)
-	{
+        }
+    }
 
 
-		if (config.highlightDenseBloodALTAR())
-		{
+    private void renderbloodaltardone(Graphics2D graphics, GameObject gameObject) {
+        if (config.highlightDenseBloodALTAR()) {
+            Shape clickbox = gameObject.getClickbox();
+            Point mousePosition = client.getMouseCanvasPosition();
+            OverlayUtil.renderHoverableArea(
+                    graphics, clickbox, mousePosition,
+                    CLICKBOX_FILL_COLOR, CLICKBOX_BORDER_COLOR, CLICKBOX_BORDER_HOVER_COLOR);
+        }
 
-			Shape clickbox = gameObject.getClickbox();
-			Point mousePosition = client.getMouseCanvasPosition();
-			OverlayUtil.renderHoverableArea(
-				graphics, clickbox, mousePosition,
-				CLICKBOX_FILL_COLORd, CLICKBOX_BORDER_COLORd, CLICKBOX_BORDER_HOVER_COLORd);
-		}
 
+    }
 
-	}
 
+    private void renderbloodaltar(Graphics2D graphics, GameObject gameObject) {
 
-	private void renderStoned(Graphics2D graphics, GameObject gameObject)
-	{
-		if (config.showDenseRunestoneClickbox())
-		{
-			Shape clickbox = gameObject.getClickbox();
-			Point mousePosition = client.getMouseCanvasPosition();
-			OverlayUtil.renderHoverableArea(
-				graphics, clickbox, mousePosition,
-				CLICKBOX_FILL_COLORd, CLICKBOX_BORDER_COLORd, CLICKBOX_BORDER_HOVER_COLORd);
-		}
 
+        if (config.highlightDenseBloodALTAR()) {
 
-		if (config.showDenseRunestoneIndicator())
-		{
-			LocalPoint gameObjectLocation = gameObject.getLocalLocation();
-			OverlayUtil.renderImageLocation(
-				client, graphics, gameObjectLocation,
-				skillIconManager.getSkillImage(Skill.MINING, false), Z_OFFSET);
-		}
-	}
+            Shape clickbox = gameObject.getClickbox();
+            Point mousePosition = client.getMouseCanvasPosition();
+            OverlayUtil.renderHoverableArea(
+                    graphics, clickbox, mousePosition,
+                    CLICKBOX_FILL_COLORd, CLICKBOX_BORDER_COLORd, CLICKBOX_BORDER_HOVER_COLORd);
+        }
+
+
+    }
+
+
+    private void renderStoned(Graphics2D graphics, GameObject gameObject) {
+        if (config.showDenseRunestoneClickbox()) {
+            Shape clickbox = gameObject.getClickbox();
+            Point mousePosition = client.getMouseCanvasPosition();
+            OverlayUtil.renderHoverableArea(
+                    graphics, clickbox, mousePosition,
+                    CLICKBOX_FILL_COLORd, CLICKBOX_BORDER_COLORd, CLICKBOX_BORDER_HOVER_COLORd);
+        }
+
+
+        if (config.showDenseRunestoneIndicator()) {
+            LocalPoint gameObjectLocation = gameObject.getLocalLocation();
+            OverlayUtil.renderImageLocation(
+                    client, graphics, gameObjectLocation,
+                    skillIconManager.getSkillImage(Skill.MINING, false), Z_OFFSET);
+        }
+    }
 }
 
 

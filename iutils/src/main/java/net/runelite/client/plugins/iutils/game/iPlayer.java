@@ -22,7 +22,9 @@ public class iPlayer extends iActor {
         return game.client();
     }
 
-    public PlayerComposition definition() { return definition; }
+    public PlayerComposition definition() {
+        return definition;
+    }
 
     /**
      * The index of the player, between {@code 0} and {@code 2048}. This
@@ -72,7 +74,8 @@ public class iPlayer extends iActor {
      * {@code 512} gives an item ID.
      *
      * @see iPlayer#female()
-     * @see iPlayer#bodyColors()*/
+     * @see iPlayer#bodyColors()
+     */
     public int[] equipment() {
         return definition().getEquipmentIds();
     }
@@ -107,7 +110,9 @@ public class iPlayer extends iActor {
         return player.getPoseAnimation();
     }
 
-    public boolean isIdle() { return game.localPlayer().idlePoseAnimation() == game.localPlayer().poseAnimation() && player.getAnimation() == -1;}
+    public boolean isIdle() {
+        return game.localPlayer().idlePoseAnimation() == game.localPlayer().poseAnimation() && player.getAnimation() == -1;
+    }
 
     public boolean isFriend() {
         return player.isFriend();
@@ -162,7 +167,7 @@ public class iPlayer extends iActor {
     }
 
     public void interact(int action) {
-            game.interactionManager().interact(index(), getActionId(action), 0, 0);
+        game.interactionManager().interact(index(), getActionId(action), 0, 0);
     }
 
     public String toString() {

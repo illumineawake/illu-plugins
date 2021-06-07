@@ -2,8 +2,7 @@ package net.runelite.client.plugins.iutils.api;
 
 import java.util.List;
 
-public interface Interactable
-{
+public interface Interactable {
     /**
      * A list of all available actions on the {@link Interactable}.
      */

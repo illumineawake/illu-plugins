@@ -96,9 +96,9 @@ public class TeleportLoader {
             }
 
             if (burningAmulet() != null) {
-                teleports.add(new Teleport(new Position(3235, 3636, 0), 2, () -> jewelleryAction(burningAmulet(), "Chaos Temple")));
-                teleports.add(new Teleport(new Position(3038, 3651, 0), 2, () -> jewelleryAction(burningAmulet(), "Bandit Camp")));
-                teleports.add(new Teleport(new Position(3028, 3842, 0), 2, () -> jewelleryAction(burningAmulet(), "Lava Maze")));
+                teleports.add(new Teleport(new Position(3235, 3636, 0), 2, () -> jewelleryAction(burningAmulet(), "Chaos Temple", "Okay")));
+                teleports.add(new Teleport(new Position(3038, 3651, 0), 2, () -> jewelleryAction(burningAmulet(), "Bandit Camp", "Okay")));
+                teleports.add(new Teleport(new Position(3028, 3842, 0), 2, () -> jewelleryAction(burningAmulet(), "Lava Maze", "Okay")));
             }
 
             if (slayerRing() != null) {
@@ -142,7 +142,7 @@ public class TeleportLoader {
     }
 
     //Jewellery
-    private void jewelleryAction(InventoryItem item, String target) { // TODO
+    private void jewelleryAction(InventoryItem item, String... target) { // TODO
         item.interact("Rub");
         chatbox.chat(target);
     }

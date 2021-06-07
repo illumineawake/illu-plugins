@@ -56,7 +56,7 @@ public class GrandExchange {
         if (game.inventory().withId(995).first() == null) {
             throw new IllegalStateException("you'll need some coins to buy stuff");
         }
-        log.info("Buying: {} quantity: {}" , item, quantity);
+        log.info("Buying: {} quantity: {}", item, quantity);
         var slot = freeSlot();
 
         startBuyOffer(slot);

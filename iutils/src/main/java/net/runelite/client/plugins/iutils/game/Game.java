@@ -278,8 +278,6 @@ public class Game {
     }
 
     public iWidget widget(int group, int file, int child) {
-        log.info("Requested widget is: {}, {}, {}", group, file, child);
-
         if (client.getWidget(group, file) == null) {
             return null;
         }
@@ -525,23 +523,16 @@ public class Game {
      * @param point the point in the world to get the wilderness level for
      * @return the int representing the wilderness level
      */
-    public static int getWildernessLevelFrom(WorldPoint point)
-    {
-        if (MAIN_WILDERNESS_CUBOID.contains(point))
-        {
-            if (NOT_WILDERNESS_BLACK_KNIGHTS.contains(point.getX(), point.getY()))
-            {
+    public static int getWildernessLevelFrom(WorldPoint point) {
+        if (MAIN_WILDERNESS_CUBOID.contains(point)) {
+            if (NOT_WILDERNESS_BLACK_KNIGHTS.contains(point.getX(), point.getY())) {
                 return 0;
             }
 
             return ((point.getY() - 3520) / 8) + 1; // calc(((coordz(coord) - (55 * 64)) / 8) + 1)
-        }
-        else if (GOD_WARS_WILDERNESS_CUBOID.contains(point))
-        {
+        } else if (GOD_WARS_WILDERNESS_CUBOID.contains(point)) {
             return ((point.getY() - 9920) / 8) - 1; // calc(((coordz(coord) - (155 * 64)) / 8) - 1)
-        }
-        else if (WILDERNESS_UNDERGROUND_CUBOID.contains(point))
-        {
+        } else if (WILDERNESS_UNDERGROUND_CUBOID.contains(point)) {
             return ((point.getY() - 9920) / 8) + 1; // calc(((coordz(coord) - (155 * 64)) / 8) + 1)
         }
         return 0;

@@ -25,202 +25,126 @@
  */
 package net.runelite.client.plugins.itasktemplate;
 
-import com.google.inject.Injector;
 import com.google.inject.Provides;
-import com.owain.chinbreakhandler.ChinBreakHandler;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.Player;
-import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.ConfigButtonClicked;
-import net.runelite.api.events.GameTick;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.itasktemplate.tasks.MovingTask;
-import net.runelite.client.plugins.itasktemplate.tasks.TimeoutTask;
+import net.runelite.client.plugins.itasktemplate.tasks.TemplateTask;
 import net.runelite.client.plugins.iutils.iUtils;
+import net.runelite.client.plugins.iutils.scripts.iScript;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
-import java.time.Duration;
 import java.time.Instant;
 
 
 @Extension
 @PluginDependency(iUtils.class)
 @PluginDescriptor(
-	name = "iTaskTemplate",
-	enabledByDefault = false,
-	description = "Illumine - Task Template plugin",
-	tags = {"illumine", "task", "template", "bot"}
+        name = "iTaskTemplate",
+        enabledByDefault = false,
+        description = "Illumine - Task Template plugin",
+        tags = {"illumine", "task", "template", "bot"}
 )
 @Slf4j
-public class iTaskTemplatePlugin extends Plugin
-{
-	@Inject
-	private Injector injector;
+public class iTaskTemplatePlugin extends iScript {
 
-	@Inject
-	private Client client;
+    @Inject
+    private Client client;
 
-	@Inject
-	private iTaskTemplateConfig config;
+    @Inject
+    private iTaskTemplateConfig config;
 
-	@Inject
-	private OverlayManager overlayManager;
+    public static iTaskTemplateConfig taskConfig;
 
-	@Inject
-	private iTaskTemplateOverlay overlay;
+    @Inject
+    private OverlayManager overlayManager;
 
-	@Inject
-	private iUtils utils;
+    @Inject
+    private iTaskTemplateOverlay overlay;
 
-	@Inject
-	public ChinBreakHandler chinBreakHandler;
+    @Inject
+    private ConfigManager configManager;
 
-	@Inject
-	private ConfigManager configManager;
+    public static TaskSet tasks = new TaskSet();
 
-	private TaskSet tasks = new TaskSet();
-	public static LocalPoint beforeLoc = new LocalPoint(0, 0);
+    Instant botTimer;
+    public static String questName;
+    public static String status = "starting...";
 
-	MenuEntry targetMenu;
-	Instant botTimer;
-	Player player;
+    @Provides
+    iTaskTemplateConfig provideConfig(ConfigManager configManager) {
+        return configManager.getConfig(iTaskTemplateConfig.class);
+    }
 
-	public static boolean startBot;
-	public static long sleepLength;
-	public static int tickLength;
-	public static int timeout;
-	public static String status = "starting...";
+    @Override
+    protected void startUp() {
 
-	@Provides
-	iTaskTemplateConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(iTaskTemplateConfig.class);
-	}
+    }
 
-	@Override
-	protected void startUp()
-	{
-		chinBreakHandler.registerPlugin(this);
-	}
+    @Override
+    protected void shutDown() {
+        stop();
+    }
 
-	@Override
-	protected void shutDown()
-	{
-		resetVals();
-		chinBreakHandler.unregisterPlugin(this);
-	}
+    @Override
+    public void onStart() {
+        log.info("Starting iTask Template");
+        taskConfig = config;
 
+        if (client != null && game.localPlayer() != null && client.getGameState() == GameState.LOGGED_IN) {
+            loadTasks();
+            botTimer = Instant.now();
+            overlayManager.add(overlay);
+        } else {
+            log.info("Start logged in!");
+            stop();
+        }
+    }
 
-	private void loadTasks()
-	{
-		tasks.clear();
-		tasks.addAll(
-			injector.getInstance(TimeoutTask.class),
-			injector.getInstance(MovingTask.class)
-		);
-	}
+    @Override
+    public void onStop() {
+        log.info("Stopping iTask Template");
+        overlayManager.remove(overlay);
+        botTimer = null;
+        tasks.clear();
+    }
 
-	public void resetVals()
-	{
-		log.debug("stopping Task Template plugin");
-		overlayManager.remove(overlay);
-		chinBreakHandler.stopPlugin(this);
-		startBot = false;
-		botTimer = null;
-		tasks.clear();
-	}
+    @Override
+    public void loop() {
+        if (client != null && client.getLocalPlayer() != null) {
+            var task = tasks.getValidTask();
 
-	@Subscribe
-	private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked)
-	{
-		if (!configButtonClicked.getGroup().equalsIgnoreCase("iTaskTemplate"))
-		{
-			return;
-		}
-		log.debug("button {} pressed!", configButtonClicked.getKey());
-		if (configButtonClicked.getKey().equals("startButton"))
-		{
-			if (!startBot)
-			{
-				Player player = client.getLocalPlayer();
-				if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
-				{
-					log.info("starting Task Template plugin");
-					loadTasks();
-					startBot = true;
-					chinBreakHandler.startPlugin(this);
-					timeout = 0;
-					targetMenu = null;
-					botTimer = Instant.now();
-					overlayManager.add(overlay);
-					beforeLoc = client.getLocalPlayer().getLocalLocation();
-				}
-				else
-				{
-					log.info("Start logged in");
-				}
-			}
-			else
-			{
-				resetVals();
-			}
-		}
-	}
+            if (task != null) {
+                status = task.getTaskDescription();
+                task.run();
+            } else {
+                stop();
+            }
+        }
+    }
 
-	public void updateStats()
-	{
-		//templatePH = (int) getPerHour(totalBraceletCount);
-		//coinsPH = (int) getPerHour(totalCoins - ((totalCoins / BRACELET_HA_VAL) * (unchargedBraceletCost + revEtherCost + natureRuneCost)));
-	}
+    private void loadTasks() {
+        tasks.clear();
+        tasks.addAll(
+                injector.getInstance(TemplateTask.class)
+        );
+    }
 
-	public long getPerHour(int quantity)
-	{
-		Duration timeSinceStart = Duration.between(botTimer, Instant.now());
-		if (!timeSinceStart.isZero())
-		{
-			return (int) ((double) quantity * (double) Duration.ofHours(1).toMillis() / (double) timeSinceStart.toMillis());
-		}
-		return 0;
-	}
+    @Subscribe
+    private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked) {
+        if (!configButtonClicked.getGroup().equalsIgnoreCase("iTaskTemplate")) {
+            return;
+        }
 
-	@Subscribe
-	private void onGameTick(GameTick event)
-	{
-		if (!startBot || chinBreakHandler.isBreakActive(this))
-		{
-			return;
-		}
-		player = client.getLocalPlayer();
-		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
-		{
-			if (chinBreakHandler.shouldBreak(this))
-			{
-				status = "Taking a break";
-				chinBreakHandler.startBreak(this);
-				timeout = 5;
-			}
-
-			Task task = tasks.getValidTask();
-			if (task != null)
-			{
-				status = task.getTaskDescription();
-				task.onGameTick(event);
-			}
-			else
-			{
-				status = "Task not found";
-				log.debug(status);
-			}
-			beforeLoc = player.getLocalLocation();
-		}
-	}
+        if (configButtonClicked.getKey().equals("startButton")) {
+            execute();
+        }
+    }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 public enum TeleportSpell {
 
     VARROCK_TELEPORT(SpellBook.Type.STANDARD, 25, new Position(3212, 3424, 0), false, "Varrock Teleport", new RuneRequirement(1, RuneElement.LAW), new RuneRequirement(3, RuneElement.AIR), new RuneRequirement(1, RuneElement.FIRE)),
-    LUMBRIDGE_TELEPORT(SpellBook.Type.STANDARD, 31, new Position(3225, 3219, 0),false, "Lumbridge Teleport", new RuneRequirement(1, RuneElement.LAW), new RuneRequirement(3, RuneElement.AIR), new RuneRequirement(1, RuneElement.EARTH)),
+    LUMBRIDGE_TELEPORT(SpellBook.Type.STANDARD, 31, new Position(3225, 3219, 0), false, "Lumbridge Teleport", new RuneRequirement(1, RuneElement.LAW), new RuneRequirement(3, RuneElement.AIR), new RuneRequirement(1, RuneElement.EARTH)),
     FALADOR_TELEPORT(SpellBook.Type.STANDARD, 37, new Position(2966, 3379, 0), false, "Falador Teleport", new RuneRequirement(1, RuneElement.LAW), new RuneRequirement(3, RuneElement.AIR), new RuneRequirement(1, RuneElement.WATER)),
     CAMELOT_TELEPORT(SpellBook.Type.STANDARD, 45, new Position(2757, 3479, 0), true, "Camelot Teleport", new RuneRequirement(1, RuneElement.LAW), new RuneRequirement(5, RuneElement.AIR)),
     ARDOUGNE_TELEPORT(SpellBook.Type.STANDARD, 51, new Position(2661, 3300, 0), true, "Ardougne Teleport", new RuneRequirement(2, RuneElement.LAW), new RuneRequirement(2, RuneElement.WATER)),
@@ -46,7 +46,9 @@ public enum TeleportSpell {
         return spellName;
     }
 
-    public Position getLocation() { return location; }
+    public Position getLocation() {
+        return location;
+    }
 
     public List<ItemQuantity> recipe(Game game) {
         List<ItemQuantity> items = new ArrayList<>();

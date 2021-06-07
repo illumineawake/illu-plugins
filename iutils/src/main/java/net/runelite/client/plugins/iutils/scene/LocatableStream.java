@@ -7,9 +7,8 @@ import java.util.Comparator;
 import java.util.stream.Stream;
 
 @Slf4j
-public abstract class LocatableStream<T extends Locatable, S extends LocatableStream<T, S>> extends RandomizedStreamAdapter<T, S>
-{
-//	@Inject private Client client;
+public abstract class LocatableStream<T extends Locatable, S extends LocatableStream<T, S>> extends RandomizedStreamAdapter<T, S> {
+    //	@Inject private Client client;
     protected LocatableStream(Stream<T> stream) {
         super(stream);
     }
@@ -27,8 +26,8 @@ public abstract class LocatableStream<T extends Locatable, S extends LocatableSt
      * nearest to the local player.
      */
     public T nearest() {
-    	return min(Comparator.comparing(o -> o.position().distanceTo(o.client().getLocalPlayer().getWorldLocation()))).orElse(null);
-	}
+        return min(Comparator.comparing(o -> o.position().distanceTo(o.client().getLocalPlayer().getWorldLocation()))).orElse(null);
+    }
 
     /**
      * Returns a stream whose elements have a {@link Locatable#position()} within

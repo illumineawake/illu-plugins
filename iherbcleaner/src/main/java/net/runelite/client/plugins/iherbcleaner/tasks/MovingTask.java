@@ -10,29 +10,24 @@ import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.before
 import static net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin.timeout;
 
 @Slf4j
-public class MovingTask extends Task
-{
+public class MovingTask extends Task {
 
-	@Override
-	public boolean validate()
-	{
-		return playerUtils.isMoving(beforeLoc);
-	}
+    @Override
+    public boolean validate() {
+        return playerUtils.isMoving(beforeLoc);
+    }
 
-	@Override
-	public String getTaskDescription()
-	{
-		return iHerbCleanerPlugin.status;
-	}
+    @Override
+    public String getTaskDescription() {
+        return iHerbCleanerPlugin.status;
+    }
 
-	@Override
-	public void onGameTick(GameTick event)
-	{
-		Player player = client.getLocalPlayer();
-		if (player != null)
-		{
-			playerUtils.handleRun(20, 30);
-			timeout = tickDelay();
-		}
-	}
+    @Override
+    public void onGameTick(GameTick event) {
+        Player player = client.getLocalPlayer();
+        if (player != null) {
+            playerUtils.handleRun(20, 30);
+            timeout = tickDelay();
+        }
+    }
 }

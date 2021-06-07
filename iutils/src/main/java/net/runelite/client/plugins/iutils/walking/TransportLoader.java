@@ -154,7 +154,7 @@ public class TransportLoader {
         }
 
         //Spirit Tree's
-        if(game.varp(111) == 9 && game.membersWorld()){
+        if (game.varp(111) == 9 && game.membersWorld()) {
             for (var source : SPIRIT_TREES) {
                 for (var target : SPIRIT_TREES) {
                     transports.add(spritTreeTransport(source.position, target.position, target.location));

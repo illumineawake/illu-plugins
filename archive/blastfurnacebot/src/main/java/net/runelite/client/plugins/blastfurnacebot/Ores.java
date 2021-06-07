@@ -32,46 +32,41 @@ import net.runelite.api.Varbits;
 
 import java.util.Map;
 
-public enum Ores
-{
-	COPPER_ORE(Varbits.BLAST_FURNACE_COPPER_ORE, ItemID.COPPER_ORE),
-	TIN_ORE(Varbits.BLAST_FURNACE_TIN_ORE, ItemID.TIN_ORE),
-	IRON_ORE(Varbits.BLAST_FURNACE_IRON_ORE, ItemID.IRON_ORE),
-	COAL(Varbits.BLAST_FURNACE_COAL, ItemID.COAL),
-	MITHRIL_ORE(Varbits.BLAST_FURNACE_MITHRIL_ORE, ItemID.MITHRIL_ORE),
-	ADAMANTITE_ORE(Varbits.BLAST_FURNACE_ADAMANTITE_ORE, ItemID.ADAMANTITE_ORE),
-	RUNITE_ORE(Varbits.BLAST_FURNACE_RUNITE_ORE, ItemID.RUNITE_ORE),
-	SILVER_ORE(Varbits.BLAST_FURNACE_SILVER_ORE, ItemID.SILVER_ORE),
-	GOLD_ORE(Varbits.BLAST_FURNACE_GOLD_ORE, ItemID.GOLD_ORE);
+public enum Ores {
+    COPPER_ORE(Varbits.BLAST_FURNACE_COPPER_ORE, ItemID.COPPER_ORE),
+    TIN_ORE(Varbits.BLAST_FURNACE_TIN_ORE, ItemID.TIN_ORE),
+    IRON_ORE(Varbits.BLAST_FURNACE_IRON_ORE, ItemID.IRON_ORE),
+    COAL(Varbits.BLAST_FURNACE_COAL, ItemID.COAL),
+    MITHRIL_ORE(Varbits.BLAST_FURNACE_MITHRIL_ORE, ItemID.MITHRIL_ORE),
+    ADAMANTITE_ORE(Varbits.BLAST_FURNACE_ADAMANTITE_ORE, ItemID.ADAMANTITE_ORE),
+    RUNITE_ORE(Varbits.BLAST_FURNACE_RUNITE_ORE, ItemID.RUNITE_ORE),
+    SILVER_ORE(Varbits.BLAST_FURNACE_SILVER_ORE, ItemID.SILVER_ORE),
+    GOLD_ORE(Varbits.BLAST_FURNACE_GOLD_ORE, ItemID.GOLD_ORE);
 
-	private static final Map<Varbits, Ores> VARBIT;
+    private static final Map<Varbits, Ores> VARBIT;
 
-	static
-	{
-		ImmutableMap.Builder<Varbits, Ores> builder = new ImmutableMap.Builder<>();
+    static {
+        ImmutableMap.Builder<Varbits, Ores> builder = new ImmutableMap.Builder<>();
 
-		for (Ores s : values())
-		{
-			builder.put(s.getVarbit(), s);
-		}
+        for (Ores s : values()) {
+            builder.put(s.getVarbit(), s);
+        }
 
-		VARBIT = builder.build();
-	}
+        VARBIT = builder.build();
+    }
 
-	@Getter(AccessLevel.PACKAGE)
-	private final Varbits varbit;
-	@Getter(AccessLevel.PACKAGE)
-	private final int oreID;
+    @Getter(AccessLevel.PACKAGE)
+    private final Varbits varbit;
+    @Getter(AccessLevel.PACKAGE)
+    private final int oreID;
 
-	Ores(Varbits varbit, int oreID)
-	{
-		this.varbit = varbit;
-		this.oreID = oreID;
-	}
+    Ores(Varbits varbit, int oreID) {
+        this.varbit = varbit;
+        this.oreID = oreID;
+    }
 
-	public static Ores getVarbit(Varbits varbit)
-	{
-		return VARBIT.get(varbit);
-	}
+    public static Ores getVarbit(Varbits varbit) {
+        return VARBIT.get(varbit);
+    }
 
 }

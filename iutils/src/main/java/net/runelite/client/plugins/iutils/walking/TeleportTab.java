@@ -11,12 +11,12 @@ import net.runelite.client.plugins.iutils.scene.Position;
 public enum TeleportTab {
 
     VARROCK_TELEPORT_TAB(new Position(3212, 3424, 0), "Varrock teleport", ItemID.VARROCK_TELEPORT),
-    LUMBRIDGE_TELEPORT_TAB(new Position(3225, 3219, 0),"Lumbridge teleport", ItemID.LUMBRIDGE_TELEPORT),
-    FALADOR_TELEPORT_TAB(new Position(2966, 3379, 0),"Falador teleport", ItemID.FALADOR_TELEPORT),
-    CAMELOT_TELEPORT_TAB(new Position(2757, 3479, 0),"Camelot Teleport", ItemID.CAMELOT_TELEPORT),
+    LUMBRIDGE_TELEPORT_TAB(new Position(3225, 3219, 0), "Lumbridge teleport", ItemID.LUMBRIDGE_TELEPORT),
+    FALADOR_TELEPORT_TAB(new Position(2966, 3379, 0), "Falador teleport", ItemID.FALADOR_TELEPORT),
+    CAMELOT_TELEPORT_TAB(new Position(2757, 3479, 0), "Camelot Teleport", ItemID.CAMELOT_TELEPORT),
     ARDOUGNE_TELEPORT_TAB(new Position(2661, 3300, 0), "Ardougne teleport", ItemID.ARDOUGNE_TELEPORT),
-    WEST_ARDOUGNE_TELEPORT_TAB(new Position(2500,3290,0), "West ardougne teleport", ItemID.WEST_ARDOUGNE_TELEPORT),
-    RIMMINGTON_TELEPORT_TAB(new Position(2954,3224, 0), "Rimmington teleport", ItemID.RIMMINGTON_TELEPORT),
+    WEST_ARDOUGNE_TELEPORT_TAB(new Position(2500, 3290, 0), "West ardougne teleport", ItemID.WEST_ARDOUGNE_TELEPORT),
+    RIMMINGTON_TELEPORT_TAB(new Position(2954, 3224, 0), "Rimmington teleport", ItemID.RIMMINGTON_TELEPORT),
     TAVERLEY_TELEPORT_TAB(new Position(2894, 3465, 0), "Taverley teleport", ItemID.TAVERLEY_TELEPORT),
     RELLEKKA_TELEPORT_TAB(new Position(2668, 3631, 0), "Rellekka teleport", ItemID.RELLEKKA_TELEPORT),
     BRIMHAVEN_TELEPORT_TAB(new Position(2758, 3178, 0), "Brimhaven teleport", ItemID.BRIMHAVEN_TELEPORT),

@@ -32,51 +32,46 @@ import net.runelite.api.Varbits;
 
 import java.util.Map;
 
-public enum Bars
-{
-	BRONZE_BAR(Varbits.BLAST_FURNACE_BRONZE_BAR, ItemID.BRONZE_BAR, ItemID.COPPER_ORE, 0),
-	IRON_BAR(Varbits.BLAST_FURNACE_IRON_BAR, ItemID.IRON_BAR, ItemID.IRON_ORE, 0),
-	STEEL_BAR(Varbits.BLAST_FURNACE_STEEL_BAR, ItemID.STEEL_BAR, ItemID.IRON_ORE, 26),
-	MITHRIL_BAR(Varbits.BLAST_FURNACE_MITHRIL_BAR, ItemID.MITHRIL_BAR, ItemID.MITHRIL_ORE, 52),
-	ADAMANTITE_BAR(Varbits.BLAST_FURNACE_ADAMANTITE_BAR, ItemID.ADAMANTITE_BAR, ItemID.ADAMANTITE_ORE, 52),
-	RUNITE_BAR(Varbits.BLAST_FURNACE_RUNITE_BAR, ItemID.RUNITE_BAR, ItemID.RUNITE_ORE, 80),
-	SILVER_BAR(Varbits.BLAST_FURNACE_SILVER_BAR, ItemID.SILVER_BAR, ItemID.SILVER_ORE, 0),
-	GOLD_BAR(Varbits.BLAST_FURNACE_GOLD_BAR, ItemID.GOLD_BAR, ItemID.GOLD_ORE, 0);
+public enum Bars {
+    BRONZE_BAR(Varbits.BLAST_FURNACE_BRONZE_BAR, ItemID.BRONZE_BAR, ItemID.COPPER_ORE, 0),
+    IRON_BAR(Varbits.BLAST_FURNACE_IRON_BAR, ItemID.IRON_BAR, ItemID.IRON_ORE, 0),
+    STEEL_BAR(Varbits.BLAST_FURNACE_STEEL_BAR, ItemID.STEEL_BAR, ItemID.IRON_ORE, 26),
+    MITHRIL_BAR(Varbits.BLAST_FURNACE_MITHRIL_BAR, ItemID.MITHRIL_BAR, ItemID.MITHRIL_ORE, 52),
+    ADAMANTITE_BAR(Varbits.BLAST_FURNACE_ADAMANTITE_BAR, ItemID.ADAMANTITE_BAR, ItemID.ADAMANTITE_ORE, 52),
+    RUNITE_BAR(Varbits.BLAST_FURNACE_RUNITE_BAR, ItemID.RUNITE_BAR, ItemID.RUNITE_ORE, 80),
+    SILVER_BAR(Varbits.BLAST_FURNACE_SILVER_BAR, ItemID.SILVER_BAR, ItemID.SILVER_ORE, 0),
+    GOLD_BAR(Varbits.BLAST_FURNACE_GOLD_BAR, ItemID.GOLD_BAR, ItemID.GOLD_ORE, 0);
 
-	private static final Map<Varbits, Bars> VARBIT;
+    private static final Map<Varbits, Bars> VARBIT;
 
-	static
-	{
-		ImmutableMap.Builder<Varbits, Bars> builder = new ImmutableMap.Builder<>();
+    static {
+        ImmutableMap.Builder<Varbits, Bars> builder = new ImmutableMap.Builder<>();
 
-		for (Bars s : values())
-		{
-			builder.put(s.getVarbit(), s);
-		}
+        for (Bars s : values()) {
+            builder.put(s.getVarbit(), s);
+        }
 
-		VARBIT = builder.build();
-	}
+        VARBIT = builder.build();
+    }
 
-	@Getter(AccessLevel.PACKAGE)
-	private final Varbits varbit;
-	@Getter(AccessLevel.PACKAGE)
-	private final int itemID;
-	@Getter(AccessLevel.PACKAGE)
-	private final int oreID;
-	@Getter(AccessLevel.PACKAGE)
-	private final int minCoalAmount;
+    @Getter(AccessLevel.PACKAGE)
+    private final Varbits varbit;
+    @Getter(AccessLevel.PACKAGE)
+    private final int itemID;
+    @Getter(AccessLevel.PACKAGE)
+    private final int oreID;
+    @Getter(AccessLevel.PACKAGE)
+    private final int minCoalAmount;
 
-	Bars(Varbits varbit, int itemID, int oreID, int minCoalAmount)
-	{
-		this.varbit = varbit;
-		this.itemID = itemID;
-		this.oreID = oreID;
-		this.minCoalAmount = minCoalAmount;
-	}
+    Bars(Varbits varbit, int itemID, int oreID, int minCoalAmount) {
+        this.varbit = varbit;
+        this.itemID = itemID;
+        this.oreID = oreID;
+        this.minCoalAmount = minCoalAmount;
+    }
 
-	public static Bars getVarbit(Varbits varbit)
-	{
-		return VARBIT.get(varbit);
-	}
+    public static Bars getVarbit(Varbits varbit) {
+        return VARBIT.get(varbit);
+    }
 
 }

@@ -9,11 +9,11 @@ public class RuneRequirement {
     public int quantity;
     public RuneElement type;
 
-    public int getFirst(){
+    public int getFirst() {
         return this.quantity;
     }
 
-    public RuneElement getSecond(){
+    public RuneElement getSecond() {
         return this.type;
     }
 }
