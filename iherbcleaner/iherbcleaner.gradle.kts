@@ -23,15 +23,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "2.1.0"
+version = "2.1.1"
 
 project.extra["PluginName"] = "iHerbCleaner"
 project.extra["PluginDescription"] = "Illumine - Herb Cleaner"
 
 dependencies {
-    //compileOnly(group = "com.openosrs.externals", name = "iutils", version = "1.0.0+") uncomment this is you want to use this in a project that doesn't also hold iUtils
     compileOnly(project(":iutils"))
-    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "+")
 }
 
 tasks {

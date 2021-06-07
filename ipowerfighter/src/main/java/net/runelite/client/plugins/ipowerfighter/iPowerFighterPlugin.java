@@ -26,7 +26,6 @@
 package net.runelite.client.plugins.ipowerfighter;
 
 import com.google.inject.Provides;
-import com.owain.chinbreakhandler.ChinBreakHandler;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
@@ -40,6 +39,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iutils.*;
+import net.runelite.client.plugins.iutils.scripts.ReflectBreakHandler;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
@@ -111,7 +111,7 @@ public class iPowerFighterPlugin extends Plugin {
     private ExecutorService executorService;
 
     @Inject
-    private ChinBreakHandler chinBreakHandler;
+    private ReflectBreakHandler chinBreakHandler;
 
     NPC currentNPC;
     WorldPoint deathLocation;

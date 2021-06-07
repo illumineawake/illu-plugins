@@ -27,7 +27,6 @@ package net.runelite.client.plugins.iherbcleaner;
 
 import com.google.inject.Injector;
 import com.google.inject.Provides;
-import com.owain.chinbreakhandler.ChinBreakHandler;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -43,6 +42,7 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iherbcleaner.tasks.*;
 import net.runelite.client.plugins.iutils.iUtils;
+import net.runelite.client.plugins.iutils.scripts.ReflectBreakHandler;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
@@ -80,7 +80,7 @@ public class iHerbCleanerPlugin extends Plugin {
     private iUtils utils;
 
     @Inject
-    public ChinBreakHandler chinBreakHandler;
+    public ReflectBreakHandler chinBreakHandler;
 
     @Inject
     private ConfigManager configManager;

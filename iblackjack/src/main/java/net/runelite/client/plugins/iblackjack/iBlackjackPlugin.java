@@ -27,7 +27,6 @@ package net.runelite.client.plugins.iblackjack;
 
 import com.google.inject.Injector;
 import com.google.inject.Provides;
-import com.owain.chinbreakhandler.ChinBreakHandler;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
@@ -45,6 +44,7 @@ import net.runelite.client.plugins.iblackjack.tasks.*;
 import net.runelite.client.plugins.iutils.CalculationUtils;
 import net.runelite.client.plugins.iutils.InventoryUtils;
 import net.runelite.client.plugins.iutils.iUtils;
+import net.runelite.client.plugins.iutils.scripts.ReflectBreakHandler;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.apache.commons.lang3.RandomUtils;
 import org.pf4j.Extension;
@@ -89,7 +89,7 @@ public class iBlackjackPlugin extends Plugin {
     private InventoryUtils inventory;
 
     @Inject
-    public ChinBreakHandler chinBreakHandler;
+    public ReflectBreakHandler chinBreakHandler;
 
     @Inject
     private ConfigManager configManager;

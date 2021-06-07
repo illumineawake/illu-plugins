@@ -1,9 +1,9 @@
 package net.runelite.client.plugins.iblackjack.tasks;
 
-import com.owain.chinbreakhandler.ChinBreakHandler;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.iblackjack.Task;
 import net.runelite.client.plugins.iblackjack.iBlackjackPlugin;
+import net.runelite.client.plugins.iutils.scripts.ReflectBreakHandler;
 
 import javax.inject.Inject;
 
@@ -14,7 +14,7 @@ public class BreakTask extends Task {
     private iBlackjackPlugin plugin;
 
     @Inject
-    public ChinBreakHandler chinBreakHandler;
+    public ReflectBreakHandler chinBreakHandler;
 
     @Override
     public boolean validate() {

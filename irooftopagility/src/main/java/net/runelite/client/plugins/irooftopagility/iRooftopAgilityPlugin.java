@@ -26,7 +26,6 @@
 package net.runelite.client.plugins.irooftopagility;
 
 import com.google.inject.Provides;
-import com.owain.chinbreakhandler.ChinBreakHandler;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
@@ -44,6 +43,7 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
 import net.runelite.client.plugins.iutils.*;
+import net.runelite.client.plugins.iutils.scripts.ReflectBreakHandler;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
@@ -111,7 +111,7 @@ public class iRooftopAgilityPlugin extends Plugin {
     ItemManager itemManager;
 
     @Inject
-    private ChinBreakHandler chinBreakHandler;
+    private ReflectBreakHandler chinBreakHandler;
 
     Player player;
     iRooftopAgilityState state;
