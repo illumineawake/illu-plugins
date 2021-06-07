@@ -709,7 +709,7 @@ public class iUtils extends Plugin {
             }
             if (menu.entry.getOption().equals("Walk here")) {
                 event.consume();
-                log.info("Walk action: {} {}", walk.coordX, walk.coordY);
+                log.debug("Walk action: {} {}", walk.coordX, walk.coordY);
                 walk.walkTile(walk.coordX, walk.coordY);
                 walk.walkAction = false;
                 menu.entry = null;

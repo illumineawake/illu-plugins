@@ -61,7 +61,7 @@ public class WalkUtils {
     public void sceneWalk(LocalPoint localPoint, int rand, long delay) {
         coordX = localPoint.getSceneX() + calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
         coordY = localPoint.getSceneY() + calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
-        log.info("Coord values: {}, {}", coordX, coordY);
+        log.debug("Coord values: {}, {}", coordX, coordY);
         walkAction = true;
         menu.setEntry(new MenuEntry("Walk here", "", 0, MenuAction.WALK.getId(),
                 0, 0, false));
@@ -82,7 +82,7 @@ public class WalkUtils {
                 calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
         coordY = position.y +
                 calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
-        log.info("Coord values: {}, {}", coordX, coordY);
+        log.debug("Coord values: {}, {}", coordX, coordY);
         walkAction = true;
         menu.setEntry(new MenuEntry("Walk here", "", 0, MenuAction.WALK.getId(),
                 0, 0, false));

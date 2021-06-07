@@ -382,7 +382,7 @@ public class Game {
     }
 
     public void sleepExact(long time) {
-        log.info("Performing sleep for: {}ms", time);
+        log.debug("Performing sleep for: {}ms", time);
         long endTime = System.currentTimeMillis() + time;
 
         time = endTime - System.currentTimeMillis();
