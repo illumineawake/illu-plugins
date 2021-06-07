@@ -58,7 +58,6 @@ public class iGroundItem implements Locatable, Interactable {
 
     @Override
     public void interact(String action) {
-        System.out.println(actions().toString());
         for (int i = 0; i < actions().size(); i++) {
             if (action.equalsIgnoreCase(actions().get(i))) {
                 interact(i);

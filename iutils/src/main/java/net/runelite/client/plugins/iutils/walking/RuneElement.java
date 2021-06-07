@@ -49,7 +49,6 @@ public enum RuneElement {
             for (String alternativeName : alternativeNames) {
                 if (rune.name().toLowerCase().startsWith(alternativeName.toLowerCase())) {
                     items.add(rune);
-                    log.info("Adding teleport rune: {}", rune.name());
                     break;
                 }
             }

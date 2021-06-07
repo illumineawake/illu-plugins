@@ -14,7 +14,7 @@ import java.util.HashMap;
 /**
  * Reflection utility for Owain's Chin Break Handler:
  * https://github.com/Owain94/OpenOSRS-external-plugins/tree/master/chinbreakhandler
- *
+ * <p>
  * Let's you 'optionally' use it, without the dependency in your plugins code.
  * Author: Soxs
  */
@@ -31,13 +31,11 @@ public class ReflectBreakHandler {
     private HashMap<String, Method> chinMethods = null;
     private boolean chinBreakHandlerInstalled = true;
 
-    public void registerPlugin(Plugin p, boolean configure)
-    {
+    public void registerPlugin(Plugin p, boolean configure) {
         performReflection("registerPlugin2", p, configure);
     }
 
-    public void registerPlugin(Plugin p)
-    {
+    public void registerPlugin(Plugin p) {
         performReflection("registerPlugin1", p);
     }
 
@@ -45,33 +43,29 @@ public class ReflectBreakHandler {
         performReflection("unregisterPlugin1", p);
     }
 
-    public void startPlugin(Plugin p)
-    {
+    public void startPlugin(Plugin p) {
         performReflection("startPlugin1", p);
     }
 
-    public void stopPlugin(Plugin p)
-    {
+    public void stopPlugin(Plugin p) {
         performReflection("stopPlugin1", p);
     }
 
-    public boolean isBreakActive(Plugin p)
-    {
+    public boolean isBreakActive(Plugin p) {
         Object o = performReflection("isBreakActive1", p);
         if (o != null)
             return (boolean) o;
         return false;
     }
-    public boolean shouldBreak(Plugin p)
-    {
+
+    public boolean shouldBreak(Plugin p) {
         Object o = performReflection("shouldBreak1", p);
         if (o != null)
             return (boolean) o;
         return false;
     }
 
-    public void startBreak(Plugin p)
-    {
+    public void startBreak(Plugin p) {
         performReflection("startBreak1", p);
     }
 
@@ -95,18 +89,15 @@ public class ReflectBreakHandler {
 
         chinMethods = new HashMap<>();
         for (Plugin p : pluginManager.getPlugins()) {
-            if (p.getClass().getSimpleName().toLowerCase().equals("chinbreakhandlerplugin"))
-            {
-                for (Field f : p.getClass().getDeclaredFields())
-                {
+            if (p.getClass().getSimpleName().toLowerCase().equals("chinbreakhandlerplugin")) {
+                for (Field f : p.getClass().getDeclaredFields()) {
                     if (f.getName().toLowerCase().equals("chinbreakhandler")) {
                         f.setAccessible(true);
                         try {
                             instance = f.get(p);
-                            for (Method m : instance.getClass().getDeclaredMethods())
-                            {
+                            for (Method m : instance.getClass().getDeclaredMethods()) {
                                 m.setAccessible(true);
-                                chinMethods.put(m.getName().toLowerCase()+m.getParameterCount(), m);
+                                chinMethods.put(m.getName().toLowerCase() + m.getParameterCount(), m);
                             }
                             return true;
                         } catch (IllegalAccessException e) {

@@ -123,7 +123,6 @@ public class TeleportLoader {
             if (Game.getWildernessLevelFrom(game.client().getLocalPlayer().getWorldLocation()) <= 20) {
                 for (TeleportTab teleportTab : TeleportTab.values()) {
                     if (teleportTab.canUse(game) && teleportTab.getLocation().distanceTo(playerPosition) > 20) {
-                        log.info("Adding teleport tab: {}", teleportTab.getTabletName());
                         teleports.add(new Teleport(teleportTab.getLocation(), 5, () -> inventoryAction(teleportTab.getTabletName(), "Break")));
                     }
                 }
@@ -133,7 +132,6 @@ public class TeleportLoader {
         for (TeleportSpell teleportSpell : TeleportSpell.values()) {
             if (!teleportSpell.canUse(game)) continue;
             if (teleportSpell.getLocation().distanceTo(playerPosition) > 50) {
-                log.info("Adding teleport method: " + teleportSpell.getSpellName());
                 teleports.add(new Teleport(teleportSpell.getLocation(), 5, () -> cast(teleportSpell.getSpellName())));
             }
         }

@@ -83,12 +83,9 @@ public abstract class UtilsScript extends Plugin {
     protected void obtain(List<ItemQuantity> items) {
         ItemQuantity[] itemArray = items.toArray(ItemQuantity[]::new);
         if (hasItems(itemArray)) {
-            log.info(".");
             return;
         }
-        log.info("..");
         obtainBank(itemArray);
-        log.info("...");
         withdraw(itemArray);
     }
 
@@ -125,9 +122,7 @@ public abstract class UtilsScript extends Plugin {
                         buyItems.add(i);
                     }
                 });
-        log.info("here");
         if (!buyItems.isEmpty()) {
-            log.info("BuyItems: {}", buyItems.toString());
             grandExchange().buy(buyItems);
         }
         bank().depositInventory();

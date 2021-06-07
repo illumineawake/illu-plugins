@@ -105,6 +105,9 @@ public class iUtils extends Plugin {
 
     private OSBGrandExchangeResult osbGrandExchangeResult;
 
+    @Inject
+    private ItemManager itemManager;
+
     public final static Set<TileObject> objects = new HashSet<>();
     public final static Set<TileItem> tileItems = new HashSet<>();
     public final static Set<NPC> npcs = new HashSet<>();
@@ -544,6 +547,18 @@ public class iUtils extends Plugin {
         }
 
         return null;
+    }
+
+    public ItemComposition getCompositionItem(int itemId) {
+        log.debug("Looking up CompositionItem: {}", itemId);
+
+        return itemManager.getItemComposition(itemId);
+    }
+
+    public int getItemPrice(int itemId, boolean useWikiPrice) {
+        log.debug("Looking up price for Item: {}", itemId);
+
+        return itemManager.getItemPriceWithSource(itemId, useWikiPrice);
     }
 
     //Ganom's

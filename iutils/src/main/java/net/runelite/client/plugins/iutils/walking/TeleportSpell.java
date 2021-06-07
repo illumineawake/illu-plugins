@@ -58,7 +58,6 @@ public enum TeleportSpell {
             RuneElement runeElement = pair.getSecond();
             int amount = amountRequiredForSpell - runeElement.getCount(game);
             if (amount > 0) {
-                log.info("Adding rune(s): ID: {}, quantity: {}", pair.getSecond().getRuneId(), amount);
                 items.add(new ItemQuantity(pair.getSecond().getRuneId(), amount));
             }
         }

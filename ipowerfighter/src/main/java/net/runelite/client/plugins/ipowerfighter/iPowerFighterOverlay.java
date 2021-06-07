@@ -59,9 +59,9 @@ class iPowerFighterOverlay extends OverlayPanel {
         tableComponent.addRow("Status:", infoStatus);
 
 
-		TableComponent tableMarksComponent = new TableComponent();
-		tableMarksComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
-		tableMarksComponent.addRow("NPCs killed:", String.valueOf(plugin.killCount));
+        TableComponent tableMarksComponent = new TableComponent();
+        tableMarksComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
+        tableMarksComponent.addRow("NPCs killed:", String.valueOf(plugin.killCount));
 
         TableComponent tableDelayComponent = new TableComponent();
         tableDelayComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);

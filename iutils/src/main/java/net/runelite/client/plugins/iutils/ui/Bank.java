@@ -170,7 +170,6 @@ public class Bank {
             if (item.itemId() == 6512 || item.itemId() == -1 || item.hidden()) {
                 continue;
             }
-            System.out.println("Bank item id: " + item.itemId());
             if (item.itemId() == id) {
                 return item.quantity();
             }

@@ -45,8 +45,7 @@ public class Combat {
 
         if (target == null || target.index() != npc.index()) {
             if (game.localPlayer().target() != null)
-                System.out.println("Target doesn't equal npc: " + npc.toString() + " my target: " + target.toString());
-            npc.interact("Attack");
+                npc.interact("Attack");
         }
     }
 

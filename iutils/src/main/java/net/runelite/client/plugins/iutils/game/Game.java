@@ -23,7 +23,6 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -32,6 +31,15 @@ import java.util.stream.Stream;
 import static java.awt.event.KeyEvent.VK_ENTER;
 import static net.runelite.client.plugins.iutils.iUtils.sleep;
 
+/**
+ * OPRS compatible port of a comprehensive OSRS automation API developed by Runemoro.
+ * Please check out his github at - https://github.com/Runemoro/
+ * Whilst all credit should go to him for the massive work in building this API please do not bug him for any issues relating
+ * to this OPRS ported version. All support/bug requests should be provided via my github - https://github.com/illumineawake/illu-plugins
+ * or via the Illumine Plugins discord
+ *
+ * @author Runemoro - ported to OPRS by illumine
+ */
 @Slf4j
 @Singleton
 public class Game {
@@ -53,9 +61,6 @@ public class Game {
 
     @Inject
     private KeyboardUtils keyboard;
-
-    @Inject
-    private ExecutorService executorService;
 
     iTile[][][] tiles = new iTile[4][104][104];
     Position base;
@@ -198,52 +203,6 @@ public class Game {
                 .stream())
         );
     }
-
-//    public TileObject objects(int id) {
-////        Collection<BaseObject> baseObjects = new ArrayList<>();
-//        Tile[][][] tiles = client().getScene().getTiles();
-//        int plane = client().getPlane();
-//
-//        for (int j = 0; j < tiles[plane].length; j++) {
-//            for (int k = 0; k < tiles[plane][j].length; k++) {
-//                GameObject[] go = tiles[plane][j][k].getGameObjects();
-//                for (GameObject gameObject : go) {
-//                    if (gameObject != null && gameObject.getId() == id) {
-//                        return gameObject;
-////                        baseObjects.add(new BaseObject(gameObject, ObjectCategory.REGULAR));
-//                    }
-//                }
-//                WallObject wallObject = tiles[plane][j][k].getWallObject();
-//                if (wallObject != null && wallObject.getId() == id) {
-//                    return wallObject;
-////                    baseObjects.add(new BaseObject(wallObject, ObjectCategory.WALL));
-//                }
-//
-//                GroundObject groundObject = tiles[plane][j][k].getGroundObject();
-//                if (groundObject != null && groundObject.getId() == id) {
-//                    return groundObject;
-////                    baseObjects.add(new BaseObject(groundObject, ObjectCategory.FLOOR_DECORATION));
-//                }
-//
-//                DecorativeObject decorativeObject = tiles[plane][j][k].getDecorativeObject();
-//                if (decorativeObject != null && decorativeObject.getId() == id) {
-//                    return decorativeObject;
-////                    baseObjects.add(new BaseObject(decorativeObject, ObjectCategory.WALL_DECORATION));
-//                }
-//            }
-//        }
-//        return getFromClientThread(() -> new GameObjectStream(baseObjects.stream()
-//                .map(o -> new iObject(
-//                        this,
-//                        o.tileObject,
-//                        o.objectCategory(),
-//                        client().getObjectDefinition(o.tileObject.getId())
-//                ))
-//                .collect(Collectors.toList())
-//                .stream())
-//        );
-//        return null;
-//    }
 
     public GroundItemStream groundItems() {
         return getFromClientThread(() -> new GroundItemStream(iUtils.tileItems.stream()

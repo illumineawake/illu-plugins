@@ -196,7 +196,6 @@ public class GrandExchange {
         for (int slot = 0; slot < 8; slot++) {
             GrandExchangeOffer offer = game.grandExchangeOffer(slot);
             if (offer == null || offer.getState() == GrandExchangeOfferState.EMPTY) {
-                System.out.println(game.grandExchangeOffer(slot));
                 return slot;
             }
         }
