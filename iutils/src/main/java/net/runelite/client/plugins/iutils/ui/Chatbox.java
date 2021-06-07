@@ -193,6 +193,19 @@ public class Chatbox {
         throw new IllegalStateException("no option found: " + options.toString());
     }
 
+    public String findFromOptions(Collection<String> options) {
+        if (chatState() == ChatState.CLOSED || chatState() != ChatState.OPTIONS_CHAT) {
+             return "";
+        }
+
+        for (var i = 0; i < game.widget(219, 1).items().size(); i++) {
+            if (game.widget(219, 1, i).text() != null && options.contains(game.widget(219, 1, i).text())) {
+                return game.widget(219, 1, i).text();
+            }
+        }
+        return "";
+    }
+
     public void selectMenu(String option) { //TODO untested
         game.waitUntil(() -> game.screenContainer().nestedInterface() == 187);
 

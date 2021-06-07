@@ -23,13 +23,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.0"
+version = "1.0.1"
 
 project.extra["PluginName"] = "iQuest Assistant"
 project.extra["PluginDescription"] = "Illumine - Quest Assistant plugin"
 
 dependencies {
-    compileOnly(group = "com.openosrs.externals", name = "iutils", version = "4.0.3+")
+    compileOnly(project(":iutils"))
 }
 
 tasks {
