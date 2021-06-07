@@ -28,9 +28,6 @@ package net.runelite.client.plugins.iherbcleaner;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
-import java.time.Duration;
-import java.time.Instant;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -44,193 +41,167 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.iherbcleaner.tasks.BankItemsTask;
-import net.runelite.client.plugins.iherbcleaner.tasks.CleanHerbTask;
-import net.runelite.client.plugins.iherbcleaner.tasks.MovingTask;
-import net.runelite.client.plugins.iherbcleaner.tasks.OpenBankTask;
-import net.runelite.client.plugins.iherbcleaner.tasks.TimeoutTask;
+import net.runelite.client.plugins.iherbcleaner.tasks.*;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
+
+import javax.inject.Inject;
+import java.time.Duration;
+import java.time.Instant;
 
 
 @Extension
 @PluginDependency(iUtils.class)
 @PluginDescriptor(
-	name = "iHerbCleaner",
-	enabledByDefault = false,
-	description = "Illumine - Herb Cleaner plugin",
-	tags = {"illumine", "task", "herblore", "clean", "bot"}
+        name = "iHerbCleaner",
+        enabledByDefault = false,
+        description = "Illumine - Herb Cleaner plugin",
+        tags = {"illumine", "task", "herblore", "clean", "bot"}
 )
 @Slf4j
-public class iHerbCleanerPlugin extends Plugin
-{
-	@Inject
-	private Injector injector;
+public class iHerbCleanerPlugin extends Plugin {
+    @Inject
+    private Injector injector;
 
-	@Inject
-	private Client client;
+    @Inject
+    private Client client;
 
-	@Inject
-	private iHerbCleanerConfig config;
+    @Inject
+    private iHerbCleanerConfig config;
 
-	@Inject
-	private OverlayManager overlayManager;
+    @Inject
+    private OverlayManager overlayManager;
 
-	@Inject
-	private iHerbCleanerOverlay overlay;
+    @Inject
+    private iHerbCleanerOverlay overlay;
 
-	@Inject
-	private iUtils utils;
+    @Inject
+    private iUtils utils;
 
-	@Inject
-	public ChinBreakHandler chinBreakHandler;
+    @Inject
+    public ChinBreakHandler chinBreakHandler;
 
-	@Inject
-	private ConfigManager configManager;
+    @Inject
+    private ConfigManager configManager;
 
-	private TaskSet tasks = new TaskSet();
-	public static LocalPoint beforeLoc = new LocalPoint(0, 0);
+    private TaskSet tasks = new TaskSet();
+    public static LocalPoint beforeLoc = new LocalPoint(0, 0);
 
-	MenuEntry targetMenu;
-	Instant botTimer;
-	Player player;
+    MenuEntry targetMenu;
+    Instant botTimer;
+    Player player;
 
-	public static boolean startBot;
-	public static long sleepLength;
-	public static int tickLength;
-	public static int timeout;
-	public static String status = "starting...";
+    public static boolean startBot;
+    public static long sleepLength;
+    public static int tickLength;
+    public static int timeout;
+    public static String status = "starting...";
 
-	@Provides
-	iHerbCleanerConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(iHerbCleanerConfig.class);
-	}
+    @Provides
+    iHerbCleanerConfig provideConfig(ConfigManager configManager) {
+        return configManager.getConfig(iHerbCleanerConfig.class);
+    }
 
-	@Override
-	protected void startUp()
-	{
-		chinBreakHandler.registerPlugin(this);
-	}
+    @Override
+    protected void startUp() {
+        chinBreakHandler.registerPlugin(this);
+    }
 
-	@Override
-	protected void shutDown()
-	{
-		resetVals();
-		chinBreakHandler.unregisterPlugin(this);
-	}
+    @Override
+    protected void shutDown() {
+        resetVals();
+        chinBreakHandler.unregisterPlugin(this);
+    }
 
 
-	private void loadTasks()
-	{
-		tasks.clear();
-		tasks.addAll(
-			injector.getInstance(TimeoutTask.class),
-			injector.getInstance(MovingTask.class),
-			injector.getInstance(CleanHerbTask.class),
-			injector.getInstance(BankItemsTask.class),
-			injector.getInstance(OpenBankTask.class)
-		);
-	}
+    private void loadTasks() {
+        tasks.clear();
+        tasks.addAll(
+                injector.getInstance(TimeoutTask.class),
+                injector.getInstance(MovingTask.class),
+                injector.getInstance(CleanHerbTask.class),
+                injector.getInstance(BankItemsTask.class),
+                injector.getInstance(OpenBankTask.class)
+        );
+    }
 
-	public void resetVals()
-	{
-		log.debug("stopping iHerb Cleaner plugin");
-		overlayManager.remove(overlay);
-		chinBreakHandler.stopPlugin(this);
-		startBot = false;
-		botTimer = null;
-		tasks.clear();
-	}
+    public void resetVals() {
+        log.debug("stopping iHerb Cleaner plugin");
+        overlayManager.remove(overlay);
+        chinBreakHandler.stopPlugin(this);
+        startBot = false;
+        botTimer = null;
+        tasks.clear();
+    }
 
-	@Subscribe
-	private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked)
-	{
-		if (!configButtonClicked.getGroup().equalsIgnoreCase("iHerbCleaner"))
-		{
-			return;
-		}
-		log.debug("button {} pressed!", configButtonClicked.getKey());
-		if (configButtonClicked.getKey().equals("startButton"))
-		{
-			if (!startBot)
-			{
-				Player player = client.getLocalPlayer();
-				if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
-				{
-					log.info("starting Herb Cleaner plugin");
-					loadTasks();
-					startBot = true;
-					chinBreakHandler.startPlugin(this);
-					timeout = 0;
-					targetMenu = null;
-					botTimer = Instant.now();
-					overlayManager.add(overlay);
-					beforeLoc = client.getLocalPlayer().getLocalLocation();
-				}
-				else
-				{
-					log.info("Start logged in");
-				}
-			}
-			else
-			{
-				resetVals();
-			}
-		}
-	}
+    @Subscribe
+    private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked) {
+        if (!configButtonClicked.getGroup().equalsIgnoreCase("iHerbCleaner")) {
+            return;
+        }
+        log.debug("button {} pressed!", configButtonClicked.getKey());
+        if (configButtonClicked.getKey().equals("startButton")) {
+            if (!startBot) {
+                Player player = client.getLocalPlayer();
+                if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN) {
+                    log.info("starting Herb Cleaner plugin");
+                    loadTasks();
+                    startBot = true;
+                    chinBreakHandler.startPlugin(this);
+                    timeout = 0;
+                    targetMenu = null;
+                    botTimer = Instant.now();
+                    overlayManager.add(overlay);
+                    beforeLoc = client.getLocalPlayer().getLocalLocation();
+                } else {
+                    log.info("Start logged in");
+                }
+            } else {
+                resetVals();
+            }
+        }
+    }
 
-	public void updateStats()
-	{
-		//templatePH = (int) getPerHour(totalBraceletCount);
-		//coinsPH = (int) getPerHour(totalCoins - ((totalCoins / BRACELET_HA_VAL) * (unchargedBraceletCost + revEtherCost + natureRuneCost)));
-	}
+    public void updateStats() {
+        //templatePH = (int) getPerHour(totalBraceletCount);
+        //coinsPH = (int) getPerHour(totalCoins - ((totalCoins / BRACELET_HA_VAL) * (unchargedBraceletCost + revEtherCost + natureRuneCost)));
+    }
 
-	public long getPerHour(int quantity)
-	{
-		Duration timeSinceStart = Duration.between(botTimer, Instant.now());
-		if (!timeSinceStart.isZero())
-		{
-			return (int) ((double) quantity * (double) Duration.ofHours(1).toMillis() / (double) timeSinceStart.toMillis());
-		}
-		return 0;
-	}
+    public long getPerHour(int quantity) {
+        Duration timeSinceStart = Duration.between(botTimer, Instant.now());
+        if (!timeSinceStart.isZero()) {
+            return (int) ((double) quantity * (double) Duration.ofHours(1).toMillis() / (double) timeSinceStart.toMillis());
+        }
+        return 0;
+    }
 
-	@Subscribe
-	private void onGameTick(GameTick event)
-	{
-		if (!startBot || chinBreakHandler.isBreakActive(this))
-		{
-			return;
-		}
-		player = client.getLocalPlayer();
-		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
-		{
-			if (chinBreakHandler.shouldBreak(this))
-			{
-				status = "Taking a break";
-				chinBreakHandler.startBreak(this);
-				timeout = 5;
-			}
-			if (timeout > 0)
-			{
-				timeout--;
-				return;
-			}
-			Task task = tasks.getValidTask();
+    @Subscribe
+    private void onGameTick(GameTick event) {
+        if (!startBot || chinBreakHandler.isBreakActive(this)) {
+            return;
+        }
+        player = client.getLocalPlayer();
+        if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN) {
+            if (chinBreakHandler.shouldBreak(this)) {
+                status = "Taking a break";
+                chinBreakHandler.startBreak(this);
+                timeout = 5;
+            }
+            if (timeout > 0) {
+                timeout--;
+                return;
+            }
+            Task task = tasks.getValidTask();
 
-			if (task != null)
-			{
-				status = task.getTaskDescription();
-				task.onGameTick(event);
-			}
-			else
-			{
-				status = "Task not found";
-				log.debug(status);
-			}
-			beforeLoc = player.getLocalLocation();
-		}
-	}
+            if (task != null) {
+                status = task.getTaskDescription();
+                task.onGameTick(event);
+            } else {
+                status = "Task not found";
+                log.debug(status);
+            }
+            beforeLoc = player.getLocalLocation();
+        }
+    }
 }

@@ -8,25 +8,22 @@ package net.runelite.client.plugins.imagiccaster;
 import lombok.Getter;
 
 @Getter
-public enum CastType
-{
+public enum CastType {
 
-	AUTO_CAST("Auto-cast"),
-	SINGLE_CAST("Single cast", "Cast"),
-	HIGH_ALCHEMY("High Alchemy", "Cast"),
-	TELE_GRAB("Tele Grab", "Cast");
+    AUTO_CAST("Auto-cast"),
+    SINGLE_CAST("Single cast", "Cast"),
+    HIGH_ALCHEMY("High Alchemy", "Cast"),
+    TELE_GRAB("Tele Grab", "Cast");
 
-	private final String name;
-	private String menuOption = "";
+    private final String name;
+    private String menuOption = "";
 
-	CastType(String name)
-	{
-		this.name = name;
-	}
+    CastType(String name) {
+        this.name = name;
+    }
 
-	CastType(String name, String menuOption)
-	{
-		this.name = name;
-		this.menuOption = menuOption;
-	}
+    CastType(String name, String menuOption) {
+        this.name = name;
+        this.menuOption = menuOption;
+    }
 }

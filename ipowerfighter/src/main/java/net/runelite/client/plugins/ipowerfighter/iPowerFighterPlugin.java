@@ -27,43 +27,11 @@ package net.runelite.client.plugins.ipowerfighter;
 
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.InventoryID;
-import net.runelite.api.Item;
-import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemComposition;
-import net.runelite.api.ItemID;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuAction;
-import net.runelite.api.NPC;
-import net.runelite.api.Player;
-import net.runelite.api.Skill;
-import net.runelite.api.TileItem;
-import net.runelite.api.VarPlayer;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.ActorDeath;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.ConfigButtonClicked;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.ItemDespawned;
-import net.runelite.api.events.ItemSpawned;
+import net.runelite.api.events.*;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
@@ -72,71 +40,78 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iutils.*;
+import net.runelite.client.ui.overlay.OverlayManager;
+import org.pf4j.Extension;
+
+import javax.inject.Inject;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static net.runelite.client.plugins.iutils.iUtils.iterating;
 import static net.runelite.client.plugins.iutils.iUtils.sleep;
-import net.runelite.client.ui.overlay.OverlayManager;
-import org.pf4j.Extension;
 
 
 @Extension
 @PluginDependency(iUtils.class)
 @PluginDescriptor(
-	name = "iPower Fighter",
-	enabledByDefault = false,
-	description = "Illumine - Power Fighter plugin",
-	tags = {"illumine", "combat", "ranged", "magic", "bot"}
+        name = "iPower Fighter",
+        enabledByDefault = false,
+        description = "Illumine - Power Fighter plugin",
+        tags = {"illumine", "combat", "ranged", "magic", "bot"}
 )
 @Slf4j
-public class iPowerFighterPlugin extends Plugin
-{
-	@Inject
-	private Client client;
+public class iPowerFighterPlugin extends Plugin {
+    @Inject
+    private Client client;
 
-	@Inject
-	private iPowerFighterConfig config;
+    @Inject
+    private iPowerFighterConfig config;
 
-	@Inject
-	private OverlayManager overlayManager;
+    @Inject
+    private OverlayManager overlayManager;
 
-	@Inject
-	private iPowerFighterOverlay overlay;
+    @Inject
+    private iPowerFighterOverlay overlay;
 
-	@Inject
-	private iUtils utils;
+    @Inject
+    private iUtils utils;
 
-	@Inject
-	private MouseUtils mouse;
+    @Inject
+    private MouseUtils mouse;
 
-	@Inject
-	private PlayerUtils playerUtils;
+    @Inject
+    private PlayerUtils playerUtils;
 
-	@Inject
-	private InventoryUtils inventory;
+    @Inject
+    private InventoryUtils inventory;
 
-	@Inject
-	private InterfaceUtils interfaceUtils;
+    @Inject
+    private InterfaceUtils interfaceUtils;
 
-	@Inject
-	private CalculationUtils calc;
+    @Inject
+    private CalculationUtils calc;
 
-	@Inject
-	private MenuUtils menu;
+    @Inject
+    private MenuUtils menu;
 
-	@Inject
-	private NPCUtils npc;
+    @Inject
+    private NPCUtils npc;
 
-	@Inject
-	private WalkUtils walk;
+    @Inject
+    private WalkUtils walk;
 
-	@Inject
-	private ConfigManager configManager;
+    @Inject
+    private ConfigManager configManager;
 
-	@Inject
-	private ExecutorService executorService;
+    @Inject
+    private ExecutorService executorService;
 
-	@Inject
-	private ChinBreakHandler chinBreakHandler;
+    @Inject
+    private ChinBreakHandler chinBreakHandler;
 
 	NPC currentNPC;
 	WorldPoint deathLocation;

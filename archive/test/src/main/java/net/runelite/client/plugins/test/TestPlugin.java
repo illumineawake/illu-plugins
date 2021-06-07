@@ -26,17 +26,7 @@
 package net.runelite.client.plugins.test;
 
 import com.google.inject.Provides;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import static net.runelite.api.ObjectID.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
@@ -46,14 +36,21 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
-import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDependency;
-import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.PluginManager;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import org.pf4j.Extension;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import static net.runelite.api.ObjectID.*;
 
 /*import net.runelite.client.rsb.methods.Tiles;
 import net.runelite.client.rsb.wrappers.RSArea;
@@ -66,65 +63,64 @@ import net.runelite.client.rsb.botLauncher.*;*/
 @Extension
 @PluginDependency(iUtils.class)
 @PluginDescriptor(
-	name = "Test",
-	enabledByDefault = false,
-	description = "Illumine test plugin",
-	tags = {"tick"},
-	type = PluginType.UTILITY
+        name = "Test",
+        enabledByDefault = false,
+        description = "Illumine test plugin",
+        tags = {"tick"},
+        type = PluginType.UTILITY
 )
 @Slf4j
-public class TestPlugin extends Plugin
-{
-	@Inject
-	private Client client;
+public class TestPlugin extends Plugin {
+    @Inject
+    private Client client;
 
-	@Inject
-	private TestPluginConfiguration config;
+    @Inject
+    private TestPluginConfiguration config;
 
-	@Inject
-	private iUtils utils;
+    @Inject
+    private iUtils utils;
 
-	@Inject
-	private ItemManager itemManager;
+    @Inject
+    private ItemManager itemManager;
 
-	@Inject
-	PluginManager pluginManager;
+    @Inject
+    PluginManager pluginManager;
 
-	@Inject
-	InfoBoxManager infoBoxManager;
+    @Inject
+    InfoBoxManager infoBoxManager;
 
-	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
-	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-		new ThreadPoolExecutor.DiscardPolicy());
-	private static final String FOREMAN_PERMISSION_TEXT = "Okay, you can use the furnace for ten minutes. Remember, you only need half as much coal as with a regular furnace.";
+    private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+    private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
+            new ThreadPoolExecutor.DiscardPolicy());
+    private static final String FOREMAN_PERMISSION_TEXT = "Okay, you can use the furnace for ten minutes. Remember, you only need half as much coal as with a regular furnace.";
 
-	Point point = new Point(10, 10);
-	GameObject object;
+    Point point = new Point(10, 10);
+    GameObject object;
 
-	int timeout = 0;
-	int itemCount = 0;
-	private Random random;
-	public boolean startBot;
-	private static final Set<Integer> MLM_ORE_TYPES = Set.of(ItemID.RUNITE_ORE, ItemID.ADAMANTITE_ORE,
-		ItemID.MITHRIL_ORE, ItemID.GOLD_ORE, ItemID.COAL, ItemID.GOLDEN_NUGGET);
-	public static final MenuEntry BANK_MENU = new MenuEntry("Bank", "<col=ffff>Bank booth", 10355, 4, 56, 48, true);
-	public LocalPoint localPoint;
-	MenuEntry testMenu;
-	private Tile[][][] areaTile = new Tile[3187][3230][0];
+    int timeout = 0;
+    int itemCount = 0;
+    private Random random;
+    public boolean startBot;
+    private static final Set<Integer> MLM_ORE_TYPES = Set.of(ItemID.RUNITE_ORE, ItemID.ADAMANTITE_ORE,
+            ItemID.MITHRIL_ORE, ItemID.GOLD_ORE, ItemID.COAL, ItemID.GOLDEN_NUGGET);
+    public static final MenuEntry BANK_MENU = new MenuEntry("Bank", "<col=ffff>Bank booth", 10355, 4, 56, 48, true);
+    public LocalPoint localPoint;
+    MenuEntry testMenu;
+    private Tile[][][] areaTile = new Tile[3187][3230][0];
 
-	private static final Set<Integer> ROCK_OBSTACLES = Set.of(ROCKFALL, ROCKFALL_26680);
-	private static final WorldArea mineArea = new WorldArea(new WorldPoint(3760, 5638, 0), new WorldPoint(3770, 5653, 0));
+    private static final Set<Integer> ROCK_OBSTACLES = Set.of(ROCKFALL, ROCKFALL_26680);
+    private static final WorldArea mineArea = new WorldArea(new WorldPoint(3760, 5638, 0), new WorldPoint(3770, 5653, 0));
 
-	List<WorldPoint> worldPointList = new ArrayList<>();
+    List<WorldPoint> worldPointList = new ArrayList<>();
 
-	LocalPoint beforeLoc;
-	WorldPoint outsideWorldPoint = new WorldPoint(2500, 2500, 0);
-	WorldPoint swWorldPoint = new WorldPoint(3160, 3208, 0);
-	WorldPoint neWorldPoint = new WorldPoint(3197, 3241, 0);
-	//WorldArea worldAreaTest = new WorldArea(swWorldPoint,20,10);
-	WorldArea worldAreaTest = new WorldArea(new WorldPoint(3160, 3208, 0), new WorldPoint(3160, 3208, 0));
-	WorldArea worldAreaCustom = new WorldArea(swWorldPoint, neWorldPoint);
-	private final int VARROCK_REGION_ID = 12853;
+    LocalPoint beforeLoc;
+    WorldPoint outsideWorldPoint = new WorldPoint(2500, 2500, 0);
+    WorldPoint swWorldPoint = new WorldPoint(3160, 3208, 0);
+    WorldPoint neWorldPoint = new WorldPoint(3197, 3241, 0);
+    //WorldArea worldAreaTest = new WorldArea(swWorldPoint,20,10);
+    WorldArea worldAreaTest = new WorldArea(new WorldPoint(3160, 3208, 0), new WorldPoint(3160, 3208, 0));
+    WorldArea worldAreaCustom = new WorldArea(swWorldPoint, neWorldPoint);
+    private final int VARROCK_REGION_ID = 12853;
 
 
 	/*MethodContext ctx;
@@ -133,52 +129,43 @@ public class TestPlugin extends Plugin
 	RSArea rsAreaOutsideTest = new RSArea(new RSTile(3092, 3295, 0), new RSTile(3135, 3263, 0));
 	RSTile screenTile = new RSTile(2655, 3286, 0);*/
 
-	@Provides
-	TestPluginConfiguration provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(TestPluginConfiguration.class);
-	}
+    @Provides
+    TestPluginConfiguration provideConfig(ConfigManager configManager) {
+        return configManager.getConfig(TestPluginConfiguration.class);
+    }
 
 
-	@Override
-	protected void startUp()
-	{
-		log.info("startBot status on startup = {}", startBot);
-		random = new Random();
-	}
+    @Override
+    protected void startUp() {
+        log.info("startBot status on startup = {}", startBot);
+        random = new Random();
+    }
 
-	@Override
-	protected void shutDown()
-	{
-		startBot = false;
-		random = null;
-	}
+    @Override
+    protected void shutDown() {
+        startBot = false;
+        random = null;
+    }
 
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("Test"))
-		{
-			return;
-		}
+    @Subscribe
+    private void onConfigChanged(ConfigChanged event) {
+        if (!event.getGroup().equals("Test")) {
+            return;
+        }
 
-		if (event.getKey().equals("volume"))
-		{
-			//placeholder
-		}
-	}
+        if (event.getKey().equals("volume")) {
+            //placeholder
+        }
+    }
 
-	@Subscribe
-	private void onGameTick(GameTick tick)
-	{
-		//List<Integer> inventorySetup = List.of(ItemID.COAL_BAG_12019, ItemID.SMALL_FISHING_NET);
-		//object = new GameObjectQuery().idEquals(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280).filter(o -> rsAreaOutsideTest.contains(o.getWorldLocation())).result(client).nearestTo(client.getLocalPlayer());
-		if (client != null && client.getLocalPlayer() != null)
-		{
-			if (!iterating)
-			{
+    @Subscribe
+    private void onGameTick(GameTick tick) {
+        //List<Integer> inventorySetup = List.of(ItemID.COAL_BAG_12019, ItemID.SMALL_FISHING_NET);
+        //object = new GameObjectQuery().idEquals(TREE, TREE_1277, TREE_1278, TREE_1279, TREE_1280).filter(o -> rsAreaOutsideTest.contains(o.getWorldLocation())).result(client).nearestTo(client.getLocalPlayer());
+        if (client != null && client.getLocalPlayer() != null) {
+            if (!iterating) {
 
-				//log.info("Bank widget" + (client.getWidget(WidgetInfo.DEPOSIT_BOX_INVENTORY_ITEMS_CONTAINER) != null));
+                //log.info("Bank widget" + (client.getWidget(WidgetInfo.DEPOSIT_BOX_INVENTORY_ITEMS_CONTAINER) != null));
 
 
 				/*OSBGrandExchangeResult runiteBarGX = utils.getOSBItem(ItemID.RUNITE_BAR);
@@ -188,19 +175,19 @@ public class TestPlugin extends Plugin
 					log.info("ItemID: " + runiteBarGX.getItem_id() + " Avg buy amount: " + runiteBarGX.getBuy_average() + " Avg sell amount: " + runiteBarGX.getSell_average() + " Overall avg: " + runiteBarGX.getOverall_average());
 					log.info(runiteBarGX.toString());
 				}*/
-				//Collection<WidgetItem> items = getAllInventoryItems();
-				//MenuEntry test = inventory.getInventoryItemMenu(itemManager, "Check", 35);
-				//log.info(String.valueOf(getBankItemWidgetAnyOf(ItemID.COAL_BAG_12019, ItemID.SWORDFISH)));
-				//handleRun(20,20);
-				//bank.depositAllExcept(ItemID.COAL_BAG_12019, ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
-				//bank.depositAllExcept(inventorySetup);
-				//arrayParamTest(inventorySetup);
-			}
-			//final int coffer = client.getVar(BLAST_FURNACE_COFFER);
-			//log.info("Coffer value: " + coffer);
-			//log.info(String.valueOf(client.getItemContainer(InventoryID.BANK) == null));
-			//log.info(String.valueOf(bankWidget != null));)
-			//log.info("Free inv spaces: " + new InventoryItemQuery(InventoryID.INVENTORY).idEquals(-1).result(client).size());
+                //Collection<WidgetItem> items = getAllInventoryItems();
+                //MenuEntry test = inventory.getInventoryItemMenu(itemManager, "Check", 35);
+                //log.info(String.valueOf(getBankItemWidgetAnyOf(ItemID.COAL_BAG_12019, ItemID.SWORDFISH)));
+                //handleRun(20,20);
+                //bank.depositAllExcept(ItemID.COAL_BAG_12019, ItemID.STAMINA_POTION1, ItemID.STAMINA_POTION2, ItemID.STAMINA_POTION3, ItemID.STAMINA_POTION4);
+                //bank.depositAllExcept(inventorySetup);
+                //arrayParamTest(inventorySetup);
+            }
+            //final int coffer = client.getVar(BLAST_FURNACE_COFFER);
+            //log.info("Coffer value: " + coffer);
+            //log.info(String.valueOf(client.getItemContainer(InventoryID.BANK) == null));
+            //log.info(String.valueOf(bankWidget != null));)
+            //log.info("Free inv spaces: " + new InventoryItemQuery(InventoryID.INVENTORY).idEquals(-1).result(client).size());
 			/*1for (Item item : client.getItemContainer(InventoryID.INVENTORY).getItems())
 			{
 				if (item.getId() != -1)
@@ -229,46 +216,43 @@ public class TestPlugin extends Plugin
 				log.info("Do they equal: " + String.valueOf(client.getLocalPlayer().getLocalLocation().equals(beforeLoc)));
 			}
 			beforeLoc = client.getLocalPlayer().getLocalLocation();*/
-			//int camX = client.getCameraX();
-			//int camY = client.getCameraY();
+            //int camX = client.getCameraX();
+            //int camY = client.getCameraY();
 
-			//log.info("local destination value: " + String.valueOf(client.getLocalDestinationLocation() != null));
-			//DecorativeObject decObject = utils.findNearestDecorObject(ROUGH_WALL_14412);
-			//log.info(String.valueOf(decObject.getLocalLocation().getSceneX()));
-			//log.info(String.valueOf(worldAreaTest.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0));
-			//NPC npc = new NPCQuery().idEquals(512).result(client).nearestTo(client.getLocalPlayer());
-			//if (npc != null)
-			//	log.info("NPC interacting status: " + npc.getInteracting());
-
-
-			//log.info(String.valueOf(client.getItemContainer(InventoryID.INVENTORY).getItems().length));
-			//ArrayList<Item> items = utils.getWidgetItems(utils.stringToIntArray("1511,1522"));
-			//log.info(String.valueOf(items.size()));
+            //log.info("local destination value: " + String.valueOf(client.getLocalDestinationLocation() != null));
+            //DecorativeObject decObject = utils.findNearestDecorObject(ROUGH_WALL_14412);
+            //log.info(String.valueOf(decObject.getLocalLocation().getSceneX()));
+            //log.info(String.valueOf(worldAreaTest.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0));
+            //NPC npc = new NPCQuery().idEquals(512).result(client).nearestTo(client.getLocalPlayer());
+            //if (npc != null)
+            //	log.info("NPC interacting status: " + npc.getInteracting());
 
 
-		}
-	}
+            //log.info(String.valueOf(client.getItemContainer(InventoryID.INVENTORY).getItems().length));
+            //ArrayList<Item> items = utils.getWidgetItems(utils.stringToIntArray("1511,1522"));
+            //log.info(String.valueOf(items.size()));
 
-	@Subscribe
-	public void onItemContainerChanged(ItemContainerChanged event)
-	{
-		log.info("Event container ID: {}, inventory container ID: {} ", event.getContainerId(), WidgetInfo.INVENTORY);
-		log.info(String.valueOf(event.getItemContainer().count(ItemID.MARK_OF_GRACE)));
-	}
 
-	@Subscribe
-	public void onWidgetLoaded(WidgetLoaded event)
-	{
-		log.info(event.toString());
-		log.info(String.valueOf(event.getGroupId()));
-		//Widget optionWidget = client.getWidget(WidgetInfo.DIALOG_NPC_TEXT);
-		Widget npcDialog = client.getWidget(WidgetInfo.DIALOG_NPC_TEXT);
-		if (npcDialog == null)
-		{
-			return;
-		}
+        }
+    }
 
-		// blocking dialog check until 5 minutes needed to avoid re-adding while dialog message still displayed
+    @Subscribe
+    public void onItemContainerChanged(ItemContainerChanged event) {
+        log.info("Event container ID: {}, inventory container ID: {} ", event.getContainerId(), WidgetInfo.INVENTORY);
+        log.info(String.valueOf(event.getItemContainer().count(ItemID.MARK_OF_GRACE)));
+    }
+
+    @Subscribe
+    public void onWidgetLoaded(WidgetLoaded event) {
+        log.info(event.toString());
+        log.info(String.valueOf(event.getGroupId()));
+        //Widget optionWidget = client.getWidget(WidgetInfo.DIALOG_NPC_TEXT);
+        Widget npcDialog = client.getWidget(WidgetInfo.DIALOG_NPC_TEXT);
+        if (npcDialog == null) {
+            return;
+        }
+
+        // blocking dialog check until 5 minutes needed to avoid re-adding while dialog message still displayed
 		/*boolean shouldCheckForemanFee = client.getRealSkillLevel(Skill.SMITHING) < 60
 			&& (foremanTimer == null || Duration.between(Instant.now(), foremanTimer.getEndTime()).toMinutes() <= 5);
 
@@ -276,8 +260,8 @@ public class TestPlugin extends Plugin
 		{*/
 
 
-		//}
-	}
+        //}
+    }
 
 	/*@Subscribe
 	public void onItemSpawned(ItemSpawned event)
@@ -327,17 +311,15 @@ public class TestPlugin extends Plugin
 		event.getGroupId(
 	}*/
 
-	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event)
-	{
-		log.info("Test menu, before hook: " + event.toString());
-		if (testMenu != null)
-		{
-			event.setMenuEntry(testMenu);
-			log.info("Test menu, after hook: " + testMenu.toString());
-			testMenu = null;
-		}
-	}
+    @Subscribe
+    public void onMenuOptionClicked(MenuOptionClicked event) {
+        log.info("Test menu, before hook: " + event.toString());
+        if (testMenu != null) {
+            event.setMenuEntry(testMenu);
+            log.info("Test menu, after hook: " + testMenu.toString());
+            testMenu = null;
+        }
+    }
 
 	/*@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)

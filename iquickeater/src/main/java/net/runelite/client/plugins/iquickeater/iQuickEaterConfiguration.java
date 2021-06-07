@@ -244,32 +244,30 @@ public interface iQuickEaterConfiguration extends Config
 		return false;
 	}
 
-	@ConfigItem(
-		keyName = "maxDrinkEnergy",
-		name = "Drink stamina below energy",
-		description = "This is the maximum energy amount",
-		position = 20,
-		hidden = true,
-		unhide = "drinkStamina"
-	)
-	default int maxDrinkEnergy()
-	{
-		return 60;
-	}
+    @ConfigItem(
+            keyName = "maxDrinkEnergy",
+            name = "Drink stamina below energy",
+            description = "This is the maximum energy amount",
+            position = 20,
+            hidden = true,
+            unhide = "drinkStamina"
+    )
+    default int maxDrinkEnergy() {
+        return 60;
+    }
 
-	@ConfigItem(
-		keyName = "randEnergy",
-		name = "random variation for drink energy (subtracted from max)",
-		description = "A random value that is subtracted from max drink energy. E.g. a random value of '20' with a max drink energy of 60 would " +
-			"cause stamina pot to be drunk at a random value between 40 and 60",
-		position = 30,
-		hidden = true,
-		unhide = "drinkStamina"
-	)
-	default int randEnergy()
-	{
-		return 20;
-	}
+    @ConfigItem(
+            keyName = "randEnergy",
+            name = "random variation for drink energy (subtracted from max)",
+            description = "A random value that is subtracted from max drink energy. E.g. a random value of '20' with a max drink energy of 60 would " +
+                    "cause stamina pot to be drunk at a random value between 40 and 60",
+            position = 30,
+            hidden = true,
+            unhide = "drinkStamina"
+    )
+    default int randEnergy() {
+        return 20;
+    }
 
 	@ConfigItem(
 		keyName = "drinkAntiFire",
@@ -282,25 +280,23 @@ public interface iQuickEaterConfiguration extends Config
 		return true;
 	}
 
-	@ConfigItem(
-		keyName = "keepPNeckEquipped",
-		name = "Keep Phoenix Neck Equipped",
-		description = "This will keep a phoenix necklace equipped.",
-		position = 40
-	)
-	default boolean keepPNeckEquipped()
-	{
-		return false;
-	}
+    @ConfigItem(
+            keyName = "keepPNeckEquipped",
+            name = "Keep Phoenix Neck Equipped",
+            description = "This will keep a phoenix necklace equipped.",
+            position = 40
+    )
+    default boolean keepPNeckEquipped() {
+        return false;
+    }
 
-	@ConfigItem(
-		keyName = "activateImbHeart",
-		name = "Reactivate Imbued Heart",
-		description = "Enable to automatically reactivate the imbued heart - activate heart once manually. ",
-		position = 41
-	)
-	default boolean activateImbHeart()
-	{
-		return false;
-	}
+    @ConfigItem(
+            keyName = "activateImbHeart",
+            name = "Reactivate Imbued Heart",
+            description = "Enable to automatically reactivate the imbued heart - activate heart once manually. ",
+            position = 41
+    )
+    default boolean activateImbHeart() {
+        return false;
+    }
 }

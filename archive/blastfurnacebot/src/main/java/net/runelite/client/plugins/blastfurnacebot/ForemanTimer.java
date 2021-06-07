@@ -24,19 +24,18 @@
  */
 package net.runelite.client.plugins.blastfurnacebot;
 
-import java.time.temporal.ChronoUnit;
 import net.runelite.api.ItemID;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.infobox.Timer;
 
-class ForemanTimer extends Timer
-{
-	private static final String TOOLTIP_TEXT = "Foreman Fee";
+import java.time.temporal.ChronoUnit;
 
-	ForemanTimer(BlastFurnaceBotPlugin plugin, ItemManager itemManager)
-	{
-		super(10, ChronoUnit.MINUTES, itemManager.getImage(ItemID.COAL_BAG), plugin);
+class ForemanTimer extends Timer {
+    private static final String TOOLTIP_TEXT = "Foreman Fee";
 
-		setTooltip(TOOLTIP_TEXT);
-	}
+    ForemanTimer(BlastFurnaceBotPlugin plugin, ItemManager itemManager) {
+        super(10, ChronoUnit.MINUTES, itemManager.getImage(ItemID.COAL_BAG), plugin);
+
+        setTooltip(TOOLTIP_TEXT);
+    }
 }

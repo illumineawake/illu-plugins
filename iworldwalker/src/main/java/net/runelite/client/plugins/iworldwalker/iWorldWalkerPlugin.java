@@ -26,23 +26,11 @@
 package net.runelite.client.plugins.iworldwalker;
 
 import com.google.inject.Provides;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuAction;
-import net.runelite.api.Player;
-import net.runelite.api.Point;
-import net.runelite.api.RenderOverview;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ConfigButtonClicked;
-import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.MenuOptionClicked;
@@ -51,440 +39,406 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iutils.CalculationUtils;
 import net.runelite.client.plugins.iutils.PlayerUtils;
 import net.runelite.client.plugins.iutils.WalkUtils;
+import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.iUtils;
+import net.runelite.client.plugins.iutils.scene.Position;
+import net.runelite.client.plugins.iutils.scripts.iScript;
+import net.runelite.client.plugins.iutils.walking.Walking;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.worldmap.WorldMapOverlay;
-import net.runelite.client.ui.overlay.worldmap.WorldMapPoint;
 import org.pf4j.Extension;
+
+import javax.inject.Inject;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 
 @Extension
 @PluginDependency(iUtils.class)
 @PluginDescriptor(
-	name = "iWorld Walker Plugin",
-	enabledByDefault = false,
-	description = "Illumine - World Walker plugin",
-	tags = {"illumine", "walk", "web", "travel", "bot"}
+        name = "iWorld Walker Plugin",
+        enabledByDefault = false,
+        description = "Illumine - World Walker plugin",
+        tags = {"illumine", "walk", "web", "travel", "bot"}
 )
 @Slf4j
-public class iWorldWalkerPlugin extends Plugin
-{
-	@Inject
-	private Client client;
+public class iWorldWalkerPlugin extends iScript {
+    @Inject
+    private Client client;
 
-	@Inject
-	private iWorldWalkerConfig config;
+    @Inject
+    private Game game;
 
-	@Inject
-	private OverlayManager overlayManager;
+    @Inject
+    public Walking walking;
 
-	@Inject
-	private iWorldWalkerOverlay overlay;
+    @Inject
+    private iWorldWalkerConfig config;
 
-	@Inject
-	private iUtils utils;
+    @Inject
+    private OverlayManager overlayManager;
 
-	@Inject
-	private WalkUtils walk;
+    @Inject
+    private iWorldWalkerOverlay overlay;
 
-	@Inject
-	private PlayerUtils playerUtils;
+    @Inject
+    private iUtils utils;
 
-	@Inject
-	private CalculationUtils calc;
+    @Inject
+    private WalkUtils walk;
 
-	@Inject
-	private ConfigManager configManager;
+    @Inject
+    private PlayerUtils playerUtils;
 
-	@Inject
-	private WorldMapOverlay worldMapOverlay;
+    @Inject
+    private CalculationUtils calc;
 
-	Instant botTimer;
-	Player player;
-	iWorldWalkerState state;
-	LocalPoint beforeLoc = new LocalPoint(0, 0);
-	WorldPoint customLocation;
-	WorldPoint catLocation;
-	WorldPoint mapPoint;
-	String farmLocation;
-	private Point lastMenuOpenedPoint;
+    @Inject
+    private ConfigManager configManager;
 
-	boolean startBot;
-	long sleepLength;
-	int tickLength;
-	int timeout;
+    @Inject
+    private WorldMapOverlay worldMapOverlay;
 
-	@Provides
-	iWorldWalkerConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(iWorldWalkerConfig.class);
-	}
+    private Thread thread;
+    volatile boolean shutdown = true;
 
-	@Override
-	protected void startUp()
-	{
+    Instant botTimer;
+    Player player;
+    iWorldWalkerState state;
+    LocalPoint beforeLoc = new LocalPoint(0, 0);
+    WorldPoint customLocation;
+    WorldPoint catLocation;
+    WorldPoint mapPoint;
+    String farmLocation;
+    private Point lastMenuOpenedPoint;
 
-	}
+    boolean startBot;
+    long sleepLength;
+    int tickLength;
+    int timeout;
 
-	@Override
-	protected void shutDown()
-	{
-		resetVals();
-	}
+    @Provides
+    iWorldWalkerConfig provideConfig(ConfigManager configManager) {
+        return configManager.getConfig(iWorldWalkerConfig.class);
+    }
 
-	@Subscribe
-	private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked)
-	{
-		if (!configButtonClicked.getGroup().equalsIgnoreCase("iWorldWalker"))
-		{
-			return;
-		}
-		log.debug("button {} pressed!", configButtonClicked.getKey());
-		if (configButtonClicked.getKey().equals("startButton"))
-		{
-			if (!startBot)
-			{
-				player = client.getLocalPlayer();
-				if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
-				{
-					startVals();
-					if (config.category().equals(Category.CUSTOM))
-					{
-						customLocation = getCustomLoc();
-						if (customLocation != null)
-						{
-							log.info("Custom location set to: {}", customLocation);
-						}
-						else
-						{
-							utils.sendGameMessage("Invalid custom location provided: " + config.customLocation());
-							log.info("Invalid custom location provided: {}", config.customLocation());
-							resetVals();
-						}
-					}
-				}
-				else
-				{
-					log.info("Start World Walker logged in!");
-					resetVals();
-				}
-			}
-			else
-			{
-				resetVals();
-			}
-		}
-	}
+    @Override
+    protected void startUp() {
 
-	private void startVals()
-	{
-		log.debug("starting World Walker plugin");
-		startBot = true;
-		beforeLoc = client.getLocalPlayer().getLocalLocation();
-		timeout = 0;
-		state = null;
-		botTimer = Instant.now();
-		overlayManager.add(overlay);
-	}
+    }
 
-	private WorldPoint getCustomLoc()
-	{
-		if (config.category().equals(Category.CUSTOM))
-		{
-			int[] customTemp = utils.stringToIntArray(config.customLocation());
-			if (customTemp.length != 3)
-			{
-				return null;
-			}
-			else
-			{
-				return new WorldPoint(customTemp[0], customTemp[1], customTemp[2]);
-			}
-		}
-		return null;
-	}
+    @Override
+    protected void shutDown() {
 
-	private WorldPoint getFarmLocation()
-	{
-		if (config.category().equals(Category.FARMING))
-		{
-			switch (config.catFarming())
-			{
-				case ALLOTMENTS:
-					return catLocation = config.catFarmAllotments().getWorldPoint();
-				case BUSHES:
-					return catLocation = config.catFarmBushes().getWorldPoint();
-				case FRUIT_TREES:
-					return catLocation = config.catFarmFruitTrees().getWorldPoint();
-				case HERBS:
-					return catLocation = config.catFarmHerbs().getWorldPoint();
-				case HOPS:
-					return catLocation = config.catFarmHops().getWorldPoint();
-				case TREES:
-					return catLocation = config.catFarmTrees().getWorldPoint();
-			}
-		}
-		return null;
-	}
+    }
 
-	private String getFarmName()
-	{
-		if (config.category().equals(Category.FARMING) && !config.catFarming().equals(Farming.NONE))
-		{
-			switch (config.catFarming())
-			{
-				case ALLOTMENTS:
-					return farmLocation = config.catFarmAllotments().getName();
-				case BUSHES:
-					return farmLocation = config.catFarmBushes().getName();
-				case FRUIT_TREES:
-					return farmLocation = config.catFarmFruitTrees().getName();
-				case HERBS:
-					return farmLocation = config.catFarmHerbs().getName();
-				case HOPS:
-					return farmLocation = config.catFarmHops().getName();
-				case TREES:
-					return farmLocation = config.catFarmTrees().getName();
-			}
-		}
-		return null;
-	}
+    @Override
+    protected void onStart() {
+        log.info("Starting World Walker");
+        player = client.getLocalPlayer();
+        if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN) {
+            beforeLoc = client.getLocalPlayer().getLocalLocation();
+            timeout = 0;
+            state = null;
+            botTimer = Instant.now();
+            overlayManager.add(overlay);
+            if (config.category().equals(Category.CUSTOM)) {
+                customLocation = getCustomLoc();
+                if (customLocation != null) {
+                    log.info("Custom location set to: {}", customLocation);
+                } else {
+                    utils.sendGameMessage("Invalid custom location provided: " + config.customLocation());
+                    log.info("Invalid custom location provided: {}", config.customLocation());
+                    stop();
+                }
+            }
+        } else {
+            stop();
+        }
+    }
 
-	@Subscribe
-	private void onConfigChange(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("iWorldWalker"))
-		{
-			return;
-		}
-		switch (event.getKey())
-		{
-			case "location":
-				if (config.category().equals(Category.CUSTOM))
-				{
-					customLocation = getCustomLoc();
-					if (customLocation != null)
-					{
-						log.info("Custom location set to: {}", customLocation);
-					}
-					else
-					{
-						utils.sendGameMessage("Invalid custom location provided: " + config.customLocation());
-						log.info("Invalid custom location provided: {}", config.customLocation());
-						resetVals();
-					}
-				}
-		}
-	}
+    @Override
+    protected void onStop() {
+        log.info("Stopping World Walker");
+        overlayManager.remove(overlay);
+        botTimer = null;
+        customLocation = null;
+        mapPoint = null;
+        state = null;
+    }
 
-	private void resetVals()
-	{
-		log.debug("stopping World Walker plugin");
-		overlayManager.remove(overlay);
-		startBot = false;
-		botTimer = null;
-		customLocation = null;
-		mapPoint = null;
-		state = null;
-	}
+    @Override
+    protected void loop() {
+        if (client != null && client.getLocalPlayer() != null) {
+            log.info("Looping");
+            walking.walkTo(new Position(getLocation()));
+            stop();
+        }
+    }
 
-	private long sleepDelay()
-	{
-		sleepLength = calc.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
-		return sleepLength;
-	}
+    @Subscribe
+    private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked) {
+        if (!configButtonClicked.getGroup().equalsIgnoreCase("iWorldWalker")) {
+            return;
+        }
+        log.debug("button {} pressed!", configButtonClicked.getKey());
+        if (configButtonClicked.getKey().equals("startButton")) {
+            if (!started()) {
+                start();
+            } else {
+                stop();
+            }
+        }
+    }
 
-	private int tickDelay()
-	{
-		tickLength = (int) calc.randomDelay(config.tickDelayWeightedDistribution(), config.tickDelayMin(), config.tickDelayMax(), config.tickDelayDeviation(), config.tickDelayTarget());
-		return tickLength;
-	}
+    private WorldPoint getCustomLoc() {
+        if (config.category().equals(Category.CUSTOM)) {
+            int[] customTemp = utils.stringToIntArray(config.customLocation());
+            if (customTemp.length != 3) {
+                return null;
+            } else {
+                return new WorldPoint(customTemp[0], customTemp[1], customTemp[2]);
+            }
+        }
+        return null;
+    }
 
-	private WorldPoint getLocation()
-	{
-		if (mapPoint != null)
-		{
-			return mapPoint;
-		}
+    private WorldPoint getFarmLocation() {
+        if (config.category().equals(Category.FARMING)) {
+            switch (config.catFarming()) {
+                case ALLOTMENTS:
+                    return catLocation = config.catFarmAllotments().getWorldPoint();
+                case BUSHES:
+                    return catLocation = config.catFarmBushes().getWorldPoint();
+                case FRUIT_TREES:
+                    return catLocation = config.catFarmFruitTrees().getWorldPoint();
+                case HERBS:
+                    return catLocation = config.catFarmHerbs().getWorldPoint();
+                case HOPS:
+                    return catLocation = config.catFarmHops().getWorldPoint();
+                case TREES:
+                    return catLocation = config.catFarmTrees().getWorldPoint();
+            }
+        }
+        return null;
+    }
 
-		switch (config.category())
-		{
-			case BANKS:
-				return catLocation = config.catBanks().getWorldPoint();
-			case BARCRAWL:
-				return catLocation = config.catBarcrawl().getWorldPoint();
-			case CITIES:
-				return catLocation = config.catCities().getWorldPoint();
-			case FARMING:
-				return getFarmLocation();
-			case GUILDS:
-				return catLocation = config.catGuilds().getWorldPoint();
-			case SKILLING:
-				return catLocation = config.catSkilling().getWorldPoint();
-			case SLAYER:
-				return catLocation = config.catSlayer().getWorldPoint();
-			case MISC:
-				return catLocation = config.catMisc().getWorldPoint();
-		}
-		return (config.category().equals(Category.CUSTOM)) ? customLocation : catLocation;
-	}
+    private String getFarmName() {
+        if (config.category().equals(Category.FARMING) && !config.catFarming().equals(Farming.NONE)) {
+            switch (config.catFarming()) {
+                case ALLOTMENTS:
+                    return farmLocation = config.catFarmAllotments().getName();
+                case BUSHES:
+                    return farmLocation = config.catFarmBushes().getName();
+                case FRUIT_TREES:
+                    return farmLocation = config.catFarmFruitTrees().getName();
+                case HERBS:
+                    return farmLocation = config.catFarmHerbs().getName();
+                case HOPS:
+                    return farmLocation = config.catFarmHops().getName();
+                case TREES:
+                    return farmLocation = config.catFarmTrees().getName();
+            }
+        }
+        return null;
+    }
 
-	@Subscribe
-	private void onGameTick(GameTick event)
-	{
-		if (!startBot || (config.catBanks().equals(Banks.NONE) && config.category().equals(Category.BANKS)) ||
-			(config.catBarcrawl().equals(Barcrawl.NONE) && config.category().equals(Category.BARCRAWL)) || (config.catCities().equals(Cities.NONE) && config.category().equals(Category.CITIES)) ||
-			(config.catGuilds().equals(Guilds.NONE) && config.category().equals(Category.GUILDS)) || (config.catSkilling().equals(Skilling.NONE) && config.category().equals(Category.SKILLING)) ||
-			(config.catSlayer().equals(Slayer.NONE) && config.category().equals(Category.SLAYER)) ||
-			(config.catMisc().equals(Misc.NONE) && config.category().equals(Category.MISC) || (config.category().equals(Category.CUSTOM) && config.customLocation().equalsIgnoreCase("0,0,0"))))
-		{
-			return;
-		}
-		player = client.getLocalPlayer();
-		if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
-		{
-			if (!config.disableRun())
-			{
-				playerUtils.handleRun(20, 30);
-			}
-			if (timeout > 0)
-			{
-				timeout--;
-			}
-			else
-			{
-				if (player.getWorldLocation().distanceTo(getLocation()) >= config.rand())
-				{
-					if (walk.webWalk(getLocation(), config.rand(), playerUtils.isMoving(beforeLoc), sleepDelay()))
-					{
-						timeout = tickDelay();
-					}
-					else
-					{
-						log.info("Path not found");
-						utils.sendGameMessage("Path not found, stopping");
-						resetVals();
-					}
-				}
-				else
-				{
-					if (mapPoint != null)
-					{
-						if (config.sendMsg()) {
-							utils.sendGameMessage("Arrived at Map destination: " + mapPoint.getX() + ", " +
-									mapPoint.getY() + ", " + mapPoint.getPlane() + " - stopping World Walker");
-						}
-						resetVals();
-						return;
-					}
-					switch (config.category())
-					{
-						case BANKS:
-							utils.sendGameMessage("Arrived at " + config.catBanks().getName() + ", stopping World Walker");
-							resetVals();
-							return;
-						case BARCRAWL:
-							utils.sendGameMessage("Arrived at " + config.catBarcrawl().getName() + ", stopping World Walker");
-							resetVals();
-							return;
-						case CITIES:
-							utils.sendGameMessage("Arrived at " + config.catCities().getName() + ", stopping World Walker");
-							resetVals();
-							return;
-						case FARMING:
-							utils.sendGameMessage("Arrived at " + getFarmName() + ", stopping World Walker");
-							resetVals();
-							return;
-						case GUILDS:
-							utils.sendGameMessage("Arrived at " + config.catGuilds().getName() + ", stopping World Walker");
-							resetVals();
-							return;
-						case SKILLING:
-							utils.sendGameMessage("Arrived at " + config.catSkilling().getName() + ", stopping World Walker");
-							resetVals();
-							return;
-						case SLAYER:
-							utils.sendGameMessage("Arrived at " + config.catSlayer().getName() + ", stopping World Walker");
-							resetVals();
-							return;
-						case MISC:
-							utils.sendGameMessage("Arrived at " + config.catMisc().getName() + ", stopping World Walker");
-							resetVals();
-							return;
-					}
-				}
-			}
-			beforeLoc = player.getLocalLocation();
-		}
-	}
+    @Subscribe
+    private void onConfigChange(ConfigChanged event) {
+        if (!event.getGroup().equals("iWorldWalker")) {
+            return;
+        }
+        switch (event.getKey()) {
+            case "location":
+                if (config.category().equals(Category.CUSTOM)) {
+                    customLocation = getCustomLoc();
+                    if (customLocation != null) {
+                        log.info("Custom location set to: {}", customLocation);
+                    } else {
+                        utils.sendGameMessage("Invalid custom location provided: " + config.customLocation());
+                        log.info("Invalid custom location provided: {}", config.customLocation());
+                        stop();
+                    }
+                }
+        }
+    }
 
-	@Subscribe
-	public void onMenuOpened(MenuOpened event)
-	{
-		lastMenuOpenedPoint = client.getMouseCanvasPosition();
-	}
+    private long sleepDelay() {
+        sleepLength = calc.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
+        return sleepLength;
+    }
 
-	@Subscribe
-	public void onMenuEntryAdded(MenuEntryAdded event)
-	{
-		final Widget map = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
+    private int tickDelay() {
+        tickLength = (int) calc.randomDelay(config.tickDelayWeightedDistribution(), config.tickDelayMin(), config.tickDelayMax(), config.tickDelayDeviation(), config.tickDelayTarget());
+        return tickLength;
+    }
 
-		if (map == null)
-		{
-			return;
-		}
+    private WorldPoint getLocation() {
+        if (mapPoint != null) {
+            return mapPoint;
+        }
 
-		if (map.getBounds().contains(client.getMouseCanvasPosition().getX(), client.getMouseCanvasPosition().getY()))
-		{
-			addMenuEntry(event, "illu-Walk here");
-			addMenuEntry(event, "illu-Clear Destination");
-		}
-	}
+        switch (config.category()) {
+            case BANKS:
+                return catLocation = config.catBanks().getWorldPoint();
+            case BARCRAWL:
+                return catLocation = config.catBarcrawl().getWorldPoint();
+            case CITIES:
+                return catLocation = config.catCities().getWorldPoint();
+            case FARMING:
+                return getFarmLocation();
+            case GUILDS:
+                return catLocation = config.catGuilds().getWorldPoint();
+            case SKILLING:
+                return catLocation = config.catSkilling().getWorldPoint();
+            case SLAYER:
+                return catLocation = config.catSlayer().getWorldPoint();
+            case MISC:
+                return catLocation = config.catMisc().getWorldPoint();
+        }
+        return (config.category().equals(Category.CUSTOM)) ? customLocation : catLocation;
+    }
 
-	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event)
-	{
-		if (event.getMenuOption().equals("illu-Walk here"))
-		{
-			mapPoint = calculateMapPoint(client.isMenuOpen() ? lastMenuOpenedPoint : client.getMouseCanvasPosition());
-			startVals();
-		}
-		if (event.getMenuOption().equals("illu-Clear Destination"))
-		{
-			mapPoint = null;
-			resetVals();
-		}
-	}
+//    @Subscribe
+//    private void onGameTick(GameTick event) {
+//        if (!startBot || (config.catBanks().equals(Banks.NONE) && config.category().equals(Category.BANKS)) ||
+//                (config.catBarcrawl().equals(Barcrawl.NONE) && config.category().equals(Category.BARCRAWL)) || (config.catCities().equals(Cities.NONE) && config.category().equals(Category.CITIES)) ||
+//                (config.catGuilds().equals(Guilds.NONE) && config.category().equals(Category.GUILDS)) || (config.catSkilling().equals(Skilling.NONE) && config.category().equals(Category.SKILLING)) ||
+//                (config.catSlayer().equals(Slayer.NONE) && config.category().equals(Category.SLAYER)) ||
+//                (config.catMisc().equals(Misc.NONE) && config.category().equals(Category.MISC) || (config.category().equals(Category.CUSTOM) && config.customLocation().equalsIgnoreCase("0,0,0")))) {
+//            return;
+//        }
+//        player = client.getLocalPlayer();
+//        if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN) {
+//            if (!config.disableRun()) {
+//                playerUtils.handleRun(20, 30);
+//            }
+//            if (timeout > 0) {
+//                timeout--;
+//            } else {
+//                if (player.getWorldLocation().distanceTo(getLocation()) >= config.rand()) {
+//                    if (walk.webWalk(getLocation(), config.rand(), playerUtils.isMoving(beforeLoc), sleepDelay())) {
+//                        timeout = tickDelay();
+//                    } else {
+//                        log.info("Path not found");
+//                        utils.sendGameMessage("Path not found, stopping");
+//                        resetVals();
+//                    }
+//                } else {
+//                    if (mapPoint != null) {
+//                        if (config.sendMsg()) {
+//                            utils.sendGameMessage("Arrived at Map destination: " + mapPoint.getX() + ", " +
+//                                    mapPoint.getY() + ", " + mapPoint.getPlane() + " - stopping World Walker");
+//                        }
+//                        resetVals();
+//                        return;
+//                    }
+//                    switch (config.category()) {
+//                        case BANKS:
+//                            utils.sendGameMessage("Arrived at " + config.catBanks().getName() + ", stopping World Walker");
+//                            resetVals();
+//                            return;
+//                        case BARCRAWL:
+//                            utils.sendGameMessage("Arrived at " + config.catBarcrawl().getName() + ", stopping World Walker");
+//                            resetVals();
+//                            return;
+//                        case CITIES:
+//                            utils.sendGameMessage("Arrived at " + config.catCities().getName() + ", stopping World Walker");
+//                            resetVals();
+//                            return;
+//                        case FARMING:
+//                            utils.sendGameMessage("Arrived at " + getFarmName() + ", stopping World Walker");
+//                            resetVals();
+//                            return;
+//                        case GUILDS:
+//                            utils.sendGameMessage("Arrived at " + config.catGuilds().getName() + ", stopping World Walker");
+//                            resetVals();
+//                            return;
+//                        case SKILLING:
+//                            utils.sendGameMessage("Arrived at " + config.catSkilling().getName() + ", stopping World Walker");
+//                            resetVals();
+//                            return;
+//                        case SLAYER:
+//                            utils.sendGameMessage("Arrived at " + config.catSlayer().getName() + ", stopping World Walker");
+//                            resetVals();
+//                            return;
+//                        case MISC:
+//                            utils.sendGameMessage("Arrived at " + config.catMisc().getName() + ", stopping World Walker");
+//                            resetVals();
+//                            return;
+//                    }
+//                }
+//            }
+//            beforeLoc = player.getLocalLocation();
+//        }
+//    }
 
-	private WorldPoint calculateMapPoint(Point point)
-	{
-		float zoom = client.getRenderOverview().getWorldMapZoom();
-		RenderOverview renderOverview = client.getRenderOverview();
-		final WorldPoint mapPoint = new WorldPoint(renderOverview.getWorldMapPosition().getX(), renderOverview.getWorldMapPosition().getY(), 0);
-		final Point middle = worldMapOverlay.mapWorldPointToGraphicsPoint(mapPoint);
+    @Subscribe
+    public void onMenuOpened(MenuOpened event) {
+        lastMenuOpenedPoint = client.getMouseCanvasPosition();
+    }
 
-		final int dx = (int) ((point.getX() - middle.getX()) / zoom);
-		final int dy = (int) ((-(point.getY() - middle.getY())) / zoom);
+    @Subscribe
+    public void onMenuEntryAdded(MenuEntryAdded event) {
+        final Widget map = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
 
-		return mapPoint.dx(dx).dy(dy);
-	}
+        if (map == null) {
+            return;
+        }
 
-	private void addMenuEntry(MenuEntryAdded event, String option)
-	{
-		List<MenuEntry> entries = new LinkedList<>(Arrays.asList(client.getMenuEntries()));
+        if (map.getBounds().contains(client.getMouseCanvasPosition().getX(), client.getMouseCanvasPosition().getY())) {
+            addMenuEntry(event, "illu-Walk here");
+            addMenuEntry(event, "illu-Clear Destination");
+        }
+    }
 
-		MenuEntry entry = new MenuEntry();
-		entry.setOption(option);
-		entry.setTarget(event.getTarget());
-		entry.setOpcode(MenuAction.RUNELITE.getId());
-		entries.add(0, entry);
+    @Subscribe
+    public void onMenuOptionClicked(MenuOptionClicked event) {
+        if (event.getMenuOption().equals("illu-Walk here")) {
+            if (thread != null) {
+                thread.interrupt();
+                thread = null;
+            }
+            mapPoint = calculateMapPoint(client.isMenuOpen() ? lastMenuOpenedPoint : client.getMouseCanvasPosition());
+            if (config.closeMap() && !game.widget(595, 38).hidden()) {
+                game.widget(595, 38).interact("Close");
+            }
+            start();
+        }
+        if (event.getMenuOption().equals("illu-Clear Destination")) {
+            mapPoint = null;
+            stop();
+        }
+    }
 
-		client.setMenuEntries(entries.toArray(new MenuEntry[0]));
-	}
+    private WorldPoint calculateMapPoint(Point point) {
+        float zoom = client.getRenderOverview().getWorldMapZoom();
+        RenderOverview renderOverview = client.getRenderOverview();
+        final WorldPoint mapPoint = new WorldPoint(renderOverview.getWorldMapPosition().getX(), renderOverview.getWorldMapPosition().getY(), 0);
+        final Point middle = worldMapOverlay.mapWorldPointToGraphicsPoint(mapPoint);
+
+        final int dx = (int) ((point.getX() - middle.getX()) / zoom);
+        final int dy = (int) ((-(point.getY() - middle.getY())) / zoom);
+
+        return mapPoint.dx(dx).dy(dy);
+    }
+
+    private void addMenuEntry(MenuEntryAdded event, String option) {
+        List<MenuEntry> entries = new LinkedList<>(Arrays.asList(client.getMenuEntries()));
+
+        MenuEntry entry = new MenuEntry();
+        entry.setOption(option);
+        entry.setTarget(event.getTarget());
+        entry.setOpcode(MenuAction.RUNELITE.getId());
+        entries.add(0, entry);
+
+        client.setMenuEntries(entries.toArray(new MenuEntry[0]));
+    }
 }

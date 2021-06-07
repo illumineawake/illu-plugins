@@ -27,24 +27,8 @@ package net.runelite.client.plugins.icombinationrunecrafter;
 
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
-import net.runelite.api.GameObject;
-import net.runelite.api.GameState;
-import net.runelite.api.ItemID;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuAction;
-import static net.runelite.api.MenuAction.ITEM_USE_ON_GAME_OBJECT;
-import net.runelite.api.ObjectID;
-import net.runelite.api.Player;
-import net.runelite.api.Point;
-import net.runelite.api.Varbits;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameStateChanged;
@@ -58,28 +42,29 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import static net.runelite.client.plugins.icombinationrunecrafter.iCombinationRunecrafterState.*;
-import net.runelite.client.plugins.iutils.BankUtils;
-import net.runelite.client.plugins.iutils.CalculationUtils;
-import net.runelite.client.plugins.iutils.InterfaceUtils;
-import net.runelite.client.plugins.iutils.InventoryUtils;
-import net.runelite.client.plugins.iutils.MenuUtils;
-import net.runelite.client.plugins.iutils.MouseUtils;
-import net.runelite.client.plugins.iutils.ObjectUtils;
-import net.runelite.client.plugins.iutils.PlayerUtils;
-import net.runelite.client.plugins.iutils.iUtils;
-import static net.runelite.client.plugins.iutils.iUtils.iterating;
+import net.runelite.client.plugins.iutils.*;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
+
+import javax.inject.Inject;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import static net.runelite.api.MenuAction.ITEM_USE_ON_GAME_OBJECT;
+import static net.runelite.client.plugins.icombinationrunecrafter.iCombinationRunecrafterState.*;
+import static net.runelite.client.plugins.iutils.iUtils.iterating;
 
 
 @Extension
 @PluginDependency(iUtils.class)
 @PluginDescriptor(
-	name = "iCombination Runecrafter Plugin",
-	enabledByDefault = false,
-	description = "Illumine - Combination Runecrafting plugin",
-	tags = {"illumine", "runecrafting", "bot", "smoke", "steam", "lava", "combination"}
+        name = "iCombination Runecrafter Plugin",
+        enabledByDefault = false,
+        description = "Illumine - Combination Runecrafting plugin",
+        tags = {"illumine", "runecrafting", "bot", "smoke", "steam", "lava", "combination"}
 )
 @Slf4j
 public class iCombinationRunecrafterPlugin extends Plugin

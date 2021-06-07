@@ -24,86 +24,73 @@
 
 package net.runelite.client.plugins.blackjackillumine;
 
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.Keybind;
-import net.runelite.client.config.Range;
-
 @ConfigGroup("blackjack")
-public interface BlackjackIllumineConfig extends Config
-{
-	@ConfigItem(
-		keyName = "pickpocketOnAggro",
-		name = "Pickpocket when aggro\'d",
-		description = "Switches to \"Pickpocket\" when bandit is aggro\'d. Saves food at the cost of slight xp/h.",
-		position = 0
-	)
-	default boolean pickpocketOnAggro()
-	{
-		return false;
-	}
+public interface BlackjackIllumineConfig extends Config {
+    @ConfigItem(
+            keyName = "pickpocketOnAggro",
+            name = "Pickpocket when aggro\'d",
+            description = "Switches to \"Pickpocket\" when bandit is aggro\'d. Saves food at the cost of slight xp/h.",
+            position = 0
+    )
+    default boolean pickpocketOnAggro() {
+        return false;
+    }
 
-	@ConfigItem(
-		keyName = "random",
-		name = "Randomly Miss 1 Pickpocket",
-		description = "If enabled, this will randomly miss 1 pickpocket every so often." +
-			"<br> Not sure why'd you want to do that, but you can.",
-		position = 1
-	)
-	default boolean random()
-	{
-		return false;
-	}
+    @ConfigItem(
+            keyName = "random",
+            name = "Randomly Miss 1 Pickpocket",
+            description = "If enabled, this will randomly miss 1 pickpocket every so often." +
+                    "<br> Not sure why'd you want to do that, but you can.",
+            position = 1
+    )
+    default boolean random() {
+        return false;
+    }
 
-	@ConfigItem(
-		keyName = "toggle",
-		name = "Toggle",
-		description = "Toggles the clicker.",
-		position = 2
-	)
-	default Keybind toggle()
-	{
-		return Keybind.NOT_SET;
-	}
+    @ConfigItem(
+            keyName = "toggle",
+            name = "Toggle",
+            description = "Toggles the clicker.",
+            position = 2
+    )
+    default Keybind toggle() {
+        return Keybind.NOT_SET;
+    }
 
-	@Range(
-		min = 5,
-		max = 98
-	)
-	@ConfigItem(
-		keyName = "hpThreshold",
-		name = "Hp Threshold",
-		description = "The hp in which the plugin will auto disable.",
-		position = 3,
-		unhide = "autoDisable"
-	)
-	default int hpThreshold()
-	{
-		return 200;
-	}
+    @Range(
+            min = 5,
+            max = 98
+    )
+    @ConfigItem(
+            keyName = "hpThreshold",
+            name = "Hp Threshold",
+            description = "The hp in which the plugin will auto disable.",
+            position = 3,
+            unhide = "autoDisable"
+    )
+    default int hpThreshold() {
+        return 200;
+    }
 
-	@ConfigItem(
-		keyName = "flash",
-		name = "Flash on Low HP",
-		description = "Your Screen flashes when you get to low hp.",
-		position = 4,
-		unhide = "autoDisable"
-	)
-	default boolean flash()
-	{
-		return false;
-	}
+    @ConfigItem(
+            keyName = "flash",
+            name = "Flash on Low HP",
+            description = "Your Screen flashes when you get to low hp.",
+            position = 4,
+            unhide = "autoDisable"
+    )
+    default boolean flash() {
+        return false;
+    }
 
-	@ConfigItem(
-		keyName = "foodToEat",
-		name = "ID of food to eat",
-		description = "The food the plugin will use to eat",
-		position = 5,
-		unhide = "autoDisable"
-	)
-	default int foodToEat()
-	{
-		return 1993;
-	} //default returns wine
+    @ConfigItem(
+            keyName = "foodToEat",
+            name = "ID of food to eat",
+            description = "The food the plugin will use to eat",
+            position = 5,
+            unhide = "autoDisable"
+    )
+    default int foodToEat() {
+        return 1993;
+    } //default returns wine
 }
