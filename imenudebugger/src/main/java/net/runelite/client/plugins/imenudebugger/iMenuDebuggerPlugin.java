@@ -29,9 +29,7 @@ import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.events.ConfigButtonClicked;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.events.*;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
@@ -40,6 +38,7 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iutils.PlayerUtils;
 import net.runelite.client.plugins.iutils.iUtils;
+import net.runelite.client.util.Text;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
@@ -61,8 +60,6 @@ import static net.runelite.client.plugins.iutils.iUtils.iterating;
 )
 @Slf4j
 public class iMenuDebuggerPlugin extends Plugin {
-    @Inject
-    private Client client;
 
     @Inject
     private iMenuDebuggerConfig config;
@@ -71,26 +68,8 @@ public class iMenuDebuggerPlugin extends Plugin {
     private iUtils utils;
 
     @Inject
-    private PlayerUtils playerUtils;
-
-    @Inject
     private ConfigManager configManager;
 
-    @Inject
-    private ItemManager itemManager;
-
-    @Inject
-    private ExecutorService executorService;
-
-    MenuEntry testMenu;
-    MenuEntry testMenu2;
-    Player player;
-    GameObject testGameObject;
-    Instant lootTimer;
-    List<Item> inventorySnapshot = new ArrayList<>();
-    LocalPoint beforeLoc;
-
-    int timeout;
 
     @Provides
     iMenuDebuggerConfig provideConfig(ConfigManager configManager) {
@@ -99,46 +78,19 @@ public class iMenuDebuggerPlugin extends Plugin {
 
     @Override
     protected void startUp() {
-
     }
 
     @Override
-    protected void shutDown() {
-        inventorySnapshot.clear();
+    protected void shutDown(){
     }
 
     @Subscribe
-    public void onGameTick(GameTick event) {
-        player = client.getLocalPlayer();
-        if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN) {
-            if (timeout > 0) {
-                timeout--;
-                return;
-            }
-            if (!iterating) {
-                if (!playerUtils.isMoving()) {
-                    timeout = 10;
-                }
-            }
-            beforeLoc = player.getLocalLocation();
-        }
-    }
-
-    @Subscribe
-    private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked) {
-        if (!configButtonClicked.getGroup().equalsIgnoreCase("Test")) {
+    private void onMenuOptionClicked(MenuOptionClicked event) {
+        if (!config.menuClicked()) {
             return;
         }
-        log.debug("button {} pressed!", configButtonClicked.getKey());
-        switch (configButtonClicked.getKey()) {
-            case "startButton":
-                log.info("button clicked");
-        }
-    }
+        log.info("Menu Entry: {}", event.toString());
 
-    @Subscribe
-    public void onMenuOptionClicked(MenuOptionClicked event) {
-        log.info("Menu Entry before override: {}", event.toString());
         if (config.printChat()) {
             utils.sendGameMessage("MenuOption value: " + event.getMenuOption());
             utils.sendGameMessage("MenuTarget value: " + event.getMenuTarget());
@@ -148,16 +100,48 @@ public class iMenuDebuggerPlugin extends Plugin {
             utils.sendGameMessage("WidgetId value: " + event.getWidgetId());
             utils.sendGameMessage("selectedItemIndex value: " + event.getSelectedItemIndex());
         }
-        if (testMenu == null) {
+    }
+
+    @Subscribe
+    private void onChatMessage(ChatMessage event) {
+        if (!config.chatMessage()) {
             return;
         }
-        if (utils.getRandomEvent()) //for random events
-        {
-            log.debug("Test plugin not overriding due to random event");
+        log.info("Message: {}", event.getMessage());
+        log.info("Type: {}", event.getType());
+        log.info("Name: {}", Text.toJagexName(event.getName()));
+        log.info("Sender: {}", event.getSender());
+    }
+
+    @Subscribe
+    private void onWidgetLoaded(WidgetLoaded event) {
+        if (!config.widget()) {
             return;
-        } else {
-            event.setMenuEntry(testMenu);
-            testMenu = null; //this allow the player to interact with the client without their clicks being overridden
         }
+        log.info("Widget spawned: {}", event.toString());
+    }
+
+    @Subscribe
+    private void onWidgetClosed(WidgetClosed event) {
+        if (!config.widget()) {
+            return;
+        }
+        log.info("Widget closed: {}", event.toString());
+    }
+
+    @Subscribe
+    private void onWidgetHiddenChanged(WidgetHiddenChanged event) {
+        if (!config.widget()) {
+            return;
+        }
+        log.info("Widget hidden: {}", event.toString());
+    }
+
+    @Subscribe
+    private void onItemContainerChanged(ItemContainerChanged event) {
+        if (!config.widget()) {
+            return;
+        }
+        log.info("Container changed: {}", event.toString());
     }
 }

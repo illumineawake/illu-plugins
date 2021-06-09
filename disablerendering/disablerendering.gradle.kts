@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, SomeoneWithAnInternetConnection
- * Copyright (c) 2018, oplosthee <https://github.com/oplosthee>
+ * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,50 +22,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.imenudebugger;
 
-import net.runelite.client.config.*;
+version = "1.0.0"
 
-@ConfigGroup("iMenuDebugger")
-public interface iMenuDebuggerConfig extends Config {
+project.extra["PluginName"] = "Disable Rendering"
+project.extra["PluginDescription"] = "Illumine - Disable rendering to improve performance"
 
-    @ConfigItem(
-            keyName = "menuClicked",
-            name = "Log Menu Clicked events",
-            description = "Enable to log menu option clicked events",
-            position = 10
-    )
-    default boolean menuClicked() {
-        return true;
-    }
-
-    @ConfigItem(
-            keyName = "widget",
-            name = "Log Widget spawned/despawned events",
-            description = "Enable to log widget spawned/despawned events",
-            position = 20
-    )
-    default boolean widget() {
-        return false;
-    }
-
-    @ConfigItem(
-            keyName = "chatMessage",
-            name = "Log Chat events",
-            description = "Enable to log chat events",
-            position = 20
-    )
-    default boolean chatMessage() {
-        return false;
-    }
-
-    @ConfigItem(
-            keyName = "printChat",
-            name = "Print to game chat",
-            description = "Enable to print menu entry to game chat",
-            position = 50
-    )
-    default boolean printChat() {
-        return true;
+tasks {
+    jar {
+        manifest {
+            attributes(mapOf(
+                    "Plugin-Version" to project.version,
+                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+                    "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Description" to project.extra["PluginDescription"],
+                    "Plugin-License" to project.extra["PluginLicense"]
+            ))
+        }
     }
 }

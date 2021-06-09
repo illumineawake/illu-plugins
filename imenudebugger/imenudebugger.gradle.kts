@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "2.1.0"
+version = "2.2.0"
 
 project.extra["PluginName"] = "iMenu Debugger Plugin"
 project.extra["PluginDescription"] = "Illumine - Menu Debugger plugin"

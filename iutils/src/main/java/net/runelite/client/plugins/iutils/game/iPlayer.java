@@ -124,14 +124,13 @@ public class iPlayer extends iActor {
 
     @Override
     public List<String> actions() {
-        return Arrays.stream(player.getActions())
-                .filter(Objects::nonNull)
+        return Arrays.stream(client().getPlayerOptions())
                 .collect(Collectors.toList());
     }
 
     @Override
     public void interact(String action) {
-        String[] actions = player.getActions();
+        String[] actions = client().getPlayerOptions();
 
         for (int i = 0; i < actions.length; i++) {
             if (action.equalsIgnoreCase(actions[i])) {

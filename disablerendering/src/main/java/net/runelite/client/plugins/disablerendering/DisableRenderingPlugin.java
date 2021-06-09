@@ -23,50 +23,38 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.imenudebugger;
+package net.runelite.client.plugins.disablerendering;
 
-import net.runelite.client.config.*;
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Client;
+import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDescriptor;
+import org.pf4j.Extension;
 
-@ConfigGroup("iMenuDebugger")
-public interface iMenuDebuggerConfig extends Config {
+import javax.inject.Inject;
 
-    @ConfigItem(
-            keyName = "menuClicked",
-            name = "Log Menu Clicked events",
-            description = "Enable to log menu option clicked events",
-            position = 10
-    )
-    default boolean menuClicked() {
-        return true;
+@Extension
+@PluginDescriptor(
+        name = "Disable Rendering",
+        enabledByDefault = false,
+        description = "Illumine - Disable rendering to improve performance",
+        tags = {"illumine", "performance", "disable", "rendering", "freeze"}
+)
+@Slf4j
+public class DisableRenderingPlugin extends Plugin {
+
+    @Inject
+    private Client client;
+
+    @Override
+    protected void startUp() {
+        if (client != null) {
+            client.setDrawCallbacks(new DisableRenderCallbacks());
+        }
     }
 
-    @ConfigItem(
-            keyName = "widget",
-            name = "Log Widget spawned/despawned events",
-            description = "Enable to log widget spawned/despawned events",
-            position = 20
-    )
-    default boolean widget() {
-        return false;
-    }
-
-    @ConfigItem(
-            keyName = "chatMessage",
-            name = "Log Chat events",
-            description = "Enable to log chat events",
-            position = 20
-    )
-    default boolean chatMessage() {
-        return false;
-    }
-
-    @ConfigItem(
-            keyName = "printChat",
-            name = "Print to game chat",
-            description = "Enable to print menu entry to game chat",
-            position = 50
-    )
-    default boolean printChat() {
-        return true;
+    @Override
+    protected void shutDown() {
+        client.setDrawCallbacks(null);
     }
 }
