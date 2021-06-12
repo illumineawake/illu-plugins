@@ -137,7 +137,6 @@ public class iUtils extends Plugin {
 
     @Override
     protected void startUp() {
-
     }
 
     @Override

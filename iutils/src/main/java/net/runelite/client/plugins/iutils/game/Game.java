@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.geometry.Cuboid;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.plugins.iutils.*;
@@ -20,6 +22,7 @@ import net.runelite.client.plugins.iutils.ui.InventoryItemStream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -233,7 +236,10 @@ public class Game {
     }
 
     public iWidget widget(int group, int file) {
-        return new iWidget(this, client.getWidget(group, file));
+        Widget widget = client.getWidget(group, file);
+        if (widget == null) return null;
+
+        return new iWidget(this, widget);
     }
 
     public iWidget widget(int group, int file, int child) {
@@ -244,7 +250,10 @@ public class Game {
     }
 
     public iWidget widget(WidgetInfo widgetInfo) {
-        return getFromClientThread(() -> new iWidget(this, client.getWidget(widgetInfo)));
+        Widget widget = client.getWidget(widgetInfo);
+        if (widget == null) return null;
+
+        return new iWidget(this, widget);
     }
 
     public InventoryItemStream inventory() {
@@ -315,6 +324,10 @@ public class Game {
         keyboard.typeString(text);
         sleep(calc.getRandomIntBetweenRange(80, 250));
         keyboard.pressKey(VK_ENTER);
+    }
+
+    public void pressKey(int keyEvent) {
+        keyboard.pressKey(keyEvent);
     }
 
     /**

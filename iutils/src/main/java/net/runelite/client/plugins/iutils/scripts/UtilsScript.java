@@ -2,7 +2,9 @@ package net.runelite.client.plugins.iutils.scripts;
 
 import com.google.inject.Injector;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.GameState;
 import net.runelite.api.Skill;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.iutils.Spells;
 import net.runelite.client.plugins.iutils.api.*;
@@ -10,10 +12,12 @@ import net.runelite.client.plugins.iutils.game.*;
 import net.runelite.client.plugins.iutils.scene.Area;
 import net.runelite.client.plugins.iutils.scene.RectangularArea;
 import net.runelite.client.plugins.iutils.ui.*;
+import net.runelite.client.plugins.iutils.util.Util;
 import net.runelite.client.plugins.iutils.walking.BankLocations;
 import net.runelite.client.plugins.iutils.walking.Walking;
 
 import javax.inject.Inject;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,7 +51,12 @@ public abstract class UtilsScript extends Plugin {
                 .mapToObj(i -> new ItemQuantity(i, 1))
                 .toArray(ItemQuantity[]::new));
 
-        game.inventory().withId(ids).forEach(i -> i.interact(1));
+        game.tick(2);
+        game.inventory().withId(ids).forEach(i -> {
+            log.info("Interacting with: {}", i.name());
+            i.interact(1);
+            game.tick(2);
+        });
         game.waitUntil(() -> Arrays.stream(ids).allMatch(equipment::isEquipped));
     }
 
@@ -177,7 +186,7 @@ public abstract class UtilsScript extends Plugin {
                 game.objects().withName("Bank chest").nearest().interact("Use");
             }
             game.waitUntil(bank::isOpen, 10);
-            game.tick();
+//            game.tick();
         }
 
         return bank;
@@ -441,5 +450,30 @@ public abstract class UtilsScript extends Plugin {
     protected void waitAnimationEnd(int id) {
         game.waitUntil(() -> game.localPlayer().animation() == id);
         game.waitUntil(() -> game.localPlayer().animation() == -1);
+    }
+
+    protected boolean logout() {
+        if (game.widget(182, 8) != null) {
+            game.widget(182, 8).interact("Logout");
+        } else {
+            game.widget(WidgetInfo.WORLD_SWITCHER_LOGOUT_BUTTON).interact("Logout");
+        }
+        Util.sleep(3000);
+        return game.client.getGameState() == GameState.LOGIN_SCREEN;
+    }
+
+    protected void login(String username, String password) {
+        Util.sleep(500);
+        game.pressKey(KeyEvent.VK_ENTER);
+        game.client.setUsername(username);
+        game.client.setPassword(password);
+        Util.sleep(500);
+        game.pressKey(KeyEvent.VK_ENTER);
+        game.pressKey(KeyEvent.VK_ENTER);
+
+        game.waitUntil(() -> game.widget(WidgetInfo.LOGIN_CLICK_TO_PLAY_SCREEN) != null);
+        if (game.widget(WidgetInfo.LOGIN_CLICK_TO_PLAY_SCREEN) != null) {
+            game.widget(378, 78).interact(0);
+        }
     }
 }

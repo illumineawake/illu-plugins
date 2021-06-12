@@ -26,6 +26,7 @@
 package net.runelite.client.plugins.itasktemplate;
 
 import com.google.inject.Provides;
+import com.openosrs.client.util.Groups;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -57,6 +58,9 @@ public class iTaskTemplatePlugin extends iScript {
 
     @Inject
     private Client client;
+
+    @Inject
+    private Groups groups;
 
     @Inject
     private iTaskTemplateConfig config;

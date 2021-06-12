@@ -71,10 +71,10 @@ public class Bank {
 
         setNotedMode(noted);
 
-        for (iWidget item : game.widget(WidgetInfo.BANK_ITEM_CONTAINER).items()) {
-            if (item.itemId() == 6512 || item.itemId() == -1 || item.hidden()) {
-                continue;
-            }
+        for (iWidget item : iUtils.bankitems) {
+//            if (item.itemId() == 6512 || item.itemId() == -1 || item.hidden()) {
+//                continue;
+//            }
             if (item.itemId() == id) {
                 System.out.println("[Bank] Found item (requested = " + quantity + ", bank = " + item.quantity() + ", capacity = " + inventoryCapacity + ")");
 
@@ -94,12 +94,12 @@ public class Bank {
                     item.interact(4); // last
                 } else {
                     item.interact(5);
-                    game.tick(3);
+                    game.tick(2);
                     game.chooseNumber(quantity);
                 }
 
 //                game.waitChange(() -> game.inventory().withId(id).quantity());
-                game.tick();
+//                game.tick();
                 return Math.min(inventoryCapacity, quantity);
             }
         }
@@ -165,11 +165,11 @@ public class Bank {
         if (!isOpen()) {
             throw new IllegalStateException("bank not open");
         }
-        List<iWidget> items = game.widget(WidgetInfo.BANK_ITEM_CONTAINER).items();
-        for (iWidget item : items) {
-            if (item.itemId() == 6512 || item.itemId() == -1 || item.hidden()) {
-                continue;
-            }
+//        List<iWidget> items = game.widget(WidgetInfo.BANK_ITEM_CONTAINER).items();
+        for (iWidget item : iUtils.bankitems) {
+//            if (item.itemId() == 6512 || item.itemId() == -1 || item.hidden()) {
+//                continue;
+//            }
             if (item.itemId() == id) {
                 return item.quantity();
             }
