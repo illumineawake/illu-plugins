@@ -641,7 +641,7 @@ public class iUtils extends Plugin {
     }
 
     private void checkIdleLogout() {
-        if (!config.noAFK()) {
+        if (!config.useNoAFK()) {
             return;
         }
 

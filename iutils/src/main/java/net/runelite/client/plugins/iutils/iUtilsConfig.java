@@ -121,13 +121,13 @@ public interface iUtilsConfig extends Config {
     }
 
     @ConfigItem(
-            keyName = "noAFK",
+            keyName = "useNoAFK",
             name = "Prevent AFK",
             description = "Enable to prevent logging out due to AFK.",
             position = 10
     )
-    default boolean noAFK() {
-        return true;
+    default boolean useNoAFK() {
+        return false;
     }
 
     @ConfigItem(
