@@ -97,6 +97,16 @@ public interface iQuesterFreeConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "xMarksTheSpot",
+            name = "X Marks The Spot",
+            description = "",
+            section = "f2pQuests"
+    )
+    default boolean xMarksTheSpot() {
+        return true;
+    }
+
+    @ConfigItem(
             keyName = "enableUI",
             name = "Enable UI",
             description = "Enable to turn on in game UI",

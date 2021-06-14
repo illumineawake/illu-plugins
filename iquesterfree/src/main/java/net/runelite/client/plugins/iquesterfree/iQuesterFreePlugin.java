@@ -34,10 +34,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.iquesterfree.tasks.BuyStartItems;
-import net.runelite.client.plugins.iquesterfree.tasks.DoricsQuest;
-import net.runelite.client.plugins.iquesterfree.tasks.GoblinDiplomacyQuest;
-import net.runelite.client.plugins.iquesterfree.tasks.RomeoAndJulietQuest;
+import net.runelite.client.plugins.iquesterfree.tasks.*;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.plugins.iutils.scripts.iScript;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -143,7 +140,8 @@ public class iQuesterFreePlugin extends iScript {
                 injector.getInstance(BuyStartItems.class),
                 injector.getInstance(RomeoAndJulietQuest.class),
                 injector.getInstance(DoricsQuest.class),
-                injector.getInstance(GoblinDiplomacyQuest.class)
+                injector.getInstance(GoblinDiplomacyQuest.class),
+                injector.getInstance(XMarksTheSpotQuest.class)
         );
     }
 
