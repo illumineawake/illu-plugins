@@ -50,6 +50,9 @@ public class Chatbox {
         continueChats();
     }
 
+    /**
+     * Choose chat option in order of given chat options. Will fail if chat option isn't found.
+     */
     public void chat(String... options) {
         game.waitUntil(() -> chatState() != ChatState.CLOSED, 100);
 
@@ -72,6 +75,9 @@ public class Chatbox {
         continueChats();
     }
 
+    /**
+     * Choose chat option from any given chat options
+     */
     public void chats(Collection<String> options) {
         game.waitUntil(() -> chatState() != ChatState.CLOSED);
 
@@ -195,7 +201,7 @@ public class Chatbox {
 
     public String findFromOptions(Collection<String> options) {
         if (chatState() == ChatState.CLOSED || chatState() != ChatState.OPTIONS_CHAT) {
-             return "";
+            return "";
         }
 
         for (var i = 0; i < game.widget(219, 1).items().size(); i++) {

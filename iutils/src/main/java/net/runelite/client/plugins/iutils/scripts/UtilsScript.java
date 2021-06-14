@@ -307,6 +307,16 @@ public abstract class UtilsScript extends Plugin {
         game.tick();
     }
 
+    protected void chatOptionalNpc(Area area, String npcName, String... chatOptions) {
+        if (area != null && !area.contains(game.localPlayer().position())) {
+            walking.walkTo(area);
+        }
+
+        game.npcs().withName(npcName).nearest().interact("Talk-to");
+        chatbox.chats(Arrays.asList(chatOptions));
+        game.tick();
+    }
+
     protected void unequip(String item, EquipmentSlot slot) {
         if (game.equipment().withName(item).exists()) {
             game.widget(slot.widgetID, slot.widgetChild).interact(0);
