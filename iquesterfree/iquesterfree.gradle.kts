@@ -23,10 +23,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "4.0.7"
+version = "1.0.0"
 
-project.extra["PluginName"] = "iUtils"
-project.extra["PluginDescription"] = "Illumine - Utils required for plugins to function with added automation"
+project.extra["PluginName"] = "iQuester Free"
+project.extra["PluginDescription"] = "Illumine - Free Quester plugin."
+
+dependencies {
+    compileOnly(group = "com.openosrs.externals", name = "iutils", version = "4.0.7+")
+}
 
 tasks {
     jar {
@@ -35,6 +39,10 @@ tasks {
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Dependencies" to
+                            arrayOf(
+                                    nameToId("iUtils")
+                            ).joinToString(),
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))
