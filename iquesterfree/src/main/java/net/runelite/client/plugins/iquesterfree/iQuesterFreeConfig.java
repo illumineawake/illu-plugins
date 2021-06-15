@@ -107,7 +107,8 @@ public interface iQuesterFreeConfig extends Config {
             description = "Choose a skill to use your lamp on",
             hidden = true,
             unhide = "xMarksTheSpot",
-            section = "f2pQuests"
+            section = "f2pQuests",
+            position = 1
     )
 
     default Skill xSkill() {
