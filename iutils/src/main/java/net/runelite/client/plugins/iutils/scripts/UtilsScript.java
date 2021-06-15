@@ -387,7 +387,6 @@ public abstract class UtilsScript extends Plugin {
         game.inventory().withId(item1).first().useOn(game.inventory().withName(item2).first());
     }
 
-
     protected void take(Area area, String item) {
         if (area != null) {
             walking.walkTo(area);

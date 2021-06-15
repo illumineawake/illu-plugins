@@ -25,6 +25,7 @@
  */
 package net.runelite.client.plugins.iquesterfree;
 
+import net.runelite.api.Skill;
 import net.runelite.client.config.Button;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -88,6 +89,29 @@ public interface iQuesterFreeConfig extends Config {
     )
     default boolean romeoAndJuliet() {
         return true;
+    }
+
+    @ConfigItem(
+            keyName = "xMarksTheSpot",
+            name = "X Marks the Spot",
+            description = "",
+            section = "f2pQuests"
+    )
+    default boolean xMarksTheSpot() {
+        return true;
+    }
+
+    @ConfigItem(
+            keyName = "xSkill",
+            name = "X Marks Lamp Skill",
+            description = "Choose a skill to use your lamp on",
+            hidden = true,
+            unhide = "xMarksTheSpot",
+            section = "f2pQuests"
+    )
+
+    default Skill xSkill() {
+        return Skill.PRAYER;
     }
 
 	@ConfigItem(
