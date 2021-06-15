@@ -42,8 +42,8 @@ public class WalkUtils {
 
     public boolean retrievingPath;
     private int nextFlagDist = -1;
-    public int coordX;
-    public int coordY;
+    public static int coordX;
+    public static int coordY;
     public boolean walkAction;
 
     /**
@@ -110,7 +110,6 @@ public class WalkUtils {
     private List<WorldPoint> jsonToObject(String jsonString) {
         Gson g = new Gson();
         Outer outer = g.fromJson(jsonString, Outer.class);
-        //log.info("test list output: {}, \n length: {}", outer.path.toString(), outer.path.size());
         return outer.path;
     }
 
@@ -118,7 +117,6 @@ public class WalkUtils {
         int listSize = worldPoints.size();
         for (int i = listSize - 1; i > 0; i--) {
             if (worldPoints.get(i).isInScene(client)) {
-                //log.info("WorldPoint: {} is inScene.", worldPoints.get(i));
                 WorldPoint scenePoint = worldPoints.get((i >= listSize - 1) ? i : (i - calc.getRandomIntBetweenRange(2, 4))); //returns a few tiles into the scene unless it's the destination tile
                 return getRandPoint(scenePoint, randomRadius);
             }
