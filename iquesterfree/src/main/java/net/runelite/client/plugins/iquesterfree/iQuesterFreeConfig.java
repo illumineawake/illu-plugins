@@ -25,7 +25,11 @@
  */
 package net.runelite.client.plugins.iquesterfree;
 
-import net.runelite.client.config.*;
+import net.runelite.client.config.Button;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigSection;
 
 @ConfigGroup("iQuesterFree")
 public interface iQuesterFreeConfig extends Config {
@@ -41,21 +45,11 @@ public interface iQuesterFreeConfig extends Config {
             name = "",
             description = "Instructions. Don't enter anything into this field",
             title = "instructionsTitle",
+			section = "instructionsTitle",
             position = -3
     )
     default String instructions() {
         return "Select the quests to run, have roughly 50k+ gp and press Start.";
-    }
-
-    @ConfigItem(
-            keyName = "buyStart",
-            name = "Allow buying all items at start",
-            description = "Enable to allow the plugin to buy all starting quest items for eligible quests at plugin start." +
-                    " You may not want to enable this if you are already partway through a quest.",
-            position = -3
-    )
-    default boolean buyStart() {
-        return true;
     }
 
     @ConfigSection(
@@ -95,6 +89,17 @@ public interface iQuesterFreeConfig extends Config {
     default boolean romeoAndJuliet() {
         return true;
     }
+
+	@ConfigItem(
+		keyName = "buyStart",
+		name = "Allow buying all items at start",
+		description = "Enable to allow the plugin to buy all starting quest items for eligible quests at plugin start." +
+			" You may not want to enable this if you are already partway through a quest.",
+		position = 89
+	)
+	default boolean buyStart() {
+		return true;
+	}
 
     @ConfigItem(
             keyName = "enableUI",
