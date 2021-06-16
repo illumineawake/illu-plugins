@@ -185,10 +185,10 @@ public class iRandomHandlerPlugin extends Plugin {
         if (randomToDismiss.getId() == NpcID.GENIE || randomToDismiss.getId() == NpcID.GENIE_327) {
             log.debug("Handling genie random event");
             genie = true;
-            if (client.getWidget(WidgetInfo.DIALOG_NPC_CONTINUE) != null) {
+            if (client.getWidget(231, 3) != null) {
                 log.debug("Genie click here to continue found, progressing...");
                 targetMenu = new MenuEntry("Continue", "", 0, MenuAction.WIDGET_TYPE_6.getId(),
-                        -1, 15138819, false);
+                        -1, 15138820, false);
                 menu.setEntry(targetMenu);
                 mouse.delayMouseClick(randomToDismiss.getConvexHull().getBounds(), sleepDelay());
                 timeout = 2 + tickDelay();

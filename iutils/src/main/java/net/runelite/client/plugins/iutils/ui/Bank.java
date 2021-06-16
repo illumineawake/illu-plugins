@@ -179,7 +179,13 @@ public class Bank {
     }
 
     public boolean isOpen() {
-        return game.getFromClientThread(() -> game.container(InventoryID.BANK) != null);
+        return game.container(InventoryID.BANK) != null;
+    }
+
+    public void close() {
+        if (isOpen()) {
+            game.widget(12, 2, 11).interact(0);
+        }
     }
 
     public boolean withdrawNoted() {

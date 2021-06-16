@@ -42,6 +42,9 @@ public class Equipment {
     }
 
     public Item slot(EquipmentSlot slot) {
+        if (slot(slot.index) == null) {
+            return new Item(-1, 0);
+        }
         return slot(slot.index);
     }
 
@@ -50,7 +53,11 @@ public class Equipment {
      * @return -1 if item is null
      */
     public int itemId(int slot) {
-        var item = equipment.getItem(slot);
+        if (slot(slot) == null) {
+            return -1;
+        }
+
+        var item = slot(slot);
         return item != null ? item.getId() : -1;
     }
 

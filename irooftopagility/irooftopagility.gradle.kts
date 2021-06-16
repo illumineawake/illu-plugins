@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "6.1.2"
+version = "6.1.3"
 
 project.extra["PluginName"] = "iRooftop Agility"
 project.extra["PluginDescription"] = "Illumine automated rooftop agility plugin"
@@ -41,9 +41,7 @@ tasks {
                     "Plugin-Provider" to project.extra["PluginProvider"],
                     "Plugin-Dependencies" to
                             arrayOf(
-                                    nameToId("iUtils"),
-                                    "chinbreakhandler-plugin"
-                            ).joinToString(),
+                                    nameToId("iUtils")).joinToString(),
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))
