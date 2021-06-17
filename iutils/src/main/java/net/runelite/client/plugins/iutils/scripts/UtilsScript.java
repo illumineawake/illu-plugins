@@ -52,29 +52,14 @@ public abstract class UtilsScript extends Plugin {
                 .toArray(ItemQuantity[]::new));
 
         game.tick(2);
+
         game.inventory().withId(ids).forEach(i -> {
-            log.info("Interacting with: {}", i.name());
+            log.info("Equipping: {}", i.name());
             i.interact(1);
             game.tick(2);
         });
+
         game.waitUntil(() -> Arrays.stream(ids).allMatch(equipment::isEquipped));
-    }
-
-    protected void equip(List<EquipmentItem> equipmentItems) {
-        obtain(equipmentItems.stream()
-                .filter(i -> !equipment.isEquipped(i.id()))
-                .map(i -> new ItemQuantity(i.id(), 1))
-                .toArray(ItemQuantity[]::new));
-
-        game.tick(2);
-
-        for (EquipmentItem item : equipmentItems) {
-            game.inventory().withId(item.id()).forEach(i -> {
-                log.info("Interacting with: {}", i.name());
-                i.interact(1);
-            });
-            game.waitUntil(() -> equipment.isEquipped(item.id()));
-        }
     }
 
     protected void equip(String name) {

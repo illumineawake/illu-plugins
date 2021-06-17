@@ -42,7 +42,7 @@ public class Bank {
             throw new IllegalStateException("bank isn't open");
         }
 
-        if (game.widget(12, 113).nestedInterface() == 664) {
+        if (game.widget(12, 113) != null && game.widget(12, 113).nestedInterface() == 664) {
             System.out.println("[Bank] Closing bank tutorial");
             game.widget(664, 9).select();
             game.tick();
@@ -179,7 +179,7 @@ public class Bank {
     }
 
     public boolean isOpen() {
-        return game.container(InventoryID.BANK) != null;
+        return game.getFromClientThread(() -> game.container(InventoryID.BANK) != null);
     }
 
     public void close() {

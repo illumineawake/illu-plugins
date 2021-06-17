@@ -246,7 +246,6 @@ public class iBlackjackPlugin extends Plugin {
 
     @Subscribe
     private void onChatMessage(ChatMessage event) {
-        log.info("event: {}, {}", event.getMessage(), event.getType());
         if (!startBot) {
             return;
         }

@@ -95,16 +95,17 @@ public class Chatbox {
     }
 
     public void continueChat() {
+        log.info("Chat state: {}", chatState());
         switch (chatState()) {
             case CLOSED:
                 throw new IllegalStateException("there's no chat");
             case OPTIONS_CHAT:
                 throw new IllegalStateException("can't continue, this is an options chat");
             case PLAYER_CHAT:
-                game.widget(217, 3).select();
+                game.widget(217, 4).select();
                 break;
             case NPC_CHAT:
-                game.widget(231, 3).select();
+                game.widget(231, 4).select();
                 break;
             case ITEM_CHAT:
                 game.widget(11, 4).select();

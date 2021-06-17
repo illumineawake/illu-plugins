@@ -4,6 +4,8 @@ import net.runelite.client.plugins.iutils.game.InventoryItem;
 import net.runelite.client.plugins.iutils.util.RandomizedStreamAdapter;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -24,6 +26,22 @@ public class InventoryItemStream extends RandomizedStreamAdapter<InventoryItem, 
      */
     public InventoryItemStream withId(int... ids) {
         return filter(o -> Arrays.stream(ids).anyMatch(id -> o.id() == id));
+    }
+
+    /**
+     * Returns a stream consisting of the elements of this stream with
+     * any of the given {@link InventoryItem#id()}s
+     */
+    public InventoryItemStream withId(Collection<Integer> ids) {
+        return filter(o -> ids.stream().anyMatch(id -> o.id() == id));
+    }
+
+    /**
+     * Returns a stream consisting of the elements of this stream that don't match
+     * any of the given {@link InventoryItem#id()}s
+     */
+    public InventoryItemStream withoutId(Collection<Integer> ids) {
+        return filter(o -> ids.stream().noneMatch(id -> o.id() == id));
     }
 
     /**
