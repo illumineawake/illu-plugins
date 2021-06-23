@@ -347,11 +347,11 @@ public class Game {
     public iWidget screenContainer() {
         if (client.isResized()) {
             if (varb(4607) == 0) {
-                return widget(161, 15); //classic resizable
+                return widget(161, 20); //classic resizable
             }
-            return widget(164, 15); //modern resizable
+            return widget(164, 20); //modern resizable
         }
-        return widget(548, 23); //fixed
+        return widget(548, 28); //fixed
     }
 
     ///////////////////////////////////////////////////

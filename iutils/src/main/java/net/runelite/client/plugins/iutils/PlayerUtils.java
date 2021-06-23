@@ -114,7 +114,7 @@ public class PlayerUtils {
         executorService.submit(() ->
         {
             menu.setEntry(new MenuEntry("Toggle Run", "", 1, 57, -1,
-                    10485782, false));
+                    10485783, false));
             mouse.delayMouseClick(runOrbBounds, calc.getRandomIntBetweenRange(10, 250));
         });
     }

@@ -376,7 +376,7 @@ public class Walking {
 
     public void setRun(boolean run) {
         if (isRunning() != run) {
-            game.widget(160, 22).interact(0);
+            game.widget(160, 23).interact(0);
             game.waitUntil(() -> isRunning() == run);
         }
     }
