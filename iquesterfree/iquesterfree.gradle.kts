@@ -29,7 +29,7 @@ project.extra["PluginName"] = "iQuester Free"
 project.extra["PluginDescription"] = "Illumine - Free Quester plugin."
 
 dependencies {
-    compileOnly(group = "com.openosrs.externals", name = "iutils", version = "4.0.7+")
+    compileOnly(group = "com.openosrs.externals", name = "iutils", version = "4.1.0+")
 }
 
 tasks {

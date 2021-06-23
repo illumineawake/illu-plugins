@@ -3,6 +3,7 @@ package net.runelite.client.plugins.iutils.ui;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GrandExchangeOffer;
 import net.runelite.api.GrandExchangeOfferState;
+import net.runelite.client.plugins.iutils.api.GrandExchangePrices;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.ItemQuantity;
 
@@ -40,17 +41,43 @@ public class GrandExchange {
         collectToInv();
     }
 
+    /**
+     * Buys items from GE, if prices are over 8000GP it will progressively buy, otherwise attempts to buy instantly
+     * */
+    public void buy(int item, int quantity) {
+        if (GrandExchangePrices.get(item).high > 8000) {
+            if (!buyProgressively(item, quantity,1.2, 30, 20)) {
+                throw new AssertionError("Failed to buy GE item progressively");
+            }
+        } else {
+            buyInstantly(item, quantity);
+        }
+    }
+
     public void buy(List<ItemQuantity> items) {
         for (ItemQuantity item : items) {
             buy(item.id, item.quantity);
         }
     }
 
-    public void buy(int item, int quantity) {
+    /**
+     * Buys list of items at GE with a high max price to buy quickly
+     * */
+    public void buyInstantly(List<ItemQuantity> items) {
+        for (ItemQuantity item : items) {
+            buyInstantly(item.id, item.quantity);
+        }
+    }
+
+    /**
+     * Buys items at GE with a high max price to buy quickly
+     * */
+    public void buyInstantly(int item, int quantity) {
         if (!isOpen()) {
             log.info("Opening Grand Exchange");
             game.npcs().withName("Grand Exchange Clerk").nearest().interact("Exchange");
             game.waitUntil(this::isOpen);
+            game.tick(2, 4);
         }
 
         if (game.inventory().withId(995).first() == null) {
@@ -66,10 +93,10 @@ public class GrandExchange {
 
         if (quantity != currentQuantity()) { // todo: use +/- buttons
             game.widget(465, 24, 7).interact(0);
-            game.tick();
+            game.tick(2, 4);
 
             game.chooseNumber(quantity);
-            game.tick();
+            game.tick(2, 4);
         }
 
         var price = Math.min(
@@ -79,10 +106,10 @@ public class GrandExchange {
 
         if (price != currentPrice()) {
             game.widget(465, 24, 12).interact(0);
-            game.tick();
+            game.tick(2, 4);
 
             game.chooseNumber(price);
-            game.tick();
+            game.tick(2, 4);
         }
 
         game.tick();
@@ -90,11 +117,12 @@ public class GrandExchange {
         game.widget(465, 27).interact(0);
 
         game.waitUntil(() -> game.grandExchangeOffer(slot) != null);
+        game.tick(2, 4);
 
         var ticks = 0;
 
         while (game.grandExchangeOffer(slot).getQuantitySold() != quantity && ticks++ < 10) {
-            game.tick();
+            game.tick(1, 4);
         }
 
         if (game.grandExchangeOffer(slot).getQuantitySold() == quantity) {
@@ -110,63 +138,85 @@ public class GrandExchange {
         }
     }
 
-    public boolean buyProgressively(int item, int quantity, double priceMultiplier, int timeout) {
-        if (!isOpen()) {
-            throw new IllegalStateException("grand exchange window is closed");
-        }
+    /**
+     * Attempts to buy items using given multiplier and progressively increases until bought
+     */
+    public boolean buyProgressively(int item, int quantity, double priceMultiplier, int maxAttempts, int tickTimeout) {
+        var lastPrice = -1;
 
-        if (game.inventory().withId(995).first() == null) {
-            throw new IllegalStateException("you'll need some coins to buy stuff");
-        }
+        for (int attempts = 1; attempts < maxAttempts; attempts++) {
+            if (!isOpen()) {
+                log.info("Opening Grand Exchange");
+                game.npcs().withName("Grand Exchange Clerk").nearest().interact("Exchange");
+                game.waitUntil(this::isOpen);
+                game.tick(2, 4);
+            }
 
-        int slot = freeSlot();
-        startBuyOffer(slot);
-        game.tick(4);
-        game.chooseItem(item);
-        game.waitUntil(() -> currentBuyItem() == item);
+            if (game.inventory().withId(995).first() == null) {
+                throw new IllegalStateException("you'll need some coins to buy stuff");
+            }
+            log.info("Progressive buying: {} quantity: {} attempt: {}", item, quantity, attempts);
+            var slot = freeSlot();
 
-        if (quantity != currentQuantity()) { // todo: use +/- buttons
-            game.widget(465, 24, 7).interact(0);
-            game.tick(4);
-            game.chooseNumber(quantity);
-            game.tick(3);
-        }
+            startBuyOffer(slot);
+            game.chooseItem(item);
+            game.waitUntil(() -> currentBuyItem() == item);
 
-        int price = (int) Math.ceil(priceMultiplier * currentPrice());
-        price = Math.min(price, game.inventory().withId(995).first().quantity() / quantity);
+            if (quantity != currentQuantity()) {
+                game.widget(465, 24, 7).interact(0);
+                game.tick(2, 4);
 
-        if (price != currentPrice()) { // todo: use +/- buttons
-            game.widget(465, 24, 12).interact(0);
-            game.tick(4);
-            game.chooseNumber(price);
-            game.tick(3);
-        }
+                game.chooseNumber(quantity);
+                game.tick(2, 4);
+            }
 
-        game.widget(465, 27).interact(0);
+            int price = (int) Math.ceil((priceMultiplier * attempts) * currentPrice());
+            price = Math.min(price, game.inventory().withId(995).first().quantity() / quantity);
 
-        game.waitUntil(() -> game.grandExchangeOffer(slot) != null);
+            if (lastPrice == price) {
+                log.info("Not enough money for progressive buy offer");
+                //TODO withdraw money from bank
+                return false;
+            }
+            lastPrice = price;
 
-        long start = System.currentTimeMillis();
+            if (price != currentPrice()) {
+                game.widget(465, 24, 12).interact(0);
+                game.tick(2, 4);
 
-        while (game.grandExchangeOffer(slot).getQuantitySold() != quantity && System.currentTimeMillis() - start < timeout) {
+                game.chooseNumber(price);
+                game.tick(2, 4);
+            }
+
             game.tick();
-        }
+            game.widget(465, 27).interact(0);
+            game.waitUntil(() -> game.grandExchangeOffer(slot) != null);
+            game.tick(2, 4);
 
-        if (game.grandExchangeOffer(slot).getQuantitySold() != quantity) {
-            System.out.println("[Grand Exchange] Timed out waiting for offer to complete: " + game.grandExchangeOffer(slot).getQuantitySold() + " / " + quantity);
-            game.widget(465, 14).interact(0);
-            game.tick(4);
-            collectToBank();
-            return false;
-        }
+            var startTicks = game.ticks();
+            while (game.grandExchangeOffer(slot).getQuantitySold() != quantity && (game.ticks() - startTicks) < tickTimeout) {
+                game.tick(1, 4);
+            }
 
-        collectToBank();
-        return true;
+            if (game.grandExchangeOffer(slot).getQuantitySold() == quantity) {
+                collectToBank();
+                return true;
+            }
+
+            if (game.grandExchangeOffer(slot).getQuantitySold() != quantity) {
+                game.widget(465, 7, 2).interact(1);
+                game.tick(4);
+                collectToInv();
+                log.info("Attempt {} timed out for progressive buy offer: {} / {}", attempts, game.grandExchangeOffer(slot).getQuantitySold(), quantity);
+                //TODO abort offer?
+            }
+        }
+        return false;
     }
 
     public void collectToBank() {
         game.widget(465, 6, 0).interact(1);
-        game.tick(4);
+        game.tick(4, 6);
     }
 
     public void collectToInv() {
@@ -181,7 +231,7 @@ public class GrandExchange {
 
         if (currentOpenSlot() != 0) {
             game.widget(465, 4).interact(0);
-            game.tick();
+            game.tick(2, 4);
         }
 
         if (game.grandExchangeOffer(slot).getState() != GrandExchangeOfferState.EMPTY) {
@@ -190,6 +240,7 @@ public class GrandExchange {
 
         game.widget(465, 7 + slot, 3).interact(0);
         game.waitUntil(() -> currentOpenSlot() != 0);
+        game.tick(2, 4);
     }
 
     private int freeSlot() {

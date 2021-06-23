@@ -39,7 +39,7 @@ public class RomeoAndJulietQuest extends Task {
 
         if (questProgress() == 0) {
             items.add(new ItemQuantity(CADAVA_BERRIES, 1));
-            items.addAll(new TeleportMethod(game, TeleportLocation.VARROCK, 2).getItems());
+            items.addAll(new TeleportMethod(game, TeleportLocation.VARROCK_CENTRE, 2).getItems());
         }
 
         return items;

@@ -57,7 +57,7 @@ public class InventoryItemStream extends RandomizedStreamAdapter<InventoryItem, 
      * any of the given {@link InventoryItem#name()}s
      */
     public InventoryItemStream withName(String... names) {
-        return filter(o -> Arrays.stream(names).anyMatch(name -> Objects.equals(o.name(), name)));
+        return filter(o -> Arrays.stream(names).anyMatch(name -> Objects.equals(o.name().toLowerCase(), name.toLowerCase())));
     }
 
     /**
@@ -65,7 +65,7 @@ public class InventoryItemStream extends RandomizedStreamAdapter<InventoryItem, 
      * {@link InventoryItem#name()}s contain any of the given name parts
      */
     public InventoryItemStream withNamePart(String... names) {
-        return filter(o -> Arrays.stream(names).anyMatch(name -> o.name().contains(name)));
+        return filter(o -> Arrays.stream(names).anyMatch(name -> o.name().toLowerCase().contains(name.toLowerCase())));
     }
 
     /**
@@ -96,10 +96,7 @@ public class InventoryItemStream extends RandomizedStreamAdapter<InventoryItem, 
     }
 
     public void forEachWaiting(Consumer<InventoryItem> action) {
-        forEach(item -> {
-            action.accept(item);
-//            item.game().sleepApproximately(300); TODO: implement sleep
-        });
+        forEach(action::accept);
     }
 
     public boolean full() {

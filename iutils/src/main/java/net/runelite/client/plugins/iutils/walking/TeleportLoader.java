@@ -15,8 +15,8 @@ import java.util.List;
 public class TeleportLoader {
     public static final int[] RING_OF_DUELING = {2552, 2554, 2556, 2558, 2560, 2562, 2564, 2566};
     public static final int[] GAMES_NECKLACE = {3853, 3863, 3855, 3857, 3859, 3861, 3863, 3865, 3867};
-    public static final int[] COMBAT_BRACELET = {11972, 11974, 11118, 11120, 11122, 11124};
-    public static final int[] RING_OF_WEALTH = {11982, 11980, 11984, 11986, 11988};
+    public static final int[] COMBAT_BRACELET = {11118, 11972, 11974, 11120, 11122, 11124};
+    public static final int[] RING_OF_WEALTH = {11980, 11982, 11984, 11986, 11988};
     public static final int[] AMULET_OF_GLORY = {1712, 1706, 1708, 1710, 11976, 11978};
     public static final int[] NECKLACE_OF_PASSAGE = {21146, 21149, 21151, 21153, 21155};
     public static final int[] BURNING_AMULET = {21166, 21171, 21173, 21175, 21167};
@@ -24,7 +24,7 @@ public class TeleportLoader {
     public static final int[] SLAYER_RING = {11866, 11867, 11868, 11869, 11870, 11871, 11872, 11873, 21268};
     public static final int[] DIGSITE_PENDANT = {11190, 11191, 11192, 11193, 11194};
     public static final int DRAKANS_MEDALLION = 22400;
-    public static final int[] SKILLS_NECKLACE = {11111, 11109, 11107, 11105, 11970, 11968};
+    public static final int[] SKILLS_NECKLACE = {11105, 11111, 11109, 11107, 11970, 11968};
     private final Game game;
     private final Chatbox chatbox;
     protected StandardSpellbook standardSpellbook;
@@ -67,12 +67,12 @@ public class TeleportLoader {
             }
 
             if (skillsNecklace() != null) {
-                teleports.add(new Teleport(new Position(2611, 3390, 0), 6, () -> jewelleryAction(skillsNecklace(), "Fishing Guild")));
-                teleports.add(new Teleport(new Position(3050, 9763, 0), 6, () -> jewelleryAction(skillsNecklace(), "Mining Guild")));
-                teleports.add(new Teleport(new Position(2933, 3295, 0), 6, () -> jewelleryAction(skillsNecklace(), "Crafting Guild")));
-                teleports.add(new Teleport(new Position(3143, 3440, 0), 6, () -> jewelleryAction(skillsNecklace(), "Cooking Guild")));
-                teleports.add(new Teleport(new Position(1662, 3505, 0), 6, () -> jewelleryAction(skillsNecklace(), "Woodcutting Guild")));
-                teleports.add(new Teleport(new Position(1249, 3718, 0), 6, () -> jewelleryAction(skillsNecklace(), "Farming Guild")));
+                teleports.add(new Teleport(new Position(2611, 3390, 0), 6, () -> jewelleryContainerAction(skillsNecklace(), "Fishing Guild")));
+                teleports.add(new Teleport(new Position(3050, 9763, 0), 6, () -> jewelleryContainerAction(skillsNecklace(), "Mining Guild")));
+                teleports.add(new Teleport(new Position(2933, 3295, 0), 6, () -> jewelleryContainerAction(skillsNecklace(), "Crafting Guild")));
+                teleports.add(new Teleport(new Position(3143, 3440, 0), 6, () -> jewelleryContainerAction(skillsNecklace(), "Cooking Guild")));
+                teleports.add(new Teleport(new Position(1662, 3505, 0), 6, () -> jewelleryContainerAction(skillsNecklace(), "Woodcutting Guild")));
+                teleports.add(new Teleport(new Position(1249, 3718, 0), 6, () -> jewelleryContainerAction(skillsNecklace(), "Farming Guild")));
             }
 
             if (ringOfWealth() != null) {
@@ -142,7 +142,24 @@ public class TeleportLoader {
     //Jewellery
     private void jewelleryAction(InventoryItem item, String... target) { // TODO
         item.interact("Rub");
+        game.tick();
         chatbox.chat(target);
+    }
+
+    private void jewelleryContainerAction(InventoryItem item, String target) {
+        item.interact("Rub");
+        game.tick();
+
+        if (game.screenContainer().nestedInterface() == 187) {
+            for (int i = 0; i < game.widget(187, 3).items().size(); i++) {
+                String option = game.widget(187, 3, i).text();
+                if (option != null) {
+                    if (option.split(": ")[1].contains(target)) {
+                        game.widget(187, 3, i).select();
+                    }
+                }
+            }
+        }
     }
 
     private InventoryItem ringOfDueling() {

@@ -68,7 +68,6 @@ public class iObject implements Locatable, Interactable {
     }
 
     public List<String> actions() {
-        Arrays.stream(definition().getActions()).filter(Objects::nonNull).forEach(log::info);
         return Arrays.stream(definition().getActions())
 //                .filter(Objects::nonNull) //TODO may need to readd this for non-imposter objects
                 .collect(Collectors.toList());

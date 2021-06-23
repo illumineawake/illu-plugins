@@ -90,12 +90,11 @@ public class Chatbox {
     public void continueChats() {
         while (chatState() != ChatState.CLOSED && chatState() != ChatState.OPTIONS_CHAT && chatState() != ChatState.MAKE) {
             continueChat();
-            game.tick();
+            game.tick(1,2);
         }
     }
 
     public void continueChat() {
-        log.info("Chat state: {}", chatState());
         switch (chatState()) {
             case CLOSED:
                 throw new IllegalStateException("there's no chat");
@@ -158,6 +157,7 @@ public class Chatbox {
             if (game.widget(219, 1, i).text() != null && game.widget(219, 1, i).text().contains(part)) {
                 game.widget(219, 1, i).select();
                 game.waitChange(this::chatState, 6);
+                game.tick(2,3);
                 return;
             }
         }
@@ -178,6 +178,7 @@ public class Chatbox {
             log.info("Selecting chat option from integer: {}", game.widget(219, 1, option).text());
             game.widget(219, 1, option).select();
             game.waitChange(this::chatState, 6);
+            game.tick(2,3);
             return;
         }
 
@@ -193,6 +194,7 @@ public class Chatbox {
             if (game.widget(219, 1, i).text() != null && options.contains(game.widget(219, 1, i).text())) {
                 game.widget(219, 1, i).select();
                 game.waitChange(this::chatState, 6);
+                game.tick(2,3);
                 return;
             }
         }

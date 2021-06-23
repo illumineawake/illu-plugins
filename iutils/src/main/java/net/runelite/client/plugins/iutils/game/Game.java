@@ -121,6 +121,10 @@ public class Game {
         }
     }
 
+    public long ticks() {
+        return client.getTickCount();
+    }
+
     public long sleepDelay() {
         long sleepLength = calc.randomDelay(
                 config().sleepWeightedDistribution(),

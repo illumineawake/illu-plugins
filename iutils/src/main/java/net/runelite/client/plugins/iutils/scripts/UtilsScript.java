@@ -89,6 +89,8 @@ public abstract class UtilsScript extends Plugin {
 
         obtainBank(items);
         withdraw(items);
+        bank().close();
+        game.tick(2);
     }
 
     protected void obtain(List<ItemQuantity> items) {
@@ -98,6 +100,9 @@ public abstract class UtilsScript extends Plugin {
         }
         obtainBank(itemArray);
         withdraw(itemArray);
+        game.tick(2);
+        bank().close();
+        game.tick(2);
     }
 
     protected void withdraw(ItemQuantity... items) {
@@ -197,7 +202,7 @@ public abstract class UtilsScript extends Plugin {
     protected GrandExchange grandExchange() {
         if (!GRAND_EXCHANGE.contains(game.localPlayer().position())) {
             if (GRAND_EXCHANGE.distanceTo(game.localPlayer().position()) > 50) {
-                TeleportMethod varrockTeleport = new TeleportMethod(game, TeleportLocation.VARROCK, 1);
+                TeleportMethod varrockTeleport = new TeleportMethod(game, TeleportLocation.VARROCK_CENTRE, 1);
                 varrockTeleport.getTeleport(true);
             }
             walking.walkTo(GRAND_EXCHANGE);
