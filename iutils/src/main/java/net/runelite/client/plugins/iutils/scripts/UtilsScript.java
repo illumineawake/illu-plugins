@@ -139,6 +139,7 @@ public abstract class UtilsScript extends Plugin {
                     }
                 });
         if (!buyItems.isEmpty()) {
+            bank().depositInventory();
             grandExchange().buy(buyItems);
         }
         bank().depositInventory();

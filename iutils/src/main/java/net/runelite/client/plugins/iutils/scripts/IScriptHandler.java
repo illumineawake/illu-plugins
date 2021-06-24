@@ -19,6 +19,7 @@ public class IScriptHandler implements Runnable {
             } catch (IllegalStateException | AssertionError | NullPointerException e) {
                 log.info("Caught error, restarting in 3 seconds");
                 e.printStackTrace();
+                log.info(e.getMessage());
                 Util.sleep(3000);
             }
         }

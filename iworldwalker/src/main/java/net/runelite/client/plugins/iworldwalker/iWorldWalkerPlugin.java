@@ -106,9 +106,6 @@ public class iWorldWalkerPlugin extends iScript {
     @Inject
     private WorldMapOverlay worldMapOverlay;
 
-    private Thread thread;
-    volatile boolean shutdown = true;
-
     Instant botTimer;
     Player player;
     iWorldWalkerState state;
@@ -119,7 +116,6 @@ public class iWorldWalkerPlugin extends iScript {
     String farmLocation;
     private Point lastMenuOpenedPoint;
 
-    boolean startBot;
     long sleepLength;
     int tickLength;
     int timeout;
@@ -131,11 +127,6 @@ public class iWorldWalkerPlugin extends iScript {
 
     @Override
     protected void startUp() {
-
-    }
-
-    @Override
-    protected void shutDown() {
 
     }
 
@@ -402,10 +393,6 @@ public class iWorldWalkerPlugin extends iScript {
     @Subscribe
     public void onMenuOptionClicked(MenuOptionClicked event) {
         if (event.getMenuOption().equals("illu-Walk here")) {
-            if (thread != null) {
-                thread.interrupt();
-                thread = null;
-            }
             mapPoint = calculateMapPoint(client.isMenuOpen() ? lastMenuOpenedPoint : client.getMouseCanvasPosition());
             if (config.closeMap() && !game.widget(595, 38).hidden()) {
                 game.widget(595, 38).interact("Close");
