@@ -4,5 +4,7 @@ public enum CombatStyle {
     ACCURATE,
     AGGRESSIVE,
     SPECIAL,
-    DEFENSIVE
+    DEFENSIVE,
+    RAPID,
+    MAGIC
 }

@@ -34,6 +34,7 @@ public class CombatStyles {
                 case ACCURATE:
                     game.widget(593, 4).interact(0);
                     break;
+                case RAPID:
                 case AGGRESSIVE:
                     game.widget(593, 8).interact(0);
                     break;
@@ -42,6 +43,7 @@ public class CombatStyles {
                     break;
                 case DEFENSIVE:
                     game.widget(593, 16).interact(0);
+                    break;
             }
 
             game.waitUntil(() -> currentStyle() == style);
