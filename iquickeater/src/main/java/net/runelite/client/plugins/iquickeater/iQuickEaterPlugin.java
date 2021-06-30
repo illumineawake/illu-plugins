@@ -215,8 +215,6 @@ public class iQuickEaterPlugin extends Plugin {
                     log.debug("Next Eat HP: {}", nextEatHP);
                     return;
                 }
-                utils.sendGameMessage("Health is below threshold but we're out of food");
-            }
             if (config.drinkStamina() && drinkTimeout == 0) {
                 if (drinkEnergy == 0) {
                     drinkEnergy = calc.getRandomIntBetweenRange(config.maxDrinkEnergy() - config.randEnergy(), config.maxDrinkEnergy());
