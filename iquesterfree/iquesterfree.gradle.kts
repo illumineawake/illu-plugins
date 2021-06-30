@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.3"
+version = "1.0.4"
 
 project.extra["PluginName"] = "iQuester Free"
 project.extra["PluginDescription"] = "Illumine - Free Quester plugin."
