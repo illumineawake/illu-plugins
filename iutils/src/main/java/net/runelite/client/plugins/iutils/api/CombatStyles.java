@@ -18,6 +18,9 @@ public class CombatStyles {
             case 0:
                 return CombatStyle.ACCURATE;
             case 1:
+                if (game.widget(593, 11).text().contains("Rapid")) {
+                    return CombatStyle.RAPID;
+                }
                 return CombatStyle.AGGRESSIVE;
             case 2:
                 return CombatStyle.SPECIAL;
@@ -26,6 +29,10 @@ public class CombatStyles {
             default:
                 throw new IllegalStateException("unexpected combat style id");
         }
+    }
+
+    public CombatType currentType() {
+        return currentStyle().getCombatType();
     }
 
     public void setStyle(CombatStyle style) {

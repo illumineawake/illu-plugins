@@ -31,7 +31,7 @@ public class TeleportMethod {
         int[][] itemIds = this.teleportLocation.getItemIds();
 
         if (game.membersWorld()) {
-            /*if (itemIds != null && itemIds.length > 0) {
+            if (itemIds != null && itemIds.length > 0) {
 
                 ItemQuantity jewelleryTeleport = getItemTeleportInventory();
                 if (jewelleryTeleport != null) {
@@ -40,7 +40,7 @@ public class TeleportMethod {
 
                 jewelleryTeleport = getItemTeleportBank();
                 return List.of(Objects.requireNonNullElseGet(jewelleryTeleport, () -> new ItemQuantity(itemIds[0][0], 1)));
-            }*/
+            }
 
             if (tabLocation != null && tabLocation.hasRequirements(game)) {
                 return List.of(new ItemQuantity(tabLocation.getTabletId(), this.quantity));
@@ -159,7 +159,7 @@ public class TeleportMethod {
 
         if (itemIds != null && itemIds.length > 0) {
             for (int[] itemId : itemIds) {
-                if (game.equipment().withId(itemId).exists() || game.inventory().withId(itemId).exists()) {
+                if (/*game.equipment().withId(itemId).exists() || */game.inventory().withId(itemId).exists()) {
                     return new ItemQuantity(game.inventory().withId(itemId).first().id(), 1);
                 }
             }

@@ -62,6 +62,18 @@ public abstract class UtilsScript extends Plugin {
         game.waitUntil(() -> Arrays.stream(ids).allMatch(equipment::isEquipped));
     }
 
+    protected void equip(int id, int quantity) {
+        if (!equipment.isEquipped(id) || equipment.quantity(id) < quantity) {
+            obtain(new ItemQuantity(id, quantity - equipment.quantity(id)));
+        }
+
+        game.tick(2);
+        game.inventory().withId(id).first().interact(1);
+        game.tick(2);
+
+        game.waitUntil(() -> equipment.isEquipped(id));
+    }
+
     protected void equip(String name) {
         if (game.equipment().withName(name).exists()) {
             return;
