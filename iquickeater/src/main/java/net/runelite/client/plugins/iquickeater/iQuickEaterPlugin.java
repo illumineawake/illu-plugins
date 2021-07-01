@@ -215,141 +215,142 @@ public class iQuickEaterPlugin extends Plugin {
                     log.debug("Next Eat HP: {}", nextEatHP);
                     return;
                 }
-            if (config.drinkStamina() && drinkTimeout == 0) {
-                if (drinkEnergy == 0) {
-                    drinkEnergy = calc.getRandomIntBetweenRange(config.maxDrinkEnergy() - config.randEnergy(), config.maxDrinkEnergy());
-                    log.debug("Max drink energy: {}, Rand drink value: {}, Next drink energy: {}", config.maxDrinkEnergy(), config.randEnergy(), drinkEnergy);
-                }
-                if (client.getEnergy() < drinkEnergy) {
-                    playerUtils.drinkStamPot(15 + calc.getRandomIntBetweenRange(0, 30));
-                    drinkEnergy = calc.getRandomIntBetweenRange(config.maxDrinkEnergy() - config.randEnergy(), config.maxDrinkEnergy());
-                    log.debug("Max drink energy: {}, Rand drink value: {}, Next drink energy: {}", config.maxDrinkEnergy(), config.randEnergy(), drinkEnergy);
-                    drinkTimeout = 2;
-                }
-            }
-            if (config.keepPNeckEquipped()) {
-                timeout += 4;
-                if (inventory.containsItem(11090)) {
-                    if (playerUtils.getEquippedItems() != null && playerUtils.getEquippedItems().get(2).getId() != 11090) {
-                        targetMenu = new MenuEntry("Wear", "Wear", 11090, MenuAction.ITEM_SECOND_OPTION.getId(), inventory.getWidgetItem(11090).getIndex(),
-                                WidgetInfo.INVENTORY.getId(), false);
-                        menu.setEntry(targetMenu);
-                        mouse.delayMouseClick(inventory.getWidgetItem(11090).getCanvasBounds(), calc.getRandomIntBetweenRange(25, 200));
+                if (config.drinkStamina() && drinkTimeout == 0) {
+                    if (drinkEnergy == 0) {
+                        drinkEnergy = calc.getRandomIntBetweenRange(config.maxDrinkEnergy() - config.randEnergy(), config.maxDrinkEnergy());
+                        log.debug("Max drink energy: {}, Rand drink value: {}, Next drink energy: {}", config.maxDrinkEnergy(), config.randEnergy(), drinkEnergy);
                     }
+                    if (client.getEnergy() < drinkEnergy) {
+                        playerUtils.drinkStamPot(15 + calc.getRandomIntBetweenRange(0, 30));
+                        drinkEnergy = calc.getRandomIntBetweenRange(config.maxDrinkEnergy() - config.randEnergy(), config.maxDrinkEnergy());
+                        log.debug("Max drink energy: {}, Rand drink value: {}, Next drink energy: {}", config.maxDrinkEnergy(), config.randEnergy(), drinkEnergy);
+                        drinkTimeout = 2;
+                    }
+                }
+                if (config.keepPNeckEquipped()) {
+                    timeout += 4;
+                    if (inventory.containsItem(11090)) {
+                        if (playerUtils.getEquippedItems() != null && playerUtils.getEquippedItems().get(2).getId() != 11090) {
+                            targetMenu = new MenuEntry("Wear", "Wear", 11090, MenuAction.ITEM_SECOND_OPTION.getId(), inventory.getWidgetItem(11090).getIndex(),
+                                    WidgetInfo.INVENTORY.getId(), false);
+                            menu.setEntry(targetMenu);
+                            mouse.delayMouseClick(inventory.getWidgetItem(11090).getCanvasBounds(), calc.getRandomIntBetweenRange(25, 200));
+                        }
+                    } else {
+                        utils.sendGameMessage("No phoenix necklaces in inventory.");
+                    }
+                }
+
+            }
+        }
+    }
+
+        @Subscribe
+        private void onChatMessage (ChatMessage event){
+            String BURN_MESSAGE = ("You're horribly burnt by the dragon fire!");
+            String BURN_EXPIRE = ("antifire potion is about to expire.");
+            String IMB_HEART_MESSAGE = ("Your imbued heart has regained its magical power.");
+
+            if (event.getMessage().equals(BURN_MESSAGE) || event.getMessage().contains(BURN_EXPIRE) && config.drinkAntiFire()) {
+                if (inventory.containsItem(ANTI_FIRE_SET)) {
+                    log.debug("Drinking anti-fire");
+                    WidgetItem antiFireItem = inventory.getWidgetItem(ANTI_FIRE_SET);
+                    useItem(antiFireItem);
                 } else {
-                    utils.sendGameMessage("No phoenix necklaces in inventory.");
+                    utils.sendGameMessage("You are Burnt but missing anti-fire potions");
                 }
             }
-
-        }
-    }
-
-    @Subscribe
-    private void onChatMessage(ChatMessage event) {
-        String BURN_MESSAGE = ("You're horribly burnt by the dragon fire!");
-        String BURN_EXPIRE = ("antifire potion is about to expire.");
-        String IMB_HEART_MESSAGE = ("Your imbued heart has regained its magical power.");
-
-        if (event.getMessage().equals(BURN_MESSAGE) || event.getMessage().contains(BURN_EXPIRE) && config.drinkAntiFire()) {
-            if (inventory.containsItem(ANTI_FIRE_SET)) {
-                log.debug("Drinking anti-fire");
-                WidgetItem antiFireItem = inventory.getWidgetItem(ANTI_FIRE_SET);
-                useItem(antiFireItem);
-            } else {
-                utils.sendGameMessage("You are Burnt but missing anti-fire potions");
+            if (event.getMessage().contains(IMB_HEART_MESSAGE) && config.activateImbHeart()) {
+                if (inventory.containsItem(ItemID.IMBUED_HEART)) {
+                    WidgetItem imbHeart = inventory.getWidgetItem(ItemID.IMBUED_HEART);
+                    useItem(imbHeart);
+                }
             }
         }
-        if (event.getMessage().contains(IMB_HEART_MESSAGE) && config.activateImbHeart()) {
-            if (inventory.containsItem(ItemID.IMBUED_HEART)) {
-                WidgetItem imbHeart = inventory.getWidgetItem(ItemID.IMBUED_HEART);
-                useItem(imbHeart);
-            }
-        }
-    }
 
 
-    @Subscribe
-    protected void onGameStateChanged(GameStateChanged event) {
+        @Subscribe
+        protected void onGameStateChanged (GameStateChanged event){
 		/* When logging in thr stat changed event is triggered for all skills and can send a false value of 0 even if the stat is full,
 		causing a prayer pot to be incorrectly consumed if enabled. Setting a timeout on login ensures this doesn't occur */
-        if (event.getGameState() == GameState.LOGGED_IN) {
-            drinkTimeout = 4;
+            if (event.getGameState() == GameState.LOGGED_IN) {
+                drinkTimeout = 4;
+            }
+            if (event.getGameState() == GameState.LOGIN_SCREEN) {
+                nextEatHP = -1;
+            }
         }
-        if (event.getGameState() == GameState.LOGIN_SCREEN) {
-            nextEatHP = -1;
+
+        @Subscribe
+        public void onStatChanged (StatChanged event){
+            checkSkill(event.getSkill(), event.getBoostedLevel());
         }
-    }
 
-    @Subscribe
-    public void onStatChanged(StatChanged event) {
-        checkSkill(event.getSkill(), event.getBoostedLevel());
-    }
-
-    private void checkSkill(Skill skill, int boostedLevel) {
-        switch (skill) {
-            case PRAYER:
-                if (config.drinkPrayer() && drinkPot(skill, boostedLevel, PRAYER_SET, drinkPrayer)) {
-                    drinkPrayer = calc.getRandomIntBetweenRange(config.minPrayerPoints(), config.maxPrayerPoints());
-                }
-                break;
-            case STRENGTH:
-            case ATTACK:
-            case DEFENCE:
-                if (config.drinkStrength()) {
-                    drinkPot(Skill.STRENGTH, client.getBoostedSkillLevel(Skill.STRENGTH), STRENGTH_SET, config.strengthPoints());
-                }
-                if (config.drinkAttack()) {
-                    drinkPot(Skill.ATTACK, client.getBoostedSkillLevel(Skill.ATTACK), ATTACK_SET, config.attackPoints());
-                }
-                if (config.drinkDefence()) {
-                    drinkPot(Skill.DEFENCE, client.getBoostedSkillLevel(Skill.DEFENCE), DEFENCE_SET, config.defencePoints());
-                }
-                break;
-            case RANGED:
-                if (config.drinkRanged()) {
-                    drinkPot(skill, boostedLevel, RANGED_SET, config.rangedPoints());
-                }
-                if (config.drinkDefence()) {
-                    drinkPot(Skill.DEFENCE, client.getBoostedSkillLevel(Skill.DEFENCE), DEFENCE_SET, config.defencePoints());
-                }
-                break;
-            case MAGIC:
-                if (config.drinkMagic()) {
-                    drinkPot(skill, boostedLevel, MAGIC_SET, config.magicPoints());
-                }
-                if (config.drinkDefence()) {
-                    drinkPot(Skill.DEFENCE, client.getBoostedSkillLevel(Skill.DEFENCE), DEFENCE_SET, config.defencePoints());
-                }
-                break;
+        private void checkSkill (Skill skill,int boostedLevel){
+            switch (skill) {
+                case PRAYER:
+                    if (config.drinkPrayer() && drinkPot(skill, boostedLevel, PRAYER_SET, drinkPrayer)) {
+                        drinkPrayer = calc.getRandomIntBetweenRange(config.minPrayerPoints(), config.maxPrayerPoints());
+                    }
+                    break;
+                case STRENGTH:
+                case ATTACK:
+                case DEFENCE:
+                    if (config.drinkStrength()) {
+                        drinkPot(Skill.STRENGTH, client.getBoostedSkillLevel(Skill.STRENGTH), STRENGTH_SET, config.strengthPoints());
+                    }
+                    if (config.drinkAttack()) {
+                        drinkPot(Skill.ATTACK, client.getBoostedSkillLevel(Skill.ATTACK), ATTACK_SET, config.attackPoints());
+                    }
+                    if (config.drinkDefence()) {
+                        drinkPot(Skill.DEFENCE, client.getBoostedSkillLevel(Skill.DEFENCE), DEFENCE_SET, config.defencePoints());
+                    }
+                    break;
+                case RANGED:
+                    if (config.drinkRanged()) {
+                        drinkPot(skill, boostedLevel, RANGED_SET, config.rangedPoints());
+                    }
+                    if (config.drinkDefence()) {
+                        drinkPot(Skill.DEFENCE, client.getBoostedSkillLevel(Skill.DEFENCE), DEFENCE_SET, config.defencePoints());
+                    }
+                    break;
+                case MAGIC:
+                    if (config.drinkMagic()) {
+                        drinkPot(skill, boostedLevel, MAGIC_SET, config.magicPoints());
+                    }
+                    if (config.drinkDefence()) {
+                        drinkPot(Skill.DEFENCE, client.getBoostedSkillLevel(Skill.DEFENCE), DEFENCE_SET, config.defencePoints());
+                    }
+                    break;
+            }
         }
-    }
 
-    private boolean drinkPot(Skill skill, int boostedLevel, Set<Integer> itemSet, int drinkPotLevel) {
-        if (boostedLevel == 0 || boostedLevel > drinkPotLevel) {
+        private boolean drinkPot (Skill skill,int boostedLevel, Set<Integer > itemSet,int drinkPotLevel){
+            if (boostedLevel == 0 || boostedLevel > drinkPotLevel) {
+                return false;
+            }
+            if (inventory.containsItem(itemSet) && drinkTimeout == 0) {
+                WidgetItem itemToDrink = inventory.getWidgetItem(itemSet);
+                useItem(itemToDrink);
+                drinkTimeout = 4;
+                return true;
+            }
+            if (drinkTimeout == 0) {
+                utils.sendGameMessage(skill + " is below threshold but we have nothing to regain " + skill);
+            }
             return false;
         }
-        if (inventory.containsItem(itemSet) && drinkTimeout == 0) {
-            WidgetItem itemToDrink = inventory.getWidgetItem(itemSet);
-            useItem(itemToDrink);
-            drinkTimeout = 4;
-            return true;
-        }
-        if (drinkTimeout == 0) {
-            utils.sendGameMessage(skill + " is below threshold but we have nothing to regain " + skill);
-        }
-        return false;
-    }
 
-    private void getNextEatHP() {
-        float hpLevel = client.getRealSkillLevel(Skill.HITPOINTS);
-        float minHP = (config.minEatHP() / (float) 100) * hpLevel;
-        float maxHP = (config.maxEatHP() / (float) 100) * hpLevel;
-        if (hpLevel > 0) {
-            if (config.usePercent()) {
-                nextEatHP = Math.max(1, calc.getRandomIntBetweenRange(Math.round(minHP), Math.round(maxHP)));
-            } else {
-                nextEatHP = calc.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
+        private void getNextEatHP() {
+            float hpLevel = client.getRealSkillLevel(Skill.HITPOINTS);
+            float minHP = (config.minEatHP() / (float) 100) * hpLevel;
+            float maxHP = (config.maxEatHP() / (float) 100) * hpLevel;
+            if (hpLevel > 0) {
+                if (config.usePercent()) {
+                    nextEatHP = Math.max(1, calc.getRandomIntBetweenRange(Math.round(minHP), Math.round(maxHP)));
+                } else {
+                    nextEatHP = calc.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
+                }
             }
         }
     }
-}
