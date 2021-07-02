@@ -94,13 +94,14 @@ public class Game {
         }
     }
 
-    public void tick(int tickMin, int tickMax) {
+    public int tick(int tickMin, int tickMax) {
         Random r = new Random();
         int result = r.nextInt((tickMax + 1) - tickMin) + tickMin;
 
         for (int i = 0; i < result; i++) {
             tick();
         }
+        return result;
     }
 
     public void tick(int ticks) {
@@ -125,6 +126,19 @@ public class Game {
         return client.getTickCount();
     }
 
+    public int tickDelay() {
+        int tickLength = (int) calc.randomDelay(
+                config().tickDelayWeightedDistribution(),
+                config().tickDelayMin(),
+                config().tickDelayMax(),
+                config().tickDelayDeviation(),
+                config().tickDelayTarget()
+        );
+        tick(tickLength);
+
+        return tickLength;
+    }
+
     public long sleepDelay() {
         long sleepLength = calc.randomDelay(
                 config().sleepWeightedDistribution(),
@@ -136,6 +150,18 @@ public class Game {
         sleepExact(sleepLength);
 
         return sleepLength;
+    }
+
+    public void randomDelay() {
+        switch (calc.getRandomIntBetweenRange(0, 1)) {
+            case 0:
+                tick(1,2);
+                sleepDelay();
+                break;
+            case 1:
+                sleepDelay();
+                break;
+        }
     }
 
     public iPlayer localPlayer() {

@@ -5,13 +5,17 @@ import net.runelite.api.MenuAction;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.iutils.api.Interactable;
+import net.runelite.client.plugins.iutils.ui.Bank;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class InventoryItem implements Interactable, Useable {
+    @Inject
+    private Bank bank;
     private final Game game;
     private final WidgetItem widgetItem;
     private final ItemComposition definition;

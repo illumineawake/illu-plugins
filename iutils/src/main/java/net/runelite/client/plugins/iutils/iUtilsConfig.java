@@ -110,11 +110,90 @@ public interface iUtilsConfig extends Config {
         return false;
     }
 
+    @ConfigTitle(
+            keyName = "delayTickConfig",
+            name = "Game Tick Configuration",
+            description = "Configure how the bot handles game tick delays, 1 game tick equates to roughly 600ms",
+            position = 7
+    )
+    String delayTickConfig = "delayTickConfig";
+
+    @Range(
+            min = 0,
+            max = 10
+    )
+    @ConfigItem(
+            keyName = "tickDelayMin",
+            name = "Game Tick Min",
+            description = "",
+            position = 8,
+            section = "delayTickConfig"
+    )
+    default int tickDelayMin() {
+        return 1;
+    }
+
+    @Range(
+            min = 0,
+            max = 10
+    )
+    @ConfigItem(
+            keyName = "tickDelayMax",
+            name = "Game Tick Max",
+            description = "",
+            position = 9,
+            section = "delayTickConfig"
+    )
+    default int tickDelayMax() {
+        return 3;
+    }
+
+    @Range(
+            min = 0,
+            max = 10
+    )
+    @ConfigItem(
+            keyName = "tickDelayTarget",
+            name = "Game Tick Target",
+            description = "",
+            position = 10,
+            section = "delayTickConfig"
+    )
+    default int tickDelayTarget() {
+        return 2;
+    }
+
+    @Range(
+            min = 0,
+            max = 10
+    )
+    @ConfigItem(
+            keyName = "tickDelayDeviation",
+            name = "Game Tick Deviation",
+            description = "",
+            position = 11,
+            section = "delayTickConfig"
+    )
+    default int tickDelayDeviation() {
+        return 1;
+    }
+
+    @ConfigItem(
+            keyName = "tickDelayWeightedDistribution",
+            name = "Game Tick Weighted Distribution",
+            description = "Shifts the random distribution towards the lower end at the target, otherwise it will be an even distribution",
+            position = 12,
+            section = "delayTickConfig"
+    )
+    default boolean tickDelayWeightedDistribution() {
+        return false;
+    }
+
     @ConfigItem(
             keyName = "getMouse",
             name = "Mouse",
             description = "Choose a mouse movement style",
-            position = 6
+            position = 15
     )
     default MouseType getMouse() {
         return MouseType.NO_MOVE;
@@ -124,7 +203,7 @@ public interface iUtilsConfig extends Config {
             keyName = "useNoAFK",
             name = "Prevent AFK",
             description = "Enable to prevent logging out due to AFK.",
-            position = 10
+            position = 16
     )
     default boolean useNoAFK() {
         return false;

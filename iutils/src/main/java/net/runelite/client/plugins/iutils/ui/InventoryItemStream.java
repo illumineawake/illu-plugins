@@ -45,6 +45,14 @@ public class InventoryItemStream extends RandomizedStreamAdapter<InventoryItem, 
     }
 
     /**
+     * Returns a stream consisting of the elements of this stream that don't match
+     * any of the given {@link InventoryItem#id()}s
+     */
+    public InventoryItemStream withoutId(int... ids) {
+        return filter(o -> Arrays.stream(ids).noneMatch(id -> o.id() == id));
+    }
+
+    /**
      * Returns a stream consisting of the elements of this stream with
      * a minimum {@link InventoryItem#quantity()}
      */

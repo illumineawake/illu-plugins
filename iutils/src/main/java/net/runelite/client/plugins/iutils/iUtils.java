@@ -112,6 +112,7 @@ public class iUtils extends Plugin {
     public final static Set<TileItem> tileItems = new HashSet<>();
     public final static Set<NPC> npcs = new HashSet<>();
     public final static List<iWidget> bankitems = new ArrayList<>();
+    public final static List<iWidget> bankInventoryitems = new ArrayList<>();
 
     public boolean randomEvent;
     public static boolean iterating;
@@ -162,6 +163,7 @@ public class iUtils extends Plugin {
             npcs.clear();
             tileItems.clear();
             bankitems.clear();
+            bankInventoryitems.clear();
         }
     }
 
@@ -233,6 +235,18 @@ public class iUtils extends Plugin {
 
     @Subscribe
     private void onItemContainerChanged(ItemContainerChanged event) {
+        if (event.getContainerId() == InventoryID.INVENTORY.getId()) {
+            bankInventoryitems.clear();
+            Widget[] items = client.getWidget(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER).getDynamicChildren();
+
+            for (Widget item : items) {
+                if (item.getItemId() == 6512 || item.getItemId() == -1 || item.isHidden()) {
+                    continue;
+                }
+                bankInventoryitems.add(new iWidget(game, item));
+            }
+        }
+
         if (event.getContainerId() == InventoryID.BANK.getId()) {
             bankitems.clear();
             Widget[] items = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER).getDynamicChildren();
@@ -243,7 +257,6 @@ public class iUtils extends Plugin {
                 }
                 bankitems.add(new iWidget(game, item));
             }
-
         }
     }
 
@@ -251,6 +264,7 @@ public class iUtils extends Plugin {
     private void onWidgetClosed(WidgetClosed event) {
         if (event.getGroupId() == 15) {
             bankitems.clear();
+            bankInventoryitems.clear();
         }
     }
 

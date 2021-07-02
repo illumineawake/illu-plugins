@@ -97,7 +97,6 @@ public class iWidget implements Interactable, Useable {
         }
         return items;
     }
-//        return widget.getDynamicChildren(); }
 
     public int nestedInterface() {
         Widget[] nested = game.getFromClientThread(widget::getNestedChildren);
@@ -119,7 +118,6 @@ public class iWidget implements Interactable, Useable {
     @Override
     public void interact(String action) {
         String[] actions = widget.getActions();
-
         for (int i = 0; i < actions.length; i++) {
             if (action.equalsIgnoreCase(actions[i])) {
                 interact(i);
