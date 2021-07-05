@@ -98,6 +98,9 @@ public class iUtils extends Plugin {
     private ObjectUtils objectUtils;
 
     @Inject
+    private BankUtils bankUtils;
+
+    @Inject
     ExecutorService executorService;
 
     @Inject
@@ -235,7 +238,7 @@ public class iUtils extends Plugin {
 
     @Subscribe
     private void onItemContainerChanged(ItemContainerChanged event) {
-        if (event.getContainerId() == InventoryID.INVENTORY.getId()) {
+        if (bankUtils.isOpen() && event.getContainerId() == InventoryID.INVENTORY.getId()) {
             bankInventoryitems.clear();
             Widget[] items = client.getWidget(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER).getDynamicChildren();
 

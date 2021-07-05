@@ -51,7 +51,7 @@ public class iObject implements Locatable, Interactable {
         return definition().getName();
     }
 
-    public int orientation() { //TODO untested
+    public int orientation() { //TODO untested decorative object orientation removal impacts
         if (tileObject instanceof WallObject) {
             int orientation = ((WallObject) tileObject).getOrientationA();
             if (orientation == 1) return 0;
@@ -61,8 +61,8 @@ public class iObject implements Locatable, Interactable {
             throw new AssertionError();
         }
 
-        if (tileObject instanceof DecorativeObject)
-            return ((DecorativeObject) tileObject).getOrientation();
+//        if (tileObject instanceof DecorativeObject)
+//            return ((DecorativeObject) tileObject).getOrientation();
 
         return -1;
     }

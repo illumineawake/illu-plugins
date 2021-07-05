@@ -280,6 +280,7 @@ public class ObjectUtils {
         return findNearestGroundObjectMenuWithin(worldPoint, dist, menuAction);
     }
 
+    @Deprecated
     @Nullable
     public List<TileItem> getTileItemsWithin(int distance) {
         assert client.isClientThread();
@@ -294,6 +295,7 @@ public class ObjectUtils {
                 .getGroundItems();
     }
 
+    @Deprecated
     @Nullable
     public List<TileItem> getTileItemsAtTile(Tile tile) {
         assert client.isClientThread();

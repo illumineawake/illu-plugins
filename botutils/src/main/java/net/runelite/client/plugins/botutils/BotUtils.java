@@ -491,6 +491,7 @@ public class BotUtils extends Plugin {
         return findNearestGroundObject(ids);
     }
 
+    @Deprecated
     @Nullable
     public List<TileItem> getTileItemsWithin(int distance) {
         assert client.isClientThread();
@@ -505,6 +506,7 @@ public class BotUtils extends Plugin {
                 .getGroundItems();
     }
 
+    @Deprecated
     @Nullable
     public List<TileItem> getTileItemsAtTile(Tile tile) {
         assert client.isClientThread();

@@ -3,7 +3,7 @@
  * All rights reserved.
  * Licensed under GPL3, see LICENSE for the full scope.
  */
-package net.runelite.client.plugins.iutils;
+package net.runelite.client.plugins.iutils.api;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
@@ -211,6 +211,7 @@ public enum Spells {
         ImmutableMap.Builder<String, WidgetInfo> builder = ImmutableMap.builder();
 
         for (Spells spells : values()) {
+            System.out.println("Building: " + spells.getName() + " " + spells.getInfo());
             builder.put(spells.getName(), spells.getInfo());
         }
 

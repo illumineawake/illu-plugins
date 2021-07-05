@@ -6,7 +6,7 @@ import net.runelite.api.GameState;
 import net.runelite.api.Skill;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.iutils.Spells;
+import net.runelite.client.plugins.iutils.api.Spells;
 import net.runelite.client.plugins.iutils.api.*;
 import net.runelite.client.plugins.iutils.game.*;
 import net.runelite.client.plugins.iutils.scene.Area;
@@ -38,7 +38,7 @@ public abstract class UtilsScript extends Plugin {
     protected Equipment equipment;
     @Inject
     protected Combat combat;
-    @Inject
+//    @Inject
     protected StandardSpellbook standardSpellbook;
     @Inject
     protected Prayers prayers;

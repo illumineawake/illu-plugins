@@ -1,10 +1,11 @@
 package net.runelite.client.plugins.iutils.walking;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.client.plugins.iutils.Spells;
+import net.runelite.client.plugins.iutils.api.Spells;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.InventoryItem;
 import net.runelite.client.plugins.iutils.scene.Position;
+import net.runelite.client.plugins.iutils.ui.Bank;
 import net.runelite.client.plugins.iutils.ui.Chatbox;
 import net.runelite.client.plugins.iutils.ui.StandardSpellbook;
 
@@ -26,11 +27,13 @@ public class TeleportLoader {
     public static final int DRAKANS_MEDALLION = 22400;
     public static final int[] SKILLS_NECKLACE = {11105, 11111, 11109, 11107, 11970, 11968};
     private final Game game;
+    private final Bank bank;
     private final Chatbox chatbox;
     protected StandardSpellbook standardSpellbook;
 
     public TeleportLoader(Game game) {
         this.game = game;
+        this.bank = new Bank(game);
         this.chatbox = new Chatbox(game);
         this.standardSpellbook = new StandardSpellbook(game);
     }
@@ -75,9 +78,17 @@ public class TeleportLoader {
                 teleports.add(new Teleport(new Position(1249, 3718, 0), 6, () -> jewelleryContainerAction(skillsNecklace(), "Farming Guild")));
             }
 
+            if (xericsTalisman() != null) {
+                teleports.add(new Teleport(new Position(1576, 3530, 0), 6, () -> jewelleryContainerAction(skillsNecklace(), "Xeric's Lookout")));
+                teleports.add(new Teleport(new Position(1752, 3566, 0), 6, () -> jewelleryContainerAction(skillsNecklace(), "Xeric's Glade")));
+                teleports.add(new Teleport(new Position(1504, 3817, 0), 6, () -> jewelleryContainerAction(skillsNecklace(), "Xeric's Inferno")));
+                teleports.add(new Teleport(new Position(1640, 3674, 0), 6, () -> jewelleryContainerAction(skillsNecklace(), "Xeric's Heart")));
+//                teleports.add(new Teleport(new Position(1662, 3505, 0), 6, () -> jewelleryContainerAction(skillsNecklace(), "Xeric's Honour")));
+            }
+
             if (ringOfWealth() != null) {
                 teleports.add(new Teleport(new Position(3163, 3478, 0), 2, () -> jewelleryAction(ringOfWealth(), "Grand Exchange")));
-                //teleports.add(new Teleport(new Position(2996, 3375, 0), 2, () -> jewelleryAction(ringOfWealth(), "Falador")));
+                teleports.add(new Teleport(new Position(2996, 3375, 0), 2, () -> jewelleryAction(ringOfWealth(), "Falador")));
 //            teleports.add(new Teleport(new Position, 2, () -> jewelleryAction(ringOfWealth(), "Miscellania")));
                 teleports.add(new Teleport(new Position(2829, 10167, 0), 2, () -> jewelleryAction(ringOfWealth(), "Dondakan")));
             }
@@ -212,6 +223,10 @@ public class TeleportLoader {
 
     //Magic
     private void cast(String spellName) { // TODO
+        if (bank.isOpen()) {
+            bank.close();
+            game.tick();
+        }
         log.info("Casting teleport - {}", spellName);
         standardSpellbook.castSpell(Spells.getWidget(spellName));
     }
