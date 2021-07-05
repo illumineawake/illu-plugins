@@ -130,6 +130,11 @@ public class iRooftopAgilityPlugin extends Plugin {
     Set<Integer> AIR_STAFFS = Set.of(ItemID.STAFF_OF_AIR, ItemID.AIR_BATTLESTAFF, ItemID.DUST_BATTLESTAFF, ItemID.MIST_BATTLESTAFF,
             ItemID.SMOKE_BATTLESTAFF, ItemID.MYSTIC_AIR_STAFF, ItemID.MYSTIC_DUST_STAFF, ItemID.MYSTIC_SMOKE_STAFF, ItemID.MYSTIC_MIST_STAFF);
 
+    private final Set<Integer> SUMMER_PIE_IDS = Set.of(
+            ItemID.SUMMER_PIE,
+            ItemID.HALF_A_SUMMER_PIE
+    );
+
     int timeout;
     int alchTimeout;
     int mogSpawnCount;
@@ -234,6 +239,12 @@ public class iRooftopAgilityPlugin extends Plugin {
         return 0;
     }
 
+    private boolean shouldEatSummerPie() {
+        return config.boostWithPie() && 
+                (client.getBoostedSkillLevel(Skill.AGILITY) == client.getRealSkillLevel(Skill.AGILITY)) &&
+                inventory.containsItem(SUMMER_PIE_IDS);
+    }
+    
     private boolean shouldCastTeleport() {
         return config.camelotTeleport() && client.getBoostedSkillLevel(Skill.MAGIC) >= 45 &&
                 CAMELOT_TELE_LOC.distanceTo(client.getLocalPlayer().getWorldLocation()) <= 3 &&
@@ -271,6 +282,14 @@ public class iRooftopAgilityPlugin extends Plugin {
             mouse.delayMouseClick(alchItem.getCanvasBounds(), sleepDelay());
             alchTimeout = 4 + tickDelay();
         }
+    }
+
+    private void eatSummerPie() {
+        WidgetItem summerPieItem = inventory.getWidgetItem(SUMMER_PIE_IDS);
+        targetMenu = new MenuEntry("", "", summerPieItem.getId(), MenuAction.ITEM_FIRST_OPTION.getId(), summerPieItem.getIndex(),
+                WidgetInfo.INVENTORY.getId(), false);
+        menu.setEntry(targetMenu);
+        mouse.delayMouseClick(summerPieItem.getCanvasBounds(), sleepDelay());
     }
 
     private boolean shouldRestock() {
@@ -412,6 +431,10 @@ public class iRooftopAgilityPlugin extends Plugin {
                             }
                         }
                     }
+                    if (shouldEatSummerPie()) {
+                        timeout--;
+                        return EAT_SUMMER_PIE;
+                    }
                     if (currentObstacle.getBankID() == 0 || !shouldRestock()) {
                         timeout--;
                         return (shouldCastTeleport()) ? CAST_CAMELOT_TELEPORT : FIND_OBSTACLE;
@@ -431,6 +454,9 @@ public class iRooftopAgilityPlugin extends Plugin {
             }
             timeout = tickDelay();
             return MOVING;
+        }
+        if (shouldEatSummerPie()) {
+            return EAT_SUMMER_PIE;
         }
         iRooftopAgilityObstacles currentObstacle = iRooftopAgilityObstacles.getObstacle(client.getLocalPlayer().getWorldLocation());
         if (currentObstacle == null) {
@@ -547,6 +573,9 @@ public class iRooftopAgilityPlugin extends Plugin {
                 case HANDLE_BREAK:
                     chinBreakHandler.startBreak(this);
                     timeout = 10;
+                    break;
+                case EAT_SUMMER_PIE:
+                    eatSummerPie();
                     break;
             }
         } else {

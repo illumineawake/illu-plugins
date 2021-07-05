@@ -334,6 +334,17 @@ public interface iRooftopAgilityConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "boostWithPie",
+            name = "Enable Summer Pies",
+            description = "Enable using Summer Pies",
+            position = 25,
+            title = "agilityTitle"
+    )
+    default boolean boostWithPie() {
+        return false;
+    }
+
+    @ConfigItem(
             keyName = "startButton",
             name = "Start/Stop",
             description = "Test button that changes variable value",
