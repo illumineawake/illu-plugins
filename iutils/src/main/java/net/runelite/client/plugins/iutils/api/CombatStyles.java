@@ -37,6 +37,7 @@ public class CombatStyles {
 
     public void setStyle(CombatStyle style) {
         if (currentStyle() != style) {
+            game.openInterface(0);
             switch (style) {
                 case ACCURATE:
                     game.widget(593, 4).interact(0);
@@ -52,8 +53,8 @@ public class CombatStyles {
                     game.widget(593, 16).interact(0);
                     break;
             }
-
             game.waitUntil(() -> currentStyle() == style);
+            game.openInterface(3);
         }
     }
 }

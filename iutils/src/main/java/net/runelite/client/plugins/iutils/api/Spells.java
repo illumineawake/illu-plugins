@@ -205,21 +205,33 @@ public enum Spells {
 
     private final String name;
     private final WidgetInfo info;
-    private static final Map<String, WidgetInfo> map;
 
-    static {
-        ImmutableMap.Builder<String, WidgetInfo> builder = ImmutableMap.builder();
 
-        for (Spells spells : values()) {
-            System.out.println("Building: " + spells.getName() + " " + spells.getInfo());
-            builder.put(spells.getName(), spells.getInfo());
+//    private static final Map<String, WidgetInfo> map;
+
+//    static {
+//        ImmutableMap.Builder<String, WidgetInfo> builder = ImmutableMap.builder();
+//
+//        for (Spells spells : values()) {
+//            System.out.println("Building: " + spells.getName() + " " + spells.getInfo());
+//            builder.put(spells.getName(), spells.getInfo());
+//        }
+//
+//        map = builder.build();
+//    }
+//
+//    @Nullable
+//    public static WidgetInfo getWidget(String spell) {
+//        return values().
+//    }
+
+    public static WidgetInfo getWidget(String spellName) {
+        for (Spells spell : Spells.values()) {
+            if (spell.name.equalsIgnoreCase(spellName)) {
+                return spell.getInfo();
+            }
         }
-
-        map = builder.build();
-    }
-
-    @Nullable
-    public static WidgetInfo getWidget(String spell) {
-        return map.getOrDefault(spell, null);
+        System.out.println("Spell: " + spellName + " not found");
+        return null;
     }
 }

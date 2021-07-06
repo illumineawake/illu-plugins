@@ -91,7 +91,6 @@ public class InterfaceUtils {
     }
 
     public Widget getSpellWidget(String spell) {
-        assert client.isClientThread();
         return client.getWidget(Spells.getWidget(spell));
     }
 
