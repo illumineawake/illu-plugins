@@ -63,4 +63,12 @@ public class GameObjectStream extends LocatableStream<iObject, GameObjectStream>
     public GameObjectStream withAction(String... actions) {
         return filter(o -> Arrays.stream(actions).anyMatch(action -> o.actions().contains(action)));
     }
+
+    /**
+     * Returns a stream consisting of the elements of this stream with
+     * any of the given {@link iObject#position()}s
+     */
+    public GameObjectStream withPosition(Position... positions) {
+        return filter(o -> Arrays.stream(positions).anyMatch(position -> o.position().equals(position)));
+    }
 }

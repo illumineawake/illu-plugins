@@ -2,6 +2,7 @@ package net.runelite.client.plugins.iutils.actor;
 
 import net.runelite.client.plugins.iutils.game.iActor;
 import net.runelite.client.plugins.iutils.scene.LocatableStream;
+import net.runelite.client.plugins.iutils.scene.Position;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -61,6 +62,14 @@ public abstract class ActorStream<T extends iActor, S extends ActorStream<T, S>>
      */
     public S withOrientation(int... orientations) {
         return filter(o -> Arrays.stream(orientations).anyMatch(orientation -> o.orientation() == orientation));
+    }
+
+    /**
+     * Returns a stream consisting of the elements of this stream with
+     * any of the given {@link iActor#position()}s
+     */
+    public S withPosition(Position... positions) {
+        return filter(o -> Arrays.stream(positions).anyMatch(position -> o.position().equals(position)));
     }
 
     /**

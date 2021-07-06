@@ -47,4 +47,12 @@ public class GroundItemStream extends LocatableStream<iGroundItem, GroundItemStr
     public GroundItemStream withAction(String... actions) {
         return filter(o -> Arrays.stream(actions).anyMatch(action -> o.actions().contains(action)));
     }
+
+    /**
+     * Returns a stream consisting of the elements of this stream with
+     * any of the given {@link iGroundItem#position()}s
+     */
+    public GroundItemStream withPosition(Position... positions) {
+        return filter(o -> Arrays.stream(positions).anyMatch(position -> o.position().equals(position)));
+    }
 }
