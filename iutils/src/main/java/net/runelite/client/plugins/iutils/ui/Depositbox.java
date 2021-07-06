@@ -38,7 +38,7 @@ public class Depositbox {
     }
 
     public boolean isOpen() {
-        return game.getFromClientThread(() -> game.widget(192, 1) != null);
+        return game.widget(192, 1) != null;
     }
 
     public void close() {

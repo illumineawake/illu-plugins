@@ -197,8 +197,8 @@ public abstract class UtilsScript extends Plugin {
         var depositbox = new Depositbox(game);
 
         if (!depositbox.isOpen()) {
-            if (game.objects().withName("Bank deposit box").withAction("Deposit").exists()) {
-                game.objects().withName("Bank deposit box").withAction("Deposit").nearest().interact("Deposit");
+            if (game.objects().withName("Bank deposit box", "Bank Deposit Box").withAction("Deposit").exists()) {
+                game.objects().withName("Bank deposit box", "Bank Deposit Box").withAction("Deposit").nearest().interact("Deposit");
             } else {
                 log.info("failed finding bank deposit box");
             }
