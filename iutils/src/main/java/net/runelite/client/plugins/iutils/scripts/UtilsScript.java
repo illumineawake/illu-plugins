@@ -185,7 +185,7 @@ public abstract class UtilsScript extends Plugin {
     }
 
     protected void handleLevelUp() {
-        if (game.widget(162, 562).nestedInterface() == 233) {
+        if (game.widget(162, 562) != null && game.widget(162, 562).nestedInterface() == 233) {
             System.out.println("Closing chat dialog");
             game.widget(233, 3).select();
             game.tick();

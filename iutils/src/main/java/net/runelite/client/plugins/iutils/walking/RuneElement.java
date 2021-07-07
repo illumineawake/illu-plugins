@@ -18,9 +18,17 @@ public enum RuneElement {
     EARTH(ItemID.EARTH_RUNE, "Earth", "Lava", "Mud", "Dust"),
     FIRE(ItemID.FIRE_RUNE, "Fire", "Lava", "Smoke", "Steam"),
     WATER(ItemID.WATER_RUNE, "Water", "Mud", "Steam", "Mist"),
-    LAW(ItemID.LAW_RUNE, "Law"),
+    MIND(ItemID.MIND_RUNE, "Mind"),
+    BODY(ItemID.BODY_RUNE, "Body"),
+    COSMIC(ItemID.COSMIC_RUNE, "Cosmic"),
+    CHAOS(ItemID.CHAOS_RUNE, "Chaos"),
     NATURE(ItemID.NATURE_RUNE, "Nature"),
-    SOUL(ItemID.SOUL_RUNE, "Soul");
+    LAW(ItemID.LAW_RUNE, "Law"),
+    DEATH(ItemID.DEATH_RUNE, "Death"),
+    ASTRAL(ItemID.ASTRAL_RUNE, "Astral"),
+    BLOOD(ItemID.BLOOD_RUNE, "Blood"),
+    SOUL(ItemID.SOUL_RUNE, "Soul"),
+    WRATH(ItemID.WRATH_RUNE, "Wrath");
 
     private String[] alternativeNames;
     private int runeId;
