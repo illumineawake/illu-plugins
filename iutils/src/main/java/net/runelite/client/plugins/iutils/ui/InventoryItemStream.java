@@ -110,4 +110,6 @@ public class InventoryItemStream extends RandomizedStreamAdapter<InventoryItem, 
     public boolean full() {
         return size() == 28;
     }
+
+    public int emptySlots() { return 28 - size(); }
 }

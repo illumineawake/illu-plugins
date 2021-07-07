@@ -241,7 +241,7 @@ public class iRooftopAgilityPlugin extends Plugin {
 
     private boolean shouldEatSummerPie() {
         return config.boostWithPie() && 
-                (client.getBoostedSkillLevel(Skill.AGILITY) == client.getRealSkillLevel(Skill.AGILITY)) &&
+                (client.getBoostedSkillLevel(Skill.AGILITY) < config.pieLevel()) &&
                 inventory.containsItem(SUMMER_PIE_IDS);
     }
     

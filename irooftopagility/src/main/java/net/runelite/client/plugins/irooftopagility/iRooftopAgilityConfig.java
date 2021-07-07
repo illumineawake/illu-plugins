@@ -345,6 +345,20 @@ public interface iRooftopAgilityConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "pieLevel",
+            name = "Min boost level",
+            description = "A Summer Pie will be used whenever your Agility drops below this level",
+            position = 26,
+            title = "agilityTitle",
+            hidden = true,
+            unhide = "boostWithPie",
+            unhideValue = "true"
+    )
+    default int pieLevel() {
+        return 80;
+    }
+
+    @ConfigItem(
             keyName = "startButton",
             name = "Start/Stop",
             description = "Test button that changes variable value",
