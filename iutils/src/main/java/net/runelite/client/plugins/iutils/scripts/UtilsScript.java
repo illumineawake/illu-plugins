@@ -167,12 +167,16 @@ public abstract class UtilsScript extends Plugin {
     }
 
     protected boolean inventoryHasItems(ItemQuantity... items) {
+        return inventoryHasItems(false, items);
+    }
+
+    protected boolean inventoryHasItems(boolean any, ItemQuantity... items) {
         for (var item : items) {
-            if (game.inventory().withId(item.id).quantity() < item.quantity) {
-                return false;
+            if (any == (game.inventory().withId(item.id).quantity() >= item.quantity)) {
+                return any;
             }
         }
-        return true;
+        return !any;
     }
 
     protected boolean hasItems(ItemQuantity... items) {
