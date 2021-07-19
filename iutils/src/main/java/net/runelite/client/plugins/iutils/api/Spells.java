@@ -202,7 +202,6 @@ public enum Spells {
     private final String name;
     private final WidgetInfo info;
 
-
 //    private static final Map<String, WidgetInfo> map;
 
 //    static {

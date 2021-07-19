@@ -26,6 +26,8 @@ public class CombatStyles {
                 return CombatStyle.SPECIAL;
             case 3:
                 return CombatStyle.DEFENSIVE;
+            case 4:
+                return CombatStyle.MAGIC;
             default:
                 throw new IllegalStateException("unexpected combat style id");
         }
