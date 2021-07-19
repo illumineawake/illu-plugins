@@ -454,6 +454,19 @@ public interface iPowerFighterConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "scatterAshes",
+            name = "Loot and Scatter Ashes",
+            description = "Enable to loot and scatter Ashes",
+            position = 46,
+            hidden = true,
+            unhide = "lootItems",
+            section = "lootTitle"
+    )
+    default boolean scatterAshes() {
+        return false;
+    }
+
+    @ConfigItem(
             keyName = "buryOne",
             name = "Get 1 Bury 1",
             description = "Enable to bury bones as they are picked up. Disable to bury bones once inventory is full.",
@@ -725,4 +738,6 @@ public interface iPowerFighterConfig extends Config {
     default Button startButton() {
         return new Button();
     }
+
+    boolean buryAshes();
 }
