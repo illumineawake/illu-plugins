@@ -280,6 +280,7 @@ public class iPowerFighterPlugin extends Plugin {
                 ((config.lootValue() && itemTotalValue > config.minTotalValue()) ||
                         lootableItems.stream().anyMatch(itemName.toLowerCase()::contains) ||
                         config.buryBones() && itemName.contains("bones") ||
+                        config.scatterAshes() && itemName.contains("ashes") ||
                         config.lootClueScrolls() && itemName.contains("scroll"));
     }
 
@@ -347,7 +348,24 @@ public class iPowerFighterPlugin extends Plugin {
             iterating = false;
         });
     }
-
+   private void scatterAshes() {
+        List<WidgetItem> ashes = inventory.getItems("ashes");
+        executorService.submit(() ->
+        {
+            iterating = true;
+            for (WidgetItem ashe : ashes) {
+                if (BONE_BLACKLIST.contains(ashe.getId())) {
+                    continue;
+                }
+                targetMenu = new MenuEntry("", "", ashe.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
+                        ashe.getIndex(), WidgetInfo.INVENTORY.getId(), false);
+                menu.setEntry(targetMenu);
+                mouse.handleMouseClick(ashe.getCanvasBounds());
+                sleep(calc.getRandomIntBetweenRange(800, 2200));
+            }
+            iterating = false;
+        });
+    }
     private void attackNPC(NPC npc) {
         targetMenu = new MenuEntry("", "", npc.getIndex(), MenuAction.NPC_SECOND_OPTION.getId(),
                 0, 0, false);
@@ -501,6 +519,9 @@ public class iPowerFighterPlugin extends Plugin {
         if (config.buryBones() && inventory.containsItem("bones") && (inventory.isFull() || config.buryOne())) {
             return iPowerFighterState.BURY_BONES;
         }
+        if (config.scatterAshes() && inventory.containsItem("ashes") && (inventory.isFull() || config.buryOne())) {
+            return iPowerFighterState.SCATTER_ASHES;
+        }
         if (canAlch() && !alchLoot.isEmpty()) {
             log.debug("high alch conditions met");
             return iPowerFighterState.HIGH_ALCH;
@@ -556,6 +577,10 @@ public class iPowerFighterPlugin extends Plugin {
                     break;
                 case BURY_BONES:
                     buryBones();
+                    timeout = tickDelay();
+                    break;
+                case SCATTER_ASHES:
+                    scatterAshes();
                     timeout = tickDelay();
                     break;
                 case EQUIP_AMMO:

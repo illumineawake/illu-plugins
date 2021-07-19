@@ -17,6 +17,7 @@ public enum iPowerFighterState {
     MOVING,
     NPC_NOT_FOUND,
     RETURN_SAFE_SPOT,
+    SCATTER_ASHES,
     SLAYER_COMPLETED,
     TIMEOUT,
     WAIT_COMBAT;
