@@ -2,9 +2,11 @@ package net.runelite.client.plugins.iutils.scene;
 
 import net.runelite.api.Client;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.client.plugins.iutils.walking.Pathfinder;
+import net.runelite.client.plugins.iutils.walking.Walking;
 
 import javax.inject.Inject;
-import java.util.Objects;
+import java.util.*;
 
 public class Position implements Area {
     @Inject
@@ -65,6 +67,23 @@ public class Position implements Area {
         return Math.max(Math.abs(other.getX() - x), Math.abs(other.getY() - y));
     }
 
+    public int pathLength(WorldPoint other) {
+        return pathLength(new Position(other));
+    }
+
+    public int pathLength(Position other) {
+        if (z != other.z) {
+            return Integer.MAX_VALUE;
+        }
+
+        var path = new Pathfinder(Walking.map, Collections.emptyMap(), List.of(other), this::contains).find();
+
+        if (path == null) {
+            return Integer.MAX_VALUE;
+        }
+        return path.size();
+    }
+
     public boolean inside(Area area) {
         return area.contains(this);
     }
@@ -107,4 +126,104 @@ public class Position implements Area {
         return "(" + x + ", " + y + ", " + z + ")";
     }
 
+    public boolean reachable(WorldPoint other) {
+        return reachable(new Position(other));
+    }
+
+    public boolean reachable(Position other) {
+        return pathLength(other) < Integer.MAX_VALUE;
+    }
+
+    public Position nearestReachable(WorldPoint other) {
+        return nearestReachable(new Position(other));
+    }
+
+    public Position nearestReachable(Position other) {
+        if (reachable(other))
+            return this;
+
+        List<Position> positions = nearestReachable(other, 1, 6);
+
+        if (positions == null || positions.isEmpty()) {
+            return null;
+        }
+
+        Position closest_pos = null;
+        int closest_pos_dist = Integer.MAX_VALUE;
+        for (Position pos : positions) {
+            int current_pos_dist = pos.distanceTo(other);
+            if (closest_pos_dist > current_pos_dist) {
+                closest_pos_dist = current_pos_dist;
+                closest_pos = pos;
+            }
+        }
+
+        return closest_pos;
+    }
+
+    public List<Position> nearestReachable(Position other, int depth, int max_depth) {
+        List<Position> positions = new ArrayList<>();
+
+        if (depth > max_depth)
+            return null;
+
+        Position pos_n = north();
+        for (int i = 1; depth > i; i++)
+            pos_n = pos_n.north();
+        if (pos_n.reachable(other))
+            positions.add(pos_n);
+
+        Position pos_e = east();
+        for (int i = 1; depth > i; i++)
+            pos_e = pos_e.east();
+        if (pos_e.reachable(other))
+            positions.add(pos_e);
+
+        Position pos_s = south();
+        for (int i = 1; depth > i; i++)
+            pos_s = pos_s.south();
+        if (pos_s.reachable(other))
+            positions.add(pos_s);
+
+        Position pos_w = west();
+        for (int i = 1; depth > i; i++)
+            pos_w = pos_w.west();
+        if (pos_w.reachable(other))
+            positions.add(pos_w);
+
+        if (!positions.isEmpty())
+            return positions;
+
+        Position pos_nw = pos_n;
+        for (int i = 0; depth > i; i++) {
+            pos_nw = pos_nw.west();
+            if (pos_nw.reachable(other))
+                positions.add(pos_nw);
+        }
+
+        Position pos_ne = pos_n;
+        for (int i = 0; depth > i; i++) {
+            pos_ne = pos_ne.east();
+            if (pos_ne.reachable(other))
+                positions.add(pos_ne);
+        }
+
+        Position pos_sw = pos_s;
+        for (int i = 0; depth > i; i++) {
+            pos_sw = pos_sw.west();
+            if (pos_sw.reachable(other))
+                positions.add(pos_sw);
+        }
+
+        Position pos_se = pos_s;
+        for (int i = 0; depth > i; i++) {
+            pos_se = pos_se.east();
+            if (pos_se.reachable(other))
+                positions.add(pos_se);
+        }
+
+        if (!positions.isEmpty())
+            return positions;
+        return nearestReachable(other, ++depth, max_depth);
+    }
 }
