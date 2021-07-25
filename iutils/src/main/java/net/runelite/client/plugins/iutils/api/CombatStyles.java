@@ -54,6 +54,9 @@ public class CombatStyles {
                 case DEFENSIVE:
                     game.widget(593, 16).interact(0);
                     break;
+                case MAGIC:
+                    game.widget(593, 26).interact(0);
+                    return;
             }
             game.waitUntil(() -> currentStyle() == style);
             game.openInterface(3);

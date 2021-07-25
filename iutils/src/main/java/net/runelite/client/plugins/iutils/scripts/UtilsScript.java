@@ -44,6 +44,8 @@ public abstract class UtilsScript extends Plugin {
     protected Prayers prayers;
     @Inject
     protected Injector injector;
+    @Inject
+    protected Bank bank;
 
     protected void equip(int... ids) {
         obtain(Arrays.stream(ids)
@@ -54,6 +56,9 @@ public abstract class UtilsScript extends Plugin {
         game.tick(2);
 
         game.inventory().withId(ids).forEach(i -> {
+            if (equipment.isEquipped(i.id()))
+                return;
+
             log.info("Equipping: {}", i.name());
             i.interact(1);
             game.tick(2);
@@ -106,15 +111,26 @@ public abstract class UtilsScript extends Plugin {
     }
 
     protected void obtain(List<ItemQuantity> items) {
-        ItemQuantity[] itemArray = items.toArray(ItemQuantity[]::new);
-        if (hasItems(itemArray)) {
+        if (items.isEmpty() || hasItems(items)) {
             return;
         }
-        obtainBank(itemArray);
-        withdraw(itemArray);
-        game.tick(2);
-        bank().close();
-        game.tick(2);
+        obtain(items.toArray(ItemQuantity[]::new));
+    }
+
+    protected void obtain(List<ItemQuantity> items, boolean keepInventoryItems) {
+        if (items.isEmpty() || hasItems(items)) {
+            return;
+        }
+
+        if (keepInventoryItems) {
+            items.addAll(game.inventory().all().stream()
+                    .map(i -> new ItemQuantity(i.id(), i.quantity()))
+                    .collect(Collectors.toList())
+            );
+            log.info("Keeping items: {}", items.toString());
+        }
+
+        obtain(items.toArray(ItemQuantity[]::new));
     }
 
     protected void withdraw(ItemQuantity... items) {
@@ -177,6 +193,15 @@ public abstract class UtilsScript extends Plugin {
             }
         }
         return !any;
+    }
+
+    protected boolean hasItems(List<ItemQuantity> items) {
+        for (var item : items) {
+            if (equipment.quantity(item.id) < item.quantity && game.inventory().withId(item.id).quantity() < item.quantity) {
+                return false;
+            }
+        }
+        return true;
     }
 
     protected boolean hasItems(ItemQuantity... items) {
