@@ -56,6 +56,7 @@ public abstract class UtilsScript extends Plugin {
         game.tick(2);
 
         game.inventory().withId(ids).forEach(i -> {
+            log.info("In equip loop");
             if (equipment.isEquipped(i.id()))
                 return;
 
@@ -63,8 +64,7 @@ public abstract class UtilsScript extends Plugin {
             i.interact(1);
             game.tick(2);
         });
-
-        game.waitUntil(() -> Arrays.stream(ids).allMatch(equipment::isEquipped));
+        log.info("Finished equipping");
     }
 
     protected void equip(int id, int quantity) {
@@ -148,6 +148,7 @@ public abstract class UtilsScript extends Plugin {
 
         List<ItemQuantity> buyItems = new ArrayList<>();
         List<iWidget> bankItems = bank().items();
+
         Arrays.stream(items)
                 .filter(Objects::nonNull)
                 .map(i -> new ItemQuantity(i.id,
@@ -250,9 +251,7 @@ public abstract class UtilsScript extends Plugin {
                 game.objects().withName("Bank chest").nearest().interact("Use");
             }
             game.waitUntil(bank::isOpen, 10);
-//            game.tick();
         }
-
         return bank;
     }
 

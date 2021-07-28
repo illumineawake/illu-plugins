@@ -65,6 +65,22 @@ public class Position implements Area {
         return Math.max(Math.abs(other.getX() - x), Math.abs(other.getY() - y));
     }
 
+    public int distanceTo(Area other) {
+        if (other instanceof RectangularArea) {
+            return ((RectangularArea) other).distanceTo(this);
+        }
+
+        if (other instanceof PolygonalArea) {
+            return ((PolygonalArea) other).points.get(0).distanceTo(this);
+        }
+
+        if (other instanceof Position) {
+            return ((Position) other).distanceTo(this);
+        }
+
+        throw new IllegalStateException("distanceTo check for Area type not valid;");
+    }
+
     public boolean inside(Area area) {
         return area.contains(this);
     }

@@ -252,6 +252,9 @@ public class Bank {
 //    }
 
     public List<iWidget> items() {
+        if (iUtils.bankitems.isEmpty()) {
+            game.tick(); //Give time for items to load
+        }
         return iUtils.bankitems;
     }
 

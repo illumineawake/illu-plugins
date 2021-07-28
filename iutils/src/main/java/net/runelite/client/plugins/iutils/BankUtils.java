@@ -58,7 +58,7 @@ public class BankUtils {
     }
 
     public boolean isOpen() {
-        return client.getItemContainer(InventoryID.BANK) != null;
+        return client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER) != null;
     }
 
     public void close() {

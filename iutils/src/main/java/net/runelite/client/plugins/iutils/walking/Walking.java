@@ -88,8 +88,13 @@ public class Walking {
 
         var teleports = new LinkedHashMap<Position, Teleport>();
 
+        var playerPosition = game.localPlayer().position();
         for (var teleport : new TeleportLoader(game).buildTeleports()) {
-            teleports.putIfAbsent(teleport.target, teleport);
+            if (teleport.target.distanceTo(playerPosition) > 50 && (playerPosition.distanceTo(target) > teleport.target.distanceTo(target) + 20)) {
+                teleports.putIfAbsent(teleport.target, teleport);
+            } else {
+                log.info("Teleport not added due to distance reqs: {}", teleport.toString());
+            }
         }
 
         var starts = new ArrayList<>(teleports.keySet());
