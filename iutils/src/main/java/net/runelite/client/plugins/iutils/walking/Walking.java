@@ -256,7 +256,7 @@ public class Walking {
         // TODO: if the player isn't on the transport source tile, interacting with the transport may cause the
         //   player to walk to a different source tile for the same transport, which has a different destination
         game.waitUntil(() -> game.localPlayer().templatePosition().distanceTo(transport.target) <= transport.targetRadius, 10);
-        game.tick(3);
+        game.tick(5);
     }
 
     private boolean stepAlong(List<Position> path) {

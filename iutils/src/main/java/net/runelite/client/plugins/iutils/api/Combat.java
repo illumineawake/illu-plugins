@@ -40,7 +40,6 @@ public class Combat {
     }
 
     public void attack(iNPC npc) {
-        // todo: target doen't necessarily mean in combat (could be chat)
         iNPC target = (iNPC) game.localPlayer().target();
 
         if (target == null || target.index() != npc.index()) {
