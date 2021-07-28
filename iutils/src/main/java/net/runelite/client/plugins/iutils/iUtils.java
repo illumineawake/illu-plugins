@@ -238,35 +238,54 @@ public class iUtils extends Plugin {
 
     @Subscribe
     private void onItemContainerChanged(ItemContainerChanged event) {
-        if (bankUtils.isOpen() && event.getContainerId() == InventoryID.INVENTORY.getId()) {
-            bankInventoryitems.clear();
-            Widget[] items = client.getWidget(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER).getDynamicChildren();
-
-            for (Widget item : items) {
-                if (item.getItemId() == 6512 || item.getItemId() == -1 || item.isHidden()) {
-                    continue;
-                }
-                bankInventoryitems.add(new iWidget(game, item));
-            }
+        if (client.getWidget(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER) != null && bankUtils.isOpen() &&
+                event.getContainerId() == InventoryID.INVENTORY.getId()) {
+            loadBankInventoryItems();
         }
 
-        if (event.getContainerId() == InventoryID.BANK.getId()) {
-            bankitems.clear();
-            Widget[] items = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER).getDynamicChildren();
+        if (bankUtils.isOpen() && event.getContainerId() == InventoryID.BANK.getId()) {
+            loadBankItems();
+        }
+    }
 
-            for (Widget item : items) {
-                if (item.getItemId() == 6512 || item.getItemId() == -1 || item.isHidden()) {
-                    continue;
-                }
-                bankitems.add(new iWidget(game, item));
+    private void loadBankInventoryItems() {
+        bankInventoryitems.clear();
+        for (Widget item : client.getWidget(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER).getDynamicChildren()) {
+            if (item == null || item.getItemId() == 6512 || item.getItemId() == -1 || item.isHidden()) {
+                continue;
             }
+            bankInventoryitems.add(new iWidget(game, item));
+        }
+    }
+
+    private void loadBankItems() {
+        bankitems.clear();
+        for (Widget item : client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER).getDynamicChildren()) {
+            if (item == null || item.getItemId() == 6512 || item.getItemId() == -1 || item.isHidden()) {
+                continue;
+            }
+            bankitems.add(new iWidget(game, item));
+        }
+    }
+
+    @Subscribe
+    private void onWidgetLoaded(WidgetLoaded event) {
+        if (event.getGroupId() == 12) {
+            loadBankItems();
+        }
+
+        if (event.getGroupId() == 15) {
+            loadBankInventoryItems();
         }
     }
 
     @Subscribe
     private void onWidgetClosed(WidgetClosed event) {
-        if (event.getGroupId() == 15) {
+        if (event.getGroupId() == 12) {
             bankitems.clear();
+        }
+
+        if (event.getGroupId() == 15) {
             bankInventoryitems.clear();
         }
     }
