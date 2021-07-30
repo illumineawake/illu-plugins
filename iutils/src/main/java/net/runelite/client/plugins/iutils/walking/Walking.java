@@ -93,7 +93,7 @@ public class Walking {
             if (teleport.target.distanceTo(playerPosition) > 50 && (playerPosition.distanceTo(target) > teleport.target.distanceTo(target) + 20)) {
                 teleports.putIfAbsent(teleport.target, teleport);
             } else {
-                log.info("Teleport not added due to distance reqs: {}", teleport.toString());
+                log.info("Teleport not added due to distance reqs: {}", teleport.target);
             }
         }
 
