@@ -56,15 +56,13 @@ public abstract class UtilsScript extends Plugin {
         game.tick(2);
 
         game.inventory().withId(ids).forEach(i -> {
-            log.info("In equip loop");
-            if (equipment.isEquipped(i.id()))
+            if (equipment.isEquipped(i.id())) {
                 return;
+            }
 
             log.info("Equipping: {}", i.name());
             i.interact(1);
-            game.tick(2);
         });
-        log.info("Finished equipping");
     }
 
     protected void equip(int id, int quantity) {
@@ -141,6 +139,10 @@ public abstract class UtilsScript extends Plugin {
                 .forEach(i -> bank().withdraw(i.id, i.quantity, false));
     }
 
+    protected void obtainBank(List<ItemQuantity> items) {
+        obtainBank(items.toArray(ItemQuantity[]::new));
+    }
+
     protected void obtainBank(ItemQuantity... items) {
         if (items.length == 0) {
             return;
@@ -168,6 +170,7 @@ public abstract class UtilsScript extends Plugin {
                     }
                 });
         if (!buyItems.isEmpty()) {
+            log.info("Buying items: {}", buyItems.toString());
             bank().depositInventory();
             grandExchange().buy(buyItems);
         }

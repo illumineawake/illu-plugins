@@ -23,7 +23,6 @@ import static org.apache.commons.lang3.time.DurationFormatUtils.formatDuration;
 @Slf4j
 @Singleton
 class iRooftopAgilityOverlay extends OverlayPanel {
-    private final Client client;
     private final iRooftopAgilityPlugin plugin;
     private final iRooftopAgilityConfig config;
 
@@ -31,10 +30,9 @@ class iRooftopAgilityOverlay extends OverlayPanel {
     private String infoStatus = "Starting...";
 
     @Inject
-    private iRooftopAgilityOverlay(final Client client, final iRooftopAgilityPlugin plugin, final iRooftopAgilityConfig config) {
+    private iRooftopAgilityOverlay(final iRooftopAgilityPlugin plugin, final iRooftopAgilityConfig config) {
         super(plugin);
         setPosition(OverlayPosition.BOTTOM_LEFT);
-        this.client = client;
         this.plugin = plugin;
         this.config = config;
         getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Rooftop Agility overlay"));
