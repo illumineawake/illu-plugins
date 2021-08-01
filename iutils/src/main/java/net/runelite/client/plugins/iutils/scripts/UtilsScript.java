@@ -140,7 +140,7 @@ public abstract class UtilsScript extends Plugin {
     }
 
     protected void obtainBank(List<ItemQuantity> items) {
-        obtain(items.toArray(ItemQuantity[]::new));
+        obtainBank(items.toArray(ItemQuantity[]::new));
     }
 
     protected void obtainBank(ItemQuantity... items) {
