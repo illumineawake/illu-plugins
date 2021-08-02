@@ -23,6 +23,10 @@ public class Equipment {
         return game.container(94) != null && Arrays.stream(game.container(94).getItems()).anyMatch(i -> i.getId() == id);
     }
 
+    public boolean isNothingEquipped() {
+        return game.container(94) == null;
+    }
+
     public int quantity(int id) {
         if (game.container(94) == null) return 0;
 
@@ -38,6 +42,10 @@ public class Equipment {
      * @return item at slot or null
      */
     public Item slot(int slot) {
+        if (isNothingEquipped()) {
+            return null;
+        }
+
         return game.container(94).getItem(slot);
     }
 

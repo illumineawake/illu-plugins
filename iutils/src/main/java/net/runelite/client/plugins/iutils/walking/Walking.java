@@ -249,7 +249,8 @@ public class Walking {
 
 
     private boolean openDiagonalDoor(Position position) {
-        tile(position).object(ObjectCategory.REGULAR).interact("Open");
+        Objects.requireNonNull(tile(position)).object(ObjectCategory.REGULAR).interact("Open");
+        game.tick();
         game.waitUntil(this::isStill);
         return true;
     }
