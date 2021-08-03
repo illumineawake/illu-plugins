@@ -156,6 +156,9 @@ public class TransportLoader {
         //Spirit Tree's
         if (game.varp(111) == 9 && game.membersWorld()) {
             for (var source : SPIRIT_TREES) {
+                if (source.location.equals("Gnome Stronghold") && game.varp(150) < 160) {
+                    continue;
+                }
                 for (var target : SPIRIT_TREES) {
                     transports.add(spritTreeTransport(source.position, target.position, target.location));
                 }
