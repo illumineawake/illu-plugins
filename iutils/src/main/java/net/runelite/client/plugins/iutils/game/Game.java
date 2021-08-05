@@ -348,6 +348,7 @@ public class Game {
         keyboard.typeString(String.valueOf(number));
         sleep(calc.getRandomIntBetweenRange(80, 250));
         keyboard.pressKey(VK_ENTER);
+        tick();
     }
 
     public void chooseString(String text) {
