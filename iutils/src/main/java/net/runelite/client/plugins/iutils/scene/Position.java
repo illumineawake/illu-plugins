@@ -78,7 +78,7 @@ public class Position implements Area {
             return ((Position) other).distanceTo(this);
         }
 
-        return -1;
+        return Integer.MAX_VALUE;
     }
 
     public boolean inside(Area area) {

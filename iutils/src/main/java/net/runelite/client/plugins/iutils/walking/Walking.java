@@ -90,11 +90,11 @@ public class Walking {
 
         var playerPosition = game.localPlayer().position();
         for (var teleport : new TeleportLoader(game).buildTeleports()) {
-            if (teleport.target.distanceTo(playerPosition) > 50 && (playerPosition.distanceTo(target) > teleport.target.distanceTo(target) + 20)) {
+//            if (teleport.target.distanceTo(playerPosition) > 50 && (playerPosition.distanceTo(target) > teleport.target.distanceTo(target) + 20)) {
                 teleports.putIfAbsent(teleport.target, teleport);
-            } else {
-                log.info("Teleport not added due to distance reqs: {}", teleport.target);
-            }
+//            } else {
+//                log.info("Teleport not added due to distance reqs: {}", teleport.target);
+//            }
         }
 
         var starts = new ArrayList<>(teleports.keySet());
@@ -222,7 +222,8 @@ public class Walking {
 
     private boolean hasDiagonalDoor(iTile tile) {
         var wall = tile.object(ObjectCategory.REGULAR);
-        return wall != null && wall.actions().contains("Open");
+
+        return wall != null && !wall.position().equals(game.localPlayer().position()) && wall.actions().contains("Open");
     }
 
     private boolean isWallBlocking(Position a, Position b) {

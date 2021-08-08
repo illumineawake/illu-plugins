@@ -451,10 +451,8 @@ public class Game {
             if (condition.getAsBoolean()) {
                 return true;
             }
-
             tick();
         }
-
         return false;
     }
 
