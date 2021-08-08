@@ -45,7 +45,7 @@ public class GrandExchange {
      * Buys items from GE, if prices are over 8000GP it will progressively buy, otherwise attempts to buy instantly
      * */
     public void buy(int item, int quantity) {
-        if (GrandExchangePrices.get(item).high > 1000) {
+        if (GrandExchangePrices.get(item).high * quantity > 1000) {
             if (!buyProgressively(item, quantity,1.2, 30, 20)) {
                 throw new AssertionError("Failed to buy GE item progressively");
             }
