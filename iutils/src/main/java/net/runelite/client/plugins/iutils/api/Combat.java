@@ -3,18 +3,22 @@ package net.runelite.client.plugins.iutils.api;
 import net.runelite.api.Skill;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.iNPC;
+import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.ui.Prayer;
+import net.runelite.client.plugins.iutils.walking.Walking;
 
 import javax.inject.Inject;
 
 public class Combat {
     private final Game game;
     private final Prayers prayers;
+    private final Walking walking;
 
     @Inject
     public Combat(Game game) {
         this.game = game;
         this.prayers = new Prayers(game);
+        this.walking = new Walking(game);
     }
 
     public void kill(iNPC npc, Prayer... prayers) {
@@ -39,11 +43,35 @@ public class Combat {
         }
     }
 
+    public void kill(iNPC npc, Position safeSpot, Prayer... prayers) {
+        for (var prayer : prayers) {
+            this.prayers.setEnabled(prayer, true);
+        }
+
+        npc.interact("Attack");
+
+        try {
+            while (game.npcs().withIndex(npc.index()).withAction("Attack").exists() && !game.npcs().withIndex(npc.index()).withAction("Attack").nearest().isDead()) {
+                if (game.localPlayer().position().distanceTo(safeSpot) > 0) {
+                    walking.walkTo(safeSpot);
+                }
+                heal();
+                restorePrayer();
+                restoreStats();
+                attack(npc);
+                game.tick();
+            }
+        } finally {
+            for (var prayer : prayers) {
+                this.prayers.setEnabled(prayer, false);
+            }
+        }
+    }
+
     public void attack(iNPC npc) {
         iNPC target = (iNPC) game.localPlayer().target();
 
-        if (target == null || target.index() != npc.index()) {
-            if (game.localPlayer().target() != null)
+        if (target == null || target.index() != npc.index() && !target.isDead()) {
                 npc.interact("Attack");
         }
     }
