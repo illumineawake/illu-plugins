@@ -121,14 +121,17 @@ public abstract class UtilsScript extends Plugin {
         }
 
         if (keepInventoryItems) {
-            items.addAll(game.inventory().all().stream()
-                    .map(i -> new ItemQuantity(i.id(), i.quantity()))
-                    .collect(Collectors.toList())
-            );
+            items.addAll(inventoryList());
             log.info("Keeping items: {}", items.toString());
         }
 
         obtain(items.toArray(ItemQuantity[]::new));
+    }
+
+    protected List<ItemQuantity> inventoryList() {
+        return game.inventory().all().stream()
+                .map(i -> new ItemQuantity(i.id(), i.quantity()))
+                .collect(Collectors.toList());
     }
 
     protected void withdraw(ItemQuantity... items) {
