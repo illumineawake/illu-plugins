@@ -35,10 +35,20 @@ public interface iQuestAssistantConfig extends Config {
     @ConfigItem(
             keyName = "continueChat",
             name = "Continue all chats",
-            description = "",
+            description = "Progress through all click here to continue... chats",
             position = 0
     )
     default boolean continueChat() {
+        return true;
+    }
+
+    @ConfigItem(
+            keyName = "questHelper",
+            name = "Select Quest Helper options",
+            description = "Enable to auto select highlighted quest helper options",
+            position = 5
+    )
+    default boolean questHelper() {
         return true;
     }
 
@@ -49,14 +59,14 @@ public interface iQuestAssistantConfig extends Config {
             position = 10
     )
     default boolean supportedQuests() {
-        return true;
+        return false;
     }
 
     @ConfigItem(
             keyName = "allQuests",
             name = "Progress all quests (experimental)",
             description = "Progress through all quest dialogue. This will have bugs.",
-            position = 20
+            position = 15
     )
     default boolean allQuests() {
         return false;

@@ -62,6 +62,7 @@ public abstract class UtilsScript extends Plugin {
 
             log.info("Equipping: {}", i.name());
             i.interact(1);
+            game.sleepDelay();
         });
     }
 
