@@ -1,6 +1,7 @@
 package net.runelite.client.plugins.iutils.walking;
 
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.iTile;
@@ -333,7 +334,7 @@ public class Walking {
             }
 
             if (game.modifiedLevel(Skill.HITPOINTS) < 8 || game.modifiedLevel(Skill.HITPOINTS) < game.baseLevel(Skill.HITPOINTS) - 22) {
-                var food = game.inventory().withAction("Eat").first();
+                var food = game.inventory().withoutId(ItemID.DWARVEN_ROCK_CAKE_7510).withAction("Eat").first();
 
                 if (food != null) {
                     food.interact("Eat");

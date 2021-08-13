@@ -77,6 +77,14 @@ public class InventoryItemStream extends RandomizedStreamAdapter<InventoryItem, 
     }
 
     /**
+     * Returns a stream consisting of the elements of this stream that don't match
+     * any of the given {@link InventoryItem#name()}s
+     */
+    public InventoryItemStream withoutNamePart(String... names) {
+        return filter(o -> Arrays.stream(names).noneMatch(name -> o.name().toLowerCase().contains(name.toLowerCase())));
+    }
+
+    /**
      * Returns a stream consisting of the elements of this stream with
      * any of the given {@link InventoryItem#actions()}s
      */
