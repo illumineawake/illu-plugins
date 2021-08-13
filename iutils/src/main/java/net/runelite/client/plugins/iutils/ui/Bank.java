@@ -3,7 +3,6 @@ package net.runelite.client.plugins.iutils.ui;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemComposition;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.InventoryItem;
 import net.runelite.client.plugins.iutils.game.ItemQuantity;

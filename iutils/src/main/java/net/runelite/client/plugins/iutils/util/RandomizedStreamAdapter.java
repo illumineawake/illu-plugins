@@ -1,7 +1,5 @@
 package net.runelite.client.plugins.iutils.util;
 
-import net.runelite.client.plugins.iutils.game.ItemQuantity;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

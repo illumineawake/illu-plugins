@@ -5,7 +5,6 @@ import net.runelite.client.plugins.iutils.util.RandomizedStreamAdapter;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;

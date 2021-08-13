@@ -1,7 +1,6 @@
 package net.runelite.client.plugins.iutils.api;
 
 import lombok.Getter;
-import net.runelite.client.plugins.iutils.walking.Teleport;
 import net.runelite.client.plugins.iutils.walking.TeleportLoader;
 import net.runelite.client.plugins.iutils.walking.TeleportSpell;
 import net.runelite.client.plugins.iutils.walking.TeleportTab;
