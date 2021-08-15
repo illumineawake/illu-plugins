@@ -24,7 +24,11 @@ public class Equipment {
     }
 
     public boolean isNothingEquipped() {
-        return game.container(94) == null;
+        if (game.container(94) == null) {
+            return true;
+        }
+
+        return !Arrays.stream(game.container(94).getItems()).anyMatch(e -> e.getId() != -1);
     }
 
     public int quantity(int id) {
