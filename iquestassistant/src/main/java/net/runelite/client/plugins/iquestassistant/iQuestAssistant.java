@@ -29,7 +29,9 @@ import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iquestassistant.tasks.ChatOptionsAnyTask;
@@ -42,7 +44,7 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
-import java.time.Instant;
+import java.util.concurrent.ExecutorService;
 
 
 @Extension
@@ -78,13 +80,27 @@ public class iQuestAssistant extends iScript {
 
     @Override
     protected void startUp() {
-        execute();
+        log.info("Game state: {}", client.getGameState());
+        if (client.getLocalPlayer() != null || client.getGameState() == GameState.LOGIN_SCREEN) {
+            log.info("Starting quest assistant from startUp");
+            execute();
+        }
+    }
+
+    @Subscribe
+    private void onGameStateChanged(GameStateChanged event) {
+        if (event.getGameState() == GameState.LOGIN_SCREEN || event.getGameState() == GameState.LOGGED_IN) {
+            if (!this.started()) {
+                log.info("Starting quest assistant from Game State");
+                execute();
+            }
+        }
     }
 
     @Override
     protected void onStart() {
-            log.info("starting Quest Assistant plugin");
-            loadTasks();
+        log.info("starting Quest Assistant plugin");
+        loadTasks();
     }
 
     @Override
