@@ -282,4 +282,15 @@ public interface iQuickEaterConfiguration extends Config {
     default boolean activateImbHeart() {
         return false;
     }
+    
+    @ConfigItem(
+            keyName = "useInvokes",
+            name = "Use Invokes",
+            description = "WARNING: This is potentially detectable. This will use items without sending any click data" +
+                    "<br>Use this if iquickeater is conflicting with another plugin",
+            position = 51
+    )
+    default boolean useInvokes() {
+        return false;
+    }
 }

@@ -157,8 +157,12 @@ public class iQuickEaterPlugin extends Plugin {
         if (item != null) {
             targetMenu = new MenuEntry("", "", item.getId(), MenuAction.ITEM_FIRST_OPTION.getId(), item.getIndex(),
                     WidgetInfo.INVENTORY.getId(), false);
-            menu.setEntry(targetMenu);
-            mouse.delayMouseClick(item.getCanvasBounds(), calc.getRandomIntBetweenRange(25, 200));
+            if (config.useInvokes()) {
+                utils.doInvokeMsTime(targetMenu, calc.getRandomIntBetweenRange(25, 200));
+            } else {
+                menu.setEntry(targetMenu);
+                mouse.delayMouseClick(item.getCanvasBounds(), calc.getRandomIntBetweenRange(25, 200));
+            }
         }
     }
 
@@ -235,8 +239,12 @@ public class iQuickEaterPlugin extends Plugin {
                     if (playerUtils.getEquippedItems() != null && playerUtils.getEquippedItems().get(2).getId() != 11090) {
                         targetMenu = new MenuEntry("Wear", "Wear", 11090, MenuAction.ITEM_SECOND_OPTION.getId(), inventory.getWidgetItem(11090).getIndex(),
                                 WidgetInfo.INVENTORY.getId(), false);
-                        menu.setEntry(targetMenu);
-                        mouse.delayMouseClick(inventory.getWidgetItem(11090).getCanvasBounds(), calc.getRandomIntBetweenRange(25, 200));
+                        if (config.useInvokes()) {
+                            utils.doInvokeMsTime(targetMenu, calc.getRandomIntBetweenRange(25, 200));
+                        } else {
+                            menu.setEntry(targetMenu);
+                            mouse.delayMouseClick(inventory.getWidgetItem(11090).getCanvasBounds(), calc.getRandomIntBetweenRange(25, 200));
+                        }
                     }
                 } else {
                     utils.sendGameMessage("No phoenix necklaces in inventory.");
