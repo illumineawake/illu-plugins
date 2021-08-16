@@ -27,6 +27,7 @@ package net.runelite.client.plugins.disablerendering;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import org.pf4j.Extension;
@@ -46,15 +47,19 @@ public class DisableRenderingPlugin extends Plugin {
     @Inject
     private Client client;
 
+    private DrawCallbacks originalDrawCallbacks;
+
     @Override
     protected void startUp() {
         if (client != null) {
+            originalDrawCallbacks = client.getDrawCallbacks();
             client.setDrawCallbacks(new DisableRenderCallbacks());
         }
     }
 
     @Override
     protected void shutDown() {
-        client.setDrawCallbacks(null);
+        client.setDrawCallbacks(originalDrawCallbacks);
+        originalDrawCallbacks = null;
     }
 }
