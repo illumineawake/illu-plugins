@@ -60,4 +60,36 @@ public abstract class LocatableStream<T extends Locatable, S extends LocatableSt
     public S nearestFirst(Position position) {
         return sorted(Comparator.comparing(o -> o.position().distanceTo(position)));
     }
+
+    /**
+     * Returns the element of the stream whose {@link Locatable#position()} is
+     * nearest to the local player by path length.
+     */
+    public T nearestPath() {
+        return min(Comparator.comparing(o -> o.position().nearestReachable(o.client().getLocalPlayer().getWorldLocation()).pathLength(o.client().getLocalPlayer().getWorldLocation()))).orElse(null);
+    }
+
+    /**
+     * Returns the element of the stream whose {@link Locatable#position()} is
+     * nearest to the given {@link Position} by path length.
+     */
+    public T nearestPath(Position position) {
+        return min(Comparator.comparing(o -> o.position().nearestReachable(position).pathLength(position))).orElse(null);
+    }
+
+    /**
+     * Returns a stream consisting of the elements of this stream, sorted
+     * by increasing path distance to the local player.
+     */
+    public S nearestPathFirst() {
+        return sorted(Comparator.comparing(o -> o.position().nearestReachable(o.client().getLocalPlayer().getWorldLocation()).pathLength(o.client().getLocalPlayer().getWorldLocation())));
+    }
+
+    /**
+     * Returns a stream consisting of the elements of this stream, sorted
+     * by increasing path distance to the given {@link Position}.
+     */
+    public S nearestPathFirst(Position position) {
+        return sorted(Comparator.comparing(o -> o.position().nearestReachable(position).pathLength(position)));
+    }
 }

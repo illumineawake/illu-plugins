@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
 
 @Slf4j
 public class Walking {
-    private static final CollisionMap map;
+    public static final CollisionMap map;
     private static final int MAX_INTERACT_DISTANCE = 20;
     private static final int MIN_TILES_WALKED_IN_STEP = 10;
     private static final int MIN_TILES_WALKED_BEFORE_RECHOOSE = 10; // < MIN_TILES_WALKED_IN_STEP
