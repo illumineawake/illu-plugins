@@ -166,10 +166,6 @@ public class iWidget implements Interactable, Useable {
         return c;
     }
 
-    public List<iWidget> children() { //TODO untested
-        return new ArrayList<>(children.values());
-    }
-
     @Override
     public void useOn(InventoryItem item) {
         game.interactionManager().submit(() -> game.clientThread.invoke(() -> {

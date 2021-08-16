@@ -5,7 +5,6 @@ import net.runelite.client.plugins.iutils.util.RandomizedStreamAdapter;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -74,6 +73,14 @@ public class InventoryItemStream extends RandomizedStreamAdapter<InventoryItem, 
      */
     public InventoryItemStream withNamePart(String... names) {
         return filter(o -> Arrays.stream(names).anyMatch(name -> o.name().toLowerCase().contains(name.toLowerCase())));
+    }
+
+    /**
+     * Returns a stream consisting of the elements of this stream that don't match
+     * any of the given {@link InventoryItem#name()}s
+     */
+    public InventoryItemStream withoutNamePart(String... names) {
+        return filter(o -> Arrays.stream(names).noneMatch(name -> o.name().toLowerCase().contains(name.toLowerCase())));
     }
 
     /**

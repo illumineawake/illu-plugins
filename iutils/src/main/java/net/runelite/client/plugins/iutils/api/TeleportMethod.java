@@ -2,7 +2,6 @@ package net.runelite.client.plugins.iutils.api;
 
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.ItemQuantity;
-import net.runelite.client.plugins.iutils.game.iWidget;
 import net.runelite.client.plugins.iutils.ui.Bank;
 import net.runelite.client.plugins.iutils.walking.BankLocations;
 import net.runelite.client.plugins.iutils.walking.TeleportSpell;

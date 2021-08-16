@@ -5,7 +5,6 @@ import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.geometry.Cuboid;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.plugins.iutils.*;
@@ -22,7 +21,6 @@ import net.runelite.client.plugins.iutils.ui.InventoryItemStream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -348,6 +346,7 @@ public class Game {
         keyboard.typeString(String.valueOf(number));
         sleep(calc.getRandomIntBetweenRange(80, 250));
         keyboard.pressKey(VK_ENTER);
+        tick();
     }
 
     public void chooseString(String text) {
@@ -450,10 +449,8 @@ public class Game {
             if (condition.getAsBoolean()) {
                 return true;
             }
-
             tick();
         }
-
         return false;
     }
 

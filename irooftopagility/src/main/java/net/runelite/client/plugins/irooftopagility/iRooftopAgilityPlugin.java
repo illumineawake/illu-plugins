@@ -575,6 +575,12 @@ public class iRooftopAgilityPlugin extends Plugin {
                     timeout = 10;
                     break;
                 case EAT_SUMMER_PIE:
+                    if (!inventory.containsItem(SUMMER_PIE_IDS)) {
+                        log.info("Out of Summer Pies");
+                        state = OUT_OF_SUMMER_PIES;
+                        startAgility = false;
+                        return;
+                    }
                     eatSummerPie();
                     break;
             }

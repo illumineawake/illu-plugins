@@ -218,7 +218,7 @@ public class Chatbox {
     public void selectMenu(String option) { //TODO untested
         game.waitUntil(() -> game.screenContainer().nestedInterface() == 187);
 
-        for (var child : game.widget(187, 3).children()) {
+        for (var child : game.widget(187, 3).items()) {
             if (child.text() != null && child.text().contains(option)) {
                 child.select();
                 return;

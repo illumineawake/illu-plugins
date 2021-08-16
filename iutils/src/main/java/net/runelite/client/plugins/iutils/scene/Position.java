@@ -84,6 +84,22 @@ public class Position implements Area {
         return path.size();
     }
 
+    public int distanceTo(Area other) {
+        if (other instanceof RectangularArea) {
+            return ((RectangularArea) other).distanceTo(this);
+        }
+
+        if (other instanceof PolygonalArea) {
+            return ((PolygonalArea) other).points.get(0).distanceTo(this);
+        }
+
+        if (other instanceof Position) {
+            return ((Position) other).distanceTo(this);
+        }
+
+        return Integer.MAX_VALUE;
+    }
+
     public boolean inside(Area area) {
         return area.contains(this);
     }

@@ -69,4 +69,35 @@ public interface iMenuDebuggerConfig extends Config {
     default boolean printChat() {
         return true;
     }
+
+    @ConfigItem(
+            keyName = "varbit",
+            name = "Varbit ID",
+            description = "Provide Varbit ID then press the Print Varb/Varp button print the value of it to chat",
+            position = 60
+    )
+    default int varbit() {
+        return 0;
+    }
+
+    @ConfigItem(
+            keyName = "varPlayer",
+            name = "VarPlayer ID",
+            description = "Provide VarPlayer ID then press the Print Varb/Varp button print the value of it to chat",
+            position = 65
+    )
+    default int varPlayer() {
+        return 0;
+    }
+
+    @ConfigItem(
+            keyName = "printVar",
+            name = "Print Varb/Varp",
+            description = "Press to print the provided varb/varp values to chat",
+            position = 70,
+            title = "agilityTitle"
+    )
+    default Button printVar() {
+        return new Button();
+    }
 }

@@ -6,7 +6,6 @@ import net.runelite.api.GameState;
 import net.runelite.api.Skill;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.iutils.api.Spells;
 import net.runelite.client.plugins.iutils.api.*;
 import net.runelite.client.plugins.iutils.game.*;
 import net.runelite.client.plugins.iutils.scene.Area;
@@ -44,6 +43,8 @@ public abstract class UtilsScript extends Plugin {
     protected Prayers prayers;
     @Inject
     protected Injector injector;
+    @Inject
+    protected Bank bank;
 
     protected void equip(int... ids) {
         obtain(Arrays.stream(ids)
@@ -54,12 +55,14 @@ public abstract class UtilsScript extends Plugin {
         game.tick(2);
 
         game.inventory().withId(ids).forEach(i -> {
+            if (equipment.isEquipped(i.id())) {
+                return;
+            }
+
             log.info("Equipping: {}", i.name());
             i.interact(1);
-            game.tick(2);
+            game.sleepDelay();
         });
-
-        game.waitUntil(() -> Arrays.stream(ids).allMatch(equipment::isEquipped));
     }
 
     protected void equip(int id, int quantity) {
@@ -106,15 +109,29 @@ public abstract class UtilsScript extends Plugin {
     }
 
     protected void obtain(List<ItemQuantity> items) {
-        ItemQuantity[] itemArray = items.toArray(ItemQuantity[]::new);
-        if (hasItems(itemArray)) {
+        if (items.isEmpty() || hasItems(items)) {
             return;
         }
-        obtainBank(itemArray);
-        withdraw(itemArray);
-        game.tick(2);
-        bank().close();
-        game.tick(2);
+        obtain(items.toArray(ItemQuantity[]::new));
+    }
+
+    protected void obtain(List<ItemQuantity> items, boolean keepInventoryItems) {
+        if (items.isEmpty() || hasItems(items)) {
+            return;
+        }
+
+        if (keepInventoryItems) {
+            items.addAll(inventoryList());
+            log.info("Keeping items: {}", items.toString());
+        }
+
+        obtain(items.toArray(ItemQuantity[]::new));
+    }
+
+    protected List<ItemQuantity> inventoryList() {
+        return game.inventory().all().stream()
+                .map(i -> new ItemQuantity(i.id(), i.quantity()))
+                .collect(Collectors.toList());
     }
 
     protected void withdraw(ItemQuantity... items) {
@@ -125,6 +142,10 @@ public abstract class UtilsScript extends Plugin {
                 .forEach(i -> bank().withdraw(i.id, i.quantity, false));
     }
 
+    protected void obtainBank(List<ItemQuantity> items) {
+        obtainBank(items.toArray(ItemQuantity[]::new));
+    }
+
     protected void obtainBank(ItemQuantity... items) {
         if (items.length == 0) {
             return;
@@ -132,6 +153,7 @@ public abstract class UtilsScript extends Plugin {
 
         List<ItemQuantity> buyItems = new ArrayList<>();
         List<iWidget> bankItems = bank().items();
+
         Arrays.stream(items)
                 .filter(Objects::nonNull)
                 .map(i -> new ItemQuantity(i.id,
@@ -151,6 +173,7 @@ public abstract class UtilsScript extends Plugin {
                     }
                 });
         if (!buyItems.isEmpty()) {
+            log.info("Buying items: {}", buyItems.toString());
             bank().depositInventory();
             grandExchange().buy(buyItems);
         }
@@ -177,6 +200,15 @@ public abstract class UtilsScript extends Plugin {
             }
         }
         return !any;
+    }
+
+    protected boolean hasItems(List<ItemQuantity> items) {
+        for (var item : items) {
+            if (equipment.quantity(item.id) < item.quantity && game.inventory().withId(item.id).quantity() < item.quantity) {
+                return false;
+            }
+        }
+        return true;
     }
 
     protected boolean hasItems(ItemQuantity... items) {
@@ -225,9 +257,7 @@ public abstract class UtilsScript extends Plugin {
                 game.objects().withName("Bank chest").nearest().interact("Use");
             }
             game.waitUntil(bank::isOpen, 10);
-//            game.tick();
         }
-
         return bank;
     }
 

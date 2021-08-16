@@ -4,7 +4,6 @@ import net.runelite.api.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class iPlayer extends iActor {
@@ -110,8 +109,12 @@ public class iPlayer extends iActor {
         return player.getPoseAnimation();
     }
 
+    public boolean isMoving() {
+        return game.localPlayer().idlePoseAnimation() != game.localPlayer().poseAnimation();
+    }
+
     public boolean isIdle() {
-        return game.localPlayer().idlePoseAnimation() == game.localPlayer().poseAnimation() && player.getAnimation() == -1;
+        return !isMoving() && player.getAnimation() == -1;
     }
 
     public boolean isFriend() {

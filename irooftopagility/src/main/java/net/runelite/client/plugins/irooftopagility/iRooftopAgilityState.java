@@ -11,5 +11,6 @@ public enum iRooftopAgilityState {
     PRIFF_PORTAL,
     RESTOCK_ITEMS,
     TIMEOUT,
-    EAT_SUMMER_PIE;
+    EAT_SUMMER_PIE,
+    OUT_OF_SUMMER_PIES;
 }

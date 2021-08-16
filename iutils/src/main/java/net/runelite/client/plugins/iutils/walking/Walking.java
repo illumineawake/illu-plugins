@@ -1,6 +1,7 @@
 package net.runelite.client.plugins.iutils.walking;
 
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.iTile;
@@ -88,8 +89,13 @@ public class Walking {
 
         var teleports = new LinkedHashMap<Position, Teleport>();
 
+        var playerPosition = game.localPlayer().position();
         for (var teleport : new TeleportLoader(game).buildTeleports()) {
-            teleports.putIfAbsent(teleport.target, teleport);
+//            if (teleport.target.distanceTo(playerPosition) > 50 && (playerPosition.distanceTo(target) > teleport.target.distanceTo(target) + 20)) {
+                teleports.putIfAbsent(teleport.target, teleport);
+//            } else {
+//                log.info("Teleport not added due to distance reqs: {}", teleport.target);
+//            }
         }
 
         var starts = new ArrayList<>(teleports.keySet());
@@ -217,7 +223,8 @@ public class Walking {
 
     private boolean hasDiagonalDoor(iTile tile) {
         var wall = tile.object(ObjectCategory.REGULAR);
-        return wall != null && wall.actions().contains("Open");
+
+        return wall != null && !wall.position().equals(game.localPlayer().position()) && wall.actions().contains("Open");
     }
 
     private boolean isWallBlocking(Position a, Position b) {
@@ -244,7 +251,8 @@ public class Walking {
 
 
     private boolean openDiagonalDoor(Position position) {
-        tile(position).object(ObjectCategory.REGULAR).interact("Open");
+        Objects.requireNonNull(tile(position)).object(ObjectCategory.REGULAR).interact("Open");
+        game.tick();
         game.waitUntil(this::isStill);
         return true;
     }
@@ -256,7 +264,7 @@ public class Walking {
         // TODO: if the player isn't on the transport source tile, interacting with the transport may cause the
         //   player to walk to a different source tile for the same transport, which has a different destination
         game.waitUntil(() -> game.localPlayer().templatePosition().distanceTo(transport.target) <= transport.targetRadius, 10);
-        game.tick(3);
+        game.tick(5);
     }
 
     private boolean stepAlong(List<Position> path) {
@@ -326,7 +334,7 @@ public class Walking {
             }
 
             if (game.modifiedLevel(Skill.HITPOINTS) < 8 || game.modifiedLevel(Skill.HITPOINTS) < game.baseLevel(Skill.HITPOINTS) - 22) {
-                var food = game.inventory().withAction("Eat").first();
+                var food = game.inventory().withoutId(ItemID.DWARVEN_ROCK_CAKE_7510).withAction("Eat").first();
 
                 if (food != null) {
                     food.interact("Eat");

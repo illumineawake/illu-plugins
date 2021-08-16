@@ -27,27 +27,19 @@ package net.runelite.client.plugins.imenudebugger;
 
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
-import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.Client;
 import net.runelite.api.events.*;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.iutils.PlayerUtils;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.util.Text;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-
-import static net.runelite.client.plugins.iutils.iUtils.iterating;
 
 
 @Extension
@@ -70,6 +62,12 @@ public class iMenuDebuggerPlugin extends Plugin {
     @Inject
     private ConfigManager configManager;
 
+    @Inject
+    private Client client;
+
+    @Inject
+    private ClientThread clientThread;
+
 
     @Provides
     iMenuDebuggerConfig provideConfig(ConfigManager configManager) {
@@ -81,7 +79,7 @@ public class iMenuDebuggerPlugin extends Plugin {
     }
 
     @Override
-    protected void shutDown(){
+    protected void shutDown() {
     }
 
     @Subscribe
@@ -135,6 +133,24 @@ public class iMenuDebuggerPlugin extends Plugin {
             return;
         }
         log.info("Widget hidden: {}", event.toString());
+    }
+
+    @Subscribe
+    private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked) {
+        if (!configButtonClicked.getGroup().equalsIgnoreCase("iMenuDebugger")) {
+            return;
+        }
+
+        if (configButtonClicked.getKey().equals("printVar")) {
+            clientThread.invoke(() -> {
+                if (config.varbit() != 0) {
+                    utils.sendGameMessage("Varbit " + config.varbit() + " value: " + client.getVarbitValue(config.varbit()));
+                }
+                if (config.varPlayer() != 0) {
+                    utils.sendGameMessage("VarPlayer " + config.varPlayer() + " value: " + client.getVarpValue(config.varPlayer()));
+                }
+            });
+        }
     }
 
     @Subscribe

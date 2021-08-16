@@ -33,6 +33,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iquestassistant.tasks.ChatOptionsAnyTask;
+import net.runelite.client.plugins.iquestassistant.tasks.ChatOptionsQuestHelperTask;
 import net.runelite.client.plugins.iquestassistant.tasks.ChatOptionsTask;
 import net.runelite.client.plugins.iquestassistant.tasks.ContinueChatTask;
 import net.runelite.client.plugins.iutils.iUtils;
@@ -110,6 +111,7 @@ public class iQuestAssistant extends iScript {
         tasks.clear();
         tasks.addAll(
                 injector.getInstance(ContinueChatTask.class),
+                injector.getInstance(ChatOptionsQuestHelperTask.class),
                 injector.getInstance(ChatOptionsTask.class),
                 injector.getInstance(ChatOptionsAnyTask.class)
         );

@@ -85,6 +85,12 @@ public class TransportLoader {
             transports.add(npcTransport(new Position(3054, 3245, 0), new Position(1824, 3695, 1), 10724, "Port Piscarilius"));
         }
 
+        //White Wolf Mountain Tunnel
+        if (game.varp(11) >= 5) {
+            transports.add(objectTransport(new Position(2877, 3482, 0), new Position(2876, 9878, 0), 57, "Climb-down"));
+            transports.add(objectTransport(new Position(2876, 9878, 0), new Position(2877, 3482, 0), 56, "Climb-up"));
+        }
+
         //entrana
         transports.add(npcActionTransport(new Position(3041, 3237, 0), new Position(2834, 3331, 1), 1166, "Take-boat"));
         transports.add(npcActionTransport(new Position(2834, 3335, 0), new Position(3048, 3231, 1), 1170, "Take-boat"));
@@ -156,6 +162,9 @@ public class TransportLoader {
         //Spirit Tree's
         if (game.varp(111) == 9 && game.membersWorld()) {
             for (var source : SPIRIT_TREES) {
+                if (source.location.equals("Gnome Stronghold") && game.varp(150) < 160) {
+                    continue;
+                }
                 for (var target : SPIRIT_TREES) {
                     transports.add(spritTreeTransport(source.position, target.position, target.location));
                 }
