@@ -44,7 +44,6 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
-import java.util.concurrent.ExecutorService;
 
 
 @Extension
@@ -80,8 +79,7 @@ public class iQuestAssistant extends iScript {
 
     @Override
     protected void startUp() {
-        log.info("Game state: {}", client.getGameState());
-        if (client.getLocalPlayer() != null || client.getGameState() == GameState.LOGIN_SCREEN) {
+        if (client.getLocalPlayer() != null) {
             log.info("Starting quest assistant from startUp");
             execute();
         }
