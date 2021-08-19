@@ -109,6 +109,10 @@ public class Game {
     }
 
     public void tick() {
+        if (client.getGameState() == GameState.LOGIN_SCREEN || client.getGameState() == GameState.LOGIN_SCREEN_AUTHENTICATOR) {
+            return;
+        }
+
         long start = client().getTickCount();
 
         while (client.getTickCount() == start) {
