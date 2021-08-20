@@ -116,19 +116,21 @@ public abstract class UtilsScript extends Plugin {
     }
 
     protected void obtain(List<ItemQuantity> items, boolean keepInventoryItems) {
-        if (items.isEmpty() || hasItems(items)) {
+        List<ItemQuantity> test = new ArrayList<>(items);
+        if (test.isEmpty() || hasItems(test)) {
             return;
         }
 
         if (keepInventoryItems) {
-            items.addAll(inventoryList());
-            log.info("Keeping items: {}", items.toString());
+            test.addAll(inventoryList());
+            log.info("Keeping items: {}", test.toString());
         }
 
-        obtain(items.toArray(ItemQuantity[]::new));
+        obtain(test.toArray(ItemQuantity[]::new));
     }
 
     protected List<ItemQuantity> inventoryList() {
+
         return game.inventory().all().stream()
                 .map(i -> new ItemQuantity(i.id(), i.quantity()))
                 .collect(Collectors.toList());
