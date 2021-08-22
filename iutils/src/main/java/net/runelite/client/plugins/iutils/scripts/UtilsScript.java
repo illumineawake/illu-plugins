@@ -109,7 +109,9 @@ public abstract class UtilsScript extends Plugin {
     }
 
     protected void obtain(List<ItemQuantity> items) {
-        if (items.isEmpty() || hasItems(items)) {
+        if (items.isEmpty() || 
+            
+            Items(items)) {
             return;
         }
         obtain(items.toArray(ItemQuantity[]::new));
@@ -189,6 +191,30 @@ public abstract class UtilsScript extends Plugin {
                 .orElse(null);
 
         return bankItem == null ? 0 : bankItem.quantity();
+    }
+
+    protected boolean equipmentHasItemsID(Integer items) {
+        return game.equipment().withId(items).findFirst().isPresent();
+    }
+    protected boolean equipmentHasItemsID(Collection<Integer> items) {
+        return game.equipment().withId(items).findFirst().isPresent();
+    }
+
+    protected boolean inventoryHasItemsName(String items) {
+        return game.inventory().withNamePart(items).findFirst().isPresent();
+    }
+    protected boolean inventoryHasItemsName(Collection<String> items) {
+        for (String item : items) {
+        return game.inventory().withNamePart(item).findFirst().isPresent();
+        }
+        return false;
+    }
+
+    protected boolean inventoryHasItems(Integer items) {
+        return game.inventory().withId(items).findFirst().isPresent();
+    }
+    protected boolean inventoryHasItems(Collection<Integer> items) {
+        return game.inventory().withId(items).findFirst().isPresent();
     }
 
     protected boolean inventoryHasItems(ItemQuantity... items) {
