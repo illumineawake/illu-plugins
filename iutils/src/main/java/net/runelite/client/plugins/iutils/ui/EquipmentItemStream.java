@@ -18,14 +18,35 @@ public class EquipmentItemStream extends RandomizedStreamAdapter<EquipmentItem, 
         return new EquipmentItemStream(stream);
     }
 
-    /**
+/**
      * Returns a stream consisting of the elements of this stream with
      * any of the given {@link EquipmentItem#id()}s
      */
     public EquipmentItemStream withId(int... ids) {
         return filter(o -> Arrays.stream(ids).anyMatch(id -> o.id() == id));
     }
+    /**
+     * Returns a stream consisting of the elements of this stream with
+     * any of the given {@link InventoryItem#id()}s
+     */
+    public EquipmentItemStream withId(Collection<Integer> ids) {
+        return filter(o -> ids.stream().anyMatch(id -> o.id() == id));
+    }
+    /**
+     * Returns a stream consisting of the elements of this stream that don't match
+     * any of the given {@link InventoryItem#id()}s
+     */
+    public EquipmentItemStream withoutId(Collection<Integer> ids) {
+        return filter(o -> ids.stream().noneMatch(id -> o.id() == id));
+    }
 
+    /**
+     * Returns a stream consisting of the elements of this stream that don't match
+     * any of the given {@link InventoryItem#id()}s
+     */
+    public EquipmentItemStream withoutId(int... ids) {
+        return filter(o -> Arrays.stream(ids).noneMatch(id -> o.id() == id));
+    }
     /**
      * Returns a stream consisting of the elements of this stream with
      * a minimum {@link EquipmentItem#quantity()}
@@ -48,6 +69,13 @@ public class EquipmentItemStream extends RandomizedStreamAdapter<EquipmentItem, 
      */
     public EquipmentItemStream withNamePart(String... names) {
         return filter(o -> Arrays.stream(names).anyMatch(name -> o.name().toLowerCase().contains(name.toLowerCase())));
+    }
+    /**
+     * Returns a stream consisting of the elements of this stream that don't match
+     * any of the given {@link InventoryItem#name()}s
+     */
+    public EquipmentItemStream withoutNamePart(String... names) {
+        return filter(o -> Arrays.stream(names).noneMatch(name -> o.name().toLowerCase().contains(name.toLowerCase())));
     }
 
     /**
