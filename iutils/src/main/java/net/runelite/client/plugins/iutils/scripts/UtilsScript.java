@@ -17,10 +17,7 @@ import net.runelite.client.plugins.iutils.walking.Walking;
 
 import javax.inject.Inject;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,7 +34,7 @@ public abstract class UtilsScript extends Plugin {
     protected Equipment equipment;
     @Inject
     protected Combat combat;
-//    @Inject
+    //    @Inject
     protected StandardSpellbook standardSpellbook;
     @Inject
     protected Prayers prayers;
@@ -109,11 +106,10 @@ public abstract class UtilsScript extends Plugin {
     }
 
     protected void obtain(List<ItemQuantity> items) {
-        if (items.isEmpty() || 
-            
-            Items(items)) {
+        if (items.isEmpty() || hasItems(items)) {
             return;
         }
+
         obtain(items.toArray(ItemQuantity[]::new));
     }
 
@@ -193,27 +189,27 @@ public abstract class UtilsScript extends Plugin {
         return bankItem == null ? 0 : bankItem.quantity();
     }
 
-    protected boolean equipmentHasItemsID(Integer items) {
-        return game.equipment().withId(items).findFirst().isPresent();
+    protected boolean equipmentHasItem(int... ids) {
+        return game.equipment().withId(ids).findFirst().isPresent();
     }
-    protected boolean equipmentHasItemsID(Collection<Integer> items) {
+
+    protected boolean equipmentHasItem(Collection<Integer> items) {
         return game.equipment().withId(items).findFirst().isPresent();
     }
 
-    protected boolean inventoryHasItemsName(String items) {
-        return game.inventory().withNamePart(items).findFirst().isPresent();
-    }
-    protected boolean inventoryHasItemsName(Collection<String> items) {
-        for (String item : items) {
-        return game.inventory().withNamePart(item).findFirst().isPresent();
-        }
-        return false;
+    protected boolean inventoryHasItem(String... names) {
+        return game.inventory().withNamePart(names).findFirst().isPresent();
     }
 
-    protected boolean inventoryHasItems(Integer items) {
-        return game.inventory().withId(items).findFirst().isPresent();
+    protected boolean inventoryHasItemName(Collection<String> names) {
+        return game.inventory().withNamePart(names).findFirst().isPresent();
     }
-    protected boolean inventoryHasItems(Collection<Integer> items) {
+
+    protected boolean inventoryHasItem(int... ids) {
+        return game.inventory().withId(ids).findFirst().isPresent();
+    }
+
+    protected boolean inventoryHasItem(Collection<Integer> items) {
         return game.inventory().withId(items).findFirst().isPresent();
     }
 

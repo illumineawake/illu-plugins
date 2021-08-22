@@ -76,6 +76,14 @@ public class InventoryItemStream extends RandomizedStreamAdapter<InventoryItem, 
     }
 
     /**
+     * Returns a stream consisting of the elements of this stream whose
+     * {@link InventoryItem#name()}s contain any of the given name parts
+     */
+    public InventoryItemStream withNamePart(Collection<String> names) {
+        return filter(o -> names.stream().anyMatch(name -> o.name().toLowerCase().contains(name.toLowerCase())));
+    }
+
+    /**
      * Returns a stream consisting of the elements of this stream that don't match
      * any of the given {@link InventoryItem#name()}s
      */

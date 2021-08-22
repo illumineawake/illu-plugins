@@ -5,6 +5,7 @@ import net.runelite.client.plugins.iutils.game.EquipmentItem;
 import net.runelite.client.plugins.iutils.util.RandomizedStreamAdapter;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -27,14 +28,14 @@ public class EquipmentItemStream extends RandomizedStreamAdapter<EquipmentItem, 
     }
     /**
      * Returns a stream consisting of the elements of this stream with
-     * any of the given {@link InventoryItem#id()}s
+     * any of the given {@link EquipmentItem#id()}s
      */
     public EquipmentItemStream withId(Collection<Integer> ids) {
         return filter(o -> ids.stream().anyMatch(id -> o.id() == id));
     }
     /**
      * Returns a stream consisting of the elements of this stream that don't match
-     * any of the given {@link InventoryItem#id()}s
+     * any of the given {@link EquipmentItem#id()}s
      */
     public EquipmentItemStream withoutId(Collection<Integer> ids) {
         return filter(o -> ids.stream().noneMatch(id -> o.id() == id));
@@ -42,7 +43,7 @@ public class EquipmentItemStream extends RandomizedStreamAdapter<EquipmentItem, 
 
     /**
      * Returns a stream consisting of the elements of this stream that don't match
-     * any of the given {@link InventoryItem#id()}s
+     * any of the given {@link EquipmentItem#id()}s
      */
     public EquipmentItemStream withoutId(int... ids) {
         return filter(o -> Arrays.stream(ids).noneMatch(id -> o.id() == id));
@@ -72,7 +73,7 @@ public class EquipmentItemStream extends RandomizedStreamAdapter<EquipmentItem, 
     }
     /**
      * Returns a stream consisting of the elements of this stream that don't match
-     * any of the given {@link InventoryItem#name()}s
+     * any of the given {@link EquipmentItem#name()}s
      */
     public EquipmentItemStream withoutNamePart(String... names) {
         return filter(o -> Arrays.stream(names).noneMatch(name -> o.name().toLowerCase().contains(name.toLowerCase())));
