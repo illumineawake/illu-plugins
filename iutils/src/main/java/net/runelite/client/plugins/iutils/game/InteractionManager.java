@@ -12,13 +12,13 @@ public class InteractionManager {
     }
 
     public void submit(Runnable runnable) {
-        log.info("interacting");
+//        log.info("interacting");
         game.sleepDelay();
         runnable.run();
     }
 
     public void interact(int identifier, int opcode, int param0, int param1) {
-        log.info("interacting");
+//        log.info("interacting");
         game.sleepDelay();
         game.clientThread.invoke(() -> game.client().invokeMenuAction("", "", identifier, opcode, param0, param1));
     }

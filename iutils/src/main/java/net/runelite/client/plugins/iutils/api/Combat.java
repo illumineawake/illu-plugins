@@ -4,6 +4,7 @@ import net.runelite.api.Skill;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.iNPC;
 import net.runelite.client.plugins.iutils.scene.Position;
+import net.runelite.client.plugins.iutils.ui.Chatbox;
 import net.runelite.client.plugins.iutils.ui.Prayer;
 import net.runelite.client.plugins.iutils.walking.Walking;
 
@@ -13,12 +14,14 @@ public class Combat {
     private final Game game;
     private final Prayers prayers;
     private final Walking walking;
+    private final Chatbox chatbox;
 
     @Inject
     public Combat(Game game) {
         this.game = game;
         this.prayers = new Prayers(game);
         this.walking = new Walking(game);
+        this.chatbox = new Chatbox(game);
     }
 
     public void kill(iNPC npc, Prayer... prayers) {
@@ -27,13 +30,15 @@ public class Combat {
         }
 
         npc.interact("Attack");
+        game.tick();
 
         try {
-            while (game.npcs().withIndex(npc.index()).withAction("Attack").exists()) {
+            while (game.npcs().withIndex(npc.index()).withAction("Attack").exists() && !game.npcs().withIndex(npc.index()).withAction("Attack").nearest().isDead()) {
                 heal();
                 restorePrayer();
                 restoreStats();
                 attack(npc);
+                handleLevelUp();
                 game.tick();
             }
         } finally {
@@ -49,6 +54,7 @@ public class Combat {
         }
 
         npc.interact("Attack");
+        game.tick();
 
         try {
             while (game.npcs().withIndex(npc.index()).withAction("Attack").exists() && !game.npcs().withIndex(npc.index()).withAction("Attack").nearest().isDead()) {
@@ -59,6 +65,7 @@ public class Combat {
                 restorePrayer();
                 restoreStats();
                 attack(npc);
+                handleLevelUp();
                 game.tick();
             }
         } finally {
@@ -108,6 +115,13 @@ public class Combat {
                 food.interact("Eat");
                 game.tick();
             }
+        }
+    }
+
+    private void handleLevelUp() {
+        if (chatbox.chatState() == Chatbox.ChatState.LEVEL_UP) {
+            game.randomDelay();
+            chatbox.chat();
         }
     }
 
