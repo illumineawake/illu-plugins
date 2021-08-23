@@ -78,6 +78,7 @@ public class iTile implements Locatable {
     public iObject object(ObjectCategory category) {
         switch (category) {
             case REGULAR:
+                log.info("Tile length: {}", tile.getGameObjects().length);
                 GameObject go = Arrays.stream(tile.getGameObjects()).filter(Objects::nonNull).findFirst().orElse(null);
                 return (go == null) ? null : new iObject(game, go,
                         game.getFromClientThread(() -> client().getObjectDefinition(go.getId()))

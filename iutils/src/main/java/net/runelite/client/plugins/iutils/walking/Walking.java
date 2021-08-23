@@ -224,6 +224,10 @@ public class Walking {
     private boolean hasDiagonalDoor(iTile tile) {
         var wall = tile.object(ObjectCategory.REGULAR);
 
+        if (wall != null && !wall.position().equals(game.localPlayer().position()) && wall.actions().contains("Open")) {
+            log.info("Found diagonal wall at: {}, with ID: {}", wall.position(), wall.id());
+        }
+
         return wall != null && !wall.position().equals(game.localPlayer().position()) && wall.actions().contains("Open");
     }
 
