@@ -292,7 +292,7 @@ public abstract class UtilsScript extends Plugin {
     protected GrandExchange grandExchange() {
         if (!GRAND_EXCHANGE.contains(game.localPlayer().position())) {
             if (GRAND_EXCHANGE.distanceTo(game.localPlayer().position()) > 50) {
-                TeleportMethod varrockTeleport = new TeleportMethod(game, TeleportLocation.VARROCK_CENTRE, 1);
+                TeleportMethod varrockTeleport = new TeleportMethod(game, TeleportLocation.GRAND_EXCHANGE, 1);
                 varrockTeleport.getTeleport(true);
             }
             walking.walkTo(GRAND_EXCHANGE);
