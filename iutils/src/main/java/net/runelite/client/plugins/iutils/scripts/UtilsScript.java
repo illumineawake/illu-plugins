@@ -294,6 +294,8 @@ public abstract class UtilsScript extends Plugin {
             if (GRAND_EXCHANGE.distanceTo(game.localPlayer().position()) > 50) {
                 TeleportMethod varrockTeleport = new TeleportMethod(game, TeleportLocation.GRAND_EXCHANGE, 1);
                 varrockTeleport.getTeleport(true);
+                bank.close();
+                game.tick(2);
             }
             walking.walkTo(GRAND_EXCHANGE);
         }
