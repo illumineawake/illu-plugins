@@ -222,6 +222,10 @@ public class Walking {
     }
 
     private boolean hasDiagonalDoor(iTile tile) {
+        if (game.localPlayer().position().regionID() == 7223) { //Invisible door at Gric's Farm fucking shit up
+            return false;
+        }
+
         var wall = tile.object(ObjectCategory.REGULAR);
 
         if (wall != null && !wall.position().equals(game.localPlayer().position()) && wall.actions().contains("Open")) {
