@@ -82,7 +82,7 @@ public class TransportLoader {
                 transports.add(npcChatTransport(new Position(3054, 3245, 0), new Position(1824, 3691, 0), 8484, "That's great, can you take me there please?"));
             }
         } else {
-            transports.add(npcTransport(new Position(3054, 3245, 0), new Position(1824, 3695, 1), 10724, "Port Piscarilius"));
+            transports.add(npcTransport(new Position(3054, 3245, 0), new Position(1824, 3695, 1), "Veos", "Port Piscarilius"));
         }
 
         //White Wolf Mountain Tunnel
@@ -102,7 +102,7 @@ public class TransportLoader {
         transports.add(trapdoorTransport(new Position(3422, 3484, 0), new Position(3440, 9887, 0), 3432, 3433));
 
         // Port Piscarilius
-        transports.add(npcTransport(new Position(1824, 3691, 0), new Position(3055, 3242, 1), 10727, "Port Sarim"));
+        transports.add(npcTransport(new Position(1824, 3691, 0), new Position(3055, 3242, 1), "Veos", "Port Sarim"));
 
         // Meyerditch
         transports.add(new Transport(
@@ -326,6 +326,10 @@ public class TransportLoader {
             game.objects().withId(openId).nearest().interact("Climb-down");
             game.tick(1);
         });
+    }
+
+    private static Transport npcTransport(Position source, Position target, String npcName, String action) {
+        return new Transport(source, target, 10, 0, game -> game.npcs().withName(npcName).withAction(action).nearest(source).interact(action));
     }
 
     private static Transport npcTransport(Position source, Position target, int id, String action) {

@@ -115,6 +115,7 @@ public class Walking {
             System.out.println("[Walking] Teleporting to path start");
             teleport.handler.run();
             game.waitUntil(() -> game.localPlayer().templatePosition().distanceTo(teleport.target) <= teleport.radius);
+            game.tick();
         }
 
         walkAlong(path, transports);
