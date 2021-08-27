@@ -342,11 +342,14 @@ public class BankUtils {
                         identifier = 4;
                         break;
                     default:
-                        identifier = 6;
+                        identifier = (client.getVarbitValue(3960) == amount) ? 5 : 6;
                         break;
                 }
-                menu.setEntry(new MenuEntry("", "", identifier, MenuAction.CC_OP.getId(), item.getIndex(), 786444, false));
-                mouse.delayClickRandomPointCenter(-200, 200, 50);
+                utils.doActionMsTime(
+                        new MenuEntry("", "", identifier, MenuAction.CC_OP.getId(), item.getIndex(), 786444, false),
+                        new Point(client.getCenterX() + calc.getRandomIntBetweenRange(-200, 200), client.getCenterY() + calc.getRandomIntBetweenRange(-200, 200)),
+                        50
+                );
                 if (identifier == 6) {
                     executorService.submit(() -> {
                         sleep(calc.getRandomIntBetweenRange(1000, 1500));

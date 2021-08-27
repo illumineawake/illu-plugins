@@ -77,9 +77,6 @@ public class iPowerSkillerPlugin extends Plugin {
     private iUtils utils;
 
     @Inject
-    private MouseUtils mouse;
-
-    @Inject
     private PlayerUtils playerUtils;
 
     @Inject
@@ -278,8 +275,7 @@ public class iPowerSkillerPlugin extends Plugin {
         opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuAction.NPC_FIRST_OPTION.getId());
         if (targetNPC != null) {
             targetMenu = new MenuEntry("", "", targetNPC.getIndex(), opcode, 0, 0, false);
-            menu.setEntry(targetMenu);
-            mouse.delayMouseClick(targetNPC.getConvexHull().getBounds(), sleepDelay());
+            utils.doActionMsTime(targetMenu, targetNPC.getConvexHull().getBounds(), sleepDelay());
         } else {
             log.info("NPC is null");
         }
@@ -292,8 +288,7 @@ public class iPowerSkillerPlugin extends Plugin {
         if (targetObject != null) {
             targetMenu = new MenuEntry("", "", targetObject.getId(), opcode,
                     targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
-            menu.setEntry(targetMenu);
-            mouse.delayMouseClick(targetObject.getConvexHull().getBounds(), sleepDelay());
+            utils.doActionMsTime(targetMenu, targetObject.getConvexHull().getBounds(), sleepDelay());
         } else {
             log.info("Game Object is null, ids are: {}", objectIds.toString());
         }
@@ -305,8 +300,7 @@ public class iPowerSkillerPlugin extends Plugin {
         if (targetWall != null) {
             targetMenu = new MenuEntry("", "", targetWall.getId(), opcode,
                     targetWall.getLocalLocation().getSceneX(), targetWall.getLocalLocation().getSceneY(), false);
-            menu.setEntry(targetMenu);
-            mouse.delayMouseClick(targetWall.getConvexHull().getBounds(), sleepDelay());
+            utils.doActionMsTime(targetMenu, targetWall.getConvexHull().getBounds(), sleepDelay());
         } else {
             log.info("Wall Object is null, ids are: {}", objectIds.toString());
         }
@@ -337,8 +331,7 @@ public class iPowerSkillerPlugin extends Plugin {
             targetMenu = new MenuEntry("", "", bankTarget.getId(),
                     bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(),
                     bankTarget.getSceneMinLocation().getY(), false);
-            menu.setEntry(targetMenu);
-            mouse.delayMouseClick(bankTarget.getConvexHull().getBounds(), sleepDelay());
+            utils.doActionMsTime(targetMenu, bankTarget.getConvexHull().getBounds(), sleepDelay());
         } else {
             utils.sendGameMessage("Bank not found, stopping");
             startPowerSkiller = false;
@@ -641,8 +634,7 @@ public class iPowerSkillerPlugin extends Plugin {
         if (targetObject != null) {
             targetMenu = new MenuEntry("", "", targetObject.getId(), opcode,
                     targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
-            menu.setEntry(targetMenu);
-            mouse.delayMouseClick(targetObject.getConvexHull().getBounds(), sleepDelay());
+            utils.doActionMsTime(targetMenu, targetObject.getConvexHull().getBounds(), sleepDelay());
         } else {
             log.info("Game Object is null, ids are: {}", objectIds.toString());
         }

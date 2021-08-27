@@ -343,7 +343,7 @@ public class iPowerFighterPlugin extends Plugin {
                         bone.getIndex(), WidgetInfo.INVENTORY.getId(), false);
                 menu.setEntry(targetMenu);
                 mouse.handleMouseClick(bone.getCanvasBounds());
-                sleep(calc.getRandomIntBetweenRange(800, 2200));
+                sleep(calc.getRandomIntBetweenRange(1200, 1400));
             }
             iterating = false;
         });
@@ -369,8 +369,8 @@ public class iPowerFighterPlugin extends Plugin {
     private void attackNPC(NPC npc) {
         targetMenu = new MenuEntry("", "", npc.getIndex(), MenuAction.NPC_SECOND_OPTION.getId(),
                 0, 0, false);
-        menu.setEntry(targetMenu);
-        mouse.delayMouseClick(currentNPC.getConvexHull().getBounds(), sleepDelay());
+
+        utils.doActionMsTime(targetMenu, currentNPC.getConvexHull().getBounds(), sleepDelay());
         timeout = 2 + tickDelay();
     }
 
@@ -393,9 +393,9 @@ public class iPowerFighterPlugin extends Plugin {
 
     private combatType getEligibleAttackStyle() {
 
-        int attackLevel = client.getBoostedSkillLevel(Skill.ATTACK);
-        int strengthLevel = client.getBoostedSkillLevel(Skill.STRENGTH);
-        int defenceLevel = client.getBoostedSkillLevel(Skill.DEFENCE);
+        int attackLevel = client.getRealSkillLevel(Skill.ATTACK);
+        int strengthLevel = client.getRealSkillLevel(Skill.STRENGTH);
+        int defenceLevel = client.getRealSkillLevel(Skill.DEFENCE);
 
         if ((attackLevel >= config.attackLvl() && strengthLevel >= config.strengthLvl() && defenceLevel >= config.defenceLvl())) {
             return config.continueType();

@@ -33,6 +33,9 @@ public class WalkUtils {
     private MenuUtils menu;
 
     @Inject
+    private iUtils utils;
+
+    @Inject
     private ExecutorService executorService;
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -63,9 +66,8 @@ public class WalkUtils {
         coordY = localPoint.getSceneY() + calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
         log.debug("Coord values: {}, {}", coordX, coordY);
         walkAction = true;
-        menu.setEntry(new MenuEntry("Walk here", "", 0, MenuAction.WALK.getId(),
-                0, 0, false));
-        mouse.delayMouseClick(new Point(0, 0), delay);
+        utils.doActionMsTime(new MenuEntry("Walk here", "", 0, MenuAction.WALK.getId(),
+                0, 0, false), new Point(0, 0), delay);
     }
 
     public void sceneWalk(WorldPoint worldPoint, int rand, long delay) {
@@ -84,9 +86,8 @@ public class WalkUtils {
                 calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
         log.debug("Coord values: {}, {}", coordX, coordY);
         walkAction = true;
-        menu.setEntry(new MenuEntry("Walk here", "", 0, MenuAction.WALK.getId(),
-                0, 0, false));
-        mouse.delayMouseClick(new Point(0, 0), delay);
+        utils.doActionMsTime(new MenuEntry("Walk here", "", 0, MenuAction.WALK.getId(),
+                0, 0, false), new Point(0, 0), delay);
     }
 
     /**

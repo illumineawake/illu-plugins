@@ -317,7 +317,7 @@ public class iUtils extends Plugin {
     }
 
     public void doGameObjectActionClientTick(GameObject object, int menuOpcodeID, long ticksToDelay) {
-        if (object == null) {
+        if (object == null || object.getConvexHull() == null) {
             return;
         }
         Rectangle rectangle = (object.getConvexHull().getBounds() != null) ? object.getConvexHull().getBounds() :
@@ -341,7 +341,7 @@ public class iUtils extends Plugin {
     }
 
     public void doNpcActionClientTick(NPC npc, int menuOpcodeID, long ticksToDelay) {
-        if (npc == null) {
+        if (npc == null || npc.getConvexHull() == null) {
             return;
         }
         Rectangle rectangle = (npc.getConvexHull().getBounds() != null) ? npc.getConvexHull().getBounds() :
@@ -382,7 +382,7 @@ public class iUtils extends Plugin {
     }
 
     public void doGameObjectActionGameTick(GameObject object, int menuOpcodeID, long ticksToDelay) {
-        if (object == null) {
+        if (object == null || object.getConvexHull() == null) {
             return;
         }
         Rectangle rectangle = (object.getConvexHull().getBounds() != null) ? object.getConvexHull().getBounds() :
@@ -404,7 +404,7 @@ public class iUtils extends Plugin {
     }
 
     public void doNpcActionGameTick(NPC npc, int menuOpcodeID, long ticksToDelay) {
-        if (npc == null) {
+        if (npc == null || npc.getConvexHull() == null) {
             return;
         }
         Rectangle rectangle = (npc.getConvexHull().getBounds() != null) ? npc.getConvexHull().getBounds() :
@@ -444,7 +444,7 @@ public class iUtils extends Plugin {
     }
 
     public void doGameObjectActionMsTime(GameObject object, int menuOpcodeID, long timeToDelay) {
-        if (object == null) {
+        if (object == null || object.getConvexHull() == null) {
             return;
         }
         Rectangle rectangle = (object.getConvexHull().getBounds() != null) ? object.getConvexHull().getBounds() :
@@ -466,7 +466,7 @@ public class iUtils extends Plugin {
     }
 
     public void doNpcActionMsTime(NPC npc, int menuOpcodeID, long timeToDelay) {
-        if (npc == null) {
+        if (npc == null || npc.getConvexHull() == null) {
             return;
         }
         Rectangle rectangle = (npc.getConvexHull().getBounds() != null) ? npc.getConvexHull().getBounds() :
@@ -760,7 +760,7 @@ public class iUtils extends Plugin {
                         MenuAction.of(menu.modifiedOpCode), menu.entry.getParam0(), menu.entry.getParam1());
                 menu.modifiedMenu = false;
             } else {
-                System.out.println(String.format("%s, %s, %s, %s, %s, %s", menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(), menu.entry.getOpcode(), menu.entry.getParam0(), menu.entry.getParam1()));
+//                System.out.println(String.format("%s, %s, %s, %s, %s, %s", menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(), menu.entry.getOpcode(), menu.entry.getParam0(), menu.entry.getParam1()));
                 menuAction(event, menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
                         MenuAction.of(menu.entry.getOpcode()), menu.entry.getParam0(), menu.entry.getParam1());
             }
