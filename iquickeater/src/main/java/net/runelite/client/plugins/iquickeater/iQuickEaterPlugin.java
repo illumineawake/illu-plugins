@@ -157,11 +157,11 @@ public class iQuickEaterPlugin extends Plugin {
         if (item != null) {
             targetMenu = new MenuEntry("", "", item.getId(), MenuAction.ITEM_FIRST_OPTION.getId(), item.getIndex(),
                     WidgetInfo.INVENTORY.getId(), false);
+            int sleepTime = calc.getRandomIntBetweenRange(25, 200);
             if (config.useInvokes()) {
-                utils.doInvokeMsTime(targetMenu, calc.getRandomIntBetweenRange(25, 200));
+                utils.doInvokeMsTime(targetMenu, sleepTime);
             } else {
-                menu.setEntry(targetMenu);
-                mouse.delayMouseClick(item.getCanvasBounds(), calc.getRandomIntBetweenRange(25, 200));
+                utils.doActionMsTime(targetMenu, item.getCanvasBounds(), sleepTime);
             }
         }
     }
