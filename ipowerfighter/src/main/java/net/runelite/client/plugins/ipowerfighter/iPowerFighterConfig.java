@@ -221,11 +221,22 @@ public interface iPowerFighterConfig extends Config {
             keyName = "lootOnly",
             name = "Loot only mode",
             description = "Loot only mode, will loot items and not fight NPCs",
-            position = 29,
+            position = 1,
             section = "lootTitle"
     )
     default boolean lootOnly() {
         return false;
+    }
+
+    @ConfigItem(
+            keyName = "insertMenu",
+            name = "Enable menu option",
+            description = "Enable inserting of iFight menu option",
+            position = 10,
+            section = "generalTitle"
+    )
+    default boolean insertMenu() {
+        return true;
     }
 
     @ConfigItem(
@@ -653,8 +664,8 @@ public interface iPowerFighterConfig extends Config {
             keyName = "stopSlayer",
             name = "Stop on Slayer task completion",
             description = "Enable to stop when Slayer task completes",
-            position = 248,
-            title = "generalTitle"
+            position = 150,
+            title = "combatTitle"
     )
     default boolean stopSlayer() {
         return false;
@@ -664,8 +675,8 @@ public interface iPowerFighterConfig extends Config {
             keyName = "equipBracelet",
             name = "Equip Bracelets of Slaughter/Expeditious",
             description = "Enable to equip Bracelets of Slaughter/Expeditious Bracelet if in inventory",
-            position = 249,
-            title = "generalTitle"
+            position = 160,
+            title = "combatTitle"
     )
     default boolean equipBracelet() {
         return false;
@@ -739,5 +750,4 @@ public interface iPowerFighterConfig extends Config {
         return new Button();
     }
 
-    boolean buryAshes();
 }

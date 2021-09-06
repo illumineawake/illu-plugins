@@ -41,6 +41,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iutils.*;
 import net.runelite.client.plugins.iutils.scripts.ReflectBreakHandler;
 import net.runelite.client.ui.overlay.OverlayManager;
+import org.apache.commons.lang3.StringUtils;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
@@ -121,7 +122,6 @@ public class iPowerFighterPlugin extends Plugin {
     Set<String> alchableItems = new HashSet<>();
     Set<Integer> alchBlacklist = Set.of(ItemID.NATURE_RUNE, ItemID.FIRE_RUNE, ItemID.COINS_995, ItemID.RUNE_POUCH, ItemID.HERB_SACK, ItemID.OPEN_HERB_SACK, ItemID.XERICS_TALISMAN, ItemID.HOLY_WRENCH); //Temp fix until isTradeable is fixed
     List<Item> alchLoot = new ArrayList<>();
-    ;
     MenuEntry targetMenu;
     Instant botTimer;
     Instant newLoot;
@@ -134,6 +134,8 @@ public class iPowerFighterPlugin extends Plugin {
 
     int highAlchCost;
     boolean startBot;
+    boolean menuFight;
+    String npcName;
     boolean slayerCompleted;
     long sleepLength;
     int tickLength;
@@ -167,6 +169,7 @@ public class iPowerFighterPlugin extends Plugin {
     private void resetVals() {
         log.debug("stopping power fighter plugin");
         overlayManager.remove(overlay);
+        menuFight = false;
         chinBreakHandler.stopPlugin(this);
         startBot = false;
         botTimer = null;
@@ -180,6 +183,32 @@ public class iPowerFighterPlugin extends Plugin {
         state = null;
     }
 
+    private void start() {
+        log.debug("starting template plugin");
+        if (client == null || client.getLocalPlayer() == null || client.getGameState() != GameState.LOGGED_IN) {
+            log.info("startup failed, log in before starting");
+            return;
+        }
+        startBot = true;
+        chinBreakHandler.startPlugin(this);
+        timeout = 0;
+        killCount = 0;
+        slayerCompleted = false;
+        state = null;
+        targetMenu = null;
+        botTimer = Instant.now();
+        overlayManager.add(overlay);
+        updateConfigValues();
+        if (config.alchItems()) {
+            highAlchCost = utils.getItemPrice(ItemID.NATURE_RUNE, true) + (utils.getItemPrice(ItemID.FIRE_RUNE, true) * 5);
+        }
+        startLoc = client.getLocalPlayer().getWorldLocation();
+        if (config.safeSpot()) {
+            utils.sendGameMessage("Safe spot set: " + startLoc.toString());
+        }
+        beforeLoc = client.getLocalPlayer().getLocalLocation();
+    }
+
     @Subscribe
     private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked) {
         if (!configButtonClicked.getGroup().equalsIgnoreCase("iPowerFighter")) {
@@ -187,29 +216,7 @@ public class iPowerFighterPlugin extends Plugin {
         }
         if (configButtonClicked.getKey().equals("startButton")) {
             if (!startBot) {
-                log.debug("starting template plugin");
-                if (client == null || client.getLocalPlayer() == null || client.getGameState() != GameState.LOGGED_IN) {
-                    log.info("startup failed, log in before starting");
-                    return;
-                }
-                startBot = true;
-                chinBreakHandler.startPlugin(this);
-                timeout = 0;
-                killCount = 0;
-                slayerCompleted = false;
-                state = null;
-                targetMenu = null;
-                botTimer = Instant.now();
-                overlayManager.add(overlay);
-                updateConfigValues();
-                if (config.alchItems()) {
-                    highAlchCost = utils.getItemPrice(ItemID.NATURE_RUNE, true) + (utils.getItemPrice(ItemID.FIRE_RUNE, true) * 5);
-                }
-                startLoc = client.getLocalPlayer().getWorldLocation();
-                if (config.safeSpot()) {
-                    utils.sendGameMessage("Safe spot set: " + startLoc.toString());
-                }
-                beforeLoc = client.getLocalPlayer().getLocalLocation();
+                start();
             } else {
                 resetVals();
             }
@@ -375,14 +382,15 @@ public class iPowerFighterPlugin extends Plugin {
     }
 
     private NPC findSuitableNPC() {
+        npcName = menuFight ? npcName : config.npcName();
         if (config.exactNpcOnly()) {
-            NPC npcTarget = npc.findNearestNpcTargetingLocal(config.npcName(), true);
+            NPC npcTarget = npc.findNearestNpcTargetingLocal(npcName, true);
             return (npcTarget != null) ? npcTarget :
-                    npc.findNearestAttackableNpcWithin(startLoc, config.searchRadius(), config.npcName(), true);
+                    npc.findNearestAttackableNpcWithin(startLoc, config.searchRadius(), npcName, true);
         } else {
-            NPC npcTarget = npc.findNearestNpcTargetingLocal(config.npcName(), false);
+            NPC npcTarget = npc.findNearestNpcTargetingLocal(npcName, false);
             return (npcTarget != null) ? npcTarget :
-                    npc.findNearestAttackableNpcWithin(startLoc, config.searchRadius(), config.npcName(), false);
+                    npc.findNearestAttackableNpcWithin(startLoc, config.searchRadius(), npcName, false);
         }
 
     }
@@ -502,10 +510,11 @@ public class iPowerFighterPlugin extends Plugin {
             }
             return iPowerFighterState.IN_COMBAT;
         }
+        npcName = menuFight ? npcName : config.npcName();
         if (config.exactNpcOnly()) {
-            currentNPC = npc.findNearestNpcTargetingLocal(config.npcName(), true);
+            currentNPC = npc.findNearestNpcTargetingLocal(npcName, true);
         } else {
-            currentNPC = npc.findNearestNpcTargetingLocal(config.npcName(), false);
+            currentNPC = npc.findNearestNpcTargetingLocal(npcName, false);
         }
 
         if (currentNPC != null) {
@@ -763,5 +772,48 @@ public class iPowerFighterPlugin extends Plugin {
         currentNPC = null;
         state = iPowerFighterState.TIMEOUT;
         timeout = 2;
+    }
+
+    @Subscribe
+    private void onMenuOptionClicked(MenuOptionClicked event) {
+        if (!config.insertMenu()) {
+            return;
+        }
+
+        if (event.getMenuOption().equals("iFight")) {
+            menuFight = true;
+            npcName = StringUtils.substringBetween(event.getMenuTarget(), ">", "<");
+            log.info("Fighting: {}", npcName);
+            start();
+        }
+
+        if (event.getMenuOption().equals("Stop iFight")) {
+            log.info("Stop fighting");
+            resetVals();
+        }
+    }
+
+    @Subscribe
+    private void onMenuEntryAdded(MenuEntryAdded event) {
+        if (!config.insertMenu() || !event.getOption().equals("Attack")) {
+            return;
+        }
+
+        if (!startBot) {
+            addMenuEntry(event, "iFight");
+        } else {
+            addMenuEntry(event, "Stop iFight");
+        }
+    }
+
+    private void addMenuEntry(MenuEntryAdded event, String option) {
+        List<MenuEntry> entries = new LinkedList<>(Arrays.asList(client.getMenuEntries()));
+
+        MenuEntry entry = new MenuEntry();
+        entry.setOption(option);
+        entry.setTarget(event.getTarget());
+        entry.setOpcode(MenuAction.RUNELITE.getId());
+        entries.add(0, entry);
+        client.setMenuEntries(entries.toArray(new MenuEntry[0]));
     }
 }

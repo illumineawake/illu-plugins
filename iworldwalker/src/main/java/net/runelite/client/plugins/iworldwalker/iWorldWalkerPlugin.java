@@ -380,12 +380,13 @@ public class iWorldWalkerPlugin extends iScript {
     public void onMenuEntryAdded(MenuEntryAdded event) {
         final Widget map = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
 
-        if (map == null) {
-            return;
-        }
+        if (map != null) {
 
-        if (map.getBounds().contains(client.getMouseCanvasPosition().getX(), client.getMouseCanvasPosition().getY())) {
-            addMenuEntry(event, "illu-Walk here");
+            if (map.getBounds().contains(client.getMouseCanvasPosition().getX(), client.getMouseCanvasPosition().getY())) {
+                addMenuEntry(event, "illu-Walk here");
+                addMenuEntry(event, "illu-Clear Destination");
+            }
+        } else if (mapPoint != null && event.getOption().equals("Walk here")) {
             addMenuEntry(event, "illu-Clear Destination");
         }
     }
