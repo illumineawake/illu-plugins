@@ -58,7 +58,9 @@ public class BankUtils {
     }
 
     public boolean isOpen() {
-        return client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER) != null;
+        Widget bankWidget = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
+        // When you close the bank manually with a hot-key, the widget is still active but hidden.
+        return bankWidget != null && !bankWidget.isHidden();
     }
 
     public void close() {
