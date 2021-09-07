@@ -201,6 +201,22 @@ public class Bank {
         return false;
     }
 
+    public int item(int... ids) {
+        for (var item : items()) {
+            for (var id : ids) {
+                if (item.itemId() == id) {
+                    return item.itemId();
+                }
+            }
+        }
+        return -1;
+    }
+
+    public boolean contains(int... ids) {
+        return Arrays.stream(ids).anyMatch(i -> items().stream()
+                .anyMatch(b -> b.itemId() == i && b.quantity() >= 1));
+    }
+
     public boolean contains(ItemQuantity... items) {
         return Arrays.stream(items).allMatch(i -> items().stream()
                 .anyMatch(b -> b.itemId() == i.id && b.quantity() >= i.quantity));

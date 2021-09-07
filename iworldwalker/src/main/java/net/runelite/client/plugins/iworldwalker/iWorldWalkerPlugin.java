@@ -169,7 +169,13 @@ public class iWorldWalkerPlugin extends iScript {
     protected void loop() {
         if (client != null && client.getLocalPlayer() != null) {
             log.info("Looping");
-            walking.walkTo(new Position(getLocation()));
+            try {
+                walking.walkTo(new Position(getLocation()));
+            } catch(IllegalStateException e) {
+                utils.sendGameMessage("Can't find path to: " + getLocation().toString());
+                stop();
+                return;
+            }
             stop();
         }
     }
@@ -296,80 +302,6 @@ public class iWorldWalkerPlugin extends iScript {
         }
         return (config.category().equals(Category.CUSTOM)) ? customLocation : catLocation;
     }
-
-//    @Subscribe
-//    private void onGameTick(GameTick event) {
-//        if (!startBot || (config.catBanks().equals(Banks.NONE) && config.category().equals(Category.BANKS)) ||
-//                (config.catBarcrawl().equals(Barcrawl.NONE) && config.category().equals(Category.BARCRAWL)) || (config.catCities().equals(Cities.NONE) && config.category().equals(Category.CITIES)) ||
-//                (config.catGuilds().equals(Guilds.NONE) && config.category().equals(Category.GUILDS)) || (config.catSkilling().equals(Skilling.NONE) && config.category().equals(Category.SKILLING)) ||
-//                (config.catSlayer().equals(Slayer.NONE) && config.category().equals(Category.SLAYER)) ||
-//                (config.catMisc().equals(Misc.NONE) && config.category().equals(Category.MISC) || (config.category().equals(Category.CUSTOM) && config.customLocation().equalsIgnoreCase("0,0,0")))) {
-//            return;
-//        }
-//        player = client.getLocalPlayer();
-//        if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN) {
-//            if (!config.disableRun()) {
-//                playerUtils.handleRun(20, 30);
-//            }
-//            if (timeout > 0) {
-//                timeout--;
-//            } else {
-//                if (player.getWorldLocation().distanceTo(getLocation()) >= config.rand()) {
-//                    if (walk.webWalk(getLocation(), config.rand(), playerUtils.isMoving(beforeLoc), sleepDelay())) {
-//                        timeout = tickDelay();
-//                    } else {
-//                        log.info("Path not found");
-//                        utils.sendGameMessage("Path not found, stopping");
-//                        resetVals();
-//                    }
-//                } else {
-//                    if (mapPoint != null) {
-//                        if (config.sendMsg()) {
-//                            utils.sendGameMessage("Arrived at Map destination: " + mapPoint.getX() + ", " +
-//                                    mapPoint.getY() + ", " + mapPoint.getPlane() + " - stopping World Walker");
-//                        }
-//                        resetVals();
-//                        return;
-//                    }
-//                    switch (config.category()) {
-//                        case BANKS:
-//                            utils.sendGameMessage("Arrived at " + config.catBanks().getName() + ", stopping World Walker");
-//                            resetVals();
-//                            return;
-//                        case BARCRAWL:
-//                            utils.sendGameMessage("Arrived at " + config.catBarcrawl().getName() + ", stopping World Walker");
-//                            resetVals();
-//                            return;
-//                        case CITIES:
-//                            utils.sendGameMessage("Arrived at " + config.catCities().getName() + ", stopping World Walker");
-//                            resetVals();
-//                            return;
-//                        case FARMING:
-//                            utils.sendGameMessage("Arrived at " + getFarmName() + ", stopping World Walker");
-//                            resetVals();
-//                            return;
-//                        case GUILDS:
-//                            utils.sendGameMessage("Arrived at " + config.catGuilds().getName() + ", stopping World Walker");
-//                            resetVals();
-//                            return;
-//                        case SKILLING:
-//                            utils.sendGameMessage("Arrived at " + config.catSkilling().getName() + ", stopping World Walker");
-//                            resetVals();
-//                            return;
-//                        case SLAYER:
-//                            utils.sendGameMessage("Arrived at " + config.catSlayer().getName() + ", stopping World Walker");
-//                            resetVals();
-//                            return;
-//                        case MISC:
-//                            utils.sendGameMessage("Arrived at " + config.catMisc().getName() + ", stopping World Walker");
-//                            resetVals();
-//                            return;
-//                    }
-//                }
-//            }
-//            beforeLoc = player.getLocalLocation();
-//        }
-//    }
 
     @Subscribe
     public void onMenuOpened(MenuOpened event) {

@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "4.0.2"
+version = "4.0.3"
 
 project.extra["PluginName"] = "iWorld Walker Plugin"
 project.extra["PluginDescription"] = "Illumine - World Walker plugin"
