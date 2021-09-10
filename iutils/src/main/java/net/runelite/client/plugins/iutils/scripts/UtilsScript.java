@@ -113,18 +113,35 @@ public abstract class UtilsScript extends Plugin {
         obtain(items.toArray(ItemQuantity[]::new));
     }
 
-    protected void obtain(List<ItemQuantity> items, boolean keepInventoryItems) {
-        List<ItemQuantity> test = new ArrayList<>(items);
-        if (test.isEmpty() || hasItems(test)) {
+    protected void obtainKeep(List<ItemQuantity> items, boolean keepAllInventoryItems) {
+        List<ItemQuantity> itemsCopy = new ArrayList<>(items);
+        if (itemsCopy.isEmpty() || hasItems(itemsCopy)) {
             return;
         }
 
-        if (keepInventoryItems) {
-            test.addAll(inventoryList());
-            log.info("Keeping items: {}", test.toString());
+        if (keepAllInventoryItems) {
+            itemsCopy.addAll(inventoryList());
+            log.info("Keeping items: {}", itemsCopy.toString());
         }
 
-        obtain(test.toArray(ItemQuantity[]::new));
+        obtain(itemsCopy.toArray(ItemQuantity[]::new));
+    }
+
+    protected void obtainKeep(List<ItemQuantity> obtainItems, List<Integer> keepItems) {
+        List<ItemQuantity> obtainItemsCopy = new ArrayList<>(obtainItems);
+        if (obtainItemsCopy.isEmpty() || hasItems(obtainItemsCopy)) {
+            return;
+        }
+
+        if (!keepItems.isEmpty()) {
+            var inventoryItems = inventoryList().stream()
+                    .filter(i -> keepItems.contains(i.id))
+                    .collect(Collectors.toList());
+            log.info("Keeping items: {}", inventoryItems.toString());
+            obtainItemsCopy.addAll(inventoryItems);
+        }
+
+        obtain(obtainItemsCopy.toArray(ItemQuantity[]::new));
     }
 
     protected List<ItemQuantity> inventoryList() {

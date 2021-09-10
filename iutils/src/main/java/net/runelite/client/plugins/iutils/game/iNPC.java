@@ -126,7 +126,9 @@ public class iNPC extends iActor {
     }
 
     public void interact(int action) {
+        System.out.println("NPC interact");
         game().interactionManager().interact(index(), getActionId(action), 0, 0);
+        System.out.println("NPC finished interact");
     }
 
     public String toString() {
