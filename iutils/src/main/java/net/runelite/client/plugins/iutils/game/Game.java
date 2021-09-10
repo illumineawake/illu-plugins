@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.geometry.Cuboid;
+import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
@@ -168,6 +169,10 @@ public class Game {
 
     public iPlayer localPlayer() {
         return new iPlayer(this, client.getLocalPlayer(), client.getLocalPlayer().getPlayerComposition());
+    }
+
+    public AccountType accountType() {
+        return getFromClientThread(() -> client.getAccountType());
     }
 
     public Position base() {
