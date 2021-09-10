@@ -24,7 +24,7 @@
  */
 
 
-version = "4.2.5"
+version = "4.2.6"
 
 project.extra["PluginName"] = "iPowerfighter Plugin"
 project.extra["PluginDescription"] = "Illumine - Powerfighter plugin"

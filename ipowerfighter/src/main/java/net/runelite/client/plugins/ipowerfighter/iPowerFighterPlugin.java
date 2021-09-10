@@ -467,13 +467,22 @@ public class iPowerFighterPlugin extends Plugin {
             if (inventory.containsItem(config.ammoID())) {
                 return iPowerFighterState.EQUIP_AMMO;
             } else if (config.stopAmmo()) {
+                if (config.safeSpot() && startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius())) {
+                    return iPowerFighterState.RETURN_SAFE_SPOT;
+                }
                 return (config.logout()) ? iPowerFighterState.LOG_OUT : iPowerFighterState.MISSING_ITEMS;
             }
         }
         if (config.stopFood() && !inventory.containsItem(config.foodID())) {
+            if (config.safeSpot() && startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius())) {
+                return iPowerFighterState.RETURN_SAFE_SPOT;
+            }
             return (config.logout()) ? iPowerFighterState.LOG_OUT : iPowerFighterState.MISSING_ITEMS;
         }
         if (config.stopSlayer() && slayerCompleted) {
+            if (config.safeSpot() && startLoc.distanceTo(player.getWorldLocation()) > (config.safeSpotRadius())) {
+                return iPowerFighterState.RETURN_SAFE_SPOT;
+            }
             return (config.logout()) ? iPowerFighterState.LOG_OUT : iPowerFighterState.SLAYER_COMPLETED;
         }
         if (config.lootOnly()) {
