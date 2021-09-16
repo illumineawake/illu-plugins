@@ -200,16 +200,6 @@ public interface iUtilsConfig extends Config {
     }
 
     @ConfigItem(
-            keyName = "useNoAFK",
-            name = "Prevent AFK",
-            description = "Enable to prevent logging out due to AFK.",
-            position = 16
-    )
-    default boolean useNoAFK() {
-        return false;
-    }
-
-    @ConfigItem(
             keyName = "teleport",
             name = "Allow teleports",
             description = "Enable to allow web walker to utilise teleports e.g. runes, tablets, jewellery",

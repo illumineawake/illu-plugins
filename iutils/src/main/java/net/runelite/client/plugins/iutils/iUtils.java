@@ -41,17 +41,13 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
-import static java.awt.event.KeyEvent.VK_LEFT;
-import static java.awt.event.KeyEvent.VK_RIGHT;
-
 /**
  *
  */
 @Extension
 @PluginDescriptor(
         name = "iUtils",
-        description = "Illumine plugin utilities",
-        hidden = false
+        description = "Illumine plugin utilities"
 )
 @Slf4j
 @SuppressWarnings("unused")
@@ -676,36 +672,8 @@ public class iUtils extends Plugin {
         action.onClientTick(event);
     }
 
-    private void checkIdleLogout() {
-        if (!config.useNoAFK()) {
-            return;
-        }
-
-        // Check clientside AFK first, because this is required for the server to disconnect you for being afk
-        int idleClientTicks = client.getKeyboardIdleTicks();
-
-        if (client.getMouseIdleTicks() < idleClientTicks) {
-            idleClientTicks = client.getMouseIdleTicks();
-        }
-
-        if (idleClientTicks > 12500) {
-            Random r = new Random();
-            log.info("Resetting idle");
-
-            if (r.nextBoolean()) {
-                keyboard.pressKey(VK_LEFT);
-            } else {
-                keyboard.pressKey(VK_RIGHT);
-            }
-
-            client.setKeyboardIdleTicks(0);
-            client.setMouseIdleTicks(0);
-        }
-    }
-
     @Subscribe
-    public void onGameTick(GameTick event) {
-        checkIdleLogout();
+    private void onGameTick(GameTick event) {
         tickActions = 0;
         action.onGameTick(event);
     }
