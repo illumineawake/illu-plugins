@@ -564,6 +564,10 @@ public abstract class UtilsScript extends Plugin {
     protected void useItemNpc(String item, String npc) {
         game.inventory().withName(item).first().useOn(game.npcs().withName(npc).nearest());
     }
+    
+    protected void useItemNpc(String item, int npc) {
+        game.inventory().withName(item).first().useOn(game.npcs().withId(npc).nearest());
+    }
 
     protected void waitAnimationEnd(int id) {
         game.waitUntil(() -> game.localPlayer().animation() == id);
