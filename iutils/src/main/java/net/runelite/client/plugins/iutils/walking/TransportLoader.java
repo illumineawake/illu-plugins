@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 public class TransportLoader {
     public static final int COINS = 995;
@@ -368,5 +369,18 @@ public class TransportLoader {
 
     private static Transport itemObjectTransport(Position source, Position target, int item, int object) {
         return new Transport(source, target, Integer.MAX_VALUE, 0, game -> game.inventory().withId(item).first().useOn(game.objects().withId(object).nearest(source)));
+    }
+
+    private static Transport objectChatTransport(Position source, Position target, int id, String action, BooleanSupplier stopCondition, int maxTimeout, String... chatOptions) {
+        return new Transport(source, target, Integer.MAX_VALUE, 0, game -> {
+            game.objects().withId(id).nearest(source).interact(action);
+            var chatbox = new Chatbox(game);
+
+            if (game.waitUntil(() -> chatbox.chatState() != Chatbox.ChatState.CLOSED, 8)) { // in case still doing the previous transport
+                chatbox.chat(chatOptions);
+            }
+
+            game.waitUntil(stopCondition, maxTimeout);
+        });
     }
 }
