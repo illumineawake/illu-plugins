@@ -345,6 +345,22 @@ public class InventoryUtils {
         }
         return false;
     }
+    
+    public boolean onlyContains(Collection<Integer> itemIds) {
+        if (client.getItemContainer(InventoryID.INVENTORY) == null) {
+            return false;
+        }
+
+        Collection<WidgetItem> inventoryItems = getAllItems();
+        
+        for (WidgetItem item : inventoryItems) {
+            if (!itemIds.contains(item.getId())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     public void dropItem(WidgetItem item) {
         assert !client.isClientThread();
