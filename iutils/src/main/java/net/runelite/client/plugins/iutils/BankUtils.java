@@ -301,7 +301,7 @@ public class BankUtils {
     public void withdrawAllItem(Widget bankItemWidget) {
         executorService.submit(() ->
         {
-            menu.setEntry(new MenuEntry("Withdraw-All", "", 7, MenuAction.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false));
+            menu.setEntry(new MenuEntry("Withdraw-All", "", 7, MenuAction.CC_OP.getId(), bankItemWidget.getIndex(), WidgetInfo.BANK_ITEM_CONTAINER.getId(), false));
             mouse.clickRandomPointCenter(-200, 200);
         });
     }
@@ -317,7 +317,7 @@ public class BankUtils {
 
     public void withdrawItem(Widget bankItemWidget) {
         MenuEntry entry = new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 1 : 2, MenuAction.CC_OP.getId(),
-                bankItemWidget.getIndex(), 786444, false);
+                bankItemWidget.getIndex(), WidgetInfo.BANK_ITEM_CONTAINER.getId(), false);
         utils.doActionClientTick(entry, bankItemWidget.getBounds(), 0);
     }
 
@@ -348,7 +348,7 @@ public class BankUtils {
                         break;
                 }
                 utils.doActionMsTime(
-                        new MenuEntry("", "", identifier, MenuAction.CC_OP.getId(), item.getIndex(), 786444, false),
+                        new MenuEntry("", "", identifier, MenuAction.CC_OP.getId(), item.getIndex(), WidgetInfo.BANK_ITEM_CONTAINER.getId(), false),
                         new Point(client.getCenterX() + calc.getRandomIntBetweenRange(-200, 200), client.getCenterY() + calc.getRandomIntBetweenRange(-200, 200)),
                         50
                 );
