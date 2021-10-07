@@ -1888,7 +1888,7 @@ public class BotUtils extends Plugin {
     public void withdrawAllItem(Widget bankItemWidget) {
         executorService.submit(() ->
         {
-            targetMenu = new MenuEntry("Withdraw-All", "", 7, MenuAction.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
+            targetMenu = new MenuEntry("Withdraw-All", "", 7, MenuAction.CC_OP.getId(), bankItemWidget.getIndex(), WidgetInfo.BANK_ITEM_CONTAINER.getId(), false);
             clickRandomPointCenter(-200, 200);
         });
     }
@@ -1905,7 +1905,7 @@ public class BotUtils extends Plugin {
     public void withdrawItem(Widget bankItemWidget) {
         executorService.submit(() ->
         {
-            targetMenu = new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 1 : 2, MenuAction.CC_OP.getId(), bankItemWidget.getIndex(), 786444, false);
+            targetMenu = new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 1 : 2, MenuAction.CC_OP.getId(), bankItemWidget.getIndex(), WidgetInfo.BANK_ITEM_CONTAINER.getId(), false);
             setMenuEntry(targetMenu);
             clickRandomPointCenter(-200, 200);
         });
@@ -1937,7 +1937,7 @@ public class BotUtils extends Plugin {
                         identifier = 6;
                         break;
                 }
-                targetMenu = new MenuEntry("", "", identifier, MenuAction.CC_OP.getId(), item.getIndex(), 786444, false);
+                targetMenu = new MenuEntry("", "", identifier, MenuAction.CC_OP.getId(), item.getIndex(), WidgetInfo.BANK_ITEM_CONTAINER.getId(), false);
                 setMenuEntry(targetMenu);
                 delayClickRandomPointCenter(-200, 200, 50);
                 if (identifier == 6) {
