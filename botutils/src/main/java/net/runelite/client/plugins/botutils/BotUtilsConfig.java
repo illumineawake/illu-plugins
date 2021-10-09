@@ -31,16 +31,14 @@ import net.runelite.client.config.ConfigItem;
 
 
 @ConfigGroup("BotUtils")
-public interface BotUtilsConfig extends Config
-{
-	@ConfigItem(
-		keyName = "getMouse",
-		name = "Mouse",
-		description = "Choose a mouse movement style",
-		position = 0
-	)
-	default Mouse getMouse()
-	{
-		return Mouse.NO_MOVE;
-	}
+public interface BotUtilsConfig extends Config {
+    @ConfigItem(
+            keyName = "getMouse",
+            name = "Mouse",
+            description = "Choose a mouse movement style",
+            position = 0
+    )
+    default Mouse getMouse() {
+        return Mouse.NO_MOVE;
+    }
 }

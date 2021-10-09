@@ -29,47 +29,45 @@ import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
 @ConfigGroup("blastfurnacebot")
-public interface BlastFurnaceBotConfig extends Config
-{
-	@ConfigItem(
-			keyName = "cofferThreshold",
-			name = "Minimum Coffer amount",
-			description = "Minimum amount of GP to have in coffer before refilling",
-			position = 1
-	)
-	default int cofferThreshold()
-	{
-		return 5000;
-	}
+public interface BlastFurnaceBotConfig extends Config {
+    @ConfigItem(
+            keyName = "cofferThreshold",
+            name = "Minimum Coffer amount",
+            description = "Minimum amount of GP to have in coffer before refilling",
+            position = 1
+    )
+    default int cofferThreshold() {
+        return 5000;
+    }
 
-	@ConfigItem(
-			keyName = "cofferAmount",
-			name = "GP into Coffer",
-			description = "How much GP to put into coffer when refilling",
-			position = 2
-	)
-	default int cofferAmount()
-	{
-		return 50000;
-	}
+    @ConfigItem(
+            keyName = "cofferAmount",
+            name = "GP into Coffer",
+            description = "How much GP to put into coffer when refilling",
+            position = 2
+    )
+    default int cofferAmount() {
+        return 50000;
+    }
 
-	@ConfigItem(
-		keyName = "delayAmount",
-		name = "Random delay amount",
-		description = "(in game ticks) higher is slower",
-		position = 3
-	)
-	default int delayAmount()
-	{
-		return 3;
-	}
+    @ConfigItem(
+            keyName = "delayAmount",
+            name = "Random delay amount",
+            description = "(in game ticks) higher is slower",
+            position = 3
+    )
+    default int delayAmount() {
+        return 3;
+    }
 
-	@ConfigItem(
-		keyName = "bar",
-		name = "Bar to smelt",
-		description = "Select the type of bar to smelt",
-		position = 4
-	)
-	default Bars getBar() { return Bars.RUNITE_BAR; }
+    @ConfigItem(
+            keyName = "bar",
+            name = "Bar to smelt",
+            description = "Select the type of bar to smelt",
+            position = 4
+    )
+    default Bars getBar() {
+        return Bars.RUNITE_BAR;
+    }
 
 }

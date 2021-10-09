@@ -25,57 +25,53 @@
 package net.runelite.client.plugins.blastfurnacebot;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.ItemID;
 import net.runelite.api.Varbits;
 
-public enum Bars
-{
-	BRONZE_BAR(Varbits.BLAST_FURNACE_BRONZE_BAR, ItemID.BRONZE_BAR, ItemID.COPPER_ORE, 0),
-	IRON_BAR(Varbits.BLAST_FURNACE_IRON_BAR, ItemID.IRON_BAR, ItemID.IRON_ORE, 0),
-	STEEL_BAR(Varbits.BLAST_FURNACE_STEEL_BAR, ItemID.STEEL_BAR, ItemID.IRON_ORE, 26),
-	MITHRIL_BAR(Varbits.BLAST_FURNACE_MITHRIL_BAR, ItemID.MITHRIL_BAR, ItemID.MITHRIL_ORE, 52),
-	ADAMANTITE_BAR(Varbits.BLAST_FURNACE_ADAMANTITE_BAR, ItemID.ADAMANTITE_BAR, ItemID.ADAMANTITE_ORE, 52),
-	RUNITE_BAR(Varbits.BLAST_FURNACE_RUNITE_BAR, ItemID.RUNITE_BAR, ItemID.RUNITE_ORE, 80),
-	SILVER_BAR(Varbits.BLAST_FURNACE_SILVER_BAR, ItemID.SILVER_BAR, ItemID.SILVER_ORE, 0),
-	GOLD_BAR(Varbits.BLAST_FURNACE_GOLD_BAR, ItemID.GOLD_BAR, ItemID.GOLD_ORE, 0);
+import java.util.Map;
 
-	private static final Map<Varbits, Bars> VARBIT;
+public enum Bars {
+    BRONZE_BAR(Varbits.BLAST_FURNACE_BRONZE_BAR, ItemID.BRONZE_BAR, ItemID.COPPER_ORE, 0),
+    IRON_BAR(Varbits.BLAST_FURNACE_IRON_BAR, ItemID.IRON_BAR, ItemID.IRON_ORE, 0),
+    STEEL_BAR(Varbits.BLAST_FURNACE_STEEL_BAR, ItemID.STEEL_BAR, ItemID.IRON_ORE, 26),
+    MITHRIL_BAR(Varbits.BLAST_FURNACE_MITHRIL_BAR, ItemID.MITHRIL_BAR, ItemID.MITHRIL_ORE, 52),
+    ADAMANTITE_BAR(Varbits.BLAST_FURNACE_ADAMANTITE_BAR, ItemID.ADAMANTITE_BAR, ItemID.ADAMANTITE_ORE, 52),
+    RUNITE_BAR(Varbits.BLAST_FURNACE_RUNITE_BAR, ItemID.RUNITE_BAR, ItemID.RUNITE_ORE, 80),
+    SILVER_BAR(Varbits.BLAST_FURNACE_SILVER_BAR, ItemID.SILVER_BAR, ItemID.SILVER_ORE, 0),
+    GOLD_BAR(Varbits.BLAST_FURNACE_GOLD_BAR, ItemID.GOLD_BAR, ItemID.GOLD_ORE, 0);
 
-	static
-	{
-		ImmutableMap.Builder<Varbits, Bars> builder = new ImmutableMap.Builder<>();
+    private static final Map<Varbits, Bars> VARBIT;
 
-		for (Bars s : values())
-		{
-			builder.put(s.getVarbit(), s);
-		}
+    static {
+        ImmutableMap.Builder<Varbits, Bars> builder = new ImmutableMap.Builder<>();
 
-		VARBIT = builder.build();
-	}
+        for (Bars s : values()) {
+            builder.put(s.getVarbit(), s);
+        }
 
-	@Getter(AccessLevel.PACKAGE)
-	private final Varbits varbit;
-	@Getter(AccessLevel.PACKAGE)
-	private final int itemID;
-	@Getter(AccessLevel.PACKAGE)
-	private final int oreID;
-	@Getter(AccessLevel.PACKAGE)
-	private final int minCoalAmount;
+        VARBIT = builder.build();
+    }
 
-	Bars(Varbits varbit, int itemID, int oreID, int minCoalAmount)
-	{
-		this.varbit = varbit;
-		this.itemID = itemID;
-		this.oreID = oreID;
-		this.minCoalAmount = minCoalAmount;
-	}
+    @Getter(AccessLevel.PACKAGE)
+    private final Varbits varbit;
+    @Getter(AccessLevel.PACKAGE)
+    private final int itemID;
+    @Getter(AccessLevel.PACKAGE)
+    private final int oreID;
+    @Getter(AccessLevel.PACKAGE)
+    private final int minCoalAmount;
 
-	public static Bars getVarbit(Varbits varbit)
-	{
-		return VARBIT.get(varbit);
-	}
+    Bars(Varbits varbit, int itemID, int oreID, int minCoalAmount) {
+        this.varbit = varbit;
+        this.itemID = itemID;
+        this.oreID = oreID;
+        this.minCoalAmount = minCoalAmount;
+    }
+
+    public static Bars getVarbit(Varbits varbit) {
+        return VARBIT.get(varbit);
+    }
 
 }

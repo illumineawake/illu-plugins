@@ -26,160 +26,140 @@
 package net.runelite.client.plugins.test;
 
 import java.util.function.Consumer;
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigSection;
-import net.runelite.client.config.ConfigTitleSection;
-import net.runelite.client.config.Range;
-import net.runelite.client.config.Units;
 
 @ConfigGroup("Test")
-public interface TestPluginConfiguration extends Config
-{
-	@ConfigTitleSection(
-		keyName = "delayTitle",
-		name = "Delay Title",
-		description = "Delay settings are below this title",
-		position = 2
-	)
-	@Range
-		(
-			min = 0,
-			max = 550
-		)
-	@ConfigItem(
-		keyName = "minDelay",
-		name = "Absolute Delay Min",
-		description = "",
-		position = 3,
-		titleSection = "delayTitle"
-	)
-	default int min()
-	{
-		return 0;
-	}
+public interface TestPluginConfiguration extends Config {
+    @ConfigTitleSection(
+            keyName = "delayTitle",
+            name = "Delay Title",
+            description = "Delay settings are below this title",
+            position = 2
+    )
+    @Range
+            (
+                    min = 0,
+                    max = 550
+            )
+    @ConfigItem(
+            keyName = "minDelay",
+            name = "Absolute Delay Min",
+            description = "",
+            position = 3,
+            titleSection = "delayTitle"
+    )
+    default int min() {
+        return 0;
+    }
 
-	@Range(
-		min = 0,
-		max = 550
-	)
-	@ConfigItem(
-		keyName = "maxDelay",
-		name = "Absolute Delay Max",
-		description = "",
-		position = 4,
-		titleSection = "delayTitle"
-	)
-	default int max()
-	{
-		return 5;
-	}
+    @Range(
+            min = 0,
+            max = 550
+    )
+    @ConfigItem(
+            keyName = "maxDelay",
+            name = "Absolute Delay Max",
+            description = "",
+            position = 4,
+            titleSection = "delayTitle"
+    )
+    default int max() {
+        return 5;
+    }
 
-	@Range(
-		min = 0,
-		max = 550
-	)
-	@ConfigItem(
-		keyName = "target",
-		name = "Delay Target",
-		description = "",
-		position = 5,
-		titleSection = "delayTitle"
-	)
-	default int target()
-	{
-		return 3;
-	}
+    @Range(
+            min = 0,
+            max = 550
+    )
+    @ConfigItem(
+            keyName = "target",
+            name = "Delay Target",
+            description = "",
+            position = 5,
+            titleSection = "delayTitle"
+    )
+    default int target() {
+        return 3;
+    }
 
-	@Range(
-		min = 0,
-		max = 550
-	)
-	@ConfigItem(
-		keyName = "deviation",
-		name = "Delay Deviation",
-		description = "",
-		position = 6,
-		titleSection = "delayTitle"
-	)
-	default int deviation()
-	{
-		return 0;//10
-	}
+    @Range(
+            min = 0,
+            max = 550
+    )
+    @ConfigItem(
+            keyName = "deviation",
+            name = "Delay Deviation",
+            description = "",
+            position = 6,
+            titleSection = "delayTitle"
+    )
+    default int deviation() {
+        return 0;//10
+    }
 
-	@ConfigItem(
-		keyName = "weightedDistribution",
-		name = "Weighted Distribution",
-		description = "Shifts the random distribution towards the lower end at the target, otherwise it will be an even distribution",
-		position = 7,
-		titleSection = "delayTitle"
-	)
-	default boolean weightedDistribution()
-	{
-		return false;
-	}
+    @ConfigItem(
+            keyName = "weightedDistribution",
+            name = "Weighted Distribution",
+            description = "Shifts the random distribution towards the lower end at the target, otherwise it will be an even distribution",
+            position = 7,
+            titleSection = "delayTitle"
+    )
+    default boolean weightedDistribution() {
+        return false;
+    }
 
-	@ConfigSection(
-		keyName = "buttonSection",
-		name = "Button config section",
-		description = "This is the button config section",
-		position = 8
-	)
-	default boolean buttonSection()
-	{
-		return false;
-	}
+    @ConfigSection(
+            keyName = "buttonSection",
+            name = "Button config section",
+            description = "This is the button config section",
+            position = 8
+    )
+    default boolean buttonSection() {
+        return false;
+    }
 
-	@Range(
-		min = 0,
-		max = 100
-	)
-	@ConfigItem(
-		keyName = "volume",
-		name = "Volume modification",
-		description = "Configures tick/tock volume; only effects custom sounds.",
-		position = 9,
-		section = "buttonSection"
-	)
-	@Units(Units.PERCENT)
-	default int volume()
-	{
-		return 35;
-	}
+    @Range(
+            min = 0,
+            max = 100
+    )
+    @ConfigItem(
+            keyName = "volume",
+            name = "Volume modification",
+            description = "Configures tick/tock volume; only effects custom sounds.",
+            position = 9,
+            section = "buttonSection"
+    )
+    @Units(Units.PERCENT)
+    default int volume() {
+        return 35;
+    }
 
-	@ConfigItem(
-		keyName = "testButton",
-		name = "Test Button",
-		description = "Test button that changes variable value",
-		position = 10,
-		section = "buttonSection"
-	)
-	default Consumer<TestPlugin> testButton()
-	{
-		return (testPlugin) ->
-		{
-			if (testPlugin.pluginManager.isPluginEnabled(testPlugin))
-			{
-				testPlugin.startBot = !testPlugin.startBot;
-			}
-			else
-			{
-				testPlugin.startBot = false;
-			}
-			System.out.println("test button was pressed in config, status is: " + testPlugin.startBot);
-		};
-	}
+    @ConfigItem(
+            keyName = "testButton",
+            name = "Test Button",
+            description = "Test button that changes variable value",
+            position = 10,
+            section = "buttonSection"
+    )
+    default Consumer<TestPlugin> testButton() {
+        return (testPlugin) ->
+        {
+            if (testPlugin.pluginManager.isPluginEnabled(testPlugin)) {
+                testPlugin.startBot = !testPlugin.startBot;
+            } else {
+                testPlugin.startBot = false;
+            }
+            System.out.println("test button was pressed in config, status is: " + testPlugin.startBot);
+        };
+    }
 
-	@ConfigItem(
-		keyName = "testCourses",
-		name = "Supported Courses (Don't edit, FYI only)",
-		description = "Support agility courses, don't enter anything into this field",
-		position = 11
+    @ConfigItem(
+            keyName = "testCourses",
+            name = "Supported Courses (Don't edit, FYI only)",
+            description = "Support agility courses, don't enter anything into this field",
+            position = 11
 
-	)
-	default String testCourses()
-	{
-		return "Gnome, Draynor, Varrock, Canifis, Falador, Seers, Rellekka, Ardougne";
-	}
+    )
+    default String testCourses() {
+        return "Gnome, Draynor, Varrock, Canifis, Falador, Seers, Rellekka, Ardougne";
+    }
 }

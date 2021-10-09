@@ -26,11 +26,6 @@
 package net.runelite.client.plugins.powerskiller;
 
 import com.google.inject.Provides;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
@@ -43,287 +38,241 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
-import net.runelite.client.plugins.botutils.BotUtils;
-import static net.runelite.client.plugins.powerskiller.PowerSkillerState.*;
+import net.runelite.client.plugins.iutils.iUtils;
 import org.pf4j.Extension;
+
+import javax.inject.Inject;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import static net.runelite.client.plugins.powerskiller.PowerSkillerState.*;
 
 
 @Extension
-@PluginDependency(BotUtils.class)
+@PluginDependency(iUtils.class)
 @PluginDescriptor(
-	name = "Power Skiller",
-	enabledByDefault = false,
-	description = "Illumine auto power-skill plugin",
-	tags = {"tick"},
-	type = PluginType.SKILLING
+        name = "Power Skiller",
+        enabledByDefault = false,
+        description = "Illumine auto power-skill plugin",
+        tags = {"tick"},
+        type = PluginType.SKILLING
 )
 @Slf4j
-public class PowerSkillerPlugin extends Plugin
-{
-	@Inject
-	private Client client;
+public class PowerSkillerPlugin extends Plugin {
+    @Inject
+    private Client client;
 
-	@Inject
-	private PowerSkillerConfiguration config;
+    @Inject
+    private PowerSkillerConfiguration config;
 
-	@Inject
-	private BotUtils utils;
+    @Inject
+    private iUtils utils;
 
-	@Inject
-	private ConfigManager configManager;
+    @Inject
+    private ConfigManager configManager;
 
-	private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
-	private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
-		new ThreadPoolExecutor.DiscardPolicy());
+    private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(1);
+    private ThreadPoolExecutor executorService = new ThreadPoolExecutor(1, 1, 25, TimeUnit.SECONDS, queue,
+            new ThreadPoolExecutor.DiscardPolicy());
 
-	PowerSkillerState state;
-	GameObject targetObject;
-	GameObject nextTree;
-	MenuEntry targetMenu;
+    PowerSkillerState state;
+    GameObject targetObject;
+    GameObject nextTree;
+    MenuEntry targetMenu;
 
-	int timeout = 0;
+    int timeout = 0;
 
 
-	private final Set<Integer> itemIds = new HashSet<>();
-	private final Set<Integer> gameObjIds = new HashSet<>();
+    private final Set<Integer> itemIds = new HashSet<>();
+    private final Set<Integer> gameObjIds = new HashSet<>();
 
-	WorldPoint skillLocation;
+    WorldPoint skillLocation;
 
-	@Provides
-	PowerSkillerConfiguration provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(PowerSkillerConfiguration.class);
-		//TODO make GUI that can be updated in realtime, may require new JPanel
-	}
+    @Provides
+    PowerSkillerConfiguration provideConfig(ConfigManager configManager) {
+        return configManager.getConfig(PowerSkillerConfiguration.class);
+        //TODO make GUI that can be updated in realtime, may require new JPanel
+    }
 
-	@Override
-	protected void startUp()
-	{
+    @Override
+    protected void startUp() {
 
-	}
+    }
 
-	@Override
-	protected void shutDown()
-	{
-		configManager.setConfiguration("PowerSkiller", "startBot", false);
-	}
+    @Override
+    protected void shutDown() {
+        configManager.setConfiguration("PowerSkiller", "startBot", false);
+    }
 
-	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals("PowerSkiller"))
-		{
-			return;
-		}
-		getConfigValues();
-		if (event.getKey().equals("startBot"))
-		{
-			if (client != null && client.getLocalPlayer() != null && client.getGameState().equals(GameState.LOGGED_IN))
-			{
-				if (config.startBot())
-				{
-					skillLocation = client.getLocalPlayer().getWorldLocation();
-					getConfigValues();
-					log.info("Starting power-skiller at location: " + skillLocation);
-				}
-			}
-			else
-			{
-				if (config.startBot())
-				{
-					log.info("Stopping bot");
-					configManager.setConfiguration("PowerSkiller", "startBot", false);
-				}
-			}
-		}
-	}
+    @Subscribe
+    private void onConfigChanged(ConfigChanged event) {
+        if (!event.getGroup().equals("PowerSkiller")) {
+            return;
+        }
+        getConfigValues();
+        if (event.getKey().equals("startBot")) {
+            if (client != null && client.getLocalPlayer() != null && client.getGameState().equals(GameState.LOGGED_IN)) {
+                if (config.startBot()) {
+                    skillLocation = client.getLocalPlayer().getWorldLocation();
+                    getConfigValues();
+                    log.info("Starting power-skiller at location: " + skillLocation);
+                }
+            } else {
+                if (config.startBot()) {
+                    log.info("Stopping bot");
+                    configManager.setConfiguration("PowerSkiller", "startBot", false);
+                }
+            }
+        }
+    }
 
-	private void getConfigValues()
-	{
-		gameObjIds.clear();
+    private void getConfigValues() {
+        gameObjIds.clear();
 
-		for (int i : utils.stringToIntArray(config.gameObjects()))
-		{
-			gameObjIds.add(i);
-		}
+        for (int i : utils.stringToIntArray(config.gameObjects())) {
+            gameObjIds.add(i);
+        }
 
-		itemIds.clear();
+        itemIds.clear();
 
-		for (int i : utils.stringToIntArray(config.items()))
-		{
-			itemIds.add(i);
-		}
-	}
+        for (int i : utils.stringToIntArray(config.items())) {
+            itemIds.add(i);
+        }
+    }
 
-	//enables run if below given minimum energy with random positive variation
-	private void handleRun(int minEnergy, int randMax)
-	{
-		if (utils.isRunEnabled())
-		{
-			return;
-		}
-		else if (client.getEnergy() > (minEnergy + utils.getRandomIntBetweenRange(0, randMax)))
-		{
-			log.info("enabling run");
-			targetMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
-			utils.clickRandomPointCenter(-100, 100);
-		}
-	}
+    //enables run if below given minimum energy with random positive variation
+    private void handleRun(int minEnergy, int randMax) {
+        if (utils.isRunEnabled()) {
+            return;
+        } else if (client.getEnergy() > (minEnergy + calc.getRandomIntBetweenRange(0, randMax))) {
+            log.info("enabling run");
+            targetMenu = new MenuEntry("Toggle Run", "", 1, 57, -1, 10485782, false);
+            mouse.clickRandomPointCenter(-100, 100);
+        }
+    }
 
-	private void interactTree()
-	{
-		nextTree = utils.findNearestGameObjectWithin(skillLocation, config.locationRadius(), gameObjIds);
-		if (nextTree != null)
-		{
-			targetObject = nextTree;
-			targetMenu = new MenuEntry("", "", nextTree.getId(), 3, targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
-			utils.clickRandomPointCenter(-100, 100);
-		}
-		else
-		{
-			log.info("tree is null");
-		}
-	}
+    private void interactTree() {
+        nextTree = object.findNearestGameObjectWithin(skillLocation, config.locationRadius(), gameObjIds);
+        if (nextTree != null) {
+            targetObject = nextTree;
+            targetMenu = new MenuEntry("", "", nextTree.getId(), 3, targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
+            mouse.clickRandomPointCenter(-100, 100);
+        } else {
+            log.info("tree is null");
+        }
+    }
 
-	private void dropInventory()
-	{
-		Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
-		if (inventoryWidget != null)
-		{
-			Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
-			if (!items.isEmpty())
-			{
-				log.info("dropping " + items.size() + " items.");
-				utils.sendGameMessage("dropping " + items.size() + " items.");
-				state = ITERATING;
-				executorService.submit(() ->
-				{
-					items.stream()
-						.filter(item -> itemIds.contains(item.getId()))
-						.forEach((item) -> {
-							targetMenu = new MenuEntry("", "", item.getId(), 37, item.getIndex(), 9764864, false);
-							utils.clickRandomPointCenter(-100, 100);
-							try
-							{
-								Thread.sleep(utils.getRandomIntBetweenRange(config.randLow(), config.randHigh()));
-							}
-							catch (InterruptedException e)
-							{
-								e.printStackTrace();
-							}
-						});
-					state = ANIMATING; //failsafe so it doesn't get stuck looping. I should probs handle this better
-				});
-			}
-			else
-			{
-				log.info("inventory list is empty");
-			}
-		}
-		else
-		{
-			log.info("inventory container is null");
-		}
-	}
+    private void dropInventory() {
+        Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+        if (inventoryWidget != null) {
+            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            if (!items.isEmpty()) {
+                log.info("dropping " + items.size() + " items.");
+                utils.sendGameMessage("dropping " + items.size() + " items.");
+                state = ITERATING;
+                executorService.submit(() ->
+                {
+                    items.stream()
+                            .filter(item -> itemIds.contains(item.getId()))
+                            .forEach((item) -> {
+                                targetMenu = new MenuEntry("", "", item.getId(), 37, item.getIndex(), 9764864, false);
+                                mouse.clickRandomPointCenter(-100, 100);
+                                try {
+                                    Thread.sleep(calc.getRandomIntBetweenRange(config.randLow(), config.randHigh()));
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                    state = ANIMATING; //failsafe so it doesn't get stuck looping. I should probs handle this better
+                });
+            } else {
+                log.info("inventory list is empty");
+            }
+        } else {
+            log.info("inventory container is null");
+        }
+    }
 
-	public PowerSkillerState getState()
-	{
-		if (timeout > 0)
-		{
-			return TIMEOUT;
-		}
-		if (state == ITERATING && !utils.inventoryEmpty())
-		{
-			return ITERATING;
-		}
-		if (utils.inventoryFull())
-		{
-			return DROPPING;
-		}
-		if (utils.isMoving())
-		{
-			timeout = 2;
-			return MOVING;
-		}
-		if (!utils.isInteracting() && !utils.inventoryFull())
-		{
-			return FIND_OBJECT;
-		}
-		return ANIMATING; //need to determine an appropriate default
-	}
+    public PowerSkillerState getState() {
+        if (timeout > 0) {
+            return TIMEOUT;
+        }
+        if (state == ITERATING && !inventory.inventoryEmpty()) {
+            return ITERATING;
+        }
+        if (inventory.inventoryFull()) {
+            return DROPPING;
+        }
+        if (playerUtils.isMoving()) {
+            timeout = 2;
+            return MOVING;
+        }
+        if (!utils.isInteracting() && !inventory.inventoryFull()) {
+            return FIND_OBJECT;
+        }
+        return ANIMATING; //need to determine an appropriate default
+    }
 
-	@Subscribe
-	private void onGameTick(GameTick tick)
-	{
-		if (client != null && client.getLocalPlayer() != null && config.startBot())
-		{
-			handleRun(40, 20);
-			state = getState();
-			switch (state)
-			{
-				case TIMEOUT:
-					timeout--;
-					return;
-				case DROPPING:
-					dropInventory();
-					return;
-				case FIND_OBJECT:
-					interactTree();
-					return;
-				case ANIMATING:
-				case ITERATING:
-				case MOVING:
-					return; //May be needed
-			}
-		}
-		else
-		{
-			return;
-		}
-	}
+    @Subscribe
+    private void onGameTick(GameTick tick) {
+        if (client != null && client.getLocalPlayer() != null && config.startBot()) {
+            handleRun(40, 20);
+            state = getState();
+            switch (state) {
+                case TIMEOUT:
+                    timeout--;
+                    return;
+                case DROPPING:
+                    dropInventory();
+                    return;
+                case FIND_OBJECT:
+                    interactTree();
+                    return;
+                case ANIMATING:
+                case ITERATING:
+                case MOVING:
+                    return; //May be needed
+            }
+        } else {
+            return;
+        }
+    }
 
-	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event)
-	{
-		if (config.startBot())
-		{
-			if (targetMenu == null)
-			{
-				log.info("Modified MenuEntry is null");
-				return;
-			}
-			//TODO: build this into utils or use random handler getter?
-			if (utils.getRandomEvent()) //for random events
-			{
-				log.info("Powerskiller not overriding due to random event");
-				return;
-			}
-			else
-			{
-				//log.info("MenuEntry string event: " + targetMenu.toString());
-				event.setMenuEntry(targetMenu);
-				if (state != ITERATING)
-				{
-					timeout = 2;
-				}
-				targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
-			}
-		}
-		else
-		{
-			//TODO: capture object clicks for GUI
-		}
-	}
+    @Subscribe
+    public void onMenuOptionClicked(MenuOptionClicked event) {
+        if (config.startBot()) {
+            if (targetMenu == null) {
+                log.info("Modified MenuEntry is null");
+                return;
+            }
+            //TODO: build this into utils or use random handler getter?
+            if (utils.getRandomEvent()) //for random events
+            {
+                log.info("Powerskiller not overriding due to random event");
+                return;
+            } else {
+                //log.info("MenuEntry string event: " + targetMenu.toString());
+                event.setMenuEntry(targetMenu);
+                if (state != ITERATING) {
+                    timeout = 2;
+                }
+                targetMenu = null; //this allow the player to interact with the client without their clicks being overridden
+            }
+        } else {
+            //TODO: capture object clicks for GUI
+        }
+    }
 
-	@Subscribe
-	public void onGameObjectDespawned(GameObjectDespawned event)
-	{
-		if (nextTree == null || event.getGameObject() != nextTree) {
-			return;
-		} else {
-			if (client.getLocalDestinationLocation() != null) {
-				interactTree(); //This is a failsafe, Player can get stuck with a destination on object despawn and be "forever moving".
-			}
-		}
-	}
+    @Subscribe
+    public void onGameObjectDespawned(GameObjectDespawned event) {
+        if (nextTree == null || event.getGameObject() != nextTree) {
+            return;
+        } else {
+            if (client.getLocalDestinationLocation() != null) {
+                interactTree(); //This is a failsafe, Player can get stuck with a destination on object despawn and be "forever moving".
+            }
+        }
+    }
 }

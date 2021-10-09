@@ -30,145 +30,134 @@ import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
 @ConfigGroup("randomhandler")
-public interface RandomHandlerConfig extends Config
-{
-	@ConfigItem(
-		keyName = "autoDismiss",
-		name = "Dismiss all random events",
-		description = "Automatically dismisses all random events for your player",
-		position = 0
-	)
-	default boolean autoDismiss() { return false; }
+public interface RandomHandlerConfig extends Config {
+    @ConfigItem(
+            keyName = "autoDismiss",
+            name = "Dismiss all random events",
+            description = "Automatically dismisses all random events for your player",
+            position = 0
+    )
+    default boolean autoDismiss() {
+        return false;
+    }
 
-	@ConfigItem(
-		keyName = "removeMenuOptions",
-		name = "Remove others' menu options",
-		description = "Remove menu options from random events for other players.",
-		position = 1
-	)
-	default boolean removeMenuOptions()
-	{
-		return true;
-	}
+    @ConfigItem(
+            keyName = "removeMenuOptions",
+            name = "Remove others' menu options",
+            description = "Remove menu options from random events for other players.",
+            position = 1
+    )
+    default boolean removeMenuOptions() {
+        return true;
+    }
 
-	@ConfigItem(
-		keyName = "notifyDunce",
-		name = "Notify on Surprise Exam",
-		description = "",
-		position = 2
-	)
-	default boolean notifyDunce()
-	{
-		return false;
-	}
+    @ConfigItem(
+            keyName = "notifyDunce",
+            name = "Notify on Surprise Exam",
+            description = "",
+            position = 2
+    )
+    default boolean notifyDunce() {
+        return false;
+    }
 
-	@ConfigItem(
-		keyName = "notifyGenie",
-		name = "Notify on Genie",
-		description = "",
-		position = 3
-	)
-	default boolean notifyGenie()
-	{
-		return false;
-	}
+    @ConfigItem(
+            keyName = "notifyGenie",
+            name = "Notify on Genie",
+            description = "",
+            position = 3
+    )
+    default boolean notifyGenie() {
+        return false;
+    }
 
-	@ConfigItem(
-		keyName = "notifyDemon",
-		name = "Notify on Drill Demon",
-		description = "",
-		position = 4
-	)
-	default boolean notifyDemon()
-	{
-		return false;
-	}
+    @ConfigItem(
+            keyName = "notifyDemon",
+            name = "Notify on Drill Demon",
+            description = "",
+            position = 4
+    )
+    default boolean notifyDemon() {
+        return false;
+    }
 
-	@ConfigItem(
-		keyName = "notifyForester",
-		name = "Notify on Freaky Forester",
-		description = "",
-		position = 5
-	)
-	default boolean notifyForester()
-	{
-		return false;
-	}
+    @ConfigItem(
+            keyName = "notifyForester",
+            name = "Notify on Freaky Forester",
+            description = "",
+            position = 5
+    )
+    default boolean notifyForester() {
+        return false;
+    }
 
-	@ConfigItem(
-		keyName = "notifyFrog",
-		name = "Notify on Kiss the Frog",
-		description = "",
-		position = 6
-	)
-	default boolean notifyFrog()
-	{
-		return false;
-	}
+    @ConfigItem(
+            keyName = "notifyFrog",
+            name = "Notify on Kiss the Frog",
+            description = "",
+            position = 6
+    )
+    default boolean notifyFrog() {
+        return false;
+    }
 
-	@ConfigItem(
-		keyName = "notifyGravedigger",
-		name = "Notify on Gravedigger",
-		description = "",
-		position = 7
-	)
-	default boolean notifyGravedigger()
-	{
-		return false;
-	}
+    @ConfigItem(
+            keyName = "notifyGravedigger",
+            name = "Notify on Gravedigger",
+            description = "",
+            position = 7
+    )
+    default boolean notifyGravedigger() {
+        return false;
+    }
 
-	@ConfigItem(
-		keyName = "notifyMoM",
-		name = "Notify on Mysterious Old Man",
-		description = "",
-		position = 8
-	)
-	default boolean notifyMoM()
-	{
-		return false;
-	}
+    @ConfigItem(
+            keyName = "notifyMoM",
+            name = "Notify on Mysterious Old Man",
+            description = "",
+            position = 8
+    )
+    default boolean notifyMoM() {
+        return false;
+    }
 
-	@ConfigItem(
-		keyName = "notifyBob",
-		name = "Notify on Evil Bob",
-		description = "",
-		position = 9
-	)
-	default boolean notifyBob()
-	{
-		return false;
-	}
+    @ConfigItem(
+            keyName = "notifyBob",
+            name = "Notify on Evil Bob",
+            description = "",
+            position = 9
+    )
+    default boolean notifyBob() {
+        return false;
+    }
 
-	@ConfigItem(
-		keyName = "notifyQuiz",
-		name = "Notify on Quiz Master",
-		description = "",
-		position = 10
-	)
-	default boolean notifyQuiz()
-	{
-		return false;
-	}
-	
-	@ConfigItem(
-		keyName = "notifyDrJekyll",
-		name = "Notify on Dr Jekyll",
-		description = "",
-		position = 11
-	)
-	default boolean notifyDrJekyll()
-	{
-		return false;
-	}
+    @ConfigItem(
+            keyName = "notifyQuiz",
+            name = "Notify on Quiz Master",
+            description = "",
+            position = 10
+    )
+    default boolean notifyQuiz() {
+        return false;
+    }
 
-	@ConfigItem(
-		keyName = "notifyAll",
-		name = "Notify for all events",
-		description = "",
-		position = 12
-	)
-	default boolean notifyAllEvents()
-	{
-		return false;
-	}
+    @ConfigItem(
+            keyName = "notifyDrJekyll",
+            name = "Notify on Dr Jekyll",
+            description = "",
+            position = 11
+    )
+    default boolean notifyDrJekyll() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "notifyAll",
+            name = "Notify for all events",
+            description = "",
+            position = 12
+    )
+    default boolean notifyAllEvents() {
+        return false;
+    }
 }
