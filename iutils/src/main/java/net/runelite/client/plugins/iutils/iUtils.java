@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  */
 @Extension
 @PluginDescriptor(
-        name = "iUtils-Prem",
+        name = "iUtils",
         description = "Illumine plugin utilities"
 )
 @Slf4j
