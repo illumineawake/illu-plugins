@@ -197,7 +197,7 @@ public class BankUtils {
             if (isDepositBoxOpen()) {
                 menu.setEntry(new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), -1, 12582916, false)); //deposit all in bank interface
             } else {
-                menu.setEntry(new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), -1, 786473, false)); //deposit all in bank interface
+                menu.setEntry(new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), -1, 786474, false)); //deposit all in bank interface
             }
             if ((depositInventoryWidget != null)) {
                 mouse.handleMouseClick(depositInventoryWidget.getBounds());
