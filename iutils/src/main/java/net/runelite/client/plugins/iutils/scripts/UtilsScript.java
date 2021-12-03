@@ -4,6 +4,7 @@ import com.google.inject.Injector;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.Skill;
+import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.iutils.api.*;
@@ -189,7 +190,7 @@ public abstract class UtilsScript extends Plugin {
                         buyItems.add(i);
                     }
                 });
-        if (!buyItems.isEmpty()) {
+        if (!buyItems.isEmpty() && game.accountType().equals(AccountType.NORMAL)) {
             log.info("Buying items: {}", buyItems.toString());
             bank().depositInventory();
             grandExchange().buy(buyItems);
