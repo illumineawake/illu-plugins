@@ -35,13 +35,13 @@ public class GrandExchange {
         game.waitUntil(() -> currentSellItem() == baseId);
 
         if (price != currentPrice()) {
-            game.widget(465, 24, 12).interact(0);
+            game.widget(465, 25, 12).interact(0);
             game.tick(2);
             game.chooseNumber(price);
             game.tick(2);
         }
 
-        game.widget(465, 27).interact(0);
+        game.widget(465, 29).interact(0);
         game.tick(5);
         collectToInv();
     }
@@ -100,7 +100,7 @@ public class GrandExchange {
             game.waitUntil(() -> currentBuyItem() == item);
 
             if (quantity != currentQuantity()) {
-                game.widget(465, 24, 7).interact(0);
+                game.widget(465, 25, 7).interact(0);
                 game.tick(2, 4);
 
                 game.chooseNumber(quantity);
@@ -126,7 +126,7 @@ public class GrandExchange {
             lastprice = price;
 
             if (price != currentPrice()) {
-                game.widget(465, 24, 12).interact(0);
+                game.widget(465, 25, 12).interact(0);
                 game.tick(2, 4);
 
                 game.chooseNumber(price);
@@ -135,7 +135,7 @@ public class GrandExchange {
 
             game.tick();
 
-            game.widget(465, 27).interact(0);
+            game.widget(465, 29).interact(0);
 
             game.waitUntil(() -> game.grandExchangeOffer(slot) != null);
             game.tick(2, 4);
@@ -186,7 +186,7 @@ public class GrandExchange {
             game.waitUntil(() -> currentBuyItem() == item);
 
             if (quantity != currentQuantity()) {
-                game.widget(465, 24, 7).interact(0);
+                game.widget(465, 25, 7).interact(0);
                 game.tick(2, 4);
 
                 game.chooseNumber(quantity);
@@ -204,7 +204,7 @@ public class GrandExchange {
             lastPrice = price;
 
             if (price != currentPrice()) {
-                game.widget(465, 24, 12).interact(0);
+                game.widget(465, 25, 12).interact(0);
                 game.tick(2, 4);
 
                 game.chooseNumber(price);
@@ -212,7 +212,7 @@ public class GrandExchange {
             }
 
             game.tick();
-            game.widget(465, 27).interact(0);
+            game.widget(465, 29).interact(0);
             game.waitUntil(() -> game.grandExchangeOffer(slot) != null);
             game.tick(2, 4);
 
