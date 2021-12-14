@@ -41,6 +41,13 @@ public class IScriptHandler implements Runnable {
                     return;
                 }
             }
+            catch (UnsupportedOperationException e) {
+                log.info("Caught unsupported terminal failure, stopping instantly");
+                e.printStackTrace();
+                log.info("{} - caused by: {}", e.getMessage(), e.getCause());
+                script.onStop();
+                return;
+            }
         }
     }
 }

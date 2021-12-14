@@ -25,7 +25,7 @@ public class Bank {
         checkBankOpen();
 
         if (game.inventory().count() != 0) {
-            game.widget(12, 41).interact(0);
+            game.widget(12, 42).interact(0);
             game.waitUntil(() -> game.inventory().count() == 0, 5);
         }
     }
@@ -34,7 +34,7 @@ public class Bank {
         checkBankOpen();
 
         if (game.equipment().count() != 0) {
-            game.widget(12, 43).interact(0);
+            game.widget(12, 44).interact(0);
             game.tick();
         }
     }
@@ -44,7 +44,7 @@ public class Bank {
             throw new IllegalStateException("bank isn't open");
         }
 
-        if (game.widget(12, 113) != null && game.widget(12, 113).nestedInterface() == 664) {
+        if (game.widget(12, 114) != null && game.widget(12, 114).nestedInterface() == 664) {
             log.info("[Bank] Closing bank tutorial");
             game.widget(664, 9).select();
             game.tick();
@@ -230,9 +230,9 @@ public class Bank {
     private void setNotedMode(boolean noted) {
         if (noted != withdrawNoted()) {
             if (!noted) {
-                game.widget(12, 21).interact(0);
+                game.widget(12, 22).interact(0);
             } else {
-                game.widget(12, 23).interact(0);
+                game.widget(12, 24).interact(0);
             }
 
             game.waitUntil(() -> noted == withdrawNoted());
@@ -240,10 +240,10 @@ public class Bank {
     }
 
     private void completeBankTutorial() {
-        if (game.widget(12, 113).nestedInterface() == 664) {
+        if (game.widget(12, 114).nestedInterface() == 664) {
             log.info("[Bank] Closing bank tutorial");
             game.widget(664, 9).select();
-            game.waitUntil(() -> game.widget(12, 113).nestedInterface() == -1);
+            game.waitUntil(() -> game.widget(12, 114).nestedInterface() == -1);
         }
     }
 

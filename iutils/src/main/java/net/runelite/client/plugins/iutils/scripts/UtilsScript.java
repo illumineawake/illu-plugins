@@ -45,7 +45,11 @@ public abstract class UtilsScript extends Plugin {
     protected Bank bank;
 
     protected void equip(int... ids) {
-        obtain(Arrays.stream(ids)
+        equip(true, ids);
+    }
+
+    protected void equip(boolean buyMissing, int... ids) {
+        obtain(buyMissing, Arrays.stream(ids)
                 .filter(i -> !equipment.isEquipped(i))
                 .mapToObj(i -> new ItemQuantity(i, 1))
                 .toArray(ItemQuantity[]::new));
@@ -64,8 +68,12 @@ public abstract class UtilsScript extends Plugin {
     }
 
     protected void equip(int id, int quantity) {
+        equip(true, id, quantity);
+    }
+
+    protected void equip(boolean buyMissing, int id, int quantity) {
         if (!equipment.isEquipped(id) || equipment.quantity(id) < quantity) {
-            obtain(new ItemQuantity(id, quantity - equipment.quantity(id)));
+            obtain(buyMissing, new ItemQuantity(id, quantity - equipment.quantity(id)));
         }
 
         game.tick(2);
@@ -95,7 +103,15 @@ public abstract class UtilsScript extends Plugin {
         game.waitUntil(() -> game.equipment().withName(name).exists(), 6);
     }
 
+    protected void obtain(List<ItemQuantity> items) {
+        obtain(true, items.toArray(ItemQuantity[]::new));
+    }
+
     protected void obtain(ItemQuantity... items) {
+        obtain(true, items);
+    }
+
+    protected void obtain(boolean buyMissing, ItemQuantity... items) {
         if (hasItems(items)) {
             return;
         }
@@ -106,7 +122,7 @@ public abstract class UtilsScript extends Plugin {
         game.tick(2);
     }
 
-    protected void obtain(List<ItemQuantity> items) {
+    protected void obtain(boolean buyMissing, List<ItemQuantity> items) {
         if (items.isEmpty() || hasItems(items)) {
             return;
         }
@@ -115,6 +131,10 @@ public abstract class UtilsScript extends Plugin {
     }
 
     protected void obtainKeep(List<ItemQuantity> items, boolean keepAllInventoryItems) {
+        obtainKeep(items, keepAllInventoryItems, true);
+    }
+
+    protected void obtainKeep(List<ItemQuantity> items, boolean keepAllInventoryItems, boolean buyMissing) {
         List<ItemQuantity> itemsCopy = new ArrayList<>(items);
         if (itemsCopy.isEmpty() || hasItems(itemsCopy)) {
             return;
@@ -125,10 +145,14 @@ public abstract class UtilsScript extends Plugin {
             log.info("Keeping items: {}", itemsCopy.toString());
         }
 
-        obtain(itemsCopy.toArray(ItemQuantity[]::new));
+        obtain(buyMissing, itemsCopy.toArray(ItemQuantity[]::new));
     }
 
     protected void obtainKeep(List<ItemQuantity> obtainItems, List<Integer> keepItems) {
+        obtainKeep(obtainItems, keepItems, true);
+    }
+
+    protected void obtainKeep(List<ItemQuantity> obtainItems, List<Integer> keepItems, boolean buyMissing) {
         List<ItemQuantity> obtainItemsCopy = new ArrayList<>(obtainItems);
         if (obtainItemsCopy.isEmpty() || hasItems(obtainItemsCopy)) {
             return;
@@ -142,7 +166,7 @@ public abstract class UtilsScript extends Plugin {
             obtainItemsCopy.addAll(inventoryItems);
         }
 
-        obtain(obtainItemsCopy.toArray(ItemQuantity[]::new));
+        obtain(buyMissing, obtainItemsCopy.toArray(ItemQuantity[]::new));
     }
 
     protected List<ItemQuantity> inventoryList() {
@@ -161,10 +185,18 @@ public abstract class UtilsScript extends Plugin {
     }
 
     protected void obtainBank(List<ItemQuantity> items) {
-        obtainBank(items.toArray(ItemQuantity[]::new));
+        obtainBank(true, items.toArray(ItemQuantity[]::new));
+    }
+
+    protected void obtainBank(boolean buyMissing, List<ItemQuantity> items) {
+        obtainBank(buyMissing, items.toArray(ItemQuantity[]::new));
     }
 
     protected void obtainBank(ItemQuantity... items) {
+        obtainBank(true, items);
+    }
+
+    protected void obtainBank(boolean buyMissing, ItemQuantity... items) {
         if (items.length == 0) {
             return;
         }
@@ -190,6 +222,11 @@ public abstract class UtilsScript extends Plugin {
                         buyItems.add(i);
                     }
                 });
+
+        if (!buyItems.isEmpty() && (!buyMissing || !game.accountType().equals(AccountType.NORMAL)) ) {
+            throw new IllegalStateException("Missing items and we can't buy from GE: " + buyItems.toString());
+        }
+
         if (!buyItems.isEmpty() && game.accountType().equals(AccountType.NORMAL)) {
             log.info("Buying items: {}", buyItems.toString());
             bank().depositInventory();
