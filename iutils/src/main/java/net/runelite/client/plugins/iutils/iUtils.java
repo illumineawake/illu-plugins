@@ -652,11 +652,20 @@ public class iUtils extends Plugin {
 			return;
 		}
 		if (menu.entry != null) {
-			client.setLeftClickMenuEntry(menu.entry);
+			setLeftClickMenuEntry(menu.entry);
 			if (menu.modifiedMenu) {
 				event.setModified();
 			}
 		}
+	}
+
+	private void setLeftClickMenuEntry(MenuEntry entry) {
+		MenuEntry[] entries = client.getMenuEntries();
+		for (int i = entries.length - 1; i > 0; i--) {
+			entries[i] = entries[i-1];
+		}
+		entries[0] = entry;
+		client.setMenuEntries(entries);
 	}
 
 	@Subscribe
