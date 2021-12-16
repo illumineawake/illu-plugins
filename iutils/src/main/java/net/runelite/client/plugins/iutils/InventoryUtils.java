@@ -33,6 +33,9 @@ public class InventoryUtils {
     private BankUtils bank;
 
     @Inject
+    private iUtils utils;
+
+    @Inject
     private ExecutorService executorService;
 
     @Inject
@@ -365,7 +368,7 @@ public class InventoryUtils {
     public void dropItem(WidgetItem item) {
         assert !client.isClientThread();
 
-        menu.setEntry(new MenuEntry("", "", item.getId(), MenuAction.ITEM_FIFTH_OPTION.getId(), item.getIndex(), 9764864, false));
+        menu.setEntry(utils.setMenuEntry("", "", item.getId(), MenuAction.ITEM_FIFTH_OPTION, item.getIndex(), 9764864, false));
         mouse.click(item.getCanvasBounds());
     }
 
@@ -436,7 +439,7 @@ public class InventoryUtils {
         dropItems(inventoryItems, dropAll, minDelayBetween, maxDelayBetween);
     }
 
-    public void itemsInteract(Collection<Integer> ids, int opcode, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween) {
+    public void itemsInteract(Collection<Integer> ids, MenuAction menuAction, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween) {
         Collection<WidgetItem> inventoryItems = getAllItems();
         executorService.submit(() ->
         {
@@ -446,7 +449,7 @@ public class InventoryUtils {
                     if ((!exceptItems && ids.contains(item.getId()) || (exceptItems && !ids.contains(item.getId())))) {
                         log.info("interacting inventory item: {}", item.getId());
                         sleep(minDelayBetween, maxDelayBetween);
-                        menu.setEntry(new MenuEntry("", "", item.getId(), opcode, item.getIndex(), WidgetInfo.INVENTORY.getId(),
+                        menu.setEntry(utils.setMenuEntry("", "", item.getId(), menuAction, item.getIndex(), WidgetInfo.INVENTORY.getId(),
                                 true));
                         mouse.click(item.getCanvasBounds());
                         if (!interactAll) {
@@ -462,7 +465,7 @@ public class InventoryUtils {
         });
     }
 
-    public void combineItems(Collection<Integer> ids, int item1ID, int opcode, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween) {
+    public void combineItems(Collection<Integer> ids, int item1ID, MenuAction menuAction, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween) {
         WidgetItem item1 = getWidgetItem(item1ID);
         if (item1 == null) {
             log.info("combine item1 item not found in inventory");
@@ -477,7 +480,7 @@ public class InventoryUtils {
                     if ((!exceptItems && ids.contains(item.getId()) || (exceptItems && !ids.contains(item.getId())))) {
                         log.info("interacting inventory item: {}", item.getId());
                         sleep(minDelayBetween, maxDelayBetween);
-                        menu.setModifiedEntry(new MenuEntry("", "", item1.getId(), opcode, item1.getIndex(), WidgetInfo.INVENTORY.getId(),
+                        menu.setModifiedEntry(utils.setMenuEntry("", "", item1.getId(), menuAction, item1.getIndex(), WidgetInfo.INVENTORY.getId(),
                                 false), item.getId(), item.getIndex(), MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId());
                         mouse.click(item1.getCanvasBounds());
                         if (!interactAll) {
