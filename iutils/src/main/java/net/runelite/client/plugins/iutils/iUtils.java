@@ -27,8 +27,6 @@ import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.iObject;
 import net.runelite.client.plugins.iutils.game.iWidget;
 import net.runelite.http.api.ge.GrandExchangeClient;
-import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
-import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
 import okhttp3.OkHttpClient;
 import org.pf4j.Extension;
 
@@ -100,11 +98,6 @@ public class iUtils extends Plugin {
     ExecutorService executorService;
 
     @Inject
-    private OSBGrandExchangeClient osbGrandExchangeClient;
-
-    private OSBGrandExchangeResult osbGrandExchangeResult;
-
-    @Inject
     private ItemManager itemManager;
 
     public final static Set<TileObject> objects = new HashSet<>();
@@ -120,10 +113,6 @@ public class iUtils extends Plugin {
     private int gameTick = 0;
     int tickActions;
 
-    @Provides
-    OSBGrandExchangeClient provideOsbGrandExchangeClient(OkHttpClient okHttpClient) {
-        return new OSBGrandExchangeClient(okHttpClient);
-    }
 
     @Provides
     GrandExchangeClient provideGrandExchangeClient(OkHttpClient okHttpClient) {
@@ -563,21 +552,6 @@ public class iUtils extends Plugin {
                         .type(ChatMessageType.CONSOLE)
                         .runeLiteFormattedMessage(chatMessage)
                         .build());
-    }
-
-    public OSBGrandExchangeResult getOSBItem(int itemId) {
-        log.debug("Looking up OSB item price {}", itemId);
-
-        try {
-            final OSBGrandExchangeResult result = osbGrandExchangeClient.lookupItem(itemId);
-            if (result != null && result.getOverall_average() > 0) {
-                return result;
-            }
-        } catch (IOException e) {
-            log.debug("Error getting price of item {}", itemId, e);
-        }
-
-        return null;
     }
 
     public ItemComposition getCompositionItem(int itemId) {
