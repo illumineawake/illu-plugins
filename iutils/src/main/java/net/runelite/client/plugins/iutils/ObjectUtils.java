@@ -279,7 +279,7 @@ public class ObjectUtils {
 
         return findNearestGroundObjectMenuWithin(worldPoint, dist, menuAction);
     }
-
+/*
     @Deprecated
     @Nullable
     public List<TileItem> getTileItemsWithin(int distance) {
@@ -309,6 +309,7 @@ public class ObjectUtils {
                 .first()
                 .getGroundItems();
     }
+ */
 
     @Nullable
     public WallObject findNearestWallObject(int... ids) {
