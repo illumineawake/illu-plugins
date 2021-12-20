@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.0"
+version = "1.0.1"
 
 project.extra["PluginName"] = "iItem Combiner"
 project.extra["PluginDescription"] = "Illumine - Item Combiner plugin"

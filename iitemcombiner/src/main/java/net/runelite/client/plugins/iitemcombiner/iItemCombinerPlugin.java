@@ -168,22 +168,22 @@ public class iItemCombinerPlugin extends iScript {
         }
     }
 
-    @Subscribe
-    private void onMenuEntryAdded(MenuEntryAdded event) {
-        if (!event.getOption().equals("Use")) {
-            return;
-        }
-
-        if (event.getTarget().contains("->")) {
-            addMenuEntry(event, "iCombine");
-        }
-
-        if (menuAction) {
-            addMenuEntry(event, "Stop iCombine");
-        }
-    }
-
-    private void addMenuEntry(MenuEntryAdded event, String option) {
+//    @Subscribe
+//    private void onMenuEntryAdded(MenuEntryAdded event) {
+//        if (!event.getOption().equals("Use")) {
+//            return;
+//        }
+//
+//        if (event.getTarget().contains("->")) {
+//            addMenuEntry(event, "iCombine");
+//        }
+//
+//        if (menuAction) {
+//            addMenuEntry(event, "Stop iCombine");
+//        }
+//    }
+//
+//    private void addMenuEntry(MenuEntryAdded event, String option) {
 //        List<MenuEntry> entries = new LinkedList<>(Arrays.asList(client.getMenuEntries()));
 //
 //        MenuEntry entry = new LegacyMenuEntry();
@@ -193,5 +193,5 @@ public class iItemCombinerPlugin extends iScript {
 //        entries.add(0, entry);
 //
 //        client.setMenuEntries(entries.toArray(new MenuEntry[0]));
-    }
+//    }
 }

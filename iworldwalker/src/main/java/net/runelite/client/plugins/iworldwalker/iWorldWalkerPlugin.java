@@ -308,20 +308,20 @@ public class iWorldWalkerPlugin extends iScript {
         lastMenuOpenedPoint = client.getMouseCanvasPosition();
     }
 
-    @Subscribe
-    public void onMenuEntryAdded(MenuEntryAdded event) {
-        final Widget map = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
-
-        if (map != null) {
-
-            if (map.getBounds().contains(client.getMouseCanvasPosition().getX(), client.getMouseCanvasPosition().getY())) {
-                addMenuEntry(event, "illu-Walk here");
-                addMenuEntry(event, "illu-Clear Destination");
-            }
-        } else if (mapPoint != null && event.getOption().equals("Walk here")) {
-            addMenuEntry(event, "illu-Clear Destination");
-        }
-    }
+//    @Subscribe
+//    public void onMenuEntryAdded(MenuEntryAdded event) {
+//        final Widget map = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
+//
+//        if (map != null) {
+//
+//            if (map.getBounds().contains(client.getMouseCanvasPosition().getX(), client.getMouseCanvasPosition().getY())) {
+//                addMenuEntry(event, "illu-Walk here");
+//                addMenuEntry(event, "illu-Clear Destination");
+//            }
+//        } else if (mapPoint != null && event.getOption().equals("Walk here")) {
+//            addMenuEntry(event, "illu-Clear Destination");
+//        }
+//    }
 
     @Subscribe
     public void onMenuOptionClicked(MenuOptionClicked event) {
@@ -350,7 +350,7 @@ public class iWorldWalkerPlugin extends iScript {
         return mapPoint.dx(dx).dy(dy);
     }
 
-    private void addMenuEntry(MenuEntryAdded event, String option) { //TODO: update to new menu entry
+//    private void addMenuEntry(MenuEntryAdded event, String option) { //TODO: update to new menu entry
 //        List<MenuEntry> entries = new LinkedList<>(Arrays.asList(client.getMenuEntries()));
 //
 //        MenuEntry entry = new LegacyMenuEntry();
@@ -360,5 +360,5 @@ public class iWorldWalkerPlugin extends iScript {
 //        entries.add(0, entry);
 //
 //        client.setMenuEntries(entries.toArray(new MenuEntry[0]));
-    }
+//    }
 }

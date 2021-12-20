@@ -802,20 +802,20 @@ public class iPowerFighterPlugin extends Plugin {
         }
     }
 
-    @Subscribe
-    private void onMenuEntryAdded(MenuEntryAdded event) {
-        if (!config.insertMenu() || !event.getOption().equals("Attack")) {
-            return;
-        }
-
-        if (!startBot) {
-            addMenuEntry(event, "iFight");
-        } else {
-            addMenuEntry(event, "Stop iFight");
-        }
-    }
-
-    private void addMenuEntry(MenuEntryAdded event, String option) { //TODO: Update to new menu entry
+//    @Subscribe
+//    private void onMenuEntryAdded(MenuEntryAdded event) {
+//        if (!config.insertMenu() || !event.getOption().equals("Attack")) {
+//            return;
+//        }
+//
+//        if (!startBot) {
+//            addMenuEntry(event, "iFight");
+//        } else {
+//            addMenuEntry(event, "Stop iFight");
+//        }
+//    }
+//
+//    private void addMenuEntry(MenuEntryAdded event, String option) { //TODO: Update to new menu entry
 //        List<MenuEntry> entries = new LinkedList<>(Arrays.asList(client.getMenuEntries()));
 //
 //        LegacyMenuEntry entry = new LegacyMenuEntry();
@@ -824,5 +824,5 @@ public class iPowerFighterPlugin extends Plugin {
 //        entry.setOpcode(MenuAction.RUNELITE.getId());
 //        entries.add(0, entry);
 //        client.setMenuEntries(entries.toArray(new MenuEntry[0]));
-    }
+//    }
 }

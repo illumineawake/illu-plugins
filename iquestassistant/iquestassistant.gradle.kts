@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.1.3"
+version = "1.1.4"
 
 project.extra["PluginName"] = "iQuest Assistant"
 project.extra["PluginDescription"] = "Illumine - Quest Assistant plugin"

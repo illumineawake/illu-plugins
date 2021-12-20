@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "3.1.1"
+version = "3.1.2"
 
 project.extra["PluginName"] = "iRandom Handler"
 project.extra["PluginDescription"] = "illumine - Dismiss random events and handle genie"
