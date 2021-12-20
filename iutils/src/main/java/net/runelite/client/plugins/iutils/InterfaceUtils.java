@@ -25,9 +25,6 @@ public class InterfaceUtils {
     @Inject
     private MenuUtils menu;
 
-    @Inject
-    private iUtils utils;
-
     /**
      * Opens the container interface using the given index.
      *
@@ -53,13 +50,12 @@ public class InterfaceUtils {
         final int INCREMENT = 4;
         int styleParam = BASE_PARAM + (index * INCREMENT);
 
-        return utils.setMenuEntry("", "", 1, MenuAction.CC_OP, -1, styleParam, false);
+        return new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), -1, styleParam, false);
     }
 
     public void logout() {
         int param1 = (client.getWidget(WidgetInfo.LOGOUT_BUTTON) != null) ? 11927560 : 4522007;
-        MenuEntry entry = utils.setMenuEntry("", "", 1, MenuAction.CC_OP, -1, param1, false);
-        menu.setEntry(entry);
+        menu.setEntry(new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), -1, param1, false));
         Widget logoutWidget = client.getWidget(WidgetInfo.LOGOUT_BUTTON);
         if (logoutWidget != null) {
             mouse.delayMouseClick(logoutWidget.getBounds(), calc.getRandomIntBetweenRange(5, 200));
