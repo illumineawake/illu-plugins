@@ -23,13 +23,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.5"
+version = "1.0.6"
 
 project.extra["PluginName"] = "iQuester Free"
 project.extra["PluginDescription"] = "Illumine - Free Quester plugin."
 
 dependencies {
-    compileOnly(group = "com.openosrs.externals", name = "iutils", version = "4.2.9+")
+    compileOnly(project(":iutils"))
 }
 
 tasks {
