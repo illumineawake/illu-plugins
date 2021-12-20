@@ -728,7 +728,7 @@ public class iUtils extends Plugin {
                         MenuAction.of(menu.modifiedOpCode), menu.entry.getParam0(), menu.entry.getParam1());
                 menu.modifiedMenu = false;
             } else {
-                System.out.println(String.format("%s, %s, %s, %s, %s, %s", menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(), menu.entry.getOpcode(), menu.entry.getParam0(), menu.entry.getParam1()));
+//                System.out.println(String.format("%s, %s, %s, %s, %s, %s", menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(), menu.entry.getOpcode(), menu.entry.getParam0(), menu.entry.getParam1()));
                 menuAction(event, menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
                         MenuAction.of(menu.entry.getOpcode()), menu.entry.getParam0(), menu.entry.getParam1());
             }

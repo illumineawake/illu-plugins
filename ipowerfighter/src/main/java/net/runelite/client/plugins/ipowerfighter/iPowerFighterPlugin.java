@@ -802,27 +802,31 @@ public class iPowerFighterPlugin extends Plugin {
         }
     }
 
-//    @Subscribe
-//    private void onMenuEntryAdded(MenuEntryAdded event) {
-//        if (!config.insertMenu() || !event.getOption().equals("Attack")) {
-//            return;
-//        }
-//
-//        if (!startBot) {
-//            addMenuEntry(event, "iFight");
-//        } else {
-//            addMenuEntry(event, "Stop iFight");
-//        }
-//    }
-//
-//    private void addMenuEntry(MenuEntryAdded event, String option) { //TODO: Update to new menu entry
-//        List<MenuEntry> entries = new LinkedList<>(Arrays.asList(client.getMenuEntries()));
-//
-//        LegacyMenuEntry entry = new LegacyMenuEntry();
+    @Subscribe
+    private void onMenuEntryAdded(MenuEntryAdded event) {
+        if (!config.insertMenu() || !event.getOption().equals("Attack")) {
+            return;
+        }
+
+        if (!startBot) {
+            addMenuEntry(event, "iFight");
+        } else {
+            addMenuEntry(event, "Stop iFight");
+        }
+    }
+
+    private void addMenuEntry(MenuEntryAdded event, String option) { //TODO: Update to new menu entry
+        client.createMenuEntry(-1).setOption(option)
+                .setTarget(event.getTarget())
+                .setIdentifier(0)
+                .setParam1(0)
+                .setParam1(0)
+                .setType(MenuAction.RUNELITE);
+//        MenuEntry entry = new MenuEntry();
 //        entry.setOption(option);
 //        entry.setTarget(event.getTarget());
 //        entry.setOpcode(MenuAction.RUNELITE.getId());
 //        entries.add(0, entry);
 //        client.setMenuEntries(entries.toArray(new MenuEntry[0]));
-//    }
+    }
 }
