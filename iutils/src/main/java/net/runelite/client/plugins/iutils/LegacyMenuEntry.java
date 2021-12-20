@@ -1,6 +1,5 @@
 package net.runelite.client.plugins.iutils;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import net.runelite.api.MenuAction;
@@ -38,7 +37,11 @@ public class LegacyMenuEntry {
     }
 
     public int getOpcode() {
-        return type.getId();
+        if (type != null) {
+            return type.getId();
+        } else {
+            return opcode;
+        }
     }
 
 }
