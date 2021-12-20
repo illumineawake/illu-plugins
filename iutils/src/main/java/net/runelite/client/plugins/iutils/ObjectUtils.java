@@ -280,35 +280,35 @@ public class ObjectUtils {
         return findNearestGroundObjectMenuWithin(worldPoint, dist, menuAction);
     }
 
-    @Deprecated
-    @Nullable
-    public List<TileItem> getTileItemsWithin(int distance) {
-        assert client.isClientThread();
-
-        if (client.getLocalPlayer() == null) {
-            return new ArrayList<>();
-        }
-        return new TileQuery()
-                .isWithinDistance(client.getLocalPlayer().getWorldLocation(), distance)
-                .result(client)
-                .first()
-                .getGroundItems();
-    }
-
-    @Deprecated
-    @Nullable
-    public List<TileItem> getTileItemsAtTile(Tile tile) {
-        assert client.isClientThread();
-
-        if (client.getLocalPlayer() == null) {
-            return new ArrayList<>();
-        }
-        return new TileQuery()
-                .atWorldLocation(tile.getWorldLocation())
-                .result(client)
-                .first()
-                .getGroundItems();
-    }
+//    @Deprecated
+//    @Nullable
+//    public List<TileItem> getTileItemsWithin(int distance) {
+//        assert client.isClientThread();
+//
+//        if (client.getLocalPlayer() == null) {
+//            return new ArrayList<>();
+//        }
+//        return new TileQuery()
+//                .isWithinDistance(client.getLocalPlayer().getWorldLocation(), distance)
+//                .result(client)
+//                .first()
+//                .getGroundItems();
+//    }
+//
+//    @Deprecated
+//    @Nullable
+//    public List<TileItem> getTileItemsAtTile(Tile tile) {
+//        assert client.isClientThread();
+//
+//        if (client.getLocalPlayer() == null) {
+//            return new ArrayList<>();
+//        }
+//        return new TileQuery()
+//                .atWorldLocation(tile.getWorldLocation())
+//                .result(client)
+//                .first()
+//                .getGroundItems();
+//    }
 
     @Nullable
     public WallObject findNearestWallObject(int... ids) {

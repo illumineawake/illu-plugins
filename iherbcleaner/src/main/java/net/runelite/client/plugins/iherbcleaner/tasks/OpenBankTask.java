@@ -10,6 +10,7 @@ import net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin;
 import net.runelite.client.plugins.iutils.ActionQueue;
 import net.runelite.client.plugins.iutils.BankUtils;
 import net.runelite.client.plugins.iutils.InventoryUtils;
+import net.runelite.client.plugins.iutils.LegacyMenuEntry;
 
 import javax.inject.Inject;
 import java.awt.*;
@@ -44,7 +45,7 @@ public class OpenBankTask extends Task {
         GameObject bank = object.findNearestGameObject(config.bankID());
         if (bank != null) {
             status = "Opening bank";
-            entry = new MenuEntry("", "", bank.getId(), MenuAction.GAME_OBJECT_SECOND_OPTION.getId(),
+            entry = new LegacyMenuEntry("", "", bank.getId(), MenuAction.GAME_OBJECT_SECOND_OPTION.getId(),
                     bank.getSceneMinLocation().getX(), bank.getSceneMinLocation().getY(), false);
             Rectangle rectangle = (bank.getConvexHull() != null) ? bank.getConvexHull().getBounds() :
                     new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);

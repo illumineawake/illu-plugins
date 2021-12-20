@@ -122,7 +122,7 @@ public class iPowerSkillerPlugin extends Plugin {
     GameObject targetObject;
     NPC targetNPC;
     WallObject targetWall;
-    MenuEntry targetMenu;
+    LegacyMenuEntry targetMenu;
     WorldPoint skillLocation;
     Instant botTimer;
     LocalPoint beforeLoc;
@@ -274,7 +274,7 @@ public class iPowerSkillerPlugin extends Plugin {
         targetNPC = npc.findNearestNpcWithin(skillLocation, config.locationRadius(), objectIds);
         opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuAction.NPC_FIRST_OPTION.getId());
         if (targetNPC != null) {
-            targetMenu = new MenuEntry("", "", targetNPC.getIndex(), opcode, 0, 0, false);
+            targetMenu = new LegacyMenuEntry("", "", targetNPC.getIndex(), opcode, 0, 0, false);
             utils.doActionMsTime(targetMenu, targetNPC.getConvexHull().getBounds(), sleepDelay());
         } else {
             log.info("NPC is null");
@@ -286,7 +286,7 @@ public class iPowerSkillerPlugin extends Plugin {
                 object.findNearestGameObjectWithin(skillLocation, config.locationRadius(), objectIds);
         opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuAction.GAME_OBJECT_FIRST_OPTION.getId());
         if (targetObject != null) {
-            targetMenu = new MenuEntry("", "", targetObject.getId(), opcode,
+            targetMenu = new LegacyMenuEntry("", "", targetObject.getId(), opcode,
                     targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
             utils.doActionMsTime(targetMenu, targetObject.getConvexHull().getBounds(), sleepDelay());
         } else {
@@ -298,7 +298,7 @@ public class iPowerSkillerPlugin extends Plugin {
         targetWall = object.findWallObjectWithin(skillLocation, config.locationRadius(), objectIds);
         opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuAction.GAME_OBJECT_FIRST_OPTION.getId());
         if (targetWall != null) {
-            targetMenu = new MenuEntry("", "", targetWall.getId(), opcode,
+            targetMenu = new LegacyMenuEntry("", "", targetWall.getId(), opcode,
                     targetWall.getLocalLocation().getSceneX(), targetWall.getLocalLocation().getSceneY(), false);
             utils.doActionMsTime(targetMenu, targetWall.getConvexHull().getBounds(), sleepDelay());
         } else {
@@ -328,7 +328,7 @@ public class iPowerSkillerPlugin extends Plugin {
     private void openBank() {
         GameObject bankTarget = object.findNearestBank();
         if (bankTarget != null) {
-            targetMenu = new MenuEntry("", "", bankTarget.getId(),
+            targetMenu = new LegacyMenuEntry("", "", bankTarget.getId(),
                     bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(),
                     bankTarget.getSceneMinLocation().getY(), false);
             utils.doActionMsTime(targetMenu, bankTarget.getConvexHull().getBounds(), sleepDelay());
@@ -632,7 +632,7 @@ public class iPowerSkillerPlugin extends Plugin {
         }
         opcode = (config.customOpcode() && config.objectOpcode() ? config.objectOpcodeValue() : MenuAction.GAME_OBJECT_FIRST_OPTION.getId());
         if (targetObject != null) {
-            targetMenu = new MenuEntry("", "", targetObject.getId(), opcode,
+            targetMenu = new LegacyMenuEntry("", "", targetObject.getId(), opcode,
                     targetObject.getSceneMinLocation().getX(), targetObject.getSceneMinLocation().getY(), false);
             utils.doActionMsTime(targetMenu, targetObject.getConvexHull().getBounds(), sleepDelay());
         } else {
@@ -659,7 +659,7 @@ public class iPowerSkillerPlugin extends Plugin {
             utils.sendGameMessage("illu - out of astrals runes");
             startPowerSkiller = false;
         }
-        targetMenu = new MenuEntry("Cast", "<col=00ff00>Humidify</col>", 1, 57, -1, 14286954, false);
+        targetMenu = new LegacyMenuEntry("Cast", "<col=00ff00>Humidify</col>", 1, 57, -1, 14286954, false);
         Widget spellWidget = interfaceUtils.getSpellWidget("Humidify");
         if (spellWidget == null) {
             utils.sendGameMessage("illu - unable to find humidify widget");

@@ -9,6 +9,7 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.iblackjack.Task;
 import net.runelite.client.plugins.iutils.ActionQueue;
+import net.runelite.client.plugins.iutils.LegacyMenuEntry;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -40,7 +41,7 @@ public class DropTask extends Task {
         List<WidgetItem> jugs = inventory.getItems(List.of(ItemID.JUG));
         long sleep = 0;
         for (WidgetItem jug : jugs) {
-            entry = new MenuEntry("", "", jug.getId(), MenuAction.ITEM_FIFTH_OPTION.getId(), jug.getIndex(),
+            entry = new LegacyMenuEntry("", "", jug.getId(), MenuAction.ITEM_FIFTH_OPTION.getId(), jug.getIndex(),
                     WidgetInfo.INVENTORY.getId(), false);
             sleep += sleepDelay();
             log.info("Adding jug: {}, delay time: {}", jug.getIndex(), sleep);

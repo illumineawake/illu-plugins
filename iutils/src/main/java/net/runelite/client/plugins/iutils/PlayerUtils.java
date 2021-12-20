@@ -113,7 +113,7 @@ public class PlayerUtils {
         log.info("enabling run");
         executorService.submit(() ->
         {
-            menu.setEntry(new MenuEntry("Toggle Run", "", 1, 57, -1,
+            menu.setEntry(new LegacyMenuEntry("Toggle Run", "", 1, 57, -1,
                     10485783, false));
             mouse.delayMouseClick(runOrbBounds, calc.getRandomIntBetweenRange(10, 250));
         });
@@ -138,7 +138,7 @@ public class PlayerUtils {
         WidgetItem staminaPotion = shouldStamPot(energy);
         if (staminaPotion != null) {
             log.info("using stamina potion");
-            menu.setEntry(new MenuEntry("", "", staminaPotion.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
+            menu.setEntry(new LegacyMenuEntry("", "", staminaPotion.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
                     staminaPotion.getIndex(), 9764864, false));
             mouse.delayMouseClick(staminaPotion.getCanvasBounds(), calc.getRandomIntBetweenRange(5, 200));
             return true;

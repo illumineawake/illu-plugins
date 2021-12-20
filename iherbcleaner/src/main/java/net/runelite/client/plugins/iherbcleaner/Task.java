@@ -40,7 +40,7 @@ public abstract class Task {
     @Inject
     public ObjectUtils object;
 
-    public MenuEntry entry;
+    public LegacyMenuEntry entry;
 
     public abstract boolean validate();
 

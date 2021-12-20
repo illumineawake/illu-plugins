@@ -42,6 +42,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iutils.*;
+import net.runelite.client.plugins.iutils.api.GrandExchangePrices;
 import net.runelite.client.plugins.iutils.scripts.ReflectBreakHandler;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
@@ -113,7 +114,7 @@ public class iCombinationRunecrafterPlugin extends Plugin {
     @Inject
     private ReflectBreakHandler chinBreakHandler;
 
-    MenuEntry targetMenu;
+    LegacyMenuEntry targetMenu;
     Instant botTimer;
     Player player;
     iCombinationRunecrafterState state;
@@ -231,7 +232,7 @@ public class iCombinationRunecrafterPlugin extends Plugin {
             case "getEssence":
                 essenceTypeID = config.getEssence().getId();
                 essenceCost = (essenceTypeID != ItemID.DAEYALT_ESSENCE) ?
-                        utils.getOSBItem(essenceTypeID).getOverall_average() : 0;
+                        GrandExchangePrices.get(essenceTypeID).high : 0;
                 break;
             case "getRunecraftingType":
                 createdRuneTypeID = config.getRunecraftingType().getCreatedRuneID();
@@ -265,14 +266,14 @@ public class iCombinationRunecrafterPlugin extends Plugin {
     }
 
     private void updatePrices() {
-        runesCost = utils.getOSBItem(createdRuneTypeID).getOverall_average();
+        runesCost = GrandExchangePrices.get(createdRuneTypeID).high;
         essenceCost = (essenceTypeID != ItemID.DAEYALT_ESSENCE) ?
-                utils.getOSBItem(essenceTypeID).getOverall_average() : 0;
-        talismanCost = utils.getOSBItem(talismanID).getOverall_average();
-        duelRingCost = utils.getOSBItem(ItemID.RING_OF_DUELING8).getOverall_average();
-        materialRuneCost = utils.getOSBItem(materialRuneID).getOverall_average();
-        necklaceCost = utils.getOSBItem(ItemID.BINDING_NECKLACE).getOverall_average();
-        staminaPotCost = utils.getOSBItem(ItemID.STAMINA_POTION4).getOverall_average();
+                GrandExchangePrices.get(essenceTypeID).high : 0;
+        talismanCost = GrandExchangePrices.get(talismanID).high;
+        duelRingCost = GrandExchangePrices.get(ItemID.RING_OF_DUELING8).high;
+        materialRuneCost = GrandExchangePrices.get(materialRuneID).high;
+        necklaceCost = GrandExchangePrices.get(ItemID.BINDING_NECKLACE).high;
+        staminaPotCost = GrandExchangePrices.get(ItemID.STAMINA_POTION4).high;
         log.info("Item prices set to at - Crafted Runes: {}gp, Essence: {}gp, Talisman: {}gp, " +
                         "Ring of Dueling {}gp, Material Runes: {}gp, Binding Necklace: {}gp, Stamina Potion (4): {}gp",
                 runesCost, essenceCost, talismanCost, duelRingCost, materialRuneCost, necklaceCost, staminaPotCost);
@@ -337,7 +338,7 @@ public class iCombinationRunecrafterPlugin extends Plugin {
     }
 
     private void teleportRingOfDueling(int menuIdentifier) {
-        targetMenu = new MenuEntry("", "", menuIdentifier, MenuAction.CC_OP.getId(), -1,
+        targetMenu = new LegacyMenuEntry("", "", menuIdentifier, MenuAction.CC_OP.getId(), -1,
                 25362456, false);
         Widget ringWidget = client.getWidget(WidgetInfo.EQUIPMENT_RING);
         if (ringWidget != null) {
@@ -499,7 +500,7 @@ public class iCombinationRunecrafterPlugin extends Plugin {
                 case USE_FIRE_ALTAR:
                     WidgetItem airTalisman = inventory.getWidgetItem(talismanID);
                     if (airTalisman != null) {
-                        targetMenu = new MenuEntry("", "", fireAltar.getId(), ITEM_USE_ON_GAME_OBJECT.getId(),
+                        targetMenu = new LegacyMenuEntry("", "", fireAltar.getId(), ITEM_USE_ON_GAME_OBJECT.getId(),
                                 fireAltar.getSceneMinLocation().getX(), fireAltar.getSceneMinLocation().getY(), false);
                         utils.doModifiedActionMsTime(targetMenu, airTalisman.getId(), airTalisman.getIndex(), ITEM_USE_ON_GAME_OBJECT.getId(), fireAltar.getConvexHull().getBounds(), sleepDelay());
                         timeout = tickDelay();
@@ -524,7 +525,7 @@ public class iCombinationRunecrafterPlugin extends Plugin {
                         if (STAMINA_POTIONS.contains(useableItem.getId())) {
                             totalStaminaPots++;
                         }
-                        MenuEntry targetMenu = new MenuEntry("", "", 9, MenuAction.CC_OP_LOW_PRIORITY.getId(),
+                        LegacyMenuEntry targetMenu = new LegacyMenuEntry("", "", 9, MenuAction.CC_OP_LOW_PRIORITY.getId(),
                                 useableItem.getIndex(), 983043, true);
                         utils.doActionMsTime(targetMenu, new Point(0, 0), sleepDelay());
                     }

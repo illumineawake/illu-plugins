@@ -181,7 +181,7 @@ public class RandomHandlerPlugin extends Plugin {
             utils.setRandomEvent(false);
             return;
         }
-        MenuEntry dismissMenu = new MenuEntry("", "", currentRandomEvent.getIndex(), MenuOpcode.NPC_FIFTH_OPTION.getId(), 0, 0, false);
+        MenuEntry dismissMenu = new LegacyMenuEntry("", "", currentRandomEvent.getIndex(), MenuOpcode.NPC_FIFTH_OPTION.getId(), 0, 0, false);
         event.setMenuEntry(dismissMenu);
     }
 

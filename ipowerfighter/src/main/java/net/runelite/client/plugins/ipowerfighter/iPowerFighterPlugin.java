@@ -122,7 +122,7 @@ public class iPowerFighterPlugin extends Plugin {
     Set<String> alchableItems = new HashSet<>();
     Set<Integer> alchBlacklist = Set.of(ItemID.NATURE_RUNE, ItemID.FIRE_RUNE, ItemID.COINS_995, ItemID.RUNE_POUCH, ItemID.HERB_SACK, ItemID.OPEN_HERB_SACK, ItemID.XERICS_TALISMAN, ItemID.HOLY_WRENCH); //Temp fix until isTradeable is fixed
     List<Item> alchLoot = new ArrayList<>();
-    MenuEntry targetMenu;
+    LegacyMenuEntry targetMenu;
     Instant botTimer;
     Instant newLoot;
     Player player;
@@ -269,7 +269,7 @@ public class iPowerFighterPlugin extends Plugin {
     private void lootItem(List<TileItem> itemList) {
         TileItem lootItem = getNearestTileItem(itemList);
         if (lootItem != null) {
-            targetMenu = new MenuEntry("", "", lootItem.getId(), MenuAction.GROUND_ITEM_THIRD_OPTION.getId(),
+            targetMenu = new LegacyMenuEntry("", "", lootItem.getId(), MenuAction.GROUND_ITEM_THIRD_OPTION.getId(),
                     lootItem.getTile().getSceneLocation().getX(), lootItem.getTile().getSceneLocation().getY(), false);
             menu.setEntry(targetMenu);
             mouse.delayMouseClick(lootItem.getTile().getItemLayer().getCanvasTilePoly().getBounds(), sleepDelay());
@@ -326,7 +326,7 @@ public class iPowerFighterPlugin extends Plugin {
         WidgetItem alchItem = inventory.getWidgetItem(itemID);
         if (alchItem != null) {
             log.debug("Alching item: {}", alchItem.getId());
-            targetMenu = new MenuEntry("", "",
+            targetMenu = new LegacyMenuEntry("", "",
                     alchItem.getId(),
                     MenuAction.ITEM_USE_ON_WIDGET.getId(),
                     alchItem.getIndex(), WidgetInfo.INVENTORY.getId(),
@@ -346,7 +346,7 @@ public class iPowerFighterPlugin extends Plugin {
                 if (BONE_BLACKLIST.contains(bone.getId())) {
                     continue;
                 }
-                targetMenu = new MenuEntry("", "", bone.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
+                targetMenu = new LegacyMenuEntry("", "", bone.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
                         bone.getIndex(), WidgetInfo.INVENTORY.getId(), false);
                 menu.setEntry(targetMenu);
                 mouse.handleMouseClick(bone.getCanvasBounds());
@@ -364,7 +364,7 @@ public class iPowerFighterPlugin extends Plugin {
                 if (BONE_BLACKLIST.contains(ashe.getId())) {
                     continue;
                 }
-                targetMenu = new MenuEntry("", "", ashe.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
+                targetMenu = new LegacyMenuEntry("", "", ashe.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
                         ashe.getIndex(), WidgetInfo.INVENTORY.getId(), false);
                 menu.setEntry(targetMenu);
                 mouse.handleMouseClick(ashe.getCanvasBounds());
@@ -374,7 +374,7 @@ public class iPowerFighterPlugin extends Plugin {
         });
     }
     private void attackNPC(NPC npc) {
-        targetMenu = new MenuEntry("", "", npc.getIndex(), MenuAction.NPC_SECOND_OPTION.getId(),
+        targetMenu = new LegacyMenuEntry("", "", npc.getIndex(), MenuAction.NPC_SECOND_OPTION.getId(),
                 0, 0, false);
 
         utils.doActionMsTime(targetMenu, currentNPC.getConvexHull().getBounds(), sleepDelay());
@@ -604,7 +604,7 @@ public class iPowerFighterPlugin extends Plugin {
                 case EQUIP_AMMO:
                     WidgetItem ammoItem = inventory.getWidgetItem(config.ammoID());
                     if (ammoItem != null) {
-                        targetMenu = new MenuEntry("", "", ammoItem.getId(), MenuAction.ITEM_SECOND_OPTION.getId(), ammoItem.getIndex(),
+                        targetMenu = new LegacyMenuEntry("", "", ammoItem.getId(), MenuAction.ITEM_SECOND_OPTION.getId(), ammoItem.getIndex(),
                                 WidgetInfo.INVENTORY.getId(), false);
                         menu.setEntry(targetMenu);
                         mouse.delayMouseClick(ammoItem.getCanvasBounds(), sleepDelay());
@@ -614,7 +614,7 @@ public class iPowerFighterPlugin extends Plugin {
                     WidgetItem bracelet = inventory.getWidgetItem(BRACELETS);
                     if (bracelet != null) {
                         log.debug("Equipping bracelet");
-                        targetMenu = new MenuEntry("", "", bracelet.getId(), MenuAction.ITEM_SECOND_OPTION.getId(), bracelet.getIndex(),
+                        targetMenu = new LegacyMenuEntry("", "", bracelet.getId(), MenuAction.ITEM_SECOND_OPTION.getId(), bracelet.getIndex(),
                                 WidgetInfo.INVENTORY.getId(), false);
                         menu.setEntry(targetMenu);
                         mouse.delayMouseClick(bracelet.getCanvasBounds(), sleepDelay());
@@ -815,14 +815,14 @@ public class iPowerFighterPlugin extends Plugin {
         }
     }
 
-    private void addMenuEntry(MenuEntryAdded event, String option) {
-        List<MenuEntry> entries = new LinkedList<>(Arrays.asList(client.getMenuEntries()));
-
-        MenuEntry entry = new MenuEntry();
-        entry.setOption(option);
-        entry.setTarget(event.getTarget());
-        entry.setOpcode(MenuAction.RUNELITE.getId());
-        entries.add(0, entry);
-        client.setMenuEntries(entries.toArray(new MenuEntry[0]));
+    private void addMenuEntry(MenuEntryAdded event, String option) { //TODO: Update to new menu entry
+//        List<MenuEntry> entries = new LinkedList<>(Arrays.asList(client.getMenuEntries()));
+//
+//        LegacyMenuEntry entry = new LegacyMenuEntry();
+//        entry.setOption(option);
+//        entry.setTarget(event.getTarget());
+//        entry.setOpcode(MenuAction.RUNELITE.getId());
+//        entries.add(0, entry);
+//        client.setMenuEntries(entries.toArray(new MenuEntry[0]));
     }
 }

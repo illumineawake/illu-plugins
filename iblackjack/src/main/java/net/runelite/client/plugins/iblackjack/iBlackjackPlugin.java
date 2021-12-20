@@ -43,6 +43,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iblackjack.tasks.*;
 import net.runelite.client.plugins.iutils.CalculationUtils;
 import net.runelite.client.plugins.iutils.InventoryUtils;
+import net.runelite.client.plugins.iutils.LegacyMenuEntry;
 import net.runelite.client.plugins.iutils.iUtils;
 import net.runelite.client.plugins.iutils.scripts.ReflectBreakHandler;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -96,7 +97,7 @@ public class iBlackjackPlugin extends Plugin {
 
     private TaskSet tasks = new TaskSet();
     public static LocalPoint beforeLoc = new LocalPoint(0, 0);
-    MenuEntry targetMenu;
+    LegacyMenuEntry targetMenu;
     Instant botTimer;
     Player player;
 

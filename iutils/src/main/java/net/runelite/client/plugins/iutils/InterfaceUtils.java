@@ -42,7 +42,7 @@ public class InterfaceUtils {
      * @param index is position based on order including styles that might not be visible. Starting from 0.
      *              e.g. Stab = 0, Lunge = 1, Slash 2, Block = 3
      */
-    public MenuEntry getAttackStyleMenuEntry(int index) {
+    public LegacyMenuEntry getAttackStyleLegacyMenuEntry(int index) {
         if (client == null || client.getGameState() != GameState.LOGGED_IN || index < 0) {
             return null;
         }
@@ -50,12 +50,12 @@ public class InterfaceUtils {
         final int INCREMENT = 4;
         int styleParam = BASE_PARAM + (index * INCREMENT);
 
-        return new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), -1, styleParam, false);
+        return new LegacyMenuEntry("", "", 1, MenuAction.CC_OP.getId(), -1, styleParam, false);
     }
 
     public void logout() {
         int param1 = (client.getWidget(WidgetInfo.LOGOUT_BUTTON) != null) ? 11927560 : 4522007;
-        menu.setEntry(new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), -1, param1, false));
+        menu.setEntry(new LegacyMenuEntry("", "", 1, MenuAction.CC_OP.getId(), -1, param1, false));
         Widget logoutWidget = client.getWidget(WidgetInfo.LOGOUT_BUTTON);
         if (logoutWidget != null) {
             mouse.delayMouseClick(logoutWidget.getBounds(), calc.getRandomIntBetweenRange(5, 200));

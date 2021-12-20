@@ -38,10 +38,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.iutils.CalculationUtils;
-import net.runelite.client.plugins.iutils.MenuUtils;
-import net.runelite.client.plugins.iutils.MouseUtils;
-import net.runelite.client.plugins.iutils.iUtils;
+import net.runelite.client.plugins.iutils.*;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
@@ -89,7 +86,7 @@ public class iRandomHandlerPlugin extends Plugin {
 
     private NPC currentRandomEvent;
     private NPC randomToDismiss;
-    private MenuEntry targetMenu;
+    private LegacyMenuEntry targetMenu;
     private boolean genie;
     long sleepLength;
     int tickLength;
@@ -187,7 +184,7 @@ public class iRandomHandlerPlugin extends Plugin {
             genie = true;
             if (client.getWidget(231, 3) != null) {
                 log.debug("Genie click here to continue found, progressing...");
-                targetMenu = new MenuEntry("Continue", "", 0, MenuAction.WIDGET_TYPE_6.getId(),
+                targetMenu = new LegacyMenuEntry("Continue", "", 0, MenuAction.WIDGET_TYPE_6.getId(),
                         -1, 15138820, false);
                 menu.setEntry(targetMenu);
                 mouse.delayMouseClick(randomToDismiss.getConvexHull().getBounds(), sleepDelay());
@@ -196,7 +193,7 @@ public class iRandomHandlerPlugin extends Plugin {
             }
         }
         log.debug("Dismissing random event");
-        targetMenu = new MenuEntry("", "", randomToDismiss.getIndex(),
+        targetMenu = new LegacyMenuEntry("", "", randomToDismiss.getIndex(),
                 (genie) ? MenuAction.NPC_FIRST_OPTION.getId() : MenuAction.NPC_FIFTH_OPTION.getId(),
                 0, 0, false);
         menu.setEntry(targetMenu);

@@ -15,7 +15,7 @@ public class MenuUtils {
     @Inject
     private Client client;
 
-    public MenuEntry entry;
+    public LegacyMenuEntry entry;
 
     public boolean consumeClick;
     public boolean modifiedMenu;
@@ -32,16 +32,16 @@ public class MenuUtils {
         }
     }
 
-    public void setEntry(MenuEntry menuEntry) {
+    public void setEntry(LegacyMenuEntry menuEntry) {
         entry = menuEntry;
     }
 
-    public void setEntry(MenuEntry menuEntry, boolean consume) {
+    public void setEntry(LegacyMenuEntry menuEntry, boolean consume) {
         entry = menuEntry;
         consumeClick = consume;
     }
 
-    public void setModifiedEntry(MenuEntry menuEntry, int itemID, int itemIndex, int opCode) {
+    public void setModifiedEntry(LegacyMenuEntry menuEntry, int itemID, int itemIndex, int opCode) {
         entry = menuEntry;
         modifiedMenu = true;
         modifiedItemID = itemID;

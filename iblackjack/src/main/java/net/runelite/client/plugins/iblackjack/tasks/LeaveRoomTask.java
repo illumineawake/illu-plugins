@@ -5,6 +5,7 @@ import net.runelite.api.*;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.iblackjack.Location;
 import net.runelite.client.plugins.iblackjack.Task;
+import net.runelite.client.plugins.iutils.LegacyMenuEntry;
 import net.runelite.client.plugins.iutils.WalkUtils;
 
 import javax.inject.Inject;
@@ -41,7 +42,7 @@ public class LeaveRoomTask extends Task {
             log.info(status);
             GameObject ladder = object.findNearestGameObjectWithin(currentRoom.escapeLocation, 1, config.npcType().escapeObjID);
             if (ladder != null) {
-                entry = new MenuEntry("", "", ladder.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
+                entry = new LegacyMenuEntry("", "", ladder.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
                         ladder.getSceneMinLocation().getX(), ladder.getSceneMinLocation().getY(), false);
                 utils.doActionMsTime(entry, ladder.getConvexHull().getBounds(), sleepDelay());
                 timeout = tickDelay();
@@ -50,7 +51,7 @@ public class LeaveRoomTask extends Task {
             WallObject closedCurtain = object.findWallObjectWithin(currentRoom.curtainLocation, 1, ObjectID.CURTAIN_1533);
             if (closedCurtain != null) {
                 status = "Opening curtain";
-                entry = new MenuEntry("", "", closedCurtain.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
+                entry = new LegacyMenuEntry("", "", closedCurtain.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
                         closedCurtain.getLocalLocation().getSceneX(), closedCurtain.getLocalLocation().getSceneY(), false);
                 utils.doActionMsTime(entry, closedCurtain.getConvexHull().getBounds(), sleepDelay());
                 log.debug(status);
