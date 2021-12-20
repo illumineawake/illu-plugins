@@ -66,9 +66,8 @@ public class WalkUtils {
         coordY = localPoint.getSceneY() + calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
         log.debug("Coord values: {}, {}", coordX, coordY);
         walkAction = true;
-        MenuEntry entry = utils.setMenuEntry("Walk here", "", 0, MenuAction.WALK,
-                0, 0, false);
-        utils.doActionMsTime(entry, new Point(0, 0), delay);
+        utils.doActionMsTime(new MenuEntry("Walk here", "", 0, MenuAction.WALK.getId(),
+                0, 0, false), new Point(0, 0), delay);
     }
 
     public void sceneWalk(WorldPoint worldPoint, int rand, long delay) {
@@ -87,9 +86,8 @@ public class WalkUtils {
                 calc.getRandomIntBetweenRange(-Math.abs(rand), Math.abs(rand));
         log.debug("Coord values: {}, {}", coordX, coordY);
         walkAction = true;
-        MenuEntry entry = utils.setMenuEntry("Walk here", "", 0, MenuAction.WALK,
-                0, 0, false);
-        utils.doActionMsTime(entry, new Point(0, 0), delay);
+        utils.doActionMsTime(new MenuEntry("Walk here", "", 0, MenuAction.WALK.getId(),
+                0, 0, false), new Point(0, 0), delay);
     }
 
     /**

@@ -67,7 +67,7 @@ public class BankUtils {
         if (!isOpen()) {
             return;
         }
-        menu.setEntry(utils.setMenuEntry("", "", 1, MenuAction.CC_OP, 11, 786434, false)); //close bank
+        menu.setEntry(new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), 11, 786434, false)); //close bank
         Widget bankCloseWidget = client.getWidget(WidgetInfo.BANK_PIN_EXIT_BUTTON);
         if (bankCloseWidget != null) {
             executorService.submit(() -> mouse.handleMouseClick(bankCloseWidget.getBounds()));
@@ -195,9 +195,9 @@ public class BankUtils {
         {
             Widget depositInventoryWidget = client.getWidget(WidgetInfo.BANK_DEPOSIT_INVENTORY);
             if (isDepositBoxOpen()) {
-                menu.setEntry(utils.setMenuEntry("", "", 1, MenuAction.CC_OP, -1, 12582916, false)); //deposit all in bank interface
+                menu.setEntry(new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), -1, 12582916, false)); //deposit all in bank interface
             } else {
-                menu.setEntry(utils.setMenuEntry("", "", 1, MenuAction.CC_OP, -1, 786474, false)); //deposit all in bank interface
+                menu.setEntry(new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), -1, 786474, false)); //deposit all in bank interface
             }
             if ((depositInventoryWidget != null)) {
                 mouse.handleMouseClick(depositInventoryWidget.getBounds());
@@ -240,7 +240,7 @@ public class BankUtils {
             return;
         }
         boolean depositBox = isDepositBoxOpen();
-        menu.setEntry(utils.setMenuEntry("", "", (depositBox) ? 1 : 8, MenuAction.CC_OP, item.getIndex(),
+        menu.setEntry(new MenuEntry("", "", (depositBox) ? 1 : 8, MenuAction.CC_OP.getId(), item.getIndex(),
                 (depositBox) ? 12582914 : 983043, false));
         mouse.handleMouseClick(item.getCanvasBounds());
     }
@@ -286,7 +286,7 @@ public class BankUtils {
         }
         boolean depositBox = isDepositBoxOpen();
 
-        menu.setEntry(utils.setMenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 2 : 3, MenuAction.CC_OP, item.getIndex(),
+        menu.setEntry(new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 2 : 3, MenuAction.CC_OP.getId(), item.getIndex(),
                 (depositBox) ? 12582914 : 983043, false));
         mouse.delayMouseClick(item.getCanvasBounds(), calc.getRandomIntBetweenRange(0, 50));
     }
@@ -301,7 +301,7 @@ public class BankUtils {
     public void withdrawAllItem(Widget bankItemWidget) {
         executorService.submit(() ->
         {
-            menu.setEntry(utils.setMenuEntry("Withdraw-All", "", 7, MenuAction.CC_OP, bankItemWidget.getIndex(), WidgetInfo.BANK_ITEM_CONTAINER.getId(), false));
+            menu.setEntry(new MenuEntry("Withdraw-All", "", 7, MenuAction.CC_OP.getId(), bankItemWidget.getIndex(), WidgetInfo.BANK_ITEM_CONTAINER.getId(), false));
             mouse.clickRandomPointCenter(-200, 200);
         });
     }
@@ -316,7 +316,7 @@ public class BankUtils {
     }
 
     public void withdrawItem(Widget bankItemWidget) {
-        MenuEntry entry = utils.setMenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 1 : 2, MenuAction.CC_OP,
+        MenuEntry entry = new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 1 : 2, MenuAction.CC_OP.getId(),
                 bankItemWidget.getIndex(), WidgetInfo.BANK_ITEM_CONTAINER.getId(), false);
         utils.doActionClientTick(entry, bankItemWidget.getBounds(), 0);
     }
@@ -348,7 +348,7 @@ public class BankUtils {
                         break;
                 }
                 utils.doActionMsTime(
-                        utils.setMenuEntry("", "", identifier, MenuAction.CC_OP, item.getIndex(), WidgetInfo.BANK_ITEM_CONTAINER.getId(), false),
+                        new MenuEntry("", "", identifier, MenuAction.CC_OP.getId(), item.getIndex(), WidgetInfo.BANK_ITEM_CONTAINER.getId(), false),
                         new Point(client.getCenterX() + calc.getRandomIntBetweenRange(-200, 200), client.getCenterY() + calc.getRandomIntBetweenRange(-200, 200)),
                         50
                 );
