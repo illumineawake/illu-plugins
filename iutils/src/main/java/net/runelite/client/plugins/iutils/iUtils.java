@@ -27,8 +27,6 @@ import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.iObject;
 import net.runelite.client.plugins.iutils.game.iWidget;
 import net.runelite.http.api.ge.GrandExchangeClient;
-import net.runelite.http.api.osbuddy.OSBGrandExchangeClient;
-import net.runelite.http.api.osbuddy.OSBGrandExchangeResult;
 import okhttp3.OkHttpClient;
 import org.pf4j.Extension;
 
@@ -99,10 +97,10 @@ public class iUtils extends Plugin {
     @Inject
     ExecutorService executorService;
 
-    @Inject
-    private OSBGrandExchangeClient osbGrandExchangeClient;
-
-    private OSBGrandExchangeResult osbGrandExchangeResult;
+//    @Inject
+//    private OSBGrandExchangeClient osbGrandExchangeClient;
+//
+//    private OSBGrandExchangeResult osbGrandExchangeResult;
 
     @Inject
     private ItemManager itemManager;
@@ -120,10 +118,10 @@ public class iUtils extends Plugin {
     private int gameTick = 0;
     int tickActions;
 
-    @Provides
-    OSBGrandExchangeClient provideOsbGrandExchangeClient(OkHttpClient okHttpClient) {
-        return new OSBGrandExchangeClient(okHttpClient);
-    }
+//    @Provides
+//    OSBGrandExchangeClient provideOsbGrandExchangeClient(OkHttpClient okHttpClient) {
+//        return new OSBGrandExchangeClient(okHttpClient);
+//    }
 
     @Provides
     GrandExchangeClient provideGrandExchangeClient(OkHttpClient okHttpClient) {
@@ -298,12 +296,12 @@ public class iUtils extends Plugin {
         action.delayClientTicks(ticksToDelay, runnable);
     }
 
-    public void doActionClientTick(MenuEntry entry, Rectangle rect, long ticksToDelay) {
+    public void doActionClientTick(LegacyMenuEntry entry, Rectangle rect, long ticksToDelay) {
         Point point = mouse.getClickPoint(rect);
         doActionClientTick(entry, point, ticksToDelay);
     }
 
-    public void doActionClientTick(MenuEntry entry, Point point, long ticksToDelay) {
+    public void doActionClientTick(LegacyMenuEntry entry, Point point, long ticksToDelay) {
         Runnable runnable = () -> {
             menu.setEntry(entry);
             mouse.handleMouseClick(point);
@@ -318,7 +316,7 @@ public class iUtils extends Plugin {
         }
         Rectangle rectangle = (object.getConvexHull().getBounds() != null) ? object.getConvexHull().getBounds() :
                 new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
-        MenuEntry entry = new MenuEntry("", "", object.getId(), menuOpcodeID, object.getSceneMinLocation().getX(),
+        LegacyMenuEntry entry = new LegacyMenuEntry("", "", object.getId(), menuOpcodeID, object.getSceneMinLocation().getX(),
                 object.getSceneMinLocation().getY(), false);
         doActionClientTick(entry, rectangle, ticksToDelay);
         iObject test;
@@ -331,7 +329,7 @@ public class iUtils extends Plugin {
         }
         Rectangle rectangle = (object.getCanvasTilePoly().getBounds() != null) ? object.getCanvasTilePoly().getBounds() :
                 new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
-        MenuEntry entry = new MenuEntry("", "", object.getId(), menuOpcodeID, object.getLocalLocation().getSceneX(),
+        LegacyMenuEntry entry = new LegacyMenuEntry("", "", object.getId(), menuOpcodeID, object.getLocalLocation().getSceneX(),
                 object.getLocalLocation().getSceneY(), false);
         doActionClientTick(entry, rectangle, ticksToDelay);
     }
@@ -342,7 +340,7 @@ public class iUtils extends Plugin {
         }
         Rectangle rectangle = (npc.getConvexHull().getBounds() != null) ? npc.getConvexHull().getBounds() :
                 new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
-        MenuEntry entry = new MenuEntry("", "", npc.getIndex(), menuOpcodeID, 0, 0, false);
+        LegacyMenuEntry entry = new LegacyMenuEntry("", "", npc.getIndex(), menuOpcodeID, 0, 0, false);
         doActionClientTick(entry, rectangle, ticksToDelay);
     }
 
@@ -350,7 +348,7 @@ public class iUtils extends Plugin {
         if (item == null) {
             return;
         }
-        MenuEntry entry = new MenuEntry("", "", item.getId(), menuOpcodeID,
+        LegacyMenuEntry entry = new LegacyMenuEntry("", "", item.getId(), menuOpcodeID,
                 item.getIndex(), menuParam1ID, true);
         doActionClientTick(entry, item.getCanvasBounds().getBounds(), ticksToDelay);
     }
@@ -362,12 +360,12 @@ public class iUtils extends Plugin {
         action.delayGameTicks(ticksToDelay, runnable);
     }
 
-    public void doActionGameTick(MenuEntry entry, Rectangle rect, long ticksToDelay) {
+    public void doActionGameTick(LegacyMenuEntry entry, Rectangle rect, long ticksToDelay) {
         Point point = mouse.getClickPoint(rect);
         doActionGameTick(entry, point, ticksToDelay);
     }
 
-    public void doActionGameTick(MenuEntry entry, Point point, long ticksToDelay) {
+    public void doActionGameTick(LegacyMenuEntry entry, Point point, long ticksToDelay) {
 
         Runnable runnable = () -> {
             menu.setEntry(entry);
@@ -383,7 +381,7 @@ public class iUtils extends Plugin {
         }
         Rectangle rectangle = (object.getConvexHull().getBounds() != null) ? object.getConvexHull().getBounds() :
                 new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
-        MenuEntry entry = new MenuEntry("", "", object.getId(), menuOpcodeID, object.getSceneMinLocation().getX(),
+        LegacyMenuEntry entry = new LegacyMenuEntry("", "", object.getId(), menuOpcodeID, object.getSceneMinLocation().getX(),
                 object.getSceneMinLocation().getY(), false);
         doActionGameTick(entry, rectangle, ticksToDelay);
     }
@@ -394,7 +392,7 @@ public class iUtils extends Plugin {
         }
         Rectangle rectangle = (object.getCanvasTilePoly().getBounds() != null) ? object.getCanvasTilePoly().getBounds() :
                 new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
-        MenuEntry entry = new MenuEntry("", "", object.getId(), menuOpcodeID, object.getLocalLocation().getSceneX(),
+        LegacyMenuEntry entry = new LegacyMenuEntry("", "", object.getId(), menuOpcodeID, object.getLocalLocation().getSceneX(),
                 object.getLocalLocation().getSceneY(), false);
         doActionGameTick(entry, rectangle, ticksToDelay);
     }
@@ -405,7 +403,7 @@ public class iUtils extends Plugin {
         }
         Rectangle rectangle = (npc.getConvexHull().getBounds() != null) ? npc.getConvexHull().getBounds() :
                 new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
-        MenuEntry entry = new MenuEntry("", "", npc.getIndex(), menuOpcodeID, 0, 0, false);
+        LegacyMenuEntry entry = new LegacyMenuEntry("", "", npc.getIndex(), menuOpcodeID, 0, 0, false);
         doActionGameTick(entry, rectangle, ticksToDelay);
     }
 
@@ -413,24 +411,24 @@ public class iUtils extends Plugin {
         if (item == null) {
             return;
         }
-        MenuEntry entry = new MenuEntry("", "", item.getId(), menuOpcodeID,
+        LegacyMenuEntry entry = new LegacyMenuEntry("", "", item.getId(), menuOpcodeID,
                 item.getIndex(), menuParam1ID, true);
         doActionGameTick(entry, item.getCanvasBounds().getBounds(), ticksToDelay);
     }
 
     //Use with caution, does not pair with mouse click and is potentially detectable
-    public void doInvokeMsTime(MenuEntry entry, long timeToDelay) {
+    public void doInvokeMsTime(LegacyMenuEntry entry, long timeToDelay) {
         Runnable runnable = () -> client.invokeMenuAction(entry.getOption(), entry.getTarget(), entry.getIdentifier(),
                 entry.getOpcode(), entry.getParam0(), entry.getParam1());
         action.delayTime(timeToDelay, runnable);
     }
 
-    public void doActionMsTime(MenuEntry entry, Rectangle rect, long timeToDelay) {
+    public void doActionMsTime(LegacyMenuEntry entry, Rectangle rect, long timeToDelay) {
         Point point = mouse.getClickPoint(rect);
         doActionMsTime(entry, point, timeToDelay);
     }
 
-    public void doActionMsTime(MenuEntry entry, Point point, long timeToDelay) {
+    public void doActionMsTime(LegacyMenuEntry entry, Point point, long timeToDelay) {
         Runnable runnable = () -> {
             menu.setEntry(entry);
             mouse.handleMouseClick(point);
@@ -445,7 +443,7 @@ public class iUtils extends Plugin {
         }
         Rectangle rectangle = (object.getConvexHull().getBounds() != null) ? object.getConvexHull().getBounds() :
                 new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
-        MenuEntry entry = new MenuEntry("", "", object.getId(), menuOpcodeID, object.getSceneMinLocation().getX(),
+        LegacyMenuEntry entry = new LegacyMenuEntry("", "", object.getId(), menuOpcodeID, object.getSceneMinLocation().getX(),
                 object.getSceneMinLocation().getY(), false);
         doActionMsTime(entry, rectangle, timeToDelay);
     }
@@ -456,7 +454,7 @@ public class iUtils extends Plugin {
         }
         Rectangle rectangle = (object.getCanvasTilePoly().getBounds() != null) ? object.getCanvasTilePoly().getBounds() :
                 new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
-        MenuEntry entry = new MenuEntry("", "", object.getId(), menuOpcodeID, object.getLocalLocation().getSceneX(),
+        LegacyMenuEntry entry = new LegacyMenuEntry("", "", object.getId(), menuOpcodeID, object.getLocalLocation().getSceneX(),
                 object.getLocalLocation().getSceneY(), false);
         doActionMsTime(entry, rectangle, timeToDelay);
     }
@@ -467,7 +465,7 @@ public class iUtils extends Plugin {
         }
         Rectangle rectangle = (npc.getConvexHull().getBounds() != null) ? npc.getConvexHull().getBounds() :
                 new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
-        MenuEntry entry = new MenuEntry("", "", npc.getIndex(), menuOpcodeID, 0, 0, false);
+        LegacyMenuEntry entry = new LegacyMenuEntry("", "", npc.getIndex(), menuOpcodeID, 0, 0, false);
         doActionMsTime(entry, rectangle, timeToDelay);
     }
 
@@ -475,17 +473,17 @@ public class iUtils extends Plugin {
         if (item == null) {
             return;
         }
-        MenuEntry entry = new MenuEntry("", "", item.getId(), menuOpcodeID,
+        LegacyMenuEntry entry = new LegacyMenuEntry("", "", item.getId(), menuOpcodeID,
                 item.getIndex(), menuParam1ID, true);
         doActionMsTime(entry, item.getCanvasBounds().getBounds(), timeToDelay);
     }
 
-    public void doModifiedActionGameTick(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Rectangle rect, long ticksToDelay) {
+    public void doModifiedActionGameTick(LegacyMenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Rectangle rect, long ticksToDelay) {
         Point point = mouse.getClickPoint(rect);
         doModifiedActionGameTick(entry, modifiedID, modifiedIndex, modifiedOpcode, point, ticksToDelay);
     }
 
-    public void doModifiedActionGameTick(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Point point, long ticksToDelay) {
+    public void doModifiedActionGameTick(LegacyMenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Point point, long ticksToDelay) {
         Runnable runnable = () -> {
             menu.setModifiedEntry(entry, modifiedID, modifiedIndex, modifiedOpcode);
             mouse.handleMouseClick(point);
@@ -495,7 +493,7 @@ public class iUtils extends Plugin {
     }
 
     //Use with caution, does not pair with mouse click and is potentially detectable
-    public void doModifiedInvokeGameTick(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, long ticksToDelay) {
+    public void doModifiedInvokeGameTick(LegacyMenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, long ticksToDelay) {
         Runnable runnable = () -> {
             client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
             client.setSelectedItemSlot(modifiedIndex);
@@ -507,12 +505,12 @@ public class iUtils extends Plugin {
         action.delayGameTicks(ticksToDelay, runnable);
     }
 
-    public void doModifiedActionMsTime(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Rectangle rect, long timeToDelay) {
+    public void doModifiedActionMsTime(LegacyMenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Rectangle rect, long timeToDelay) {
         Point point = mouse.getClickPoint(rect);
         doModifiedActionMsTime(entry, modifiedID, modifiedIndex, modifiedOpcode, point, timeToDelay);
     }
 
-    public void doModifiedActionMsTime(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Point point, long timeToDelay) {
+    public void doModifiedActionMsTime(LegacyMenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, Point point, long timeToDelay) {
         Runnable runnable = () -> {
             menu.setModifiedEntry(entry, modifiedID, modifiedIndex, modifiedOpcode);
             mouse.handleMouseClick(point);
@@ -522,7 +520,7 @@ public class iUtils extends Plugin {
     }
 
     //Use with caution, does not pair with mouse click and is potentially detectable
-    public void doModifiedInvokeMsTime(MenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, long timeToDelay) {
+    public void doModifiedInvokeMsTime(LegacyMenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, long timeToDelay) {
         Runnable runnable = () -> {
             client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
             client.setSelectedItemSlot(modifiedIndex);
@@ -534,21 +532,21 @@ public class iUtils extends Plugin {
         action.delayTime(timeToDelay, runnable);
     }
 
-    public void oneClickCastSpell(WidgetInfo spellWidget, MenuEntry targetMenu, long sleepLength) {
+    public void oneClickCastSpell(WidgetInfo spellWidget, LegacyMenuEntry targetMenu, long sleepLength) {
         menu.setEntry(targetMenu, true);
         mouse.delayMouseClick(new Rectangle(0, 0, 100, 100), sleepLength);
         menu.setSelectedSpell(spellWidget);
         mouse.delayMouseClick(new Rectangle(0, 0, 100, 100), calc.getRandomIntBetweenRange(20, 60));
     }
 
-    public void oneClickCastSpell(WidgetInfo spellWidget, MenuEntry targetMenu, Rectangle targetBounds, long sleepLength) {
+    public void oneClickCastSpell(WidgetInfo spellWidget, LegacyMenuEntry targetMenu, Rectangle targetBounds, long sleepLength) {
         menu.setEntry(targetMenu, false);
         menu.setSelectedSpell(spellWidget);
         mouse.delayMouseClick(targetBounds, sleepLength);
     }
 
     public void setCombatStyle(int index) {
-        MenuEntry entry = interfaceUtils.getAttackStyleMenuEntry(index);
+        LegacyMenuEntry entry = interfaceUtils.getAttackStyleLegacyMenuEntry(index);
         doActionClientTick(entry, new Point(0, 0), 0);
     }
 
@@ -565,20 +563,20 @@ public class iUtils extends Plugin {
                         .build());
     }
 
-    public OSBGrandExchangeResult getOSBItem(int itemId) {
-        log.debug("Looking up OSB item price {}", itemId);
-
-        try {
-            final OSBGrandExchangeResult result = osbGrandExchangeClient.lookupItem(itemId);
-            if (result != null && result.getOverall_average() > 0) {
-                return result;
-            }
-        } catch (IOException e) {
-            log.debug("Error getting price of item {}", itemId, e);
-        }
-
-        return null;
-    }
+//    public OSBGrandExchangeResult getOSBItem(int itemId) {
+//        log.debug("Looking up OSB item price {}", itemId);
+//
+//        try {
+//            final OSBGrandExchangeResult result = osbGrandExchangeClient.lookupItem(itemId);
+//            if (result != null && result.getOverall_average() > 0) {
+//                return result;
+//            }
+//        } catch (IOException e) {
+//            log.debug("Error getting price of item {}", itemId, e);
+//        }
+//
+//        return null;
+//    }
 
     public ItemComposition getCompositionItem(int itemId) {
         log.debug("Looking up CompositionItem: {}", itemId);
@@ -685,7 +683,8 @@ public class iUtils extends Plugin {
             return;
         }
         if (menu.entry != null) {
-            client.setLeftClickMenuEntry(menu.entry);
+            client.insertMenuItem(menu.entry.option, menu.entry.target, menu.entry.opcode, menu.entry.identifier, menu.entry.param0, menu.entry.param1, menu.entry.forceLeftClick);
+//            client.setLeftClickMenuEntry(menu.entry);
             if (menu.modifiedMenu) {
                 event.setModified();
             }

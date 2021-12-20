@@ -247,14 +247,14 @@ public class BlastFurnaceBotPlugin extends Plugin {
     private void openBank() {
         GameObject bankObject = object.findNearestGameObject(26707);
         if (bankObject != null) {
-            targetMenu = new MenuEntry("", "", bankObject.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), bankObject.getSceneMinLocation().getX(), bankObject.getSceneMinLocation().getY(), true);
+            targetMenu = new LegacyMenuEntry("", "", bankObject.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), bankObject.getSceneMinLocation().getX(), bankObject.getSceneMinLocation().getY(), true);
             mouse.clickRandomPointCenter(-100, 100);
             timeout = calc.getRandomIntBetweenRange(1, tickDelay);
         }
     }
 
     private void putConveyorBelt() {
-        targetMenu = new MenuEntry("", "", conveyorBelt.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), conveyorBelt.getSceneMinLocation().getX(), conveyorBelt.getSceneMinLocation().getY(), false);
+        targetMenu = new LegacyMenuEntry("", "", conveyorBelt.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), conveyorBelt.getSceneMinLocation().getX(), conveyorBelt.getSceneMinLocation().getY(), false);
         utils.sleep(10, 100);
         mouse.clickRandomPointCenter(-100, 100);
         timeout = calc.getRandomIntBetweenRange(1, tickDelay);
@@ -263,21 +263,21 @@ public class BlastFurnaceBotPlugin extends Plugin {
     private void collectFurnace() {
         log.info("At collectFurnace(), collecting bars");
         targetMenu = (client.getVar(Varbits.BAR_DISPENSER) == 1) ?
-                new MenuEntry("", "", 0, MenuOpcode.WALK.getId(), barDispenser.getSceneMinLocation().getX(), barDispenser.getSceneMinLocation().getY(), false)
-                : new MenuEntry("", "", barDispenser.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), barDispenser.getSceneMinLocation().getX(), barDispenser.getSceneMinLocation().getY(), false);
+                new LegacyMenuEntry("", "", 0, MenuOpcode.WALK.getId(), barDispenser.getSceneMinLocation().getX(), barDispenser.getSceneMinLocation().getY(), false)
+                : new LegacyMenuEntry("", "", barDispenser.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), barDispenser.getSceneMinLocation().getX(), barDispenser.getSceneMinLocation().getY(), false);
 
         mouse.clickRandomPointCenter(-100, 100);
         timeout = calc.getRandomIntBetweenRange(1, tickDelay);
     }
 
     private void fillCoalBag(WidgetItem coalBag) {
-        targetMenu = new MenuEntry("", "", coalBag.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), coalBag.getIndex(), 9764864, false);
+        targetMenu = new LegacyMenuEntry("", "", coalBag.getId(), MenuOpcode.ITEM_FIRST_OPTION.getId(), coalBag.getIndex(), 9764864, false);
         utils.sleep(25, 100);
         mouse.clickRandomPointCenter(-100, 100);
     }
 
     private void emptyCoalBag(WidgetItem coalBag) {
-        targetMenu = new MenuEntry("", "", coalBag.getId(), MenuOpcode.ITEM_FOURTH_OPTION.getId(), coalBag.getIndex(), 9764864, false);
+        targetMenu = new LegacyMenuEntry("", "", coalBag.getId(), MenuOpcode.ITEM_FOURTH_OPTION.getId(), coalBag.getIndex(), 9764864, false);
         utils.sleep(25, 100);
         mouse.clickRandomPointCenter(-100, 100);
     }
@@ -333,7 +333,7 @@ public class BlastFurnaceBotPlugin extends Plugin {
                 }
                 Widget payDialog = client.getWidget(WidgetInfo.DIALOG_OPTION_OPTION1);
                 if (payDialog != null) {
-                    targetMenu = new MenuEntry("", "", 0, MenuOpcode.WIDGET_TYPE_6.getId(), 1, 14352385, false);
+                    targetMenu = new LegacyMenuEntry("", "", 0, MenuOpcode.WIDGET_TYPE_6.getId(), 1, 14352385, false);
                     mouse.clickRandomPointCenter(-100, 100);
                     return PAY_FOREMAN;
                 }
@@ -344,7 +344,7 @@ public class BlastFurnaceBotPlugin extends Plugin {
                 }
                 NPC foreman = utils.findNearestNpc(2923);
                 if (foreman != null) {
-                    targetMenu = new MenuEntry("", "", foreman.getIndex(), MenuOpcode.NPC_THIRD_OPTION.getId(), 0, 0, false);
+                    targetMenu = new LegacyMenuEntry("", "", foreman.getIndex(), MenuOpcode.NPC_THIRD_OPTION.getId(), 0, 0, false);
                     mouse.clickRandomPointCenter(-100, 100);
                     return PAY_FOREMAN;
                 }
@@ -384,7 +384,7 @@ public class BlastFurnaceBotPlugin extends Plugin {
                     //TODO handle filling up coffer
                     GameObject coffer = object.findNearestGameObject(BF_COFFER);
                     if (coffer != null) {
-                        targetMenu = new MenuEntry("", "", coffer.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), coffer.getSceneMinLocation().getX(), coffer.getSceneMinLocation().getY(), false);
+                        targetMenu = new LegacyMenuEntry("", "", coffer.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), coffer.getSceneMinLocation().getX(), coffer.getSceneMinLocation().getY(), false);
                         utils.sleep(50, 250);
                         mouse.clickRandomPointCenter(-100, 100);
                         timeout = calc.getRandomIntBetweenRange(1, tickDelay);
@@ -645,13 +645,13 @@ public class BlastFurnaceBotPlugin extends Plugin {
         }
         //Collect Bars
         if (event.getGroupId() == WidgetID.MULTISKILL_MENU_GROUP_ID) {
-            targetMenu = new MenuEntry("", "", 1, 57, -1, 17694734, false); //Take Bar from Bar Dispenser
+            targetMenu = new LegacyMenuEntry("", "", 1, 57, -1, 17694734, false); //Take Bar from Bar Dispenser
             mouse.clickRandomPointCenter(-100, 100);
             return;
         }
         //Deposit coins widget option
         if (event.getGroupId() == WidgetID.DIALOG_OPTION_GROUP_ID) {
-            targetMenu = new MenuEntry("", "", 0, 30, 1, 14352385, false); //Take Bar from Bar Dispenser
+            targetMenu = new LegacyMenuEntry("", "", 0, 30, 1, 14352385, false); //Take Bar from Bar Dispenser
             mouse.clickRandomPointCenter(-100, 100);
             return;
         }

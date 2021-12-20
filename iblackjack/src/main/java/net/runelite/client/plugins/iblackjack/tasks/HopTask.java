@@ -12,6 +12,7 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.WorldService;
 import net.runelite.client.plugins.iblackjack.Task;
+import net.runelite.client.plugins.iutils.LegacyMenuEntry;
 import net.runelite.client.util.WorldUtil;
 import net.runelite.http.api.worlds.World;
 import net.runelite.http.api.worlds.WorldResult;
@@ -145,7 +146,7 @@ public class HopTask extends Task {
     public void onGameTick(GameTick event) {
         if (isShopOpen()) {
             status = "Close shop and hop";
-            entry = new MenuEntry("", "", 1, MenuAction.CC_OP.getId(), 11, 19660801, false);
+            entry = new LegacyMenuEntry("", "", 1, MenuAction.CC_OP.getId(), 11, 19660801, false);
             utils.doActionMsTime(entry, new Point(0, 0), sleepDelay());
             shouldHop = true;
         } else if (client.getWidget(WidgetInfo.WORLD_SWITCHER_LIST) == null) {

@@ -118,7 +118,7 @@ public class iRooftopAgilityPlugin extends Plugin {
     Instant botTimer;
     TileItem markOfGrace;
     Tile markOfGraceTile;
-    MenuEntry targetMenu;
+    LegacyMenuEntry targetMenu;
     LocalPoint beforeLoc = new LocalPoint(0, 0); //initiate to mitigate npe
     WidgetItem alchItem;
     Portals priffPortal;
@@ -260,7 +260,7 @@ public class iRooftopAgilityPlugin extends Plugin {
 
     private void highAlchItem() {
         if (!setHighAlch) {
-            targetMenu = new MenuEntry("Cast", "<col=00ff00>High Level Alchemy</col>", 0,
+            targetMenu = new LegacyMenuEntry("Cast", "<col=00ff00>High Level Alchemy</col>", 0,
                     MenuAction.WIDGET_TYPE_2.getId(), -1, 14286887, false);
             Widget spellWidget = client.getWidget(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY);
             if (spellWidget != null) {
@@ -273,7 +273,7 @@ public class iRooftopAgilityPlugin extends Plugin {
             setHighAlch = true;
         } else {
             alchItem = inventory.getWidgetItem(List.of(config.alchItemID(), (config.alchItemID() + 1)));
-            targetMenu = new MenuEntry("Cast", "<col=00ff00>High Level Alchemy</col><col=ffffff> ->",
+            targetMenu = new LegacyMenuEntry("Cast", "<col=00ff00>High Level Alchemy</col><col=ffffff> ->",
                     alchItem.getId(),
                     MenuAction.ITEM_USE_ON_WIDGET.getId(),
                     alchItem.getIndex(), 9764864,
@@ -286,7 +286,7 @@ public class iRooftopAgilityPlugin extends Plugin {
 
     private void eatSummerPie() {
         WidgetItem summerPieItem = inventory.getWidgetItem(SUMMER_PIE_IDS);
-        targetMenu = new MenuEntry("", "", summerPieItem.getId(), MenuAction.ITEM_FIRST_OPTION.getId(), summerPieItem.getIndex(),
+        targetMenu = new LegacyMenuEntry("", "", summerPieItem.getId(), MenuAction.ITEM_FIRST_OPTION.getId(), summerPieItem.getIndex(),
                 WidgetInfo.INVENTORY.getId(), false);
         menu.setEntry(targetMenu);
         mouse.delayMouseClick(summerPieItem.getCanvasBounds(), sleepDelay());
@@ -306,7 +306,7 @@ public class iRooftopAgilityPlugin extends Plugin {
         if (bank.isOpen()) {
             //if (client.getVarbitValue(Varbits.BANK_NOTE_FLAG.getId()) != 1)
             if (client.getVarbitValue(3958) != 1) {
-                targetMenu = new MenuEntry("Note", "", 1, MenuAction.CC_OP.getId(), -1, 786455, false);
+                targetMenu = new LegacyMenuEntry("Note", "", 1, MenuAction.CC_OP.getId(), -1, 786455, false);
                 menu.setEntry(targetMenu);
                 mouse.delayClickRandomPointCenter(-200, 200, sleepDelay());
                 return;
@@ -345,7 +345,7 @@ public class iRooftopAgilityPlugin extends Plugin {
         } else {
             GameObject bankBooth = object.findNearestGameObject(getCurrentObstacle().getBankID());
             if (bankBooth != null) {
-                targetMenu = new MenuEntry("", "", bankBooth.getId(),
+                targetMenu = new LegacyMenuEntry("", "", bankBooth.getId(),
                         MenuAction.GAME_OBJECT_SECOND_OPTION.getId(), bankBooth.getSceneMinLocation().getX(),
                         bankBooth.getSceneMinLocation().getY(), false);
                 menu.setEntry(targetMenu);
@@ -366,7 +366,7 @@ public class iRooftopAgilityPlugin extends Plugin {
             if (obstacle.getObstacleType() == iRooftopAgilityObstacleType.DECORATION) {
                 DecorativeObject decObstacle = object.findNearestDecorObject(obstacle.getObstacleId());
                 if (decObstacle != null) {
-                    targetMenu = new MenuEntry("", "", decObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
+                    targetMenu = new LegacyMenuEntry("", "", decObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), decObstacle.getLocalLocation().getSceneX(), decObstacle.getLocalLocation().getSceneY(), false);
                     menu.setEntry(targetMenu);
                     Rectangle clickPoint = (decObstacle.getConvexHull() != null) ? decObstacle.getConvexHull().getBounds() :
                             new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
@@ -377,7 +377,7 @@ public class iRooftopAgilityPlugin extends Plugin {
             if (obstacle.getObstacleType() == iRooftopAgilityObstacleType.GROUND_OBJECT) {
                 GroundObject groundObstacle = object.findNearestGroundObject(obstacle.getObstacleId());
                 if (groundObstacle != null) {
-                    targetMenu = new MenuEntry("", "", groundObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
+                    targetMenu = new LegacyMenuEntry("", "", groundObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), groundObstacle.getLocalLocation().getSceneX(), groundObstacle.getLocalLocation().getSceneY(), false);
                     menu.setEntry(targetMenu);
                     Rectangle clickPoint = (groundObstacle.getConvexHull() != null) ? groundObstacle.getConvexHull().getBounds() :
                             new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
@@ -387,7 +387,7 @@ public class iRooftopAgilityPlugin extends Plugin {
             }
             GameObject objObstacle = object.findNearestGameObject(obstacle.getObstacleId());
             if (objObstacle != null) {
-                targetMenu = new MenuEntry("", "", objObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
+                targetMenu = new LegacyMenuEntry("", "", objObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), objObstacle.getSceneMinLocation().getX(), objObstacle.getSceneMinLocation().getY(), false);
                 menu.setEntry(targetMenu);
                 Rectangle clickPoint = (objObstacle.getConvexHull() != null) ? objObstacle.getConvexHull().getBounds() :
                         new Rectangle(client.getCenterX() - 50, client.getCenterY() - 50, 100, 100);
@@ -535,7 +535,7 @@ public class iRooftopAgilityPlugin extends Plugin {
                     break;
                 case MARK_OF_GRACE:
                     log.debug("Picking up mark of grace");
-                    targetMenu = new MenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
+                    targetMenu = new LegacyMenuEntry("", "", ItemID.MARK_OF_GRACE, 20, markOfGraceTile.getSceneLocation().getX(), markOfGraceTile.getSceneLocation().getY(), false);
                     menu.setEntry(targetMenu);
                     mouse.delayClickRandomPointCenter(-200, 200, sleepDelay());
                     break;
@@ -551,7 +551,7 @@ public class iRooftopAgilityPlugin extends Plugin {
                 case MOVING:
                     break;
                 case CAST_CAMELOT_TELEPORT:
-                    targetMenu = new MenuEntry("", "", 2, MenuAction.CC_OP.getId(), -1,
+                    targetMenu = new LegacyMenuEntry("", "", 2, MenuAction.CC_OP.getId(), -1,
                             14286879, false);
                     Widget spellWidget = client.getWidget(WidgetInfo.SPELL_CAMELOT_TELEPORT);
                     if (spellWidget != null) {
@@ -565,7 +565,7 @@ public class iRooftopAgilityPlugin extends Plugin {
                     break;
                 case PRIFF_PORTAL:
                     log.info("Using Priff portal");
-                    targetMenu = new MenuEntry("", "", spawnedPortal.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
+                    targetMenu = new LegacyMenuEntry("", "", spawnedPortal.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
                             spawnedPortal.getSceneMinLocation().getX(), spawnedPortal.getSceneMinLocation().getY(), false);
                     menu.setEntry(targetMenu);
                     mouse.delayMouseClick(spawnedPortal.getConvexHull().getBounds(), sleepDelay());

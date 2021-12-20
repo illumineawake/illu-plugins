@@ -129,7 +129,7 @@ public class MotherlodeBotPlugin extends Plugin {
 
         if (oreVein != null) {
             //targetObject = oreVein;
-            targetMenu = new MenuEntry("", "", oreVein.getId(), 3, oreVein.getLocalLocation().getSceneX(), oreVein.getLocalLocation().getSceneY(), false);
+            targetMenu = new LegacyMenuEntry("", "", oreVein.getId(), 3, oreVein.getLocalLocation().getSceneX(), oreVein.getLocalLocation().getSceneY(), false);
             mouse.clickRandomPointCenter(-100, 100);
         } else {
             log.info("Vein not found");
@@ -156,7 +156,7 @@ public class MotherlodeBotPlugin extends Plugin {
     }
 
     private void mineObstacle(GameObject obstacle) {
-        targetMenu = new MenuEntry("", "", obstacle.getId(), 3, obstacle.getSceneMinLocation().getX(), obstacle.getSceneMinLocation().getY(), false);
+        targetMenu = new LegacyMenuEntry("", "", obstacle.getId(), 3, obstacle.getSceneMinLocation().getX(), obstacle.getSceneMinLocation().getY(), false);
         mouse.clickRandomPointCenter(-100, 100);
     }
 
@@ -165,7 +165,7 @@ public class MotherlodeBotPlugin extends Plugin {
         if (hopper != null) {
             predictedSackSize = getSackSize() + (28 - utils.getInventorySpace());
             log.info("predicted sack size: " + predictedSackSize);
-            targetMenu = new MenuEntry("", "", hopper.getId(), 3, hopper.getSceneMinLocation().getX(), hopper.getSceneMinLocation().getY(), false);
+            targetMenu = new LegacyMenuEntry("", "", hopper.getId(), 3, hopper.getSceneMinLocation().getX(), hopper.getSceneMinLocation().getY(), false);
             mouse.clickRandomPointCenter(-100, 100);
         }
     }
@@ -206,7 +206,7 @@ public class MotherlodeBotPlugin extends Plugin {
             } else {
                 depositBox = object.findNearestGameObject(ObjectID.BANK_DEPOSIT_BOX_25937);
                 if (depositBox != null) {
-                    targetMenu = new MenuEntry("", "", depositBox.getId(), 3, depositBox.getSceneMinLocation().getX(), depositBox.getSceneMinLocation().getY(), false);
+                    targetMenu = new LegacyMenuEntry("", "", depositBox.getId(), 3, depositBox.getSceneMinLocation().getX(), depositBox.getSceneMinLocation().getY(), false);
                     mouse.clickRandomPointCenter(-100, 100);
                     return;
                 } else {
@@ -221,7 +221,7 @@ public class MotherlodeBotPlugin extends Plugin {
         if (!inventory.inventoryFull() && getSackSize() > 0) {
             sack = utils.findNearestGroundObject(26688);
             if (sack != null) {
-                targetMenu = new MenuEntry("", "", sack.getId(), 3, sack.getLocalLocation().getSceneX(), sack.getLocalLocation().getSceneY(), false);
+                targetMenu = new LegacyMenuEntry("", "", sack.getId(), 3, sack.getLocalLocation().getSceneX(), sack.getLocalLocation().getSceneY(), false);
                 mouse.clickRandomPointCenter(-100, 100);
                 return;
             } else {

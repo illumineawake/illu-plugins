@@ -85,7 +85,7 @@ public class iQuickEaterPlugin extends Plugin {
     @Inject
     private ItemManager itemManager;
 
-    MenuEntry targetMenu;
+    LegacyMenuEntry targetMenu;
     Player player;
 
     private final Set<Integer> IGNORE_FOOD = Set.of(ItemID.DWARVEN_ROCK_CAKE, ItemID.DWARVEN_ROCK_CAKE_7510);
@@ -155,7 +155,7 @@ public class iQuickEaterPlugin extends Plugin {
 
     private void useItem(WidgetItem item) {
         if (item != null) {
-            targetMenu = new MenuEntry("", "", item.getId(), MenuAction.ITEM_FIRST_OPTION.getId(), item.getIndex(),
+            targetMenu = new LegacyMenuEntry("", "", item.getId(), MenuAction.ITEM_FIRST_OPTION.getId(), item.getIndex(),
                     WidgetInfo.INVENTORY.getId(), false);
             int sleepTime = calc.getRandomIntBetweenRange(25, 200);
             if (config.useInvokes()) {
@@ -237,7 +237,7 @@ public class iQuickEaterPlugin extends Plugin {
                 timeout += 4;
                 if (inventory.containsItem(11090)) {
                     if (playerUtils.getEquippedItems() != null && playerUtils.getEquippedItems().get(2).getId() != 11090) {
-                        targetMenu = new MenuEntry("Wear", "Wear", 11090, MenuAction.ITEM_SECOND_OPTION.getId(), inventory.getWidgetItem(11090).getIndex(),
+                        targetMenu = new LegacyMenuEntry("Wear", "Wear", 11090, MenuAction.ITEM_SECOND_OPTION.getId(), inventory.getWidgetItem(11090).getIndex(),
                                 WidgetInfo.INVENTORY.getId(), false);
                         if (config.useInvokes()) {
                             utils.doInvokeMsTime(targetMenu, calc.getRandomIntBetweenRange(25, 200));

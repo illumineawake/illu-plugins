@@ -5,6 +5,7 @@ import net.runelite.api.*;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.iblackjack.Location;
 import net.runelite.client.plugins.iblackjack.Task;
+import net.runelite.client.plugins.iutils.LegacyMenuEntry;
 import net.runelite.client.plugins.iutils.WalkUtils;
 
 import javax.inject.Inject;
@@ -43,7 +44,7 @@ public class ResetCombatTask extends Task {
             WallObject openCurtain = object.findWallObjectWithin(exitLocation.curtainLocation, 1, ObjectID.CURTAIN_1534);
             if (openCurtain != null) {
                 status = "Closing curtain";
-                entry = new MenuEntry("", "", openCurtain.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
+                entry = new LegacyMenuEntry("", "", openCurtain.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
                         openCurtain.getLocalLocation().getSceneX(), openCurtain.getLocalLocation().getSceneY(), false);
                 utils.doActionMsTime(entry, openCurtain.getConvexHull().getBounds(), sleepDelay());
                 log.debug(status);
@@ -56,7 +57,7 @@ public class ResetCombatTask extends Task {
         if (inCombat) {
             GameObject staircase = object.findNearestGameObjectWithin(config.npcType().escapeLocation, 2, config.npcType().escapeObjID);
             if (staircase != null) {
-                entry = new MenuEntry("", "", staircase.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
+                entry = new LegacyMenuEntry("", "", staircase.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(),
                         staircase.getSceneMinLocation().getX(), staircase.getSceneMinLocation().getY(), false);
                 utils.doActionMsTime(entry, staircase.getConvexHull().getBounds(), sleepDelay());
                 status = "Climbing staircase";
@@ -68,7 +69,7 @@ public class ResetCombatTask extends Task {
             NPC barman = npc.findNearestNpc(NpcID.ALI_THE_BARMAN);
             if (barman != null) {
                 status = "Opening shop";
-                entry = new MenuEntry("", "", barman.getIndex(), MenuAction.NPC_THIRD_OPTION.getId(), 0, 0, false);
+                entry = new LegacyMenuEntry("", "", barman.getIndex(), MenuAction.NPC_THIRD_OPTION.getId(), 0, 0, false);
                 utils.doActionMsTime(entry, new Point(0, 0), sleepDelay());
             } else {
                 //walk.sceneWalk(shopPoint, 3, sleepDelay());

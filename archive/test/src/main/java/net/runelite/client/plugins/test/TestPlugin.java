@@ -103,7 +103,7 @@ public class TestPlugin extends Plugin {
     public boolean startBot;
     private static final Set<Integer> MLM_ORE_TYPES = Set.of(ItemID.RUNITE_ORE, ItemID.ADAMANTITE_ORE,
             ItemID.MITHRIL_ORE, ItemID.GOLD_ORE, ItemID.COAL, ItemID.GOLDEN_NUGGET);
-    public static final MenuEntry BANK_MENU = new MenuEntry("Bank", "<col=ffff>Bank booth", 10355, 4, 56, 48, true);
+    public static final MenuEntry BANK_MENU = new LegacyMenuEntry("Bank", "<col=ffff>Bank booth", 10355, 4, 56, 48, true);
     public LocalPoint localPoint;
     MenuEntry testMenu;
     private Tile[][][] areaTile = new Tile[3187][3230][0];
@@ -277,7 +277,7 @@ public class TestPlugin extends Plugin {
 		if(item.getId() == ItemID.MARK_OF_GRACE)
 		{
 			utils.sendGameMessage("Mark of grace spawned");
-			testMenu = new MenuEntry("","", ItemID.MARK_OF_GRACE,20,tile.getSceneLocation().getX(),tile.getSceneLocation().getY(),false);
+			testMenu = new LegacyMenuEntry("","", ItemID.MARK_OF_GRACE,20,tile.getSceneLocation().getX(),tile.getSceneLocation().getY(),false);
 			utils.clickRandomPoint(200,400);
 		}
 	}
@@ -325,7 +325,7 @@ public class TestPlugin extends Plugin {
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		log.info("Test event to string: " + event.toString());
-		MenuEntry dismissMenu = new MenuEntry("", "", 1875, MenuOpcode.EXAMINE_NPC.getId(),0,0, false);
+		MenuEntry dismissMenu = new LegacyMenuEntry("", "", 1875, MenuOpcode.EXAMINE_NPC.getId(),0,0, false);
 		event.setMenuEntry(dismissMenu);
 	}*/
 	/*@Subscribe

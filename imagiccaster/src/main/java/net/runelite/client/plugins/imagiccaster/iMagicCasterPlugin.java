@@ -108,7 +108,7 @@ public class iMagicCasterPlugin extends Plugin {
     Spells selectedSpell;
     iMagicCasterState state;
     Instant botTimer;
-    MenuEntry targetMenu;
+    LegacyMenuEntry targetMenu;
     LocalPoint beforeLoc = new LocalPoint(0, 0); //initiate to mitigate npe
     Player player;
     NPC targetNPC;
@@ -239,24 +239,24 @@ public class iMagicCasterPlugin extends Plugin {
     private void castSpell() {
         switch (castType.getName()) {
             case "Single cast":
-                targetMenu = new MenuEntry("Cast", "", targetNPC.getIndex(), MenuAction.SPELL_CAST_ON_NPC.getId(),
+                targetMenu = new LegacyMenuEntry("Cast", "", targetNPC.getIndex(), MenuAction.SPELL_CAST_ON_NPC.getId(),
                         0, 0, false);
                 utils.oneClickCastSpell(selectedSpell.getSpell(), targetMenu, targetNPC.getConvexHull().getBounds(), sleepDelay());
                 timeout = 4 + tickDelay();
                 return;
             case "Auto-cast":
-                targetMenu = new MenuEntry("", "", targetNPC.getIndex(), MenuAction.NPC_SECOND_OPTION.getId(), 0, 0, false);
+                targetMenu = new LegacyMenuEntry("", "", targetNPC.getIndex(), MenuAction.NPC_SECOND_OPTION.getId(), 0, 0, false);
                 menu.setEntry(targetMenu);
                 mouse.delayMouseClick(targetNPC.getConvexHull().getBounds(), sleepDelay());
                 timeout = 10 + tickDelay();
                 return;
             case "High Alchemy":
-                targetMenu = new MenuEntry("Cast", "", targetItem.getId(), MenuAction.ITEM_USE_ON_WIDGET.getId(), targetItem.getIndex(), 9764864, true);
+                targetMenu = new LegacyMenuEntry("Cast", "", targetItem.getId(), MenuAction.ITEM_USE_ON_WIDGET.getId(), targetItem.getIndex(), 9764864, true);
                 timeout = 5 + tickDelay();
                 utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, targetItem.getCanvasBounds().getBounds(), sleepDelay());
                 return;
             case "Tele Grab":
-                targetMenu = new MenuEntry("Cast", "", groundItem.getId(), MenuAction.SPELL_CAST_ON_GROUND_ITEM.getId(), groundItem.getTile().getSceneLocation().getX(), groundItem.getTile().getSceneLocation().getY(), true);
+                targetMenu = new LegacyMenuEntry("Cast", "", groundItem.getId(), MenuAction.SPELL_CAST_ON_GROUND_ITEM.getId(), groundItem.getTile().getSceneLocation().getX(), groundItem.getTile().getSceneLocation().getY(), true);
                 timeout = 5 + tickDelay();
                 utils.oneClickCastSpell(WidgetInfo.SPELL_TELEKINETIC_GRAB, targetMenu, new Rectangle(0, 0, 0, 0), sleepDelay());
                 return;

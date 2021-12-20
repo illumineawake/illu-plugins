@@ -10,6 +10,7 @@ import net.runelite.client.plugins.iherbcleaner.Task;
 import net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin;
 import net.runelite.client.plugins.iutils.ActionQueue;
 import net.runelite.client.plugins.iutils.InventoryUtils;
+import net.runelite.client.plugins.iutils.LegacyMenuEntry;
 
 import javax.inject.Inject;
 import java.awt.*;
@@ -43,7 +44,7 @@ public class CleanHerbTask extends Task {
         long sleep = 0;
         for (WidgetItem herb : herbs) {
             log.info("Adding herb: {}, delay time: {}", herb.getIndex(), sleep);
-            entry = new MenuEntry("", "", herb.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
+            entry = new LegacyMenuEntry("", "", herb.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
                     herb.getIndex(), WidgetInfo.INVENTORY.getId(), true);
             sleep += sleepDelay();
             herb.getCanvasBounds().getBounds();

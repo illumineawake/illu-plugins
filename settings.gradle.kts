@@ -25,7 +25,6 @@
 
 rootProject.name = "Illumine Plugins"
 
-include(":botutils")
 include(":iutils")
 include("iblackjack")
 include(":icombinationrunecrafter")

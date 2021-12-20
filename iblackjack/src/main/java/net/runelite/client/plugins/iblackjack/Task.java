@@ -46,7 +46,7 @@ public abstract class Task {
     @Inject
     public ObjectUtils object;
 
-    public MenuEntry entry;
+    public LegacyMenuEntry entry;
     public static String status = "";
     public static boolean shouldHop;
     public final WorldArea MENAPHITE_ROOM = new WorldArea(new WorldPoint(3347, 2952, 0), new WorldPoint(3352, 2957, 0));

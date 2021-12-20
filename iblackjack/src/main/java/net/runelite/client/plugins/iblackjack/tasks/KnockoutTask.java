@@ -5,6 +5,7 @@ import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.iblackjack.Task;
+import net.runelite.client.plugins.iutils.LegacyMenuEntry;
 
 import java.util.Set;
 
@@ -33,7 +34,7 @@ public class KnockoutTask extends Task {
 
     @Override
     public void onGameTick(GameTick event) {
-        entry = new MenuEntry("", "", selectedNPCIndex, MenuAction.NPC_FIFTH_OPTION.getId(), 0, 0, false);
+        entry = new LegacyMenuEntry("", "", selectedNPCIndex, MenuAction.NPC_FIFTH_OPTION.getId(), 0, 0, false);
         utils.doActionMsTime(entry, bandit.getConvexHull().getBounds(), sleepDelay());
     }
 }
