@@ -52,10 +52,10 @@ public class GrandExchange {
     public void buy(int item, int quantity) {
         if (GrandExchangePrices.get(item).high * quantity > 1000) {
             if (!buyProgressively(item, quantity, 1.2, 30, CalculationUtils.random(15, 25))) {
-                throw new AssertionError("Failed to buy GE item: " + item + "  progressively");
+                throw new UnsupportedOperationException("Failed to buy GE item: " + item + "  progressively");
             }
         } else if (!buyInstantly(item, quantity)) {
-            throw new AssertionError("Failed to buy GE item: " + item + " instantly");
+            throw new UnsupportedOperationException("Failed to buy GE item: " + item + " instantly");
         }
     }
 

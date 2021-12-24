@@ -33,7 +33,6 @@ import org.pf4j.Extension;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
-import java.io.IOException;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -97,11 +96,6 @@ public class iUtils extends Plugin {
     @Inject
     ExecutorService executorService;
 
-//    @Inject
-//    private OSBGrandExchangeClient osbGrandExchangeClient;
-//
-//    private OSBGrandExchangeResult osbGrandExchangeResult;
-
     @Inject
     private ItemManager itemManager;
 
@@ -117,11 +111,6 @@ public class iUtils extends Plugin {
     private int clientTick = 0;
     private int gameTick = 0;
     int tickActions;
-
-//    @Provides
-//    OSBGrandExchangeClient provideOsbGrandExchangeClient(OkHttpClient okHttpClient) {
-//        return new OSBGrandExchangeClient(okHttpClient);
-//    }
 
     @Provides
     GrandExchangeClient provideGrandExchangeClient(OkHttpClient okHttpClient) {
@@ -562,21 +551,6 @@ public class iUtils extends Plugin {
                         .runeLiteFormattedMessage(chatMessage)
                         .build());
     }
-
-//    public OSBGrandExchangeResult getOSBItem(int itemId) {
-//        log.debug("Looking up OSB item price {}", itemId);
-//
-//        try {
-//            final OSBGrandExchangeResult result = osbGrandExchangeClient.lookupItem(itemId);
-//            if (result != null && result.getOverall_average() > 0) {
-//                return result;
-//            }
-//        } catch (IOException e) {
-//            log.debug("Error getting price of item {}", itemId, e);
-//        }
-//
-//        return null;
-//    }
 
     public ItemComposition getCompositionItem(int itemId) {
         log.debug("Looking up CompositionItem: {}", itemId);

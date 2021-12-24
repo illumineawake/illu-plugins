@@ -37,15 +37,17 @@ public class IScriptHandler implements Runnable {
                     Util.sleep(3000);
                 } else {
                     log.info("Caught > 10 failures, stopping plugin");
-                    script.onStop();
+                    script.stop();
                     return;
                 }
             }
             catch (UnsupportedOperationException e) {
                 log.info("Caught unsupported terminal failure, stopping instantly");
+                script.game.sendGameMessage("Caught unsupported terminal failure, stopping instantly");
                 e.printStackTrace();
                 log.info("{} - caused by: {}", e.getMessage(), e.getCause());
-                script.onStop();
+                script.game.sendGameMessage(e.getMessage() + " - caused by: " + e.getCause());
+                script.stop();
                 return;
             }
         }

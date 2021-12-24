@@ -507,6 +507,10 @@ public class Game {
         return null;
     }
 
+    public void sendGameMessage(String message) {
+        utils.sendGameMessage(message);
+    }
+
     public InteractionManager interactionManager() {
         return interactionManager;
     }
