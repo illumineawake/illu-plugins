@@ -345,6 +345,7 @@ public abstract class UtilsScript extends Plugin {
                 bank.close();
                 game.tick(2);
             }
+            log.info("Walking to Grand Exchange");
             walking.walkTo(GRAND_EXCHANGE);
         }
 
@@ -353,6 +354,7 @@ public abstract class UtilsScript extends Plugin {
 
         if (!grandExchange.isOpen()) {
             game.npcs().withName("Grand Exchange Clerk").nearest().interact("Exchange");
+            log.info("Trying to open Grand exchange");
             game.waitUntil(grandExchange::isOpen);
         }
 

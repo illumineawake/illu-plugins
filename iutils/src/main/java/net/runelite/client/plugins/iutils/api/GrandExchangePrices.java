@@ -1,6 +1,7 @@
 package net.runelite.client.plugins.iutils.api;
 
 import com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -16,6 +17,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * Obtains latest item prices from the <a href="https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices">OSRS Wiki API</a>.
  * @Author Runemoro
  */
+
+@Slf4j
 public class GrandExchangePrices {
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private static final ReentrantLock UPDATE_LOCK = new ReentrantLock();
@@ -30,18 +33,22 @@ public class GrandExchangePrices {
                 update();
             }
         } finally {
+            log.info("Unlocking price get thread");
             UPDATE_LOCK.unlock();
+            log.info("Successfully unlocked");
         }
-
+        log.info("Returning ItemPrice data for id: {} - {}", id, data.data.get(id).toString());
         return data.data.get(id);
     }
 
     private static void update() {
         try {
+            log.info("Sending price update request");
             var json = HTTP_CLIENT.send(
                     HttpRequest.newBuilder(new URI("https://prices.runescape.wiki/api/v1/osrs/latest")).build(),
                     HttpResponse.BodyHandlers.ofString()
             ).body();
+            log.info("Returned price update request");
             data = new Gson().fromJson(json, AllPricesData.class);
             lastUpdateTime = System.currentTimeMillis();
         } catch (IOException e) {

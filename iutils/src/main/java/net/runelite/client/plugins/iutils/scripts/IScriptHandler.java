@@ -33,7 +33,7 @@ public class IScriptHandler implements Runnable {
                     failures++;
                     log.info("Caught failure #{}, restarting in 3 seconds", failures);
                     e.printStackTrace();
-                    log.info("{} - caused by: {}", e.getMessage(), e.getCause());
+                    log.info("{} - {} - caused by: {}", e.getLocalizedMessage(), e.getMessage(), e.getCause());
                     Util.sleep(3000);
                 } else {
                     log.info("Caught > 10 failures, stopping plugin");

@@ -73,6 +73,7 @@ public abstract class iScript extends UtilsScript {
 
     @Override
     protected void shutDown() {
+        log.info("Shutting down");
         stop();
     }
 
