@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Set;
 
 import static net.runelite.client.plugins.irooftopagility.iRooftopAgilityState.*;
+import static net.runelite.client.plugins.irooftopagility.iRooftopAgilityState.COINS;
 
 
 @Extension
@@ -411,6 +412,9 @@ public class iRooftopAgilityPlugin extends Plugin {
                 timeout--;
                 return HIGH_ALCH;
             }
+            if (object.getGroundItem(ItemID.COINS_995) != null && config.pickupCoins()) {
+                return COINS;
+            }
             if (alchClick) {
                 iRooftopAgilityObstacles currentObstacle = getCurrentObstacle();
                 if (currentObstacle != null) {
@@ -532,6 +536,10 @@ public class iRooftopAgilityPlugin extends Plugin {
             switch (state) {
                 case TIMEOUT:
                     timeout--;
+                    break;
+                case COINS:
+                    pickCoins();
+                    timeout = tickDelay();
                     break;
                 case MARK_OF_GRACE:
                     log.debug("Picking up mark of grace");
@@ -680,5 +688,16 @@ public class iRooftopAgilityPlugin extends Plugin {
             mogCollectCount++;
             mogInventoryCount = -1;
         }
+    }
+    private void pickCoins() {
+        TileItem coins = object.getGroundItem(ItemID.COINS_995);
+        if (coins != null) {
+            lootItem(coins);
+        }
+    }
+
+    private void lootItem(TileItem itemToLoot) {
+        menu.setEntry(new LegacyMenuEntry("", "", itemToLoot.getId(), MenuAction.GROUND_ITEM_THIRD_OPTION.getId(), itemToLoot.getTile().getSceneLocation().getX(), itemToLoot.getTile().getSceneLocation().getY(), false));
+        mouse.delayMouseClick(itemToLoot.getTile().getItemLayer().getCanvasTilePoly().getBounds(), sleepDelay());
     }
 }

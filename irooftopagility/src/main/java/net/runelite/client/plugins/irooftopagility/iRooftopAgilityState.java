@@ -12,5 +12,6 @@ public enum iRooftopAgilityState {
     RESTOCK_ITEMS,
     TIMEOUT,
     EAT_SUMMER_PIE,
+    COINS,
     OUT_OF_SUMMER_PIES;
 }
