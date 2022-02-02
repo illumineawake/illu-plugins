@@ -552,7 +552,7 @@ public class iRooftopAgilityPlugin extends Plugin {
                     break;
                 case CAST_CAMELOT_TELEPORT:
                     targetMenu = new LegacyMenuEntry("", "", 2, MenuAction.CC_OP.getId(), -1,
-                            14286879, false);
+                            WidgetInfo.SPELL_CAMELOT_TELEPORT.getId(), false);
                     Widget spellWidget = client.getWidget(WidgetInfo.SPELL_CAMELOT_TELEPORT);
                     if (spellWidget != null) {
                         menu.setEntry(targetMenu);

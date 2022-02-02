@@ -64,6 +64,8 @@ public class Game {
     @Inject
     private KeyboardUtils keyboard;
 
+    public boolean closeWidget;
+
     iTile[][][] tiles = new iTile[4][104][104];
     Position base;
     private final InteractionManager interactionManager = new InteractionManager(this);
@@ -158,7 +160,7 @@ public class Game {
     public void randomDelay() {
         switch (calc.getRandomIntBetweenRange(0, 1)) {
             case 0:
-                tick(1,2);
+                tick(1, 2);
                 sleepDelay();
                 break;
             case 1:
@@ -352,6 +354,17 @@ public class Game {
     }
 
     public void chooseNumber(int number) {
+        closeWidget = false;
+        clientThread.invoke(() -> {
+            client.runScript(108, "Enter amount:");
+            client.setVar(VarClientStr.INPUT_TEXT, "" + number);
+            client.runScript(112, 84, 0, "");
+            client.runScript(112, -1, 10, "");
+        });
+        closeWidget = true;
+    }
+
+    public void typeNumber(int number) {
         keyboard.typeString(String.valueOf(number));
         sleep(calc.getRandomIntBetweenRange(80, 250));
         keyboard.pressKey(VK_ENTER);

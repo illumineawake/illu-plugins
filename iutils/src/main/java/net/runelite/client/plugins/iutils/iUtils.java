@@ -640,6 +640,17 @@ public class iUtils extends Plugin {
     }
 
     @Subscribe
+    private void onVarClientIntChanged(VarClientIntChanged event) {
+        int index = event.getIndex();
+        if (index == VarClientInt.INPUT_TYPE.getIndex() && client.getVar(VarClientInt.INPUT_TYPE) == 7) {
+            if (game.closeWidget) {
+                log.info("Clearing input dialogue");
+                clientThread.invokeLater(() -> client.runScript(138));
+            }
+        }
+    }
+
+    @Subscribe
     public void onClientTick(ClientTick event) {
         action.onClientTick(event);
     }
@@ -648,6 +659,7 @@ public class iUtils extends Plugin {
     private void onGameTick(GameTick event) {
         tickActions = 0;
         action.onGameTick(event);
+        game.closeWidget = false;
     }
 
     @Subscribe

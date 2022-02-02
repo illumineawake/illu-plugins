@@ -92,8 +92,8 @@ public class Bank {
                     item.interact(4); // last
                 } else {
                     item.interact(5);
-                    game.tick(2);
                     game.chooseNumber(quantity);
+                    game.tick();
                 }
 
                 return Math.min(inventoryCapacity, quantity);
@@ -297,6 +297,7 @@ public class Bank {
     public void close() {
         if (isOpen()) {
             game.widget(12, 2, 11).interact(0);
+            game.clientThread.invoke(() -> game.client.runScript(138));
         }
     }
 
