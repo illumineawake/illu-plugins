@@ -169,32 +169,48 @@ public class Bank {
     public boolean deposit(int id, int quantity) {
         checkBankOpen();
 
+        iWidget targetItem = null;
+        int count = 0;
+
         for (iWidget item : iUtils.bankInventoryitems) {
             if (item.itemId() == id) {
-                log.info("[Bank] Found item (requested = " + quantity + ", bank = " + item.quantity() + ")");
-
-                quantity = Math.min(quantity, item.quantity());
-
-                if (quantity == withdrawDefaultQuantity()) {
-                    item.interact(1); // default
-                } else if (item.quantity() <= quantity) {
-                    item.interact(7); // all
-                } else if (quantity == 1) {
-                    item.interact(2); // 1
-                } else if (quantity == 5) {
-                    item.interact(3); // 5
-                } else if (quantity == 10) {
-                    item.interact(4); // 10
-                } else if (quantity == withdrawXDefaultQuantity()) {
-                    item.interact(5); // last
-                } else {
-                    item.interact(6);
-                    game.tick(2);
-                    game.chooseNumber(quantity);
+                if (targetItem == null) {
+                    targetItem = item;
                 }
 
-                return true;
+                if (item.quantity() > 1) {
+                    count = item.quantity();
+                    break;
+                } else {
+                    count++;
+                }
             }
+        }
+
+        if (targetItem != null) {
+            log.info("[Bank] Found item (requested = " + quantity + ", inventory = " + count + ")");
+
+            quantity = Math.min(quantity, count);
+
+            if (quantity == withdrawDefaultQuantity()) {
+                targetItem.interact(1); // default
+            } else if (count <= quantity) {
+                targetItem.interact(7); // all
+            } else if (quantity == 1) {
+                targetItem.interact(2); // 1
+            } else if (quantity == 5) {
+                targetItem.interact(3); // 5
+            } else if (quantity == 10) {
+                targetItem.interact(4); // 10
+            } else if (quantity == withdrawXDefaultQuantity()) {
+                targetItem.interact(5); // last
+            } else {
+                targetItem.interact(6);
+                game.tick(2);
+                game.chooseNumber(quantity);
+            }
+
+            return true;
         }
 
         log.info("[Bank] Inventory Item not found");

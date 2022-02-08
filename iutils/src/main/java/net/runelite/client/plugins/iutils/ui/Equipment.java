@@ -11,12 +11,10 @@ import java.util.Objects;
 
 public class Equipment {
     private final Game game;
-    private final ItemContainer equipment;
 
     @Inject
     public Equipment(Game game) {
         this.game = game;
-        this.equipment = game.container(94);
     }
 
     public boolean isEquipped(int id) {
