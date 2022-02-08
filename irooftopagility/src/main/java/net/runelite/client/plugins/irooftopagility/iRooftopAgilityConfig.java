@@ -359,6 +359,17 @@ public interface iRooftopAgilityConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "pickupCoins",
+            name = "Pick up coins (leagues)",
+            description = "Enable to pick up coins (leagues). Requires golden brick road fragment equipped",
+            position = 27,
+            title = "agilityTitle"
+    )
+    default boolean pickupCoins() {
+        return false;
+    }
+
+    @ConfigItem(
             keyName = "startButton",
             name = "Start/Stop",
             description = "Test button that changes variable value",
