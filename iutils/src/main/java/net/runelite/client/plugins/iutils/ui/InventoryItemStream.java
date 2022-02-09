@@ -68,6 +68,14 @@ public class InventoryItemStream extends RandomizedStreamAdapter<InventoryItem, 
     }
 
     /**
+     * Returns a stream consisting of the elements of this stream with
+     * any of the given {@link InventoryItem#name()}s
+     */
+    public InventoryItemStream withName(Collection<String> names) {
+        return filter(o -> names.stream().anyMatch(name -> o.name().equalsIgnoreCase(name)));
+    }
+
+    /**
      * Returns a stream consisting of the elements of this stream whose
      * {@link InventoryItem#name()}s contain any of the given name parts
      */
@@ -92,6 +100,14 @@ public class InventoryItemStream extends RandomizedStreamAdapter<InventoryItem, 
     }
 
     /**
+     * Returns a stream consisting of the elements of this stream that don't match
+     * any of the given {@link InventoryItem#name()}s
+     */
+    public InventoryItemStream withoutNamePart(Collection<String> names) {
+        return filter(o -> names.stream().noneMatch(name -> o.name().toLowerCase().contains(name.toLowerCase())));
+    }
+
+    /**
      * Returns a stream consisting of the elements of this stream with
      * any of the given {@link InventoryItem#actions()}s
      */
@@ -101,10 +117,26 @@ public class InventoryItemStream extends RandomizedStreamAdapter<InventoryItem, 
 
     /**
      * Returns a stream consisting of the elements of this stream with
+     * any of the given {@link InventoryItem#actions()}s
+     */
+    public InventoryItemStream withAction(Collection<String> actions) {
+        return filter(o -> actions.stream().anyMatch(action -> o.actions().contains(action)));
+    }
+
+    /**
+     * Returns a stream consisting of the elements of this stream with
      * any of the given {@link InventoryItem#slot()}s
      */
     public InventoryItemStream withSlot(int... slots) {
         return filter(o -> Arrays.stream(slots).anyMatch(slot -> o.slot() == slot));
+    }
+
+    /**
+     * Returns a stream consisting of the elements of this stream with
+     * any of the given {@link InventoryItem#slot()}s
+     */
+    public InventoryItemStream withSlot(Collection<Integer> slots) {
+        return filter(o -> slots.stream().anyMatch(slot -> o.slot() == slot));
     }
 
     /**

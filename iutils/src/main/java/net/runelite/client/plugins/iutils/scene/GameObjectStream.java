@@ -1,8 +1,10 @@
 package net.runelite.client.plugins.iutils.scene;
 
+import net.runelite.api.ObjectComposition;
 import net.runelite.client.plugins.iutils.game.iObject;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -22,6 +24,30 @@ public class GameObjectStream extends LocatableStream<iObject, GameObjectStream>
      */
     public GameObjectStream withId(int... ids) {
         return filter(o -> Arrays.stream(ids).anyMatch(id -> o.id() == id));
+    }
+
+    /**
+     * Returns a stream consisting of the elements of this stream with
+     * any of the given {@link iObject#id()}s
+     */
+    public GameObjectStream withId(Collection<Integer> ids) {
+        return filter(o -> ids.stream().anyMatch(id -> o.id() == id));
+    }
+
+    /**
+     * Returns a stream consisting of the elements of this stream with
+     * any of the given {@link ObjectComposition#getId()}s
+     */
+    public GameObjectStream withDefinitionId(int... ids) {
+        return filter(o -> Arrays.stream(ids).anyMatch(id -> o.definition() != null && o.definition().getId() == id));
+    }
+
+    /**
+     * Returns a stream consisting of the elements of this stream with
+     * any of the given {@link ObjectComposition#getId()}s
+     */
+    public GameObjectStream withDefinitionId(Collection<Integer> ids) {
+        return filter(o -> ids.stream().anyMatch(id -> o.definition() != null && o.definition().getId() == id));
     }
 
 //    /**
@@ -58,6 +84,14 @@ public class GameObjectStream extends LocatableStream<iObject, GameObjectStream>
 
     /**
      * Returns a stream consisting of the elements of this stream with
+     * any of the given {@link iObject#name()}s
+     */
+    public GameObjectStream withName(Collection<String> names) {
+        return filter(o -> names.stream().anyMatch(name -> Objects.equals(o.name(), name)));
+    }
+
+    /**
+     * Returns a stream consisting of the elements of this stream with
      * any of the given {@link iObject#actions()}s
      */
     public GameObjectStream withAction(String... actions) {
@@ -66,9 +100,25 @@ public class GameObjectStream extends LocatableStream<iObject, GameObjectStream>
 
     /**
      * Returns a stream consisting of the elements of this stream with
+     * any of the given {@link iObject#actions()}s
+     */
+    public GameObjectStream withAction(Collection<String> actions) {
+        return filter(o -> actions.stream().anyMatch(action -> o.actions().contains(action)));
+    }
+
+    /**
+     * Returns a stream consisting of the elements of this stream with
      * any of the given {@link iObject#position()}s
      */
     public GameObjectStream withPosition(Position... positions) {
         return filter(o -> Arrays.stream(positions).anyMatch(position -> o.position().equals(position)));
+    }
+
+    /**
+     * Returns a stream consisting of the elements of this stream with
+     * any of the given {@link iObject#position()}s
+     */
+    public GameObjectStream withPosition(Collection<Position> positions) {
+        return filter(o -> positions.stream().anyMatch(position -> o.position().equals(position)));
     }
 }
