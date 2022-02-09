@@ -36,11 +36,11 @@ public class RectangularArea implements Area {
                 position.z >= minZ && position.z <= maxZ;
     }
 
-    public int distanceTo(Position other) {
+    public double distanceTo(Position other) {
         return distanceTo(new RectangularArea(other, other));
     }
 
-    public int distanceTo(RectangularArea other) {
+    public double distanceTo(RectangularArea other) {
         Position p1 = nearestPosition(other);
         Position p2 = other.nearestPosition(this);
         return p1.distanceTo(p2);
