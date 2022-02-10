@@ -51,20 +51,20 @@ public class Position implements Area {
         return new Position(this.x + x, this.y + y, this.z + z);
     }
 
-    public int distanceTo(Position other) {
+    public double distanceTo(Position other) {
         if (z != other.z) {
-            return Integer.MAX_VALUE;
+            return Double.MAX_VALUE;
         }
 
-        return Math.max(Math.abs(other.x - x), Math.abs(other.y - y));
+        return Math.hypot((other.x - x), (other.y - y));
     }
 
-    public int distanceTo(WorldPoint other) {
+    public double distanceTo(WorldPoint other) {
         if (z != other.getPlane()) {
-            return Integer.MAX_VALUE;
+            return Double.MAX_VALUE;
         }
 
-        return Math.max(Math.abs(other.getX() - x), Math.abs(other.getY() - y));
+        return Math.hypot((other.getX() - x), (other.getY() - y));
     }
 
     public int pathLength(WorldPoint other) {
@@ -84,7 +84,7 @@ public class Position implements Area {
         return path.size();
     }
 
-    public int distanceTo(Area other) {
+    public double distanceTo(Area other) {
         if (other instanceof RectangularArea) {
             return ((RectangularArea) other).distanceTo(this);
         }
@@ -165,9 +165,9 @@ public class Position implements Area {
         }
 
         Position closest_pos = null;
-        int closest_pos_dist = Integer.MAX_VALUE;
+        double closest_pos_dist = Double.MAX_VALUE;
         for (Position pos : positions) {
-            int current_pos_dist = pos.distanceTo(other);
+            double current_pos_dist = pos.distanceTo(other);
             if (closest_pos_dist > current_pos_dist) {
                 closest_pos_dist = current_pos_dist;
                 closest_pos = pos;
