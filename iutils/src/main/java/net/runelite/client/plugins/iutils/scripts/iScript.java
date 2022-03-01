@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.eventbus.Subscribe;
 
+import javax.inject.Inject;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,9 +16,12 @@ import static java.awt.event.KeyEvent.VK_RIGHT;
 @Slf4j
 public abstract class iScript extends UtilsScript {
     private IScriptHandler scriptHandler;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+//    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private Future<?> future;
     private volatile boolean started;
+
+    @Inject
+    private ExecutorService executorService;
 
     /**
      * Start script handler, will stop any script handlers already running first

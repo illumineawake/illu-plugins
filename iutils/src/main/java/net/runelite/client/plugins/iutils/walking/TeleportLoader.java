@@ -101,9 +101,9 @@ public class TeleportLoader {
             }
 
             if (necklaceOfPassage() != null) {
-                teleports.add(new Teleport(new Position(3114, 3179, 0), 2, () -> jewelleryAction(necklaceOfPassage(), "Wizards' Tower")));
-                teleports.add(new Teleport(new Position(2430, 3348, 0), 2, () -> jewelleryAction(necklaceOfPassage(), "The Outpost")));
-                teleports.add(new Teleport(new Position(3405, 3157, 0), 2, () -> jewelleryAction(necklaceOfPassage(), "Eagles' Eyrie")));
+                teleports.add(new Teleport(new Position(3114, 3179, 0), 5, () -> jewelleryAction(necklaceOfPassage(), "Wizards' Tower")));
+                teleports.add(new Teleport(new Position(2430, 3348, 0), 5, () -> jewelleryAction(necklaceOfPassage(), "The Outpost")));
+                teleports.add(new Teleport(new Position(3405, 3157, 0), 5, () -> jewelleryAction(necklaceOfPassage(), "Eagles' Eyrie")));
             }
 
             if (burningAmulet() != null) {
