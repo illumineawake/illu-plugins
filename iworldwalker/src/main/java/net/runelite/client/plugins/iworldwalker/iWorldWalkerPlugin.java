@@ -168,7 +168,6 @@ public class iWorldWalkerPlugin extends iScript {
     @Override
     protected void loop() {
         if (client != null && client.getLocalPlayer() != null) {
-            log.info("Looping");
             try {
                 walking.walkTo(new Position(getLocation()));
             } catch(IllegalStateException e) {
