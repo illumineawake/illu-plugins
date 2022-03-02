@@ -55,7 +55,7 @@ public class Combat {
 
         npc.interact("Attack");
         game.tick();
-
+        game.waitUntil(() -> npc.target().equals(game.localPlayer()), 13);
         try {
             while (game.npcs().withIndex(npc.index()).withAction("Attack").exists() && !game.npcs().withIndex(npc.index()).withAction("Attack").nearest().isDead()) {
                 if (game.localPlayer().position().distanceTo(safeSpot) > 0) {

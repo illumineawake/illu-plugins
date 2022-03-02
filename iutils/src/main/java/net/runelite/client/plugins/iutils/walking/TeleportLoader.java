@@ -50,23 +50,23 @@ public class TeleportLoader {
         if (game.membersWorld()) {
             if (ringOfDueling() != null) {
                 teleports.add(new Teleport(new Position(3315, 3235, 0), 6, () -> jewelleryAction(ringOfDueling(), "Duel Arena")));
-                teleports.add(new Teleport(new Position(2440, 3090, 0), 2, () -> jewelleryAction(ringOfDueling(), "Castle Wars")));
-                teleports.add(new Teleport(new Position(3151, 3635, 0), 2, () -> jewelleryAction(ringOfDueling(), "Ferox Enclave")));
+                teleports.add(new Teleport(new Position(2440, 3090, 0), 5, () -> jewelleryAction(ringOfDueling(), "Castle Wars")));
+                teleports.add(new Teleport(new Position(3151, 3635, 0), 5, () -> jewelleryAction(ringOfDueling(), "Ferox Enclave")));
             }
 
             if (gamesNecklace() != null) {
-                teleports.add(new Teleport(new Position(2898, 3553, 0), 2, () -> jewelleryAction(gamesNecklace(), "Burthorpe")));
+                teleports.add(new Teleport(new Position(2898, 3553, 0), 5, () -> jewelleryAction(gamesNecklace(), "Burthorpe")));
                 teleports.add(new Teleport(new Position(2520, 3571, 0), 6, () -> jewelleryAction(gamesNecklace(), "Barbarian Outpost")));
-                teleports.add(new Teleport(new Position(2964, 4382, 2), 2, () -> jewelleryAction(gamesNecklace(), "Corporeal Beast")));
-                teleports.add(new Teleport(new Position(3244, 9501, 2), 2, () -> jewelleryAction(gamesNecklace(), "Tears of Guthix")));
-                teleports.add(new Teleport(new Position(1624, 3938, 0), 1, () -> jewelleryAction(gamesNecklace(), "Wintertodt Camp")));
+                teleports.add(new Teleport(new Position(2964, 4382, 2), 5, () -> jewelleryAction(gamesNecklace(), "Corporeal Beast")));
+                teleports.add(new Teleport(new Position(3244, 9501, 2), 5, () -> jewelleryAction(gamesNecklace(), "Tears of Guthix")));
+                teleports.add(new Teleport(new Position(1624, 3938, 0), 5, () -> jewelleryAction(gamesNecklace(), "Wintertodt Camp")));
             }
 
             if (combatBracelet() != null) {
-                teleports.add(new Teleport(new Position(2882, 3548, 0), 2, () -> jewelleryAction(combatBracelet(), "Warriors' Guild")));
-                teleports.add(new Teleport(new Position(3191, 3367, 0), 2, () -> jewelleryAction(combatBracelet(), "Champions' Guild")));
-                teleports.add(new Teleport(new Position(3052, 3488, 0), 2, () -> jewelleryAction(combatBracelet(), "Monastery")));
-                teleports.add(new Teleport(new Position(2655, 3441, 0), 2, () -> jewelleryAction(combatBracelet(), "Ranging Guild")));
+                teleports.add(new Teleport(new Position(2882, 3548, 0), 5, () -> jewelleryAction(combatBracelet(), "Warriors' Guild")));
+                teleports.add(new Teleport(new Position(3191, 3367, 0), 5, () -> jewelleryAction(combatBracelet(), "Champions' Guild")));
+                teleports.add(new Teleport(new Position(3052, 3488, 0), 5, () -> jewelleryAction(combatBracelet(), "Monastery")));
+                teleports.add(new Teleport(new Position(2655, 3441, 0), 5, () -> jewelleryAction(combatBracelet(), "Ranging Guild")));
             }
 
             if (skillsNecklace() != null) {
@@ -87,17 +87,17 @@ public class TeleportLoader {
             }
 
             if (ringOfWealth() != null) {
-                teleports.add(new Teleport(new Position(3163, 3478, 0), 2, () -> jewelleryAction(ringOfWealth(), "Grand Exchange")));
-                teleports.add(new Teleport(new Position(2996, 3375, 0), 2, () -> jewelleryAction(ringOfWealth(), "Falador")));
+                teleports.add(new Teleport(new Position(3163, 3478, 0), 5, () -> jewelleryAction(ringOfWealth(), "Grand Exchange")));
+                teleports.add(new Teleport(new Position(2996, 3375, 0), 5, () -> jewelleryAction(ringOfWealth(), "Falador")));
 //            teleports.add(new Teleport(new Position, 2, () -> jewelleryAction(ringOfWealth(), "Miscellania")));
-                teleports.add(new Teleport(new Position(2829, 10167, 0), 2, () -> jewelleryAction(ringOfWealth(), "Dondakan")));
+                teleports.add(new Teleport(new Position(2829, 10167, 0), 5, () -> jewelleryAction(ringOfWealth(), "Dondakan")));
             }
 
             if (amuletOfGlory() != null) {
-                teleports.add(new Teleport(new Position(3087, 3496, 0), 0, () -> jewelleryAction(amuletOfGlory(), "Edgeville")));
-                teleports.add(new Teleport(new Position(2918, 3176, 0), 0, () -> jewelleryAction(amuletOfGlory(), "Karamja")));
-                teleports.add(new Teleport(new Position(3105, 3251, 0), 0, () -> jewelleryAction(amuletOfGlory(), "Draynor Village")));
-                teleports.add(new Teleport(new Position(3293, 3163, 0), 0, () -> jewelleryAction(amuletOfGlory(), "Al Kharid")));
+                teleports.add(new Teleport(new Position(3087, 3496, 0), 5, () -> jewelleryAction(amuletOfGlory(), "Edgeville")));
+                teleports.add(new Teleport(new Position(2918, 3176, 0), 5, () -> jewelleryAction(amuletOfGlory(), "Karamja")));
+                teleports.add(new Teleport(new Position(3105, 3251, 0), 5, () -> jewelleryAction(amuletOfGlory(), "Draynor Village")));
+                teleports.add(new Teleport(new Position(3293, 3163, 0), 5, () -> jewelleryAction(amuletOfGlory(), "Al Kharid")));
             }
 
             if (necklaceOfPassage() != null) {
@@ -107,23 +107,23 @@ public class TeleportLoader {
             }
 
             if (burningAmulet() != null) {
-                teleports.add(new Teleport(new Position(3235, 3636, 0), 2, () -> jewelleryAction(burningAmulet(), "Chaos Temple", "Okay")));
-                teleports.add(new Teleport(new Position(3038, 3651, 0), 2, () -> jewelleryAction(burningAmulet(), "Bandit Camp", "Okay")));
-                teleports.add(new Teleport(new Position(3028, 3842, 0), 2, () -> jewelleryAction(burningAmulet(), "Lava Maze", "Okay")));
+                teleports.add(new Teleport(new Position(3235, 3636, 0), 5, () -> jewelleryAction(burningAmulet(), "Chaos Temple", "Okay")));
+                teleports.add(new Teleport(new Position(3038, 3651, 0), 5, () -> jewelleryAction(burningAmulet(), "Bandit Camp", "Okay")));
+                teleports.add(new Teleport(new Position(3028, 3842, 0), 5, () -> jewelleryAction(burningAmulet(), "Lava Maze", "Okay")));
             }
 
             if (slayerRing() != null) {
-                teleports.add(new Teleport(new Position(2432, 3423, 0), 2, () -> jewelleryAction(slayerRing(), "Stronghold Slayer Cave")));
-                teleports.add(new Teleport(new Position(3422, 3537, 0), 2, () -> jewelleryAction(slayerRing(), "Slayer Tower")));
-                teleports.add(new Teleport(new Position(2802, 10000, 0), 2, () -> jewelleryAction(slayerRing(), "Fremennik Slayer Dungeon")));
-                teleports.add(new Teleport(new Position(3185, 4601, 0), 2, () -> jewelleryAction(slayerRing(), "Tarn's Lair")));
-                teleports.add(new Teleport(new Position(2028, 4636, 0), 2, () -> jewelleryAction(slayerRing(), "Dark Beasts")));
+                teleports.add(new Teleport(new Position(2432, 3423, 0), 5, () -> jewelleryAction(slayerRing(), "Stronghold Slayer Cave")));
+                teleports.add(new Teleport(new Position(3422, 3537, 0), 5, () -> jewelleryAction(slayerRing(), "Slayer Tower")));
+                teleports.add(new Teleport(new Position(2802, 10000, 0), 5, () -> jewelleryAction(slayerRing(), "Fremennik Slayer Dungeon")));
+                teleports.add(new Teleport(new Position(3185, 4601, 0), 5, () -> jewelleryAction(slayerRing(), "Tarn's Lair")));
+                teleports.add(new Teleport(new Position(2028, 4636, 0), 5, () -> jewelleryAction(slayerRing(), "Dark Beasts")));
             }
 
             if (digsitePendant() != null) {
-                teleports.add(new Teleport(new Position(3341, 3445, 0), 2, () -> jewelleryAction(digsitePendant(), "Digsite")));
+                teleports.add(new Teleport(new Position(3341, 3445, 0), 5, () -> jewelleryAction(digsitePendant(), "Digsite")));
 //            teleports.add(new Teleport(new Position, 2, () -> jewleryAction(digsitePendant(), "Fossil Island")));
-                teleports.add(new Teleport(new Position(3549, 10456, 0), 2, () -> jewelleryAction(digsitePendant(), "Lithkren")));
+                teleports.add(new Teleport(new Position(3549, 10456, 0), 5, () -> jewelleryAction(digsitePendant(), "Lithkren")));
             }
 
 //        if (drakansMedallion() != null) {
