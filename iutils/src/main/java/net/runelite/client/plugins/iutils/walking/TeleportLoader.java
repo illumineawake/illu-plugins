@@ -152,9 +152,13 @@ public class TeleportLoader {
 
     //Jewellery
     private void jewelleryAction(InventoryItem item, String... target) { // TODO
-        item.interact("Rub");
-        game.tick();
-        chatbox.chat(target);
+        while (chatbox.chatState() == Chatbox.ChatState.CLOSED) {
+            item.interact("Rub");
+            game.waitUntil(() -> chatbox.chatState() != Chatbox.ChatState.CLOSED, 10);
+        }
+        if (chatbox.chatState() != Chatbox.ChatState.CLOSED) {
+            chatbox.chat(target);
+        }
     }
 
     private void jewelleryContainerAction(InventoryItem item, String target) {
