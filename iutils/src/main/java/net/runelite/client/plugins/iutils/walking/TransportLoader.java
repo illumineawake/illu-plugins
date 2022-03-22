@@ -25,7 +25,7 @@ public class TransportLoader {
     }
 
     public static final List<SpiritTree> SPIRIT_TREES = List.of(
-            new SpiritTree(new Position(2542, 3170, 0), "Tree gnome Village"),
+            new SpiritTree(new Position(2542, 3170, 0), "Tree Gnome Village"),
             new SpiritTree(new Position(2461, 3444, 0), "Gnome Stronghold"),
             new SpiritTree(new Position(2555, 3259, 0), "Battlefield of Khazard"),
             new SpiritTree(new Position(3185, 3508, 0), "Grand Exchange"),
