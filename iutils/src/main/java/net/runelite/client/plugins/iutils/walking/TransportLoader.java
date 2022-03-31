@@ -154,7 +154,7 @@ public class TransportLoader {
          */
 
         // Tree Gnome Village
-        transports.add(objectChatTransport(new Position(2461, 3382, 0), new Position(2461, 3385, 0), 190, "Sorry, I'm a bit busy."));
+        transports.add(objectChatTransport(new Position(2461, 3382, 0), new Position(2461, 3385, 0), 190, "Open","Okay then."));
         if (game.varp(111) > 0) {
             transports.add(npcTransport(new Position(2504, 3192, 0), new Position(2515, 3159, 0), 4968, "Follow"));
             transports.add(npcTransport(new Position(2515, 3159, 0), new Position(2504, 3192, 0), 4968, "Follow"));
@@ -363,7 +363,7 @@ public class TransportLoader {
                 chatbox.chat(options);
             }
 
-            game.tick(8);
+            game.tick(12);
         });
     }
 
