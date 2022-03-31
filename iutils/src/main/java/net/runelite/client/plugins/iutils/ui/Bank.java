@@ -73,27 +73,33 @@ public class Bank {
 
         for (iWidget item : iUtils.bankitems) {
             if (item.itemId() == id) {
-                log.info("[Bank] Found item (requested = " + quantity + ", bank = " + item.quantity() + ", capacity = " + inventoryCapacity + ")");
+                log.info("[Bank] Found item " + id + "(requested = " + quantity + ", bank = " + item.quantity() + ", capacity = " + inventoryCapacity + ")");
 
                 quantity = Math.min(quantity, item.quantity());
-
+                log.info("Quantity: {}", quantity);
                 if (quantity == withdrawDefaultQuantity()) {
                     log.info("Withdrawing default quantity: " + withdrawDefaultQuantity());
                     item.interact(0); // default
                 } else if (item.quantity() <= quantity || inventoryCapacity <= quantity) {
+                    log.info("Withdrawing all");
                     item.interact(6); // all
                 } else if (quantity == 1) {
+                    log.info("Withdrawing 1");
                     item.interact(1); // 1
                 } else if (quantity == 5) {
+                    log.info("Withdrawing 5");
                     item.interact(2); // 5
                 } else if (quantity == 10) {
+                    log.info("Withdrawing 10");
                     item.interact(3); // 10
                 } else if (quantity == withdrawXDefaultQuantity()) {
+                    log.info("Withdraw X Default quantity: {}, {}", quantity, withdrawXDefaultQuantity());
                     item.interact(4); // last
                 } else {
+                    log.info("Withdrawing X");
                     item.interact(5);
                     game.chooseNumber(quantity);
-                    game.tick();
+                    game.tick(2);
                 }
 
                 return Math.min(inventoryCapacity, quantity);
