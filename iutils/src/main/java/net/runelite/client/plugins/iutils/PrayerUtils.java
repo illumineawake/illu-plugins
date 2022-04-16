@@ -28,7 +28,7 @@ public class PrayerUtils {
     }
 
     public boolean isActive(Prayer prayer) {
-        return client.getVar(prayer.getVarbit()) == 1;
+        return client.getVarbitValue(prayer.getVarbit()) == 1;
     }
 
     public void toggle(Prayer prayer, long timeToDelay) {
@@ -43,7 +43,7 @@ public class PrayerUtils {
     }
 
     public boolean isQuickPrayerActive() {
-        return client.getVar(Varbits.QUICK_PRAYER) == 1;
+        return client.getVarbitValue(Varbits.QUICK_PRAYER) == 1;
     }
 
     public void toggleQuickPrayer(boolean enabled, long timeToDelay) {

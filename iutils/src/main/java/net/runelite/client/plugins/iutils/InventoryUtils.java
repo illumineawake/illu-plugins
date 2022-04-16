@@ -495,14 +495,14 @@ public class InventoryUtils {
 
     public boolean runePouchContains(int id) {
         Set<Integer> runePouchIds = new HashSet<>();
-        if (client.getVar(Varbits.RUNE_POUCH_RUNE1) != 0) {
-            runePouchIds.add(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE1)).getItemId());
+        if (client.getVarbitValue(Varbits.RUNE_POUCH_RUNE1) != 0) {
+            runePouchIds.add(Runes.getRune(client.getVarbitValue(Varbits.RUNE_POUCH_RUNE1)).getItemId());
         }
-        if (client.getVar(Varbits.RUNE_POUCH_RUNE2) != 0) {
-            runePouchIds.add(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE2)).getItemId());
+        if (client.getVarbitValue(Varbits.RUNE_POUCH_RUNE2) != 0) {
+            runePouchIds.add(Runes.getRune(client.getVarbitValue(Varbits.RUNE_POUCH_RUNE2)).getItemId());
         }
-        if (client.getVar(Varbits.RUNE_POUCH_RUNE3) != 0) {
-            runePouchIds.add(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE3)).getItemId());
+        if (client.getVarbitValue(Varbits.RUNE_POUCH_RUNE3) != 0) {
+            runePouchIds.add(Runes.getRune(client.getVarbitValue(Varbits.RUNE_POUCH_RUNE3)).getItemId());
         }
         for (int runePouchId : runePouchIds) {
             if (runePouchId == id) {
@@ -523,14 +523,14 @@ public class InventoryUtils {
 
     public int runePouchQuanitity(int id) {
         Map<Integer, Integer> runePouchSlots = new HashMap<>();
-        if (client.getVar(Varbits.RUNE_POUCH_RUNE1) != 0) {
-            runePouchSlots.put(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE1)).getItemId(), client.getVar(Varbits.RUNE_POUCH_AMOUNT1));
+        if (client.getVarbitValue(Varbits.RUNE_POUCH_RUNE1) != 0) {
+            runePouchSlots.put(Runes.getRune(client.getVarbitValue(Varbits.RUNE_POUCH_RUNE1)).getItemId(), client.getVarbitValue(Varbits.RUNE_POUCH_AMOUNT1));
         }
-        if (client.getVar(Varbits.RUNE_POUCH_RUNE2) != 0) {
-            runePouchSlots.put(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE2)).getItemId(), client.getVar(Varbits.RUNE_POUCH_AMOUNT2));
+        if (client.getVarbitValue(Varbits.RUNE_POUCH_RUNE2) != 0) {
+            runePouchSlots.put(Runes.getRune(client.getVarbitValue(Varbits.RUNE_POUCH_RUNE2)).getItemId(), client.getVarbitValue(Varbits.RUNE_POUCH_AMOUNT2));
         }
-        if (client.getVar(Varbits.RUNE_POUCH_RUNE3) != 0) {
-            runePouchSlots.put(Runes.getRune(client.getVar(Varbits.RUNE_POUCH_RUNE3)).getItemId(), client.getVar(Varbits.RUNE_POUCH_AMOUNT3));
+        if (client.getVarbitValue(Varbits.RUNE_POUCH_RUNE3) != 0) {
+            runePouchSlots.put(Runes.getRune(client.getVarbitValue(Varbits.RUNE_POUCH_RUNE3)).getItemId(), client.getVarbitValue(Varbits.RUNE_POUCH_AMOUNT3));
         }
         if (runePouchSlots.containsKey(id)) {
             return runePouchSlots.get(id);
