@@ -363,7 +363,7 @@ public class iCombinationRunecrafterPlugin extends Plugin {
     }
 
     private boolean shouldSipStamina() {
-        return (config.staminaPotion() && client.getVar(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0) &&
+        return (config.staminaPotion() && client.getVarbitValue(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0) &&
                 (client.getEnergy() <= (75 - calc.getRandomIntBetweenRange(0, 40)) ||
                         (inventory.containsItem(STAMINA_POTIONS) && client.getEnergy() < 75));
     }

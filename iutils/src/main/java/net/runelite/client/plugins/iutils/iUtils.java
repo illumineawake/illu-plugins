@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  */
 @Extension
 @PluginDescriptor(
-        name = "iUtils-Prem",
+        name = "iUtils",
         description = "Illumine plugin utilities"
 )
 @Slf4j
@@ -642,7 +642,7 @@ public class iUtils extends Plugin {
     @Subscribe
     private void onVarClientIntChanged(VarClientIntChanged event) {
         int index = event.getIndex();
-        if (index == VarClientInt.INPUT_TYPE.getIndex() && client.getVar(VarClientInt.INPUT_TYPE) == 7) {
+        if (index == VarClientInt.INPUT_TYPE.getIndex() && client.getVarbitValue(VarClientInt.INPUT_TYPE.getIndex()) == 7) {
             if (game.closeWidget) {
                 log.info("Clearing input dialogue");
                 clientThread.invokeLater(() -> client.runScript(138));
