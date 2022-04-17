@@ -1,5 +1,9 @@
 package net.runelite.client.plugins.iutils.scene;
 
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.client.plugins.iutils.CalculationUtils;
+
+@Slf4j
 public class RectangularArea implements Area {
     public final int minX;
     public final int minY;
@@ -69,7 +73,18 @@ public class RectangularArea implements Area {
         return new Position(x, y, 0);
     }
 
-    public String toString() {
+    public Position randomPosition() {
+        var x = CalculationUtils.random(minX, maxX);
+        var y = CalculationUtils.random(minY, maxY);
+        var z = minZ == 0 ? minZ : CalculationUtils.random(minZ, maxZ);
+
+        var position = new Position(x, y, z);
+        log.info("Random Position: {} found from Rectangular Area: {}", position, this);
+
+        return position;
+    }
+
+        public String toString() {
         return "[" + minX + ", " + maxX + "] x [" + minY + ", " + maxY + "] x [" + minZ + ", " + maxZ + "]";
     }
 }

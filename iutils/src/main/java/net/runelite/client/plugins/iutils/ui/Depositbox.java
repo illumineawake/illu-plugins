@@ -1,10 +1,16 @@
 package net.runelite.client.plugins.iutils.ui;
 
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.plugins.iutils.game.Game;
+import net.runelite.client.plugins.iutils.game.iWidget;
 
+import javax.inject.Inject;
+
+@Slf4j
 public class Depositbox {
     public final Game game;
 
+    @Inject
     public Depositbox(Game game) {
         this.game = game;
     }
@@ -35,6 +41,22 @@ public class Depositbox {
         if (!isOpen()) {
             throw new IllegalStateException("depositbox isn't open");
         }
+    }
+
+    public boolean deposit(int itemID, String depositAction) {
+        if (!isOpen()) {
+            return false;
+        }
+
+        for (iWidget item : game.widget(192, 2).items()) {
+            if (item.itemId() == itemID) {
+                log.info("Depositing item: {} {}", itemID, item.index());
+                game.widget(192, 2, item.index()).interact(depositAction);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean isOpen() {

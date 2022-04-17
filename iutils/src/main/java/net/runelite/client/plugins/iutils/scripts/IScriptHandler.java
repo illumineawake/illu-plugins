@@ -20,7 +20,11 @@ public class IScriptHandler implements Runnable {
         script.onStart();
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                script.loop();
+                if (script.started()) {
+                    script.loop();
+                } else {
+                    script.stop();
+                }
             } catch (IllegalStateException | AssertionError | NullPointerException e) {
 
                 if (System.currentTimeMillis() - lastFailure > FAILURE_RESET) {

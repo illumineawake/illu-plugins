@@ -1,6 +1,8 @@
 package net.runelite.client.plugins.iutils.walking;
 
 import net.runelite.api.Skill;
+import net.runelite.api.coords.WorldPoint;
+import net.runelite.client.plugins.iutils.api.EquipmentSlot;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.ui.Chatbox;
@@ -9,10 +11,12 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 public class TransportLoader {
     public static final int COINS = 995;
+    public static final Set<Integer> ROCKFALL_IDs = Set.of(26679, 26680);
 
     public static class SpiritTree {
         private Position position;
@@ -247,6 +251,9 @@ public class TransportLoader {
             }
         }
 
+        //Motherlode Mine
+        transports.add(rockfallTransport(new Position(3766, 5648, 0), new WorldPoint(3766, 5646, 0)));
+        transports.add(rockfallTransport(new Position(3766, 5646, 0), new WorldPoint(3766, 5648, 0)));
 
         // darkmeyer wall (needs long rope)
 //        3672 3376 0 3670 3375 0 Climb Wall 39541
@@ -316,6 +323,24 @@ public class TransportLoader {
                 Integer.parseInt(parts[parts.length - 1]),
                 parts[6].replace('_', ' ')
         );
+    }
+
+    private static Transport rockfallTransport(Position source, WorldPoint target) {
+        System.out.println("handling rockfall transport");
+        return new Transport(source, new Position(target), Integer.MAX_VALUE, 0, game -> {
+            if (game.objects().withId(ROCKFALL_IDs).inside(source.areaWithin(1)).exists()) {
+                if (!game.equipment().withSlot(EquipmentSlot.WEAPON).withNamePart("Pick").exists()
+                        && !game.inventory().withNamePart("Pick").exists()) {
+                    System.out.println("Blocking rock found but missing pick");
+                    return;
+                }
+                game.objects().withId(ROCKFALL_IDs).inside(source.areaWithin(1)).nearest().interact("Mine");
+                game.waitUntil(() -> !game.objects().withId(ROCKFALL_IDs).inside(source.areaWithin(1)).exists());
+                game.tick();
+                game.walkUtils.sceneWalk(target,0,0);
+            }
+            game.tick(1);
+        });
     }
 
     private static Transport trapdoorTransport(Position source, Position target, int closedId, int openId) {

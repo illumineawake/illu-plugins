@@ -106,7 +106,7 @@ public class Bank {
             }
         }
 
-        log.info("[Bank] Item not found");
+        log.info("[Bank] Item not found: {}, {}, {}", id, quantity, noted);
         return 0;
     }
 

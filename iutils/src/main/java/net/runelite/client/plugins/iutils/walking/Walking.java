@@ -3,6 +3,7 @@ package net.runelite.client.plugins.iutils.walking;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
+import net.runelite.client.plugins.iutils.api.EquipmentSlot;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.iTile;
 import net.runelite.client.plugins.iutils.scene.Area;
@@ -92,7 +93,7 @@ public class Walking {
         var playerPosition = game.localPlayer().position();
         for (var teleport : new TeleportLoader(game).buildTeleports()) {
 //            if (teleport.target.distanceTo(playerPosition) > 50 && (playerPosition.distanceTo(target) > teleport.target.distanceTo(target) + 20)) {
-                teleports.putIfAbsent(teleport.target, teleport);
+            teleports.putIfAbsent(teleport.target, teleport);
 //            } else {
 //                log.info("Teleport not added due to distance reqs: {}", teleport.target);
 //            }
@@ -212,6 +213,7 @@ public class Walking {
 
             if (hasDoor(tileA) && isWallBlocking(a, b)) return openDoor(a);
             if (hasDoor(tileB) && isWallBlocking(b, a)) return openDoor(b);
+
         }
 
         return false;
@@ -240,7 +242,7 @@ public class Walking {
         return wall != null && !wall.position().equals(game.localPlayer().position()) && wall.actions().contains("Open");
     }
 
-    private boolean isWallBlocking(Position a, Position b) {
+    public boolean isWallBlocking(Position a, Position b) {
         switch (tile(a).object(ObjectCategory.WALL).orientation()) {
             case 0:
                 return a.west().equals(b) || a.west().north().equals(b) || a.west().south().equals(b);
@@ -381,7 +383,7 @@ public class Walking {
         return reachable;
     }
 
-    private iTile tile(Position position) {
+    public iTile tile(Position position) {
         if (game.inInstance()) {
             var instancePositions = game.instancePositions(position);
 

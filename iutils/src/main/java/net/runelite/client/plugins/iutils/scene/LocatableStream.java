@@ -20,7 +20,8 @@ public abstract class LocatableStream<T extends Locatable, S extends LocatableSt
      * {@link Locatable#position()} is contained in the given {@link Area}.
      */
     public S inside(Area area) {
-        return filter(o -> area.contains(o.position()));
+//        return filter(o -> area.contains(o.position()));
+        return filter(o -> o.position() != null && area.contains(o.position()));
     }
 
     /**

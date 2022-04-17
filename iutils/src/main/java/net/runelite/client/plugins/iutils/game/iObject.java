@@ -91,6 +91,7 @@ public class iObject implements Locatable, Interactable {
     @Override
     public void interact(String action) {
         for (int i = 0; i < actions().size(); i++) {
+            log.info("Action: {}", actions().get(i));
             if (action.equalsIgnoreCase(actions().get(i))) {
                 interact(i);
                 return;

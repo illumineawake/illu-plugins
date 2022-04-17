@@ -51,6 +51,10 @@ public class Position implements Area {
         return new Position(this.x + x, this.y + y, this.z + z);
     }
 
+    public WorldPoint toWorldPoint() {
+        return new WorldPoint(x, y, z);
+    }
+
     public double distanceTo(Position other) {
         if (z != other.z) {
             return Double.MAX_VALUE;

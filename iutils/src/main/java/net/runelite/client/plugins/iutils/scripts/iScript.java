@@ -65,14 +65,14 @@ public abstract class iScript extends UtilsScript {
     }
 
     public void stop() {
+        scriptHandler = null;
+        started = false;
         if (future != null) {
             onStop();
             future.cancel(true);
         } else {
             log.info("Couldn't find future to stop");
         }
-        scriptHandler = null;
-        started = false;
     }
 
     @Override
