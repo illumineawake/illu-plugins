@@ -103,7 +103,7 @@ public class InventoryItem implements Interactable, Useable {
                 game.client.setSelectedItemSlot(item.slot());
                 game.client.setSelectedItemID(item.id());
                 game.client.invokeMenuAction("", "", id(),
-                        MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId(), slot(), WidgetInfo.INVENTORY.getId());
+                        MenuAction.ITEM_USE_ON_ITEM.getId(), slot(), WidgetInfo.INVENTORY.getId());
             });
         });
     }

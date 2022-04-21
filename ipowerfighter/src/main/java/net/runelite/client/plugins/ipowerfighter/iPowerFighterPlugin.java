@@ -328,7 +328,7 @@ public class iPowerFighterPlugin extends Plugin {
             log.debug("Alching item: {}", alchItem.getId());
             targetMenu = new LegacyMenuEntry("", "",
                     alchItem.getId(),
-                    MenuAction.ITEM_USE_ON_WIDGET.getId(),
+                    MenuAction.WIDGET_USE_ON_ITEM.getId(),
                     alchItem.getIndex(), WidgetInfo.INVENTORY.getId(),
                     false);
             utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, alchItem.getCanvasBounds().getBounds(), sleepDelay());

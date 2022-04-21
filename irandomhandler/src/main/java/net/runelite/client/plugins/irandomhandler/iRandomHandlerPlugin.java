@@ -184,7 +184,7 @@ public class iRandomHandlerPlugin extends Plugin {
             genie = true;
             if (client.getWidget(231, 3) != null) {
                 log.debug("Genie click here to continue found, progressing...");
-                targetMenu = new LegacyMenuEntry("Continue", "", 0, MenuAction.WIDGET_TYPE_6.getId(),
+                targetMenu = new LegacyMenuEntry("Continue", "", 0, MenuAction.WIDGET_CONTINUE.getId(),
                         -1, 15138820, false);
                 menu.setEntry(targetMenu);
                 mouse.delayMouseClick(randomToDismiss.getConvexHull().getBounds(), sleepDelay());

@@ -239,7 +239,7 @@ public class iMagicCasterPlugin extends Plugin {
     private void castSpell() {
         switch (castType.getName()) {
             case "Single cast":
-                targetMenu = new LegacyMenuEntry("Cast", "", targetNPC.getIndex(), MenuAction.SPELL_CAST_ON_NPC.getId(),
+                targetMenu = new LegacyMenuEntry("Cast", "", targetNPC.getIndex(), MenuAction.WIDGET_TARGET_ON_NPC.getId(),
                         0, 0, false);
                 utils.oneClickCastSpell(selectedSpell.getSpell(), targetMenu, targetNPC.getConvexHull().getBounds(), sleepDelay());
                 timeout = 4 + tickDelay();
@@ -251,12 +251,12 @@ public class iMagicCasterPlugin extends Plugin {
                 timeout = 10 + tickDelay();
                 return;
             case "High Alchemy":
-                targetMenu = new LegacyMenuEntry("Cast", "", targetItem.getId(), MenuAction.ITEM_USE_ON_WIDGET.getId(), targetItem.getIndex(), 9764864, true);
+                targetMenu = new LegacyMenuEntry("Cast", "", targetItem.getId(), MenuAction.WIDGET_USE_ON_ITEM.getId(), targetItem.getIndex(), 9764864, true);
                 timeout = 5 + tickDelay();
                 utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, targetItem.getCanvasBounds().getBounds(), sleepDelay());
                 return;
             case "Tele Grab":
-                targetMenu = new LegacyMenuEntry("Cast", "", groundItem.getId(), MenuAction.SPELL_CAST_ON_GROUND_ITEM.getId(), groundItem.getTile().getSceneLocation().getX(), groundItem.getTile().getSceneLocation().getY(), true);
+                targetMenu = new LegacyMenuEntry("Cast", "", groundItem.getId(), MenuAction.WIDGET_TARGET_ON_GROUND_ITEM.getId(), groundItem.getTile().getSceneLocation().getX(), groundItem.getTile().getSceneLocation().getY(), true);
                 timeout = 5 + tickDelay();
                 utils.oneClickCastSpell(WidgetInfo.SPELL_TELEKINETIC_GRAB, targetMenu, new Rectangle(0, 0, 0, 0), sleepDelay());
                 return;

@@ -96,7 +96,7 @@ public class iMenuDebuggerPlugin extends Plugin {
             utils.sendGameMessage("MenuAction value: " + event.getMenuAction());
             utils.sendGameMessage("ActionParam value: " + event.getActionParam());
             utils.sendGameMessage("WidgetId value: " + event.getWidgetId());
-            utils.sendGameMessage("selectedItemIndex value: " + event.getSelectedItemIndex());
+//            utils.sendGameMessage("selectedItemIndex value: " + event.getSelectedItemIndex());
         }
     }
 

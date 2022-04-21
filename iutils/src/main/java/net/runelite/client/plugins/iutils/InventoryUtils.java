@@ -478,7 +478,7 @@ public class InventoryUtils {
                         log.info("interacting inventory item: {}", item.getId());
                         sleep(minDelayBetween, maxDelayBetween);
                         menu.setModifiedEntry(new LegacyMenuEntry("", "", item1.getId(), opcode, item1.getIndex(), WidgetInfo.INVENTORY.getId(),
-                                false), item.getId(), item.getIndex(), MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId());
+                                false), item.getId(), item.getIndex(), MenuAction.ITEM_USE_ON_ITEM.getId());
                         mouse.click(item1.getCanvasBounds());
                         if (!interactAll) {
                             break;
