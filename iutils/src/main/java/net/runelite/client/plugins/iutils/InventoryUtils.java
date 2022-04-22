@@ -2,6 +2,7 @@ package net.runelite.client.plugins.iutils;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.Point;
 import net.runelite.api.queries.InventoryItemQuery;
 import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.widgets.Widget;
@@ -11,7 +12,9 @@ import net.runelite.client.game.ItemManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import static net.runelite.client.plugins.iutils.iUtils.iterating;
@@ -63,10 +66,78 @@ public class InventoryUtils {
     public int getEmptySlots() {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         if (inventoryWidget != null) {
-            return 28 - inventoryWidget.getWidgetItems().size();
+            return 28 - getInventoryWidgetItems().size();
         } else {
             return -1;
         }
+    }
+
+    public WidgetItem createWidgetItem(Widget item) {
+        boolean isDragged = item.isWidgetItemDragged(item.getItemId());
+
+        int dragOffsetX = 0;
+        int dragOffsetY = 0;
+
+        if (isDragged) {
+            Point p = item.getWidgetItemDragOffsets();
+            dragOffsetX = p.getX();
+            dragOffsetY = p.getY();
+        }
+        // set bounds to same size as default inventory
+        Rectangle bounds = item.getBounds();
+        bounds.setBounds(bounds.x - 1, bounds.y - 1, 32, 32);
+        Rectangle dragBounds = item.getBounds();
+        dragBounds.setBounds(bounds.x + dragOffsetX, bounds.y + dragOffsetY, 32, 32);
+
+        return new WidgetItem(item.getItemId(), item.getItemQuantity(), item.getIndex(), bounds, item, dragBounds);
+    }
+
+    public Collection<WidgetItem> getInventoryWidgetItems() {
+        Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+        if (inventoryWidget == null) {
+            return new ArrayList<>();
+        }
+
+        Widget[] children = inventoryWidget.getChildren();
+
+        if (children == null) {
+            return new ArrayList<>();
+        }
+
+        Collection<WidgetItem> widgetItems = new ArrayList<>();
+        for (Widget item : children) {
+            if (item.getItemId() != 6512) {
+                widgetItems.add(createWidgetItem(item));
+            }
+        }
+
+        return widgetItems;
+    }
+
+    public WidgetItem getInventoryItem(List<Integer> idList) {
+        return getInventoryItem(idList.stream().mapToInt(Integer::intValue).toArray());
+    }
+
+    public WidgetItem getInventoryItem(int... ids) {
+        Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+
+        if (inventoryWidget == null) {
+            return null;
+        }
+
+        Widget[] children = inventoryWidget.getChildren();
+
+        if (children == null) {
+            return null;
+        }
+
+        for (Widget item : children) {
+            if (Arrays.stream(ids).anyMatch(i -> i == item.getItemId())) {
+                return createWidgetItem(item);
+            }
+        }
+
+        return null;
     }
 
     public List<WidgetItem> getItems(Collection<Integer> ids) {
@@ -74,7 +145,7 @@ public class InventoryUtils {
         List<WidgetItem> matchedItems = new ArrayList<>();
 
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = getInventoryWidgetItems();
             for (WidgetItem item : items) {
                 if (ids.contains(item.getId())) {
                     matchedItems.add(item);
@@ -99,7 +170,7 @@ public class InventoryUtils {
     public Collection<WidgetItem> getAllItems() {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         if (inventoryWidget != null) {
-            return inventoryWidget.getWidgetItems();
+            return getInventoryWidgetItems();
         }
         return null;
     }
@@ -134,7 +205,7 @@ public class InventoryUtils {
     public WidgetItem getWidgetItem(int id) {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = getInventoryWidgetItems();
             for (WidgetItem item : items) {
                 if (item.getId() == id) {
                     return item;
@@ -147,7 +218,7 @@ public class InventoryUtils {
     public WidgetItem getWidgetItem(Collection<Integer> ids) {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = getInventoryWidgetItems();
             for (WidgetItem item : items) {
                 if (ids.contains(item.getId())) {
                     return item;
@@ -172,7 +243,7 @@ public class InventoryUtils {
     public WidgetItem getItemMenu(ItemManager itemManager, String menuOption, int opcode, Collection<Integer> ignoreIDs) {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = getInventoryWidgetItems();
             for (WidgetItem item : items) {
                 if (ignoreIDs.contains(item.getId())) {
                     continue;
@@ -191,7 +262,7 @@ public class InventoryUtils {
     public WidgetItem getItemMenu(Collection<String> menuOptions) {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = getInventoryWidgetItems();
             for (WidgetItem item : items) {
                 String[] menuActions = itemManager.getItemComposition(item.getId()).getInventoryActions();
                 for (String action : menuActions) {
@@ -207,7 +278,7 @@ public class InventoryUtils {
     public WidgetItem getWidgetItemMenu(ItemManager itemManager, String menuOption, int opcode) {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = getInventoryWidgetItems();
             for (WidgetItem item : items) {
                 String[] menuActions = itemManager.getItemComposition(item.getId()).getInventoryActions();
                 for (String action : menuActions) {
@@ -224,7 +295,7 @@ public class InventoryUtils {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         int total = 0;
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = getInventoryWidgetItems();
             for (WidgetItem item : items) {
                 if (item.getId() == id) {
                     if (stackable) {
@@ -280,7 +351,7 @@ public class InventoryUtils {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         int total = 0;
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = getInventoryWidgetItems();
             for (WidgetItem item : items) {
                 if (item.getId() == id) {
                     if (stackable) {
@@ -298,7 +369,7 @@ public class InventoryUtils {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         int total = 0;
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = getInventoryWidgetItems();
             for (WidgetItem item : items) {
                 if (ids.contains(item.getId())) {
                     if (stackable) {
