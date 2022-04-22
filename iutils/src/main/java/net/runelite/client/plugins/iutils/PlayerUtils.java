@@ -128,7 +128,7 @@ public class PlayerUtils {
 
         if (!inventory.getItems(STAMINA_POTIONS).isEmpty()
                 && client.getVarbitValue(Varbits.RUN_SLOWED_DEPLETION_ACTIVE) == 0 && client.getEnergy() < energy && !bank.isOpen()) {
-            return inventory.getWidgetItem(STAMINA_POTIONS);
+            return inventory.getInventoryItem(STAMINA_POTIONS);
         } else {
             return null;
         }
@@ -138,7 +138,7 @@ public class PlayerUtils {
         WidgetItem staminaPotion = shouldStamPot(energy);
         if (staminaPotion != null) {
             log.info("using stamina potion");
-            menu.setEntry(new LegacyMenuEntry("", "", staminaPotion.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
+            menu.setEntry(new LegacyMenuEntry("", "", 3, MenuAction.CC_OP.getId(),
                     staminaPotion.getIndex(), 9764864, false));
             mouse.delayMouseClick(staminaPotion.getCanvasBounds(), calc.getRandomIntBetweenRange(5, 200));
             return true;
