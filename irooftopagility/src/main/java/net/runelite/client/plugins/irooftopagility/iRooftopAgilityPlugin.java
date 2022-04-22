@@ -286,10 +286,13 @@ public class iRooftopAgilityPlugin extends Plugin {
 
     private void eatSummerPie() {
         WidgetItem summerPieItem = inventory.getWidgetItem(SUMMER_PIE_IDS);
-        targetMenu = new LegacyMenuEntry("", "", summerPieItem.getId(), MenuAction.ITEM_FIRST_OPTION.getId(), summerPieItem.getIndex(),
-                WidgetInfo.INVENTORY.getId(), false);
-        menu.setEntry(targetMenu);
-        mouse.delayMouseClick(summerPieItem.getCanvasBounds(), sleepDelay());
+        //targetMenu = new LegacyMenuEntry("", "", summerPieItem.getId(), MenuAction.ITEM_FIRST_OPTION.getId(), summerPieItem.getIndex(),
+        //        WidgetInfo.INVENTORY.getId(), false);
+        //menu.setEntry(targetMenu);
+        //mouse.delayMouseClick(summerPieItem.getCanvasBounds(), sleepDelay());
+        if (summerPieItem != null) {
+            inventory.interactWithItem(summerPieItem.getId(), sleepDelay(),"eat");
+        }
     }
 
     private boolean shouldRestock() {

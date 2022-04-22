@@ -138,9 +138,14 @@ public class PlayerUtils {
         WidgetItem staminaPotion = shouldStamPot(energy);
         if (staminaPotion != null) {
             log.info("using stamina potion");
-            menu.setEntry(new LegacyMenuEntry("", "", staminaPotion.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
-                    staminaPotion.getIndex(), 9764864, false));
-            mouse.delayMouseClick(staminaPotion.getCanvasBounds(), calc.getRandomIntBetweenRange(5, 200));
+            //menu.setEntry(new LegacyMenuEntry("", "", staminaPotion.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
+            //        staminaPotion.getIndex(), 9764864, false));
+            //mouse.delayMouseClick(staminaPotion.getCanvasBounds(), calc.getRandomIntBetweenRange(5, 200));
+            inventory.interactWithItem(
+                        staminaPotion.getId(),
+                        calc.getRandomIntBetweenRange(5, 200),
+                        "drink"
+                    );
             return true;
         }
         return false;

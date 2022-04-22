@@ -39,6 +39,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iutils.*;
+import net.runelite.client.plugins.iutils.util.LegacyInventoryAssistant;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
@@ -84,6 +85,9 @@ public class iQuickEaterPlugin extends Plugin {
 
     @Inject
     private ItemManager itemManager;
+
+    @Inject
+    LegacyInventoryAssistant inventoryAssistant;
 
     LegacyMenuEntry targetMenu;
     Player player;
@@ -155,8 +159,9 @@ public class iQuickEaterPlugin extends Plugin {
 
     private void useItem(WidgetItem item) {
         if (item != null) {
-            targetMenu = new LegacyMenuEntry("", "", item.getId(), MenuAction.ITEM_FIRST_OPTION.getId(), item.getIndex(),
-                    WidgetInfo.INVENTORY.getId(), false);
+            //targetMenu = new LegacyMenuEntry("", "", item.getId(), MenuAction.ITEM_FIRST_OPTION.getId(), item.getIndex(),
+            //        WidgetInfo.INVENTORY.getId(), false);
+            targetMenu = inventoryAssistant.getLegacyMenuEntry(item.getId(), "eat", "drink", "invigorate");
             int sleepTime = calc.getRandomIntBetweenRange(25, 200);
             if (config.useInvokes()) {
                 utils.doInvokeMsTime(targetMenu, sleepTime);

@@ -10,7 +10,6 @@ import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.ItemQuantity;
 import net.runelite.client.plugins.iutils.walking.BankLocations;
 
-import javax.inject.Inject;
 import java.util.List;
 
 // TODO: selling, several offers at once, custom prices, collect to inventory
@@ -177,7 +176,9 @@ public class GrandExchange {
                 game.tick(2, 4);
             }
 
-            if (game.inventory().withId(995).first() == null) {
+            var coins = game.inventory().withId(995).first();
+
+            if (coins == null) {
                 throw new IllegalStateException("you'll need some coins to buy stuff");
             }
             log.info("Progressive buying: {} quantity: {} attempt: {}", item, quantity, attempts);
@@ -196,7 +197,8 @@ public class GrandExchange {
             }
 
             int price = (int) Math.ceil((priceMultiplier * attempts) * currentPrice());
-            price = Math.min(price, game.inventory().withId(995).first().quantity() / quantity);
+            int coinAmount = coins.quantity();
+            price = Math.min(price, coinAmount / quantity);
 
             if (lastPrice == price) {
                 log.info("Not enough money for progressive buy offer");

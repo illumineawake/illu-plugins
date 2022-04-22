@@ -484,9 +484,15 @@ public class iUtils extends Plugin {
     //Use with caution, does not pair with mouse click and is potentially detectable
     public void doModifiedInvokeGameTick(LegacyMenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, long ticksToDelay) {
         Runnable runnable = () -> {
-            client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+            /*client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
             client.setSelectedItemSlot(modifiedIndex);
-            client.setSelectedItemID(modifiedID);
+            client.setSelectedItemID(modifiedID);*/
+
+            client.setSelectedSpellWidget(WidgetInfo.INVENTORY.getId());
+            client.setSelectedSpellChildIndex(modifiedIndex);
+            client.setSelectedSpellItemId(modifiedID);
+            client.setSpellSelected(true);
+
             client.invokeMenuAction(entry.getOption(), entry.getTarget(), entry.getIdentifier(),
                     modifiedOpcode, entry.getParam0(), entry.getParam1());
         };
@@ -511,9 +517,15 @@ public class iUtils extends Plugin {
     //Use with caution, does not pair with mouse click and is potentially detectable
     public void doModifiedInvokeMsTime(LegacyMenuEntry entry, int modifiedID, int modifiedIndex, int modifiedOpcode, long timeToDelay) {
         Runnable runnable = () -> {
-            client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-            client.setSelectedItemSlot(modifiedIndex);
-            client.setSelectedItemID(modifiedID);
+            //client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+            //client.setSelectedItemSlot(modifiedIndex);
+            //client.setSelectedItemID(modifiedID);
+
+            client.setSelectedSpellWidget(WidgetInfo.INVENTORY.getId());
+            client.setSelectedSpellChildIndex(modifiedIndex);
+            client.setSelectedSpellItemId(modifiedID);
+            client.setSpellSelected(true);
+
             client.invokeMenuAction(entry.getOption(), entry.getTarget(), entry.getIdentifier(),
                     modifiedOpcode, entry.getParam0(), entry.getParam1());
         };
@@ -705,9 +717,14 @@ public class iUtils extends Plugin {
                 return;
             }
             if (menu.modifiedMenu) {
-                client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-                client.setSelectedItemSlot(menu.modifiedItemIndex);
-                client.setSelectedItemID(menu.modifiedItemID);
+                //client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+                //client.setSelectedItemSlot(menu.modifiedItemIndex);
+                //client.setSelectedItemID(menu.modifiedItemID);
+                client.setSelectedSpellWidget(WidgetInfo.INVENTORY.getId());
+                client.setSelectedSpellChildIndex(menu.modifiedItemIndex);
+                client.setSelectedSpellItemId(menu.modifiedItemID);
+                client.setSpellSelected(true);
+
                 log.debug("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", menu.modifiedItemID,
                         menu.modifiedItemIndex, menu.entry.getParam1());
                 menuAction(event, menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),

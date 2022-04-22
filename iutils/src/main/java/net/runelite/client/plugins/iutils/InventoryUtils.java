@@ -3,16 +3,17 @@ package net.runelite.client.plugins.iutils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.queries.InventoryItemQuery;
-import net.runelite.api.queries.InventoryWidgetItemQuery;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.plugins.iutils.util.LegacyInventoryAssistant;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 import static net.runelite.client.plugins.iutils.iUtils.iterating;
 import static net.runelite.client.plugins.iutils.iUtils.sleep;
@@ -37,6 +38,35 @@ public class InventoryUtils {
 
     @Inject
     private ItemManager itemManager;
+
+    @Inject
+    LegacyInventoryAssistant legacyInventory;
+
+    @Inject
+    iUtils utils;
+
+
+    public void interactWithItem(int itemID, long delay, String... option) {
+        interactWithItem(itemID, false, delay, option);
+    }
+
+    public void interactWithItem(int itemID, boolean forceLeftClick, long delay, String... option) {
+        interactWithItem(new int[] {itemID}, forceLeftClick, delay, option);
+    }
+
+    public void interactWithItem(int[] itemID, long delay, String... option) {
+        interactWithItem(itemID, false, delay, option);
+    }
+
+    public void interactWithItem(int[] itemID, boolean forceLeftClick, long delay, String... option) {
+        List<Integer> boxedIds = Arrays.stream(itemID).boxed().collect(Collectors.toList());
+        LegacyMenuEntry entry = legacyInventory.getLegacyMenuEntry(boxedIds, Arrays.asList(option), forceLeftClick);
+        if (entry != null) {
+            WidgetItem wi = legacyInventory.getWidgetItem(boxedIds);
+            if (wi != null)
+                utils.doActionMsTime(entry, wi.getCanvasBounds(), delay);
+        }
+    }
 
     public void openInventory() {
         if (client == null || client.getGameState() != GameState.LOGGED_IN) {
@@ -63,7 +93,7 @@ public class InventoryUtils {
     public int getEmptySlots() {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         if (inventoryWidget != null) {
-            return 28 - inventoryWidget.getWidgetItems().size();
+            return 28 - legacyInventory.getWidgetItems().size();
         } else {
             return -1;
         }
@@ -74,7 +104,7 @@ public class InventoryUtils {
         List<WidgetItem> matchedItems = new ArrayList<>();
 
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = legacyInventory.getWidgetItems();
             for (WidgetItem item : items) {
                 if (ids.contains(item.getId())) {
                     matchedItems.add(item);
@@ -87,19 +117,20 @@ public class InventoryUtils {
 
     //Requires Inventory visible or returns empty
     public List<WidgetItem> getItems(String itemName) {
-        return new InventoryWidgetItemQuery()
+        /*return new InventoryWidgetItemQuery()
                 .filter(i -> client.getItemDefinition(i.getId())
                         .getName()
                         .toLowerCase()
                         .contains(itemName))
                 .result(client)
-                .list;
+                .list;*/
+        return legacyInventory.getWidgetItems().stream().filter(wi -> wi.getWidget().getName().contains(itemName)).collect(Collectors.toList());
     }
 
     public Collection<WidgetItem> getAllItems() {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         if (inventoryWidget != null) {
-            return inventoryWidget.getWidgetItems();
+            return legacyInventory.getWidgetItems();
         }
         return null;
     }
@@ -134,7 +165,7 @@ public class InventoryUtils {
     public WidgetItem getWidgetItem(int id) {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = legacyInventory.getWidgetItems();
             for (WidgetItem item : items) {
                 if (item.getId() == id) {
                     return item;
@@ -147,7 +178,7 @@ public class InventoryUtils {
     public WidgetItem getWidgetItem(Collection<Integer> ids) {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = legacyInventory.getWidgetItems();
             for (WidgetItem item : items) {
                 if (ids.contains(item.getId())) {
                     return item;
@@ -172,7 +203,7 @@ public class InventoryUtils {
     public WidgetItem getItemMenu(ItemManager itemManager, String menuOption, int opcode, Collection<Integer> ignoreIDs) {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = legacyInventory.getWidgetItems();
             for (WidgetItem item : items) {
                 if (ignoreIDs.contains(item.getId())) {
                     continue;
@@ -191,7 +222,7 @@ public class InventoryUtils {
     public WidgetItem getItemMenu(Collection<String> menuOptions) {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = legacyInventory.getWidgetItems();
             for (WidgetItem item : items) {
                 String[] menuActions = itemManager.getItemComposition(item.getId()).getInventoryActions();
                 for (String action : menuActions) {
@@ -207,7 +238,7 @@ public class InventoryUtils {
     public WidgetItem getWidgetItemMenu(ItemManager itemManager, String menuOption, int opcode) {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = legacyInventory.getWidgetItems();
             for (WidgetItem item : items) {
                 String[] menuActions = itemManager.getItemComposition(item.getId()).getInventoryActions();
                 for (String action : menuActions) {
@@ -224,7 +255,7 @@ public class InventoryUtils {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         int total = 0;
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = legacyInventory.getWidgetItems();
             for (WidgetItem item : items) {
                 if (item.getId() == id) {
                     if (stackable) {
@@ -253,15 +284,16 @@ public class InventoryUtils {
             return false;
         }
 
-        WidgetItem inventoryItem = new InventoryWidgetItemQuery()
+        /*WidgetItem inventoryItem = new InventoryWidgetItemQuery()
                 .filter(i -> client.getItemDefinition(i.getId())
                         .getName()
                         .toLowerCase()
                         .contains(itemName))
                 .result(client)
-                .first();
+                .first();*/
 
-        return inventoryItem != null;
+        return legacyInventory.getWidgetItems().stream().anyMatch(wi -> wi.getWidget().getName().contains(itemName));
+        //return inventoryItem != null;
     }
 
     public boolean containsStackAmount(int itemID, int minStackAmount) {
@@ -280,7 +312,7 @@ public class InventoryUtils {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         int total = 0;
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = legacyInventory.getWidgetItems();
             for (WidgetItem item : items) {
                 if (item.getId() == id) {
                     if (stackable) {
@@ -298,7 +330,7 @@ public class InventoryUtils {
         Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
         int total = 0;
         if (inventoryWidget != null) {
-            Collection<WidgetItem> items = inventoryWidget.getWidgetItems();
+            Collection<WidgetItem> items = legacyInventory.getWidgetItems();
             for (WidgetItem item : items) {
                 if (ids.contains(item.getId())) {
                     if (stackable) {
@@ -477,8 +509,14 @@ public class InventoryUtils {
                     if ((!exceptItems && ids.contains(item.getId()) || (exceptItems && !ids.contains(item.getId())))) {
                         log.info("interacting inventory item: {}", item.getId());
                         sleep(minDelayBetween, maxDelayBetween);
-                        menu.setModifiedEntry(new LegacyMenuEntry("", "", item1.getId(), opcode, item1.getIndex(), WidgetInfo.INVENTORY.getId(),
-                                false), item.getId(), item.getIndex(), MenuAction.ITEM_USE_ON_ITEM.getId());
+
+                        //menu.setModifiedEntry(new LegacyMenuEntry("", "", item1.getId(), opcode, item1.getIndex(), WidgetInfo.INVENTORY.getId(),
+                        //        false), item.getId(), item.getIndex(), MenuAction.ITEM_USE_ON_ITEM.getId());
+                        menu.setModifiedEntry(
+                                new LegacyMenuEntry("", "", 0, opcode, item1.getIndex(), WidgetInfo.INVENTORY.getId(), false),
+                                item.getId(), item.getIndex(), MenuAction.WIDGET_TARGET_ON_WIDGET.getId()
+                        );
+
                         mouse.click(item1.getCanvasBounds());
                         if (!interactAll) {
                             break;

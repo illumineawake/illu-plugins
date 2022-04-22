@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "2.1.3"
+version = "2.1.4"
 
 project.extra["PluginName"] = "iBlackjack"
 project.extra["PluginDescription"] = "Illumine - Blackjack plugin"
