@@ -54,7 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static net.runelite.api.MenuAction.ITEM_USE_ON_GAME_OBJECT;
+import static net.runelite.api.MenuAction.WIDGET_TARGET_ON_GAME_OBJECT;
 import static net.runelite.client.plugins.icombinationrunecrafter.iCombinationRunecrafterState.*;
 import static net.runelite.client.plugins.iutils.iUtils.iterating;
 
@@ -500,9 +500,9 @@ public class iCombinationRunecrafterPlugin extends Plugin {
                 case USE_FIRE_ALTAR:
                     WidgetItem airTalisman = inventory.getWidgetItem(talismanID);
                     if (airTalisman != null) {
-                        targetMenu = new LegacyMenuEntry("", "", fireAltar.getId(), ITEM_USE_ON_GAME_OBJECT.getId(),
+                        targetMenu = new LegacyMenuEntry("", "", fireAltar.getId(), WIDGET_TARGET_ON_GAME_OBJECT.getId(),
                                 fireAltar.getSceneMinLocation().getX(), fireAltar.getSceneMinLocation().getY(), false);
-                        utils.doModifiedActionMsTime(targetMenu, airTalisman.getId(), airTalisman.getIndex(), ITEM_USE_ON_GAME_OBJECT.getId(), fireAltar.getConvexHull().getBounds(), sleepDelay());
+                        utils.doModifiedActionMsTime(targetMenu, airTalisman.getId(), airTalisman.getIndex(), WIDGET_TARGET_ON_GAME_OBJECT.getId(), fireAltar.getConvexHull().getBounds(), sleepDelay());
                         timeout = tickDelay();
                     }
                     break;
