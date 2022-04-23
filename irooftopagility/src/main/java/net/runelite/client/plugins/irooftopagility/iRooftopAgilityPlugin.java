@@ -261,7 +261,7 @@ public class iRooftopAgilityPlugin extends Plugin {
     private void highAlchItem() {
         if (!setHighAlch) {
             targetMenu = new LegacyMenuEntry("Cast", "<col=00ff00>High Level Alchemy</col>", 0,
-                    MenuAction.WIDGET_TARGET.getId(), -1, 14286887, false);
+                    MenuAction.WIDGET_TARGET.getId(), -1, 14286888, false);
             Widget spellWidget = client.getWidget(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY);
             if (spellWidget != null) {
                 menu.setEntry(targetMenu);
@@ -274,8 +274,8 @@ public class iRooftopAgilityPlugin extends Plugin {
         } else {
             alchItem = inventory.getWidgetItem(List.of(config.alchItemID(), (config.alchItemID() + 1)));
             targetMenu = new LegacyMenuEntry("Cast", "<col=00ff00>High Level Alchemy</col><col=ffffff> ->",
-                    alchItem.getId(),
-                    MenuAction.WIDGET_USE_ON_ITEM.getId(),
+                    0,
+                    MenuAction.WIDGET_TARGET_ON_WIDGET.getId(),
                     alchItem.getIndex(), 9764864,
                     false);
             menu.setEntry(targetMenu);
