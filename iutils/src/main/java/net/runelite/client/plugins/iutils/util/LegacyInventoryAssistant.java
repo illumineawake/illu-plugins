@@ -1,11 +1,12 @@
 package net.runelite.client.plugins.iutils.util;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
 import net.runelite.api.Point;
+import net.runelite.api.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.plugins.iutils.LegacyMenuEntry;
 
 import javax.inject.Inject;
@@ -13,6 +14,8 @@ import javax.inject.Singleton;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 /**
  * Utility for i1 -> i3 inventory
@@ -27,6 +30,22 @@ public class LegacyInventoryAssistant {
     @Inject
     Client client;
 
+    @Inject
+    ClientThread clientThread;
+
+    public <T> T getFromClientThread(Supplier<T> supplier) {
+        if (!client.isClientThread()) {
+            CompletableFuture<T> future = new CompletableFuture<>();
+
+            clientThread.invoke(() -> {
+                future.complete(supplier.get());
+            });
+            return future.join();
+        } else {
+            return supplier.get();
+        }
+    }
+
     //region utility for mapping option text to menu entry id. Credits to Owain
 
     private final Map<Integer, ItemComposition> itemCompositionMap = new HashMap<>();
@@ -39,7 +58,7 @@ public class LegacyInventoryAssistant {
         }
         else
         {
-            ItemComposition def = client.getItemDefinition(id);
+            ItemComposition def = getFromClientThread(() -> client.getItemDefinition(id));
             itemCompositionMap.put(id, def);
 
             return def;
@@ -106,7 +125,10 @@ public class LegacyInventoryAssistant {
     //region legacy utility method, credits to Pajeet and Ben93riggs respectively
 
     public void refreshInventory() {
-        client.runScript(6009, 9764864, 28, 1, -1);
+        if (client.isClientThread())
+            client.runScript(6009, 9764864, 28, 1, -1);
+        else
+            clientThread.invokeLater(() -> client.runScript(6009, 9764864, 28, 1, -1));
     }
 
     public WidgetItem createWidgetItem(Widget item) {
@@ -134,40 +156,42 @@ public class LegacyInventoryAssistant {
 
 
     public Collection<WidgetItem> getWidgetItems() {
-        Widget geWidget = client.getWidget(WidgetInfo.GRAND_EXCHANGE_INVENTORY_ITEMS_CONTAINER);
+        return getFromClientThread(() -> {
+            Widget geWidget = client.getWidget(WidgetInfo.GRAND_EXCHANGE_INVENTORY_ITEMS_CONTAINER);
 
-        boolean geOpen = geWidget != null && !geWidget.isHidden();
-        boolean bankOpen = !geOpen && client.getItemContainer(InventoryID.BANK) != null;
+            boolean geOpen = geWidget != null && !geWidget.isHidden();
+            boolean bankOpen = !geOpen && client.getItemContainer(InventoryID.BANK) != null;
 
-        Widget inventoryWidget = client.getWidget(
-                bankOpen ? WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER :
-                    geOpen ? WidgetInfo.GRAND_EXCHANGE_INVENTORY_ITEMS_CONTAINER :
-                            WidgetInfo.INVENTORY
-        );
+            Widget inventoryWidget = client.getWidget(
+                    bankOpen ? WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER :
+                            geOpen ? WidgetInfo.GRAND_EXCHANGE_INVENTORY_ITEMS_CONTAINER :
+                                    WidgetInfo.INVENTORY
+            );
 
-        if (inventoryWidget == null) {
-            return new ArrayList<>();
-        }
-
-        if (!bankOpen && !geOpen && inventoryWidget.isHidden())
-        {
-            refreshInventory();
-        }
-
-        Widget[] children = inventoryWidget.getDynamicChildren();
-
-        if (children == null) {
-            return new ArrayList<>();
-        }
-
-        Collection<WidgetItem> widgetItems = new ArrayList<>();
-        for (Widget item : children) {
-            if (item.getItemId() != 6512) {
-                widgetItems.add(createWidgetItem(item));
+            if (inventoryWidget == null) {
+                return new ArrayList<>();
             }
-        }
 
-        return widgetItems;
+            if (!bankOpen && !geOpen && inventoryWidget.isHidden())
+            {
+                refreshInventory();
+            }
+
+            Widget[] children = inventoryWidget.getDynamicChildren();
+
+            if (children == null) {
+                return new ArrayList<>();
+            }
+
+            Collection<WidgetItem> widgetItems = new ArrayList<>();
+            for (Widget item : children) {
+                if (item.getItemId() != 6512) {
+                    widgetItems.add(createWidgetItem(item));
+                }
+            }
+
+            return widgetItems;
+        });
     }
 
     public WidgetItem getWidgetItem(List<Integer> ids)

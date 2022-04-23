@@ -397,7 +397,9 @@ public class InventoryUtils {
     public void dropItem(WidgetItem item) {
         assert !client.isClientThread();
 
-        menu.setEntry(new LegacyMenuEntry("", "", item.getId(), MenuAction.ITEM_FIFTH_OPTION.getId(), item.getIndex(), 9764864, false));
+        //menu.setEntry(new LegacyMenuEntry("", "", item.getId(), MenuAction.ITEM_FIFTH_OPTION.getId(), item.getIndex(), 9764864, false));
+        menu.setEntry(legacyInventory.getLegacyMenuEntry(item.getId(), "drop"));
+
         mouse.click(item.getCanvasBounds());
     }
 
@@ -468,6 +470,7 @@ public class InventoryUtils {
         dropItems(inventoryItems, dropAll, minDelayBetween, maxDelayBetween);
     }
 
+    @Deprecated
     public void itemsInteract(Collection<Integer> ids, int opcode, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween) {
         Collection<WidgetItem> inventoryItems = getAllItems();
         executorService.submit(() ->
@@ -494,6 +497,32 @@ public class InventoryUtils {
         });
     }
 
+    public void itemsInteract(Collection<Integer> ids, String optionText, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween) {
+        Collection<WidgetItem> inventoryItems = getAllItems();
+        executorService.submit(() ->
+        {
+            try {
+                iterating = true;
+                for (WidgetItem item : inventoryItems) {
+                    if ((!exceptItems && ids.contains(item.getId()) || (exceptItems && !ids.contains(item.getId())))) {
+                        log.info("interacting inventory item: {}", item.getId());
+                        sleep(minDelayBetween, maxDelayBetween);
+                        menu.setEntry(legacyInventory.getLegacyMenuEntry(item.getId(), true, optionText));
+                        mouse.click(item.getCanvasBounds());
+                        if (!interactAll) {
+                            break;
+                        }
+                    }
+                }
+                iterating = false;
+            } catch (Exception e) {
+                iterating = false;
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Deprecated
     public void combineItems(Collection<Integer> ids, int item1ID, int opcode, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween) {
         WidgetItem item1 = getWidgetItem(item1ID);
         if (item1 == null) {
@@ -514,6 +543,43 @@ public class InventoryUtils {
                         //        false), item.getId(), item.getIndex(), MenuAction.ITEM_USE_ON_ITEM.getId());
                         menu.setModifiedEntry(
                                 new LegacyMenuEntry("", "", 0, opcode, item1.getIndex(), WidgetInfo.INVENTORY.getId(), false),
+                                item.getId(), item.getIndex(), MenuAction.WIDGET_TARGET_ON_WIDGET.getId()
+                        );
+
+                        mouse.click(item1.getCanvasBounds());
+                        if (!interactAll) {
+                            break;
+                        }
+                    }
+                }
+                iterating = false;
+            } catch (Exception e) {
+                iterating = false;
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void combineItems(Collection<Integer> ids, int item1ID, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween) {
+        WidgetItem item1 = getWidgetItem(item1ID);
+        if (item1 == null) {
+            log.info("combine item1 item not found in inventory");
+            return;
+        }
+        Collection<WidgetItem> inventoryItems = getAllItems();
+        executorService.submit(() ->
+        {
+            try {
+                iterating = true;
+                for (WidgetItem item : inventoryItems) {
+                    if ((!exceptItems && ids.contains(item.getId()) || (exceptItems && !ids.contains(item.getId())))) {
+                        log.info("interacting inventory item: {}", item.getId());
+                        sleep(minDelayBetween, maxDelayBetween);
+
+                        //menu.setModifiedEntry(new LegacyMenuEntry("", "", item1.getId(), opcode, item1.getIndex(), WidgetInfo.INVENTORY.getId(),
+                        //        false), item.getId(), item.getIndex(), MenuAction.ITEM_USE_ON_ITEM.getId());
+                        menu.setModifiedEntry(
+                                new LegacyMenuEntry("", "", 0, MenuAction.WIDGET_TARGET_ON_WIDGET.getId(), item1.getIndex(), WidgetInfo.INVENTORY.getId(), false),
                                 item.getId(), item.getIndex(), MenuAction.WIDGET_TARGET_ON_WIDGET.getId()
                         );
 
