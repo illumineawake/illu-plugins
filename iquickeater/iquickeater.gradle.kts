@@ -24,7 +24,7 @@
  */
 
 
-version = "5.1.5"
+version = "5.1.6"
 
 project.extra["PluginName"] = "iQuick Eater"
 project.extra["PluginDescription"] = "Illumine - auto eat food, consume potions and equip items"

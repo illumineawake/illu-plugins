@@ -610,20 +610,22 @@ public class iPowerFighterPlugin extends Plugin {
                 case EQUIP_AMMO:
                     WidgetItem ammoItem = inventory.getWidgetItem(config.ammoID());
                     if (ammoItem != null) {
-                        targetMenu = new LegacyMenuEntry("", "", ammoItem.getId(), MenuAction.ITEM_SECOND_OPTION.getId(), ammoItem.getIndex(),
-                                WidgetInfo.INVENTORY.getId(), false);
-                        menu.setEntry(targetMenu);
-                        mouse.delayMouseClick(ammoItem.getCanvasBounds(), sleepDelay());
+                        //targetMenu = new LegacyMenuEntry("", "", ammoItem.getId(), MenuAction.ITEM_SECOND_OPTION.getId(), ammoItem.getIndex(),
+                        //        WidgetInfo.INVENTORY.getId(), false);
+                        //menu.setEntry(targetMenu);
+                        //mouse.delayMouseClick(ammoItem.getCanvasBounds(), sleepDelay());
+                        inventory.interactWithItem(ammoItem.getId(), sleepDelay(), "wear", "equip", "wield");
                     }
                     break;
                 case EQUIP_BRACELET:
                     WidgetItem bracelet = inventory.getWidgetItem(BRACELETS);
                     if (bracelet != null) {
                         log.debug("Equipping bracelet");
-                        targetMenu = new LegacyMenuEntry("", "", bracelet.getId(), MenuAction.ITEM_SECOND_OPTION.getId(), bracelet.getIndex(),
-                                WidgetInfo.INVENTORY.getId(), false);
-                        menu.setEntry(targetMenu);
-                        mouse.delayMouseClick(bracelet.getCanvasBounds(), sleepDelay());
+                        //targetMenu = new LegacyMenuEntry("", "", bracelet.getId(), MenuAction.ITEM_SECOND_OPTION.getId(), bracelet.getIndex(),
+                        //        WidgetInfo.INVENTORY.getId(), false);
+                        //menu.setEntry(targetMenu);
+                        //mouse.delayMouseClick(bracelet.getCanvasBounds(), sleepDelay());
+                        inventory.interactWithItem(bracelet.getId(), sleepDelay(), "wear", "equip", "wield");
                     }
                     break;
                 case HIGH_ALCH:
