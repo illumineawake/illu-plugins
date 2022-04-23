@@ -190,16 +190,22 @@ public class Chatbox {
             return;
         }
 
+        List<String> checkedOptions = new ArrayList<>();
         for (var i = 0; i < game.widget(219, 1).items().size(); i++) {
-            if (game.widget(219, 1, i).text() != null && options.contains(game.widget(219, 1, i).text())) {
-                game.widget(219, 1, i).select();
-                game.waitChange(this::chatState, 6);
-                game.tick(2,3);
-                return;
+            if (game.widget(219, 1, i).text() != null) {
+                checkedOptions.add(game.widget(219, 1, i).text());
+                //if (options.contains(game.widget(219, 1, i).text())) {
+                final int finalIndex = i;
+                if (options.stream().anyMatch(s -> game.widget(219, 1, finalIndex).text().toLowerCase().contains(s.toLowerCase()))) {
+                    game.widget(219, 1, i).select();
+                    game.waitChange(this::chatState, 6);
+                    game.tick(2,3);
+                    return;
+                }
             }
         }
 
-        throw new IllegalStateException("no option found: " + options.toString());
+        throw new IllegalStateException("no option found: " + options.toString() + " from available options: " + String.join(", ", checkedOptions));
     }
 
     public String findFromOptions(Collection<String> options) {

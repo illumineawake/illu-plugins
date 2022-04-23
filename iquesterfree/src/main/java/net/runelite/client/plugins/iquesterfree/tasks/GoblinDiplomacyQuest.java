@@ -73,23 +73,23 @@ public class GoblinDiplomacyQuest extends Task {
                     }
                     if (!game.inInstance()) {
                         iQuesterFreePlugin.status = "Chatting with Goblin General";
-                        chatOptionalNpc(GOBLIN_VILLAGE, "General Bentnoze", "Yes, Wartface looks fat", "I have some blue armour here", "I have some orange armour here", "I have some brown armour here");
+                        chatOptionalNpc(GOBLIN_VILLAGE, "General Bentnoze", "Yes, he looks fat", "I have some blue armour here", "I have some orange armour here", "I have some brown armour here");
                     }
                     chatbox.chat();
-                    game.waitUntil(() -> !game.inInstance());
+                    game.waitUntil(() -> !game.inInstance()); //TODO: illu this seems to hang - after the goblin tries the armour, then we exit the instanced scene, the bot doesn't continue. restarting the bot fixes it. -sox
                     break;
 
                 case 4:
                     if (!game.inInstance()) {
                         iQuesterFreePlugin.status = "Chatting with Goblin General";
-                        chatOptionalNpc(GOBLIN_VILLAGE, "General Bentnoze", "Yes, Wartface looks fat", "I have some blue armour here", "I have some orange armour here", "I have some brown armour here");
+                        chatOptionalNpc(GOBLIN_VILLAGE, "General Bentnoze", "Yes, he looks fat", "I have some blue armour here", "I have some orange armour here", "I have some brown armour here");
                     }
                     chatbox.chat();
                     break;
                 case 5:
                     if (!game.inInstance()) {
                         iQuesterFreePlugin.status = "Chatting with Goblin General";
-                        chatOptionalNpc(GOBLIN_VILLAGE, "General Bentnoze", "Yes, Wartface looks fat", "I have some blue armour here", "I have some orange armour here", "I have some brown armour here");
+                        chatOptionalNpc(GOBLIN_VILLAGE, "General Bentnoze", "Yes, he looks fat", "I have some blue armour here", "I have some orange armour here", "I have some brown armour here");
                     }
                     chatbox.chat();
                     handleCompletion();

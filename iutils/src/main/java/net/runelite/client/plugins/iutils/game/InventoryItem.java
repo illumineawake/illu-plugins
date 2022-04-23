@@ -6,6 +6,7 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.iutils.api.Interactable;
 import net.runelite.client.plugins.iutils.ui.Bank;
+import net.runelite.client.plugins.iutils.util.LegacyInventoryAssistant;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -19,6 +20,9 @@ public class InventoryItem implements Interactable, Useable {
     private final Game game;
     private final WidgetItem widgetItem;
     private final ItemComposition definition;
+
+    @Inject
+    LegacyInventoryAssistant inventoryAssistant;
 
     public InventoryItem(Game game, WidgetItem widgetItem, ItemComposition definition) {
         this.game = game;
@@ -69,8 +73,13 @@ public class InventoryItem implements Interactable, Useable {
         throw new IllegalArgumentException("no action \"" + action + "\" on item " + id());
     }
 
-    private int getActionId(int action) {
-        switch (action) {
+    private int getMenuId(int action) {
+        return inventoryAssistant.itemOptionToId(id(), actions().get(action));
+    }
+
+    private int getMenuAction(int action) {
+        return inventoryAssistant.idToMenuAction(getMenuId(action)).getId();
+        /*switch (action) {
             case 0:
                 return MenuAction.ITEM_FIRST_OPTION.getId();
             case 1:
@@ -83,13 +92,13 @@ public class InventoryItem implements Interactable, Useable {
                 return MenuAction.ITEM_FIFTH_OPTION.getId();
             default:
                 throw new IllegalArgumentException("action = " + action);
-        }
+        }*/
     }
 
     public void interact(int action) {
         game.interactionManager().interact(
-                id(),
-                getActionId(action),
+                getMenuId(action),
+                getMenuAction(action),
                 slot(),
                 WidgetInfo.INVENTORY.getId()
         );
@@ -99,11 +108,19 @@ public class InventoryItem implements Interactable, Useable {
     public void useOn(InventoryItem item) {
         game.interactionManager().submit(() -> {
             game.clientThread.invoke(() -> {
-                game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-                game.client.setSelectedItemSlot(item.slot());
-                game.client.setSelectedItemID(item.id());
-                game.client.invokeMenuAction("", "", id(),
-                        MenuAction.ITEM_USE_ON_ITEM.getId(), slot(), WidgetInfo.INVENTORY.getId());
+                //game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+                //game.client.setSelectedItemSlot(item.slot());
+                //game.client.setSelectedItemID(item.id());
+
+                game.client.setSelectedSpellWidget(WidgetInfo.INVENTORY.getId());
+                game.client.setSelectedSpellChildIndex(item.slot());
+                game.client.setSelectedSpellItemId(item.id());
+                game.client.setSpellSelected(true);
+
+                //game.client.invokeMenuAction("", "", id(),
+                //        MenuAction.ITEM_USE_ON_ITEM.getId(), slot(), WidgetInfo.INVENTORY.getId());
+                game.client.invokeMenuAction("", "", 0,
+                        MenuAction.WIDGET_TARGET_ON_WIDGET.getId(), slot(), WidgetInfo.INVENTORY.getId());
             });
         });
     }
@@ -112,9 +129,15 @@ public class InventoryItem implements Interactable, Useable {
     public void useOn(iObject object) {
         game.interactionManager().submit(() -> {
             game.clientThread.invoke(() -> {
-                game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-                game.client.setSelectedItemSlot(slot());
-                game.client.setSelectedItemID(id());
+                //game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+                //game.client.setSelectedItemSlot(slot());
+                //game.client.setSelectedItemID(id());
+
+                game.client.setSelectedSpellWidget(WidgetInfo.INVENTORY.getId());
+                game.client.setSelectedSpellChildIndex(slot());
+                game.client.setSelectedSpellItemId(id());
+                game.client.setSpellSelected(true);
+
                 game.client.invokeMenuAction("", "", object.id(),
                         MenuAction.ITEM_USE_ON_GAME_OBJECT.getId(), object.menuPoint().getX(), object.menuPoint().getY());
             });
@@ -125,9 +148,15 @@ public class InventoryItem implements Interactable, Useable {
     public void useOn(iNPC npc) {
         game.interactionManager().submit(() -> {
             game.clientThread.invoke(() -> {
-                game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-                game.client.setSelectedItemSlot(slot());
-                game.client.setSelectedItemID(id());
+                //game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+                //game.client.setSelectedItemSlot(slot());
+                //game.client.setSelectedItemID(id());
+
+                game.client.setSelectedSpellWidget(WidgetInfo.INVENTORY.getId());
+                game.client.setSelectedSpellChildIndex(slot());
+                game.client.setSelectedSpellItemId(id());
+                game.client.setSpellSelected(true);
+
                 game.client.invokeMenuAction("", "", npc.index(),
                         MenuAction.ITEM_USE_ON_NPC.getId(), 0, 0);
             });

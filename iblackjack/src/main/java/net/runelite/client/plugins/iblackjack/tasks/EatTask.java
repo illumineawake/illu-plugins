@@ -1,14 +1,10 @@
 package net.runelite.client.plugins.iblackjack.tasks;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.MenuAction;
-import net.runelite.api.MenuEntry;
 import net.runelite.api.Skill;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.iblackjack.Task;
-import net.runelite.client.plugins.iutils.LegacyMenuEntry;
 
 import java.util.Set;
 
@@ -35,9 +31,10 @@ public class EatTask extends Task {
         status = "Restoring HP";
         WidgetItem food = inventory.getItemMenu(foodMenu);
         if (food != null) {
-            entry = new LegacyMenuEntry("", "", food.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
-                    food.getIndex(), WidgetInfo.INVENTORY.getId(), false);
-            utils.doActionMsTime(entry, food.getCanvasBounds(), sleepDelay());
+            //entry = new LegacyMenuEntry("", "", food.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
+            //        food.getIndex(), WidgetInfo.INVENTORY.getId(), false);
+            //utils.doActionMsTime(entry, food.getCanvasBounds(), sleepDelay());
+            inventory.interactWithItem(food.getId(), sleepDelay(), "eat", "drink");
             eatHP = calc.getRandomIntBetweenRange(config.minEatHP(), config.maxEatHP());
             timeout = tickDelay();
         }

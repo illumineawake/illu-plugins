@@ -18,6 +18,7 @@ import net.runelite.client.plugins.iutils.scene.ObjectCategory;
 import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.ui.EquipmentItemStream;
 import net.runelite.client.plugins.iutils.ui.InventoryItemStream;
+import net.runelite.client.plugins.iutils.util.LegacyInventoryAssistant;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -63,6 +64,9 @@ public class Game {
 
     @Inject
     private KeyboardUtils keyboard;
+
+    @Inject
+    private LegacyInventoryAssistant inventoryAssistant;
 
     public boolean closeWidget;
 
@@ -295,8 +299,17 @@ public class Game {
         return new iWidget(this, widget);
     }
 
+    /*
     public InventoryItemStream inventory() {
         return getFromClientThread(() -> new InventoryItemStream(widget(WidgetInfo.INVENTORY).getWidgetItems().stream()
+                .map(wi -> new InventoryItem(this, wi, client().getItemDefinition(wi.getId())))
+                .collect(Collectors.toList())
+                .stream())
+        );
+    }*/
+
+    public InventoryItemStream inventory() {
+        return getFromClientThread(() -> new InventoryItemStream(inventoryAssistant.getWidgetItems().stream()
                 .map(wi -> new InventoryItem(this, wi, client().getItemDefinition(wi.getId())))
                 .collect(Collectors.toList())
                 .stream())

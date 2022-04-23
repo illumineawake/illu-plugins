@@ -40,6 +40,7 @@ import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iutils.*;
 import net.runelite.client.plugins.iutils.scripts.ReflectBreakHandler;
+import net.runelite.client.plugins.iutils.util.LegacyInventoryAssistant;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.apache.commons.lang3.StringUtils;
 import org.pf4j.Extension;
@@ -113,6 +114,9 @@ public class iPowerFighterPlugin extends Plugin {
 
     @Inject
     private ReflectBreakHandler chinBreakHandler;
+
+    @Inject
+    private LegacyInventoryAssistant inventoryAssistant;
 
     NPC currentNPC;
     WorldPoint deathLocation;
@@ -346,8 +350,9 @@ public class iPowerFighterPlugin extends Plugin {
                 if (BONE_BLACKLIST.contains(bone.getId())) {
                     continue;
                 }
-                targetMenu = new LegacyMenuEntry("", "", bone.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
-                        bone.getIndex(), WidgetInfo.INVENTORY.getId(), false);
+                //targetMenu = new LegacyMenuEntry("", "", bone.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
+                //        bone.getIndex(), WidgetInfo.INVENTORY.getId(), false);
+                targetMenu = inventoryAssistant.getLegacyMenuEntry(bone.getId(), "bury");
                 menu.setEntry(targetMenu);
                 mouse.handleMouseClick(bone.getCanvasBounds());
                 sleep(calc.getRandomIntBetweenRange(1200, 1400));
@@ -364,8 +369,9 @@ public class iPowerFighterPlugin extends Plugin {
                 if (BONE_BLACKLIST.contains(ashe.getId())) {
                     continue;
                 }
-                targetMenu = new LegacyMenuEntry("", "", ashe.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
-                        ashe.getIndex(), WidgetInfo.INVENTORY.getId(), false);
+                //targetMenu = new LegacyMenuEntry("", "", ashe.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
+                //        ashe.getIndex(), WidgetInfo.INVENTORY.getId(), false);
+                targetMenu = inventoryAssistant.getLegacyMenuEntry(ashe.getId(), "scatter");
                 menu.setEntry(targetMenu);
                 mouse.handleMouseClick(ashe.getCanvasBounds());
                 sleep(calc.getRandomIntBetweenRange(800, 2200));
