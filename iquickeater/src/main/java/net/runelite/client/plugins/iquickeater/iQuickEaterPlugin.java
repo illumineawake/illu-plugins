@@ -29,7 +29,6 @@ import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -242,8 +241,9 @@ public class iQuickEaterPlugin extends Plugin {
                 timeout += 4;
                 if (inventory.containsItem(11090)) {
                     if (playerUtils.getEquippedItems() != null && playerUtils.getEquippedItems().get(2).getId() != 11090) {
-                        targetMenu = new LegacyMenuEntry("Wear", "Wear", 11090, MenuAction.ITEM_SECOND_OPTION.getId(), inventory.getWidgetItem(11090).getIndex(),
-                                WidgetInfo.INVENTORY.getId(), false);
+                        //targetMenu = new LegacyMenuEntry("Wear", "Wear", 11090, MenuAction.ITEM_SECOND_OPTION.getId(), inventory.getWidgetItem(11090).getIndex(),
+                        //        WidgetInfo.INVENTORY.getId(), false);
+                        targetMenu = inventoryAssistant.getLegacyMenuEntry(11090, "wear", "equip", "wield");
                         if (config.useInvokes()) {
                             utils.doInvokeMsTime(targetMenu, calc.getRandomIntBetweenRange(25, 200));
                         } else {

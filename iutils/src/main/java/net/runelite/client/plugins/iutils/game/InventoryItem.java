@@ -139,7 +139,7 @@ public class InventoryItem implements Interactable, Useable {
                 game.client.setSpellSelected(true);
 
                 game.client.invokeMenuAction("", "", object.id(),
-                        MenuAction.ITEM_USE_ON_GAME_OBJECT.getId(), object.menuPoint().getX(), object.menuPoint().getY());
+                        MenuAction.WIDGET_TARGET_ON_GAME_OBJECT.getId(), object.menuPoint().getX(), object.menuPoint().getY());
             });
         });
     }

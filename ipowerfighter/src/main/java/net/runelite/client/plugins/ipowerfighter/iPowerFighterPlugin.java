@@ -330,9 +330,9 @@ public class iPowerFighterPlugin extends Plugin {
         WidgetItem alchItem = inventory.getWidgetItem(itemID);
         if (alchItem != null) {
             log.debug("Alching item: {}", alchItem.getId());
-            targetMenu = new LegacyMenuEntry("", "",
-                    alchItem.getId(),
-                    MenuAction.WIDGET_USE_ON_ITEM.getId(),
+            targetMenu = new LegacyMenuEntry("Cast", "High Level Alchemy -> Item",
+                    0,
+                    MenuAction.WIDGET_TARGET_ON_WIDGET.getId(),
                     alchItem.getIndex(), WidgetInfo.INVENTORY.getId(),
                     false);
             utils.oneClickCastSpell(WidgetInfo.SPELL_HIGH_LEVEL_ALCHEMY, targetMenu, alchItem.getCanvasBounds().getBounds(), sleepDelay());
@@ -610,20 +610,22 @@ public class iPowerFighterPlugin extends Plugin {
                 case EQUIP_AMMO:
                     WidgetItem ammoItem = inventory.getWidgetItem(config.ammoID());
                     if (ammoItem != null) {
-                        targetMenu = new LegacyMenuEntry("", "", ammoItem.getId(), MenuAction.ITEM_SECOND_OPTION.getId(), ammoItem.getIndex(),
-                                WidgetInfo.INVENTORY.getId(), false);
-                        menu.setEntry(targetMenu);
-                        mouse.delayMouseClick(ammoItem.getCanvasBounds(), sleepDelay());
+                        //targetMenu = new LegacyMenuEntry("", "", ammoItem.getId(), MenuAction.ITEM_SECOND_OPTION.getId(), ammoItem.getIndex(),
+                        //        WidgetInfo.INVENTORY.getId(), false);
+                        //menu.setEntry(targetMenu);
+                        //mouse.delayMouseClick(ammoItem.getCanvasBounds(), sleepDelay());
+                        inventory.interactWithItem(ammoItem.getId(), sleepDelay(), "wear", "equip", "wield");
                     }
                     break;
                 case EQUIP_BRACELET:
                     WidgetItem bracelet = inventory.getWidgetItem(BRACELETS);
                     if (bracelet != null) {
                         log.debug("Equipping bracelet");
-                        targetMenu = new LegacyMenuEntry("", "", bracelet.getId(), MenuAction.ITEM_SECOND_OPTION.getId(), bracelet.getIndex(),
-                                WidgetInfo.INVENTORY.getId(), false);
-                        menu.setEntry(targetMenu);
-                        mouse.delayMouseClick(bracelet.getCanvasBounds(), sleepDelay());
+                        //targetMenu = new LegacyMenuEntry("", "", bracelet.getId(), MenuAction.ITEM_SECOND_OPTION.getId(), bracelet.getIndex(),
+                        //        WidgetInfo.INVENTORY.getId(), false);
+                        //menu.setEntry(targetMenu);
+                        //mouse.delayMouseClick(bracelet.getCanvasBounds(), sleepDelay());
+                        inventory.interactWithItem(bracelet.getId(), sleepDelay(), "wear", "equip", "wield");
                     }
                     break;
                 case HIGH_ALCH:
