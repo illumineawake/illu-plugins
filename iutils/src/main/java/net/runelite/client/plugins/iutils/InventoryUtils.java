@@ -560,43 +560,6 @@ public class InventoryUtils {
         });
     }
 
-    public void combineItems(Collection<Integer> ids, int item1ID, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween) {
-        WidgetItem item1 = getWidgetItem(item1ID);
-        if (item1 == null) {
-            log.info("combine item1 item not found in inventory");
-            return;
-        }
-        Collection<WidgetItem> inventoryItems = getAllItems();
-        executorService.submit(() ->
-        {
-            try {
-                iterating = true;
-                for (WidgetItem item : inventoryItems) {
-                    if ((!exceptItems && ids.contains(item.getId()) || (exceptItems && !ids.contains(item.getId())))) {
-                        log.info("interacting inventory item: {}", item.getId());
-                        sleep(minDelayBetween, maxDelayBetween);
-
-                        //menu.setModifiedEntry(new LegacyMenuEntry("", "", item1.getId(), opcode, item1.getIndex(), WidgetInfo.INVENTORY.getId(),
-                        //        false), item.getId(), item.getIndex(), MenuAction.ITEM_USE_ON_ITEM.getId());
-                        menu.setModifiedEntry(
-                                new LegacyMenuEntry("", "", 0, MenuAction.WIDGET_TARGET_ON_WIDGET.getId(), item1.getIndex(), WidgetInfo.INVENTORY.getId(), false),
-                                item.getId(), item.getIndex(), MenuAction.WIDGET_TARGET_ON_WIDGET.getId()
-                        );
-
-                        mouse.click(item1.getCanvasBounds());
-                        if (!interactAll) {
-                            break;
-                        }
-                    }
-                }
-                iterating = false;
-            } catch (Exception e) {
-                iterating = false;
-                e.printStackTrace();
-            }
-        });
-    }
-
     public boolean runePouchContains(int id) {
         Set<Integer> runePouchIds = new HashSet<>();
         if (client.getVarbitValue(Varbits.RUNE_POUCH_RUNE1) != 0) {
