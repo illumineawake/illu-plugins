@@ -484,8 +484,8 @@ public class InventoryUtils {
         dropItems(inventoryItems, dropAll, minDelayBetween, maxDelayBetween);
     }
 
-    @Deprecated
-    public void itemsInteract(Collection<Integer> ids, int opcode, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween) {
+
+    public void itemsInteract(Collection<Integer> ids, int id, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween) {
         Collection<WidgetItem> inventoryItems = getAllItems();
         executorService.submit(() ->
         {
@@ -495,7 +495,7 @@ public class InventoryUtils {
                     if ((!exceptItems && ids.contains(item.getId()) || (exceptItems && !ids.contains(item.getId())))) {
                         log.info("interacting inventory item: {}", item.getId());
                         sleep(minDelayBetween, maxDelayBetween);
-                        menu.setEntry(new LegacyMenuEntry("", "", item.getId(), opcode, item.getIndex(), WidgetInfo.INVENTORY.getId(),
+                        menu.setEntry(new LegacyMenuEntry("", "", id, legacyInventory.idToMenuAction(id), item.getIndex(), WidgetInfo.INVENTORY.getId(),
                                 true));
                         mouse.click(item.getCanvasBounds());
                         if (!interactAll) {
@@ -536,7 +536,7 @@ public class InventoryUtils {
         });
     }
 
-    @Deprecated
+
     public void combineItems(Collection<Integer> ids, int item1ID, int opcode, boolean exceptItems, boolean interactAll, int minDelayBetween, int maxDelayBetween) {
         WidgetItem item1 = getWidgetItem(item1ID);
         if (item1 == null) {
