@@ -68,6 +68,20 @@ public class InventoryUtils {
         }
     }
 
+    public void interactWithItemInvoke(int itemID, boolean forceLeftClick, long delay, String... option) {
+        interactWithItemInvoke(new int[] {itemID}, forceLeftClick, delay, option);
+    }
+
+    public void interactWithItemInvoke(int[] itemID, boolean forceLeftClick, long delay, String... option) {
+        List<Integer> boxedIds = Arrays.stream(itemID).boxed().collect(Collectors.toList());
+        LegacyMenuEntry entry = legacyInventory.getLegacyMenuEntry(boxedIds, Arrays.asList(option), forceLeftClick);
+        if (entry != null) {
+            WidgetItem wi = legacyInventory.getWidgetItem(boxedIds);
+            if (wi != null)
+                utils.doInvokeMsTime(entry, delay);
+        }
+    }
+
     public void openInventory() {
         if (client == null || client.getGameState() != GameState.LOGGED_IN) {
             return;
