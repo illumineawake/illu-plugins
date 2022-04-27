@@ -725,8 +725,8 @@ public class iUtils extends Plugin {
                 client.setSelectedSpellItemId(menu.modifiedItemID);
                 client.setSpellSelected(true);
 
-                log.debug("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}", menu.modifiedItemID,
-                        menu.modifiedItemIndex, menu.entry.getParam1());
+                log.info("doing a Modified MOC, mod ID: {}, mod index: {}, param1: {}, modified opcode: {}", menu.modifiedItemID,
+                        menu.modifiedItemIndex, menu.entry.getParam1(), MenuAction.of(menu.modifiedOpCode));
                 menuAction(event, menu.entry.getOption(), menu.entry.getTarget(), menu.entry.getIdentifier(),
                         MenuAction.of(menu.modifiedOpCode), menu.entry.getParam0(), menu.entry.getParam1());
                 menu.modifiedMenu = false;
@@ -749,7 +749,9 @@ public class iUtils extends Plugin {
         menuOptionClicked.setMenuTarget(target);
         menuOptionClicked.setId(identifier);
         menuOptionClicked.setMenuAction(menuAction);
-        menuOptionClicked.setActionParam(param0);
-        menuOptionClicked.setWidgetId(param1);
+        menuOptionClicked.setParam0(param0);
+        menuOptionClicked.setParam1(param1);
+//        menuOptionClicked.setActionParam(param0);
+//        menuOptionClicked.setWidgetId(param1);
     }
 }
