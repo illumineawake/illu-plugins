@@ -51,7 +51,7 @@ public class InventoryUtils {
     }
 
     public void interactWithItem(int itemID, boolean forceLeftClick, long delay, String... option) {
-        interactWithItem(new int[] {itemID}, forceLeftClick, delay, option);
+        interactWithItem(new int[]{itemID}, forceLeftClick, delay, option);
     }
 
     public void interactWithItem(int[] itemID, long delay, String... option) {
@@ -69,7 +69,7 @@ public class InventoryUtils {
     }
 
     public void interactWithItemInvoke(int itemID, boolean forceLeftClick, long delay, String... option) {
-        interactWithItemInvoke(new int[] {itemID}, forceLeftClick, delay, option);
+        interactWithItemInvoke(new int[]{itemID}, forceLeftClick, delay, option);
     }
 
     public void interactWithItemInvoke(int[] itemID, boolean forceLeftClick, long delay, String... option) {
@@ -391,14 +391,14 @@ public class InventoryUtils {
         }
         return false;
     }
-    
+
     public boolean onlyContains(Collection<Integer> itemIds) {
         if (client.getItemContainer(InventoryID.INVENTORY) == null) {
             return false;
         }
 
         Collection<WidgetItem> inventoryItems = getAllItems();
-        
+
         for (WidgetItem item : inventoryItems) {
             if (!itemIds.contains(item.getId())) {
                 return false;
@@ -427,15 +427,12 @@ public class InventoryUtils {
         {
             try {
                 iterating = true;
+
                 for (WidgetItem item : inventoryItems) {
-                    if (ids.contains(item.getId())) //6512 is empty widget slot
-                    {
-                        log.info("dropping item: " + item.getId());
-                        sleep(minDelayBetween, maxDelayBetween);
-                        dropItem(item);
-                        if (!dropAll) {
-                            break;
-                        }
+                    utils.game.inventory().withSlot(item.getIndex()).withId(item.getId()).first().interact("Drop");
+                    utils.game.sleepExact(CalculationUtils.random(minDelayBetween, maxDelayBetween));
+                    if (!dropAll) {
+                        break;
                     }
                 }
                 iterating = false;
@@ -458,11 +455,12 @@ public class InventoryUtils {
                 iterating = true;
                 for (WidgetItem item : inventoryItems) {
                     if (ids.contains(item.getId())) {
-                        log.info("not dropping item: " + item.getId());
+                        log.debug("not dropping item: " + item.getId());
                         continue;
                     }
-                    sleep(minDelayBetween, maxDelayBetween);
-                    dropItem(item);
+                    log.info("Dropping item: {}, at slot: {}", item.getId(), item.getIndex());
+                    utils.game.inventory().withSlot(item.getIndex()).withId(item.getId()).first().interact("Drop");
+                    utils.game.sleepExact(CalculationUtils.random(minDelayBetween, maxDelayBetween));
                     if (!dropAll) {
                         break;
                     }
