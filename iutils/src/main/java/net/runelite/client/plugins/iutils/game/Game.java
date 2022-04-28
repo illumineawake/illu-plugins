@@ -66,7 +66,7 @@ public class Game {
     private KeyboardUtils keyboard;
 
     @Inject
-    private LegacyInventoryAssistant inventoryAssistant;
+    public LegacyInventoryAssistant inventoryAssistant;
 
     public boolean closeWidget;
 
@@ -286,7 +286,7 @@ public class Game {
     }
 
     public iWidget widget(int group, int file, int child) {
-        if (client.getWidget(group, file) == null) {
+        if (client.getWidget(group, file) == null || client.getWidget(group, file).getDynamicChildren().length == 0) {
             return null;
         }
         return new iWidget(this, client.getWidget(group, file).getDynamicChildren()[child]);

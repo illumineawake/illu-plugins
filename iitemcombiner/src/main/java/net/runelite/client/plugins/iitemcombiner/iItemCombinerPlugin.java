@@ -156,7 +156,7 @@ public class iItemCombinerPlugin extends iScript {
         if (event.getMenuOption().equals("iCombine")) {
             menuAction = true;
             itemOne = StringUtils.substringBetween(event.getMenuTarget(), ">", "<");
-            itemTwo = StringUtils.substringAfterLast(event.getMenuTarget(), ">");
+            itemTwo = StringUtils.substringAfterLast(StringUtils.substringBeforeLast(event.getMenuTarget(), "<"), ">");
             log.info("Combining item: {} with: {}", itemOne, itemTwo);
             start();
         }
@@ -187,7 +187,7 @@ public class iItemCombinerPlugin extends iScript {
         client.createMenuEntry(-1).setOption(option)
                 .setTarget(event.getTarget())
                 .setIdentifier(0)
-                .setParam1(0)
+                .setParam0(0)
                 .setParam1(0)
                 .setType(MenuAction.RUNELITE);
     }

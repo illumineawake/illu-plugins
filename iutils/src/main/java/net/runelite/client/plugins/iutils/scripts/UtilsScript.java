@@ -62,7 +62,17 @@ public abstract class UtilsScript extends Plugin {
             }
 
             log.info("Equipping: {}", i.name());
-            i.interact(1);
+            var item = game.inventory().withId(i.id()).first();
+
+            if (item.actions().contains("Wield")) {
+                game.inventory().withId(i.id()).first().interact("Wield");
+            } else if (item.actions().contains("Wear")) {
+                game.inventory().withId(i.id()).first().interact("Wear");
+            } else if (item.actions().contains("Equip")) {
+                game.inventory().withId(i.id()).first().interact("Equip");
+            } else {
+                throw new IllegalStateException("no known equip action for item");
+            }
             game.sleepDelay();
         });
     }
@@ -77,7 +87,17 @@ public abstract class UtilsScript extends Plugin {
         }
 
         game.tick(2);
-        game.inventory().withId(id).first().interact(1);
+        var item = game.inventory().withId(id).first();
+
+        if (item.actions().contains("Wield")) {
+            game.inventory().withId(id).first().interact("Wield");
+        } else if (item.actions().contains("Wear")) {
+            game.inventory().withId(id).first().interact("Wear");
+        } else if (item.actions().contains("Equip")) {
+            game.inventory().withId(id).first().interact("Equip");
+        } else {
+            throw new IllegalStateException("no known equip action for item");
+        }
         game.tick(2);
 
         game.waitUntil(() -> equipment.isEquipped(id));

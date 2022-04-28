@@ -159,7 +159,7 @@ public class LegacyInventoryAssistant {
         return getFromClientThread(() -> {
             Widget geWidget = client.getWidget(WidgetInfo.GRAND_EXCHANGE_INVENTORY_ITEMS_CONTAINER);
 
-            boolean geOpen = geWidget != null && !geWidget.isHidden();
+            boolean geOpen = geWidget != null/* && !geWidget.isHidden()*/;
             boolean bankOpen = !geOpen && client.getItemContainer(InventoryID.BANK) != null;
 
             Widget inventoryWidget = client.getWidget(

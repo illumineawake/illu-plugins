@@ -157,6 +157,10 @@ public class iWidget implements Interactable, Useable {
     }
 
     public Widget child(int child) { //TODO untested
+        if (widget.getDynamicChildren().length == 0) {
+            return null;
+        }
+
         var c = widget.getDynamicChildren()[child];
 
         if (c == null) {
