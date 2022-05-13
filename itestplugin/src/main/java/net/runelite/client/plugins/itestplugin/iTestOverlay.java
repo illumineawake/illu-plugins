@@ -37,7 +37,7 @@ class iTestOverlay extends OverlayPanel {
         this.client = client;
         this.plugin = plugin;
         this.config = config;
-        getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Herb Cleaner overlay"));
+        getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "iTest overlay"));
     }
 
     @Override
@@ -68,7 +68,7 @@ class iTestOverlay extends OverlayPanel {
             panelComponent.setPreferredSize(new Dimension(270, 200));
             panelComponent.setBorder(new Rectangle(5, 5, 5, 5));
             panelComponent.getChildren().add(TitleComponent.builder()
-                    .text("Illumine Herb Cleaner")
+                    .text("Illumine iTest")
                     .color(ColorUtil.fromHex("#40C4FF"))
                     .build());
             panelComponent.getChildren().add(tableComponent);

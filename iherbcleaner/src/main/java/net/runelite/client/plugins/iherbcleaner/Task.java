@@ -5,6 +5,7 @@ import net.runelite.api.Client;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.events.GameTick;
 import net.runelite.client.plugins.iutils.*;
+import net.runelite.client.plugins.iutils.game.Game;
 
 import javax.inject.Inject;
 
@@ -18,6 +19,9 @@ public abstract class Task {
 
     @Inject
     public Client client;
+
+    @Inject
+    protected Game game;
 
     @Inject
     public iHerbCleanerConfig config;

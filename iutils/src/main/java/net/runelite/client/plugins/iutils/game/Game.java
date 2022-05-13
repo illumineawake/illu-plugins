@@ -528,6 +528,13 @@ public class Game {
 
     public void waitUntil(BooleanSupplier condition) {
         waiting = true;
+
+        if (client.isClientThread()) {
+            log.info("Submitting waitUntil on Executor");
+            executorService.submit(() -> waitUntil(condition));
+            return;
+        }
+
         if (!waitUntil(condition, 100)) {
             waiting = false;
             throw new IllegalStateException("timed out");
@@ -537,15 +544,22 @@ public class Game {
 
     public boolean waitUntil(BooleanSupplier condition, int ticks) {
         waiting = true;
-        for (var i = 0; i < ticks; i++) {
-            if (condition.getAsBoolean()) {
-                waiting = false;
-                return true;
+        if (client.isClientThread()) {
+            log.info("Submitting waitUntil on Executor");
+            boolean result = getFromExecutorThread(() -> waitUntil(condition, ticks));
+            waiting = false;
+            return result;
+        } else {
+            for (var i = 0; i < ticks; i++) {
+                if (condition.getAsBoolean()) {
+                    waiting = false;
+                    return true;
+                }
+                tick();
             }
-            tick();
+            waiting = false;
+            return false;
         }
-        waiting = false;
-        return false;
     }
 
     public boolean waitChange(Supplier<Object> supplier, int ticks) {

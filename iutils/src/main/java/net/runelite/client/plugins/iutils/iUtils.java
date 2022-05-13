@@ -422,7 +422,6 @@ public class iUtils extends Plugin {
             menu.setEntry(entry);
             mouse.handleMouseClick(point);
         };
-
         action.delayTime(timeToDelay, runnable);
     }
 

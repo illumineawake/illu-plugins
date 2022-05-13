@@ -61,6 +61,11 @@ public class Walking {
         if (target.contains(game.localPlayer().templatePosition())) {
             return;
         }
+        if (game.client.isClientThread()) {
+            log.info("Submitting walk on executor");
+            game.executorService.submit(() -> walkTo(target));
+            return;
+        }
         Game.walking = true;
         if (DEATHS_OFFICE.contains(game.localPlayer().templatePosition())) {
             if (chatbox.chatState() != Chatbox.ChatState.NPC_CHAT) {

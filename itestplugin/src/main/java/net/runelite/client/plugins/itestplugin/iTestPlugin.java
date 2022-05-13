@@ -42,6 +42,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.itestplugin.tasks.TimeoutTask;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.iUtils;
+import net.runelite.client.plugins.iutils.scene.Area;
 import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.scripts.ReflectBreakHandler;
 import net.runelite.client.plugins.iutils.scripts.UtilsScript;
@@ -98,6 +99,7 @@ public class iTestPlugin extends UtilsScript {
     public static long sleepLength;
     public static int tickLength;
     public static int timeout;
+    private static boolean stepping = false;
     public static String status = "starting...";
 
     @Provides
@@ -179,7 +181,7 @@ public class iTestPlugin extends UtilsScript {
         if (!startBot || chinBreakHandler.isBreakActive(this)) {
             return;
         }
-        if (Game.waiting) {
+        if (Game.isBusy()) {
             log.info("Waiting");
             return;
         }
@@ -190,8 +192,15 @@ public class iTestPlugin extends UtilsScript {
                 chinBreakHandler.startBreak(this);
                 timeout = 5;
             }
-            log.info("Game tick: {}", client.getTickCount());
-            bank();
+            log.info("Game tick: {}, steppppping: {}", client.getTickCount(), stepping);
+//            walking.walkTo(GRAND_EXCHANGE);
+            game.waitUntil(() -> game.localPlayer().position().distanceTo(GRAND_EXCHANGE) < 50, 5);
+//            if (!stepping) {
+//                log.info("Walking to GE");
+//                walk(GRAND_EXCHANGE);
+//            } else {
+//                log.info("Stepping");
+//            }
 //            if (timeout > 0) {
 //                timeout--;
 //                return;
@@ -207,5 +216,13 @@ public class iTestPlugin extends UtilsScript {
 //            }
 //            beforeLoc = player.getLocalLocation();
         }
+    }
+
+    private void walk(Area position) {
+        stepping = true;
+        game.executorService.submit(() -> {
+            walking.walkTo(position);
+            stepping = false;
+        });
     }
 }

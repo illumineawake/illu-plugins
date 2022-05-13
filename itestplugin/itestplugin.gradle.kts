@@ -25,8 +25,8 @@
 
 version = "2.1.4"
 
-project.extra["PluginName"] = "iHerbCleaner"
-project.extra["PluginDescription"] = "Illumine - Herb Cleaner"
+project.extra["PluginName"] = "iTestPlugin"
+project.extra["PluginDescription"] = "Illumine - iTest Plugin"
 
 dependencies {
     compileOnly(project(":iutils"))
