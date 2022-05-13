@@ -665,6 +665,11 @@ public class iUtils extends Plugin {
     @Subscribe
     public void onClientTick(ClientTick event) {
         action.onClientTick(event);
+
+        if (System.currentTimeMillis() >= Game.millisDelay && client.getTickCount() >= Game.gameTickDelay) {
+            Game.waiting = false;
+//            log.info("Ending delay due at: {}, at: {}, difference: {}", Game.millisDelay, System.currentTimeMillis(), System.currentTimeMillis() - Game.millisDelay);
+        }
     }
 
     @Subscribe
@@ -737,10 +742,10 @@ public class iUtils extends Plugin {
             }
             menu.entry = null;
         } else {
-            if (!event.isConsumed() && !action.delayedActions.isEmpty() && event.getMenuOption().equals("Walk here")) {
-                log.info("Consuming a NULL MOC event");
-                event.consume();
-            }
+//            if (!event.isConsumed() && !action.delayedActions.isEmpty() && event.getMenuOption().equals("Walk here")) {
+//                log.info("Consuming a NULL MOC event");
+//                event.consume();
+//            }
         }
     }
 

@@ -350,8 +350,6 @@ public class iPowerFighterPlugin extends Plugin {
                 if (BONE_BLACKLIST.contains(bone.getId())) {
                     continue;
                 }
-                //targetMenu = new LegacyMenuEntry("", "", bone.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
-                //        bone.getIndex(), WidgetInfo.INVENTORY.getId(), false);
                 targetMenu = inventoryAssistant.getLegacyMenuEntry(bone.getId(), "bury");
                 menu.setEntry(targetMenu);
                 mouse.handleMouseClick(bone.getCanvasBounds());
@@ -360,7 +358,8 @@ public class iPowerFighterPlugin extends Plugin {
             iterating = false;
         });
     }
-   private void scatterAshes() {
+
+    private void scatterAshes() {
         List<WidgetItem> ashes = inventory.getItems("ashes");
         executorService.submit(() ->
         {
@@ -379,6 +378,7 @@ public class iPowerFighterPlugin extends Plugin {
             iterating = false;
         });
     }
+
     private void attackNPC(NPC npc) {
         targetMenu = new LegacyMenuEntry("", "", npc.getIndex(), MenuAction.NPC_SECOND_OPTION.getId(),
                 0, 0, false);
@@ -540,7 +540,7 @@ public class iPowerFighterPlugin extends Plugin {
         if (chinBreakHandler.shouldBreak(this)) {
             return iPowerFighterState.HANDLE_BREAK;
         }
-        if (config.buryBones() && inventory.containsItem("bones") && (inventory.isFull() || config.buryOne())) {
+        if (config.buryBones() && inventory.containsItem("Bones") && (inventory.isFull() || config.buryOne())) {
             return iPowerFighterState.BURY_BONES;
         }
         if (config.scatterAshes() && inventory.containsItem("ashes") && (inventory.isFull() || config.buryOne())) {

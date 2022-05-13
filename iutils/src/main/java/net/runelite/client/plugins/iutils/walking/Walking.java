@@ -61,7 +61,7 @@ public class Walking {
         if (target.contains(game.localPlayer().templatePosition())) {
             return;
         }
-
+        Game.walking = true;
         if (DEATHS_OFFICE.contains(game.localPlayer().templatePosition())) {
             if (chatbox.chatState() != Chatbox.ChatState.NPC_CHAT) {
                 game.npcs().withName("Death").nearest().interact("Talk-to");
@@ -104,6 +104,7 @@ public class Walking {
         var path = pathfind(starts, target, transportPositions);
 
         if (path == null) {
+            Game.walking = false;
             throw new IllegalStateException("couldn't pathfind " + game.localPlayer().templatePosition() + " -> " + target);
         }
 
@@ -120,6 +121,7 @@ public class Walking {
         }
 
         walkAlong(path, transports);
+        Game.walking = false;
     }
 
     private List<Position> pathfind(ArrayList<Position> start, Area target, Map<Position, List<Position>> tranports) {
@@ -155,6 +157,7 @@ public class Walking {
 
             if (!stepAlong(remainingPath)) {
                 if (fails++ == 5) {
+                    Game.walking = false;
                     throw new IllegalStateException("stuck in path at " + game.localPlayer().templatePosition());
                 }
             } else {

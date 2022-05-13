@@ -138,7 +138,7 @@ public class InventoryUtils {
                         .contains(itemName))
                 .result(client)
                 .list;*/
-        return legacyInventory.getWidgetItems().stream().filter(wi -> wi.getWidget().getName().contains(itemName)).collect(Collectors.toList());
+        return legacyInventory.getWidgetItems().stream().filter(wi -> wi.getWidget().getName().toLowerCase().contains(itemName.toLowerCase())).collect(Collectors.toList());
     }
 
     public Collection<WidgetItem> getAllItems() {

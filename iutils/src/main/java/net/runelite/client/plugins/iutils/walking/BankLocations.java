@@ -6,7 +6,8 @@ import net.runelite.client.plugins.iutils.scene.RectangularArea;
 
 import java.util.ArrayList;
 
-public class BankLocations {
+public class
+BankLocations {
     public static final Area LUMBRIDGE_BANK = new RectangularArea(3207, 3222, 3210, 3215, 2);
     public static final Area VARROCK_WEST_BANK = new RectangularArea(3180, 3447, 3190, 3433, 0);
     public static final Area VARROCK_EAST_BANK = new RectangularArea(3250, 3424, 3257, 3416, 0);
