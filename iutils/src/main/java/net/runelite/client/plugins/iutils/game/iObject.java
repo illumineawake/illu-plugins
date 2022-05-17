@@ -97,7 +97,7 @@ public class iObject implements Locatable, Interactable {
                 return;
             }
         }
-        throw new IllegalArgumentException("no action \"" + action + "\" on object " + id());
+        throw new IllegalArgumentException("no action \"" + action + "\" on object " + id() +". Actions found: " + actions().toString());
     }
 
     private int getActionId(int action) {

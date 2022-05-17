@@ -84,7 +84,7 @@ public class RectangularArea implements Area {
         return position;
     }
 
-        public String toString() {
+    public String toString() {
         return "[" + minX + ", " + maxX + "] x [" + minY + ", " + maxY + "] x [" + minZ + ", " + maxZ + "]";
     }
 }
