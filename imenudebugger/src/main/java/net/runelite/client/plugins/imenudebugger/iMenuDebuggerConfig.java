@@ -51,6 +51,16 @@ public interface iMenuDebuggerConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "gameState",
+            name = "Log Game State events",
+            description = "Enable to log Game State Changed events",
+            position = 20
+    )
+    default boolean gameState() {
+        return false;
+    }
+
+    @ConfigItem(
             keyName = "chatMessage",
             name = "Log Chat events",
             description = "Enable to log chat events",

@@ -299,11 +299,7 @@ public class Bank {
         if (!isOpen()) {
             throw new IllegalStateException("bank not open");
         }
-//        List<iWidget> items = game.widget(WidgetInfo.BANK_ITEM_CONTAINER).items();
         for (iWidget item : iUtils.bankitems) {
-//            if (item.itemId() == 6512 || item.itemId() == -1 || item.hidden()) {
-//                continue;
-//            }
             if (item.itemId() == id) {
                 return item.quantity();
             }

@@ -50,9 +50,14 @@ public class Depositbox {
 
         for (iWidget item : game.widget(192, 2).items()) {
             if (item.itemId() == itemID) {
-                log.info("Depositing item: {} {}", itemID, item.index());
-                game.widget(192, 2, item.index()).interact(depositAction);
-                return true;
+                if (game.widget(192, 2, item.index()).actions().contains(depositAction)) {
+                    log.info("Depositing item: {} {}", itemID, item.index());
+                    game.widget(192, 2, item.index()).interact(depositAction);
+                    return true;
+                } else {
+                    log.info("Action: {} not found on item {}", depositAction, itemID);
+                    return false;
+                }
             }
         }
 

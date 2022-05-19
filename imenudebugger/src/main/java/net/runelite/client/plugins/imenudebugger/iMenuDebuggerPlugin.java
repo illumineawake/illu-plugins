@@ -136,6 +136,23 @@ public class iMenuDebuggerPlugin extends Plugin {
     }
 
     @Subscribe
+    private void onItemContainerChanged(ItemContainerChanged event) {
+        if (!config.widget()) {
+            return;
+        }
+        log.info("Container changed: {}", event.toString());
+    }
+
+    @Subscribe
+    private void onGameStateChanged(GameStateChanged event) {
+        if (!config.gameState()) {
+            return;
+        }
+
+        log.info("Game State changed: {}", event.getGameState());
+    }
+
+    @Subscribe
     private void onConfigButtonPressed(ConfigButtonClicked configButtonClicked) {
         if (!configButtonClicked.getGroup().equalsIgnoreCase("iMenuDebugger")) {
             return;
@@ -151,13 +168,5 @@ public class iMenuDebuggerPlugin extends Plugin {
                 }
             });
         }
-    }
-
-    @Subscribe
-    private void onItemContainerChanged(ItemContainerChanged event) {
-        if (!config.widget()) {
-            return;
-        }
-        log.info("Container changed: {}", event.toString());
     }
 }
