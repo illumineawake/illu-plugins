@@ -95,6 +95,8 @@ public class Banks {
             ObjectID.BANK_DEPOSIT_BOX_34344,
             ObjectID.BANK_DEPOSIT_BOX_36086,
             ObjectID.BANK_DEPOSIT_BOX_39239,
+            ObjectID.BANK_CHEST_41493,
+            ObjectID.BANK_CHEST_26707,
             ObjectID.MINE_CART_36219);
 
     public static final Set<Integer> BANK_SET = ImmutableSet.of(
@@ -189,6 +191,8 @@ public class Banks {
             ObjectID.BANK_DEPOSIT_BOX_36086,
             ObjectID.BANK_DEPOSIT_BOX_39239,
             ObjectID.MINE_CART_36219,
-            ObjectID.BANK_CHEST_26711
+            ObjectID.BANK_CHEST_26711,
+            ObjectID.BANK_CHEST_41493,
+            ObjectID.BANK_CHEST_26707
     );
 }
