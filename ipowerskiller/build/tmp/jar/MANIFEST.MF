@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Plugin-Version: 6.1.5
+Plugin-Id: ipowerskiller-plugin
+Plugin-Provider: illumine
+Plugin-Dependencies: iutils-plugin
+Plugin-Description: Illumine auto power skiller plugin
+Plugin-License: 3-Clause BSD License
+

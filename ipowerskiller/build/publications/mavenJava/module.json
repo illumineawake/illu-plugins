@@ -1,0 +1,60 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.openosrs.externals",
+    "module": "ipowerskiller",
+    "version": "6.1.5",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.4"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "ipowerskiller-6.1.5.jar",
+          "url": "ipowerskiller-6.1.5.jar",
+          "size": 21916,
+          "sha512": "b3e4e95537d0983c230d70bf481502587c485621b3a8fc408242d223ede4b7264c58f063fe44e329dc878a5e4b5ee07bead4a82c80738c0e77ec6d20c74e714f",
+          "sha256": "619cb0f426a40a913697b428af4437df95f7f1fe68408d8155e56b2ef5acbc1b",
+          "sha1": "8f758d1524a9f12b755e8ed619fcefa7acc5ad27",
+          "md5": "2bf2feae08c64362a6489ed32b4a66ca"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "ipowerskiller-6.1.5.jar",
+          "url": "ipowerskiller-6.1.5.jar",
+          "size": 21916,
+          "sha512": "b3e4e95537d0983c230d70bf481502587c485621b3a8fc408242d223ede4b7264c58f063fe44e329dc878a5e4b5ee07bead4a82c80738c0e77ec6d20c74e714f",
+          "sha256": "619cb0f426a40a913697b428af4437df95f7f1fe68408d8155e56b2ef5acbc1b",
+          "sha1": "8f758d1524a9f12b755e8ed619fcefa7acc5ad27",
+          "md5": "2bf2feae08c64362a6489ed32b4a66ca"
+        }
+      ]
+    }
+  ]
+}

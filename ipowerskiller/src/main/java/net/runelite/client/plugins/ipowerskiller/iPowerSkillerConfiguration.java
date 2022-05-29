@@ -231,6 +231,34 @@ public interface iPowerSkillerConfiguration extends Config {
     }
 
     @ConfigItem(
+            keyName = "levelPbool",
+            name = "Power level until ...",
+            description = "activate ..Level until.. function",
+            position = 71,
+            section = "skillerConfig"
+
+    )
+    default boolean levelPbool() {return false;}
+
+    @Range(
+            min = 1,
+            max = 99
+    )
+    @ConfigItem(
+            keyName = "levelP",
+            name = "Level to power to",
+            description = "Fill in desired level " +
+                    "e.g 20 to level till level 20 and AFK/Log out",
+            position = 72,
+            hidden = true,
+            unhide = "levelPbool",
+            section = "skillerConfig"
+
+    )
+
+    default int levelP() { return 1; }
+
+    @ConfigItem(
             keyName = "objectIds",
             name = "IDs to power-skill",
             description = "Separate with comma",
