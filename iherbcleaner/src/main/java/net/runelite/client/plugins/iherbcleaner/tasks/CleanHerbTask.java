@@ -40,7 +40,7 @@ public class CleanHerbTask extends Task {
     @Override
     public void onGameTick(GameTick event) {
         if(bank.isOpen()){
-            log.debug("Closing bank");
+            log.debug("Closed bank");
             bank.close();
             game.sleepExact(sleepDelay());
         }
