@@ -40,7 +40,9 @@ public class CleanHerbTask extends Task {
     @Override
     public void onGameTick(GameTick event) {
         if(bank.isOpen()){
+            log.debug("Closing bank");
             bank.close();
+            game.sleepExact(sleepDelay());
         }
         status = "Starting herb cleaning";
         var herbs = game.inventory().withId(config.herbID()).withAction("Clean").all();
