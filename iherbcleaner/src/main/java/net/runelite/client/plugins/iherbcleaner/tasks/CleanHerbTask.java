@@ -40,18 +40,21 @@ public class CleanHerbTask extends Task {
     @Override
     public void onGameTick(GameTick event) {
         if(bank.isOpen()){
-            log.debug("Closed bank");
+            //log.debug("Closed bank");
             bank.close();
             game.sleepExact(sleepDelay());
+            log.info("Closed bank");
         }
-        status = "Starting herb cleaning";
-        var herbs = game.inventory().withId(config.herbID()).withAction("Clean").all();
-        game.executorService.submit(() -> {
-            herbs.forEach(h -> {
-                h.interact("Clean");
-                game.sleepExact(sleepDelay());
+        else {
+            status = "Starting herb cleaning";
+            var herbs = game.inventory().withId(config.herbID()).withAction("Clean").all();
+            game.executorService.submit(() -> {
+                herbs.forEach(h -> {
+                    h.interact("Clean");
+                    game.sleepExact(sleepDelay());
+                });
             });
-        });
+        }
         log.info(status);
     }
 }
