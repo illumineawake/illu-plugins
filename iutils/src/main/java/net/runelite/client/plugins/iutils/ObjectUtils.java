@@ -3,6 +3,7 @@ package net.runelite.client.plugins.iutils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.queries.*;
 import org.apache.commons.lang3.ArrayUtils;
@@ -383,6 +384,34 @@ public class ObjectUtils {
                 .nearestTo(client.getLocalPlayer());
     }
 
+    public WallObject getNearestWallObjectInArea(WorldArea area, int... ids) {
+        assert client.isClientThread();
+
+        if (client.getLocalPlayer() == null) {
+            return null;
+        }
+
+        return new WallObjectQuery()
+                .idEquals(ids)
+                .filter(o -> o.getWorldLocation().toWorldArea().intersectsWith(area))
+                .result(client)
+                .nearestTo(client.getLocalPlayer());
+    }
+
+    public GameObject getNearestGameObjectInArea(WorldArea area, int... ids) {
+        assert client.isClientThread();
+
+        if (client.getLocalPlayer() == null) {
+            return null;
+        }
+
+        return new GameObjectQuery()
+                .idEquals(ids)
+                .filter(o -> o.getWorldLocation().toWorldArea().intersectsWith(area))
+                .result(client)
+                .nearestTo(client.getLocalPlayer());
+    }
+
     @Nullable
     public DecorativeObject findNearestDecorObject(int... ids) {
         assert client.isClientThread();
@@ -547,6 +576,22 @@ public class ObjectUtils {
         return new GameObjectQuery()
                 .atLocalLocation(localPoint)
                 .result(client).first();
+    }
+
+    public WallObject getWallObjectAtWorldPoint(WorldPoint worldPoint) {
+        assert client.isClientThread();
+        if (client.getLocalPlayer() == null) {
+            return null;
+        }
+        return new WallObjectQuery().atWorldLocation(worldPoint).result(client).first();
+    }
+
+    public GroundObject getGroundObjectAtWorldPoint(WorldPoint worldPoint) {
+        assert client.isClientThread();
+        if (client.getLocalPlayer() == null) {
+            return null;
+        }
+        return new GroundObjectQuery().atWorldLocation(worldPoint).result(client).first();
     }
 
     @Nullable
