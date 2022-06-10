@@ -6,6 +6,7 @@ import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.iherbcleaner.Task;
 import net.runelite.client.plugins.iherbcleaner.iHerbCleanerPlugin;
 import net.runelite.client.plugins.iutils.ActionQueue;
+import net.runelite.client.plugins.iutils.BankUtils;
 import net.runelite.client.plugins.iutils.InventoryUtils;
 import net.runelite.client.plugins.iutils.game.Game;
 
@@ -23,6 +24,9 @@ public class CleanHerbTask extends Task {
     @Inject
     InventoryUtils inventory;
 
+    @Inject
+    BankUtils bank;
+
     @Override
     public boolean validate() {
         return /*action.delayedActions.isEmpty()*/ !Game.isBusy() && inventory.containsItem(config.herbID());
@@ -35,14 +39,22 @@ public class CleanHerbTask extends Task {
 
     @Override
     public void onGameTick(GameTick event) {
-        status = "Starting herb cleaning";
-        var herbs = game.inventory().withId(config.herbID()).withAction("Clean").all();
-        game.executorService.submit(() -> {
-            herbs.forEach(h -> {
-                h.interact("Clean");
-                game.sleepExact(sleepDelay());
+        if(bank.isOpen()){
+            //log.debug("Closed bank");
+            bank.close();
+            game.sleepExact(sleepDelay());
+            log.info("Closed bank");
+        }
+        else {
+            status = "Starting herb cleaning";
+            var herbs = game.inventory().withId(config.herbID()).withAction("Clean").all();
+            game.executorService.submit(() -> {
+                herbs.forEach(h -> {
+                    h.interact("Clean");
+                    game.sleepExact(sleepDelay());
+                });
             });
-        });
+        }
         log.info(status);
     }
 }
