@@ -15,7 +15,7 @@ public class PathfinderTest {
 
     static {
         try {
-            map = new CollisionMap(Util.ungzip(Walking.class.getResourceAsStream("/collision-map").readAllBytes()));
+            map = new CollisionMap(Util.ungzip(Walking.class.getResourceAsStream("/regions").readAllBytes()));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

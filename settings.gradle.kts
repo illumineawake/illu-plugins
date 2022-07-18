@@ -28,7 +28,7 @@ rootProject.name = "Illumine Plugins"
 include(":iutils")
 include("iblackjack")
 include(":icombinationrunecrafter")
-include("disablerendering")
+//include("disablerendering")
 include("iherbcleaner")
 include("iitemcombiner")
 include(":imagiccaster")

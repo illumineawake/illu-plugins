@@ -26,8 +26,6 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.iObject;
 import net.runelite.client.plugins.iutils.game.iWidget;
-import net.runelite.http.api.ge.GrandExchangeClient;
-import okhttp3.OkHttpClient;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
@@ -43,7 +41,7 @@ import java.util.stream.Collectors;
  */
 @Extension
 @PluginDescriptor(
-        name = "iUtils",
+        name = "iUtils-Prem",
         description = "Illumine plugin utilities"
 )
 @Slf4j
@@ -113,11 +111,6 @@ public class iUtils extends Plugin {
     int tickActions;
 
     @Provides
-    GrandExchangeClient provideGrandExchangeClient(OkHttpClient okHttpClient) {
-        return new GrandExchangeClient(okHttpClient);
-    }
-
-    @Provides
     iUtilsConfig provideConfig(ConfigManager configManager) {
         return configManager.getConfig(iUtilsConfig.class);
     }
@@ -155,12 +148,6 @@ public class iUtils extends Plugin {
 
     @Subscribe
     public void onWallObjectSpawned(WallObjectSpawned event) {
-        objects.add(event.getWallObject());
-    }
-
-    @Subscribe
-    public void onWallObjectChanged(WallObjectChanged event) {
-        objects.remove(event.getPrevious());
         objects.add(event.getWallObject());
     }
 
@@ -659,7 +646,7 @@ public class iUtils extends Plugin {
     @Subscribe
     private void onVarClientIntChanged(VarClientIntChanged event) {
         int index = event.getIndex();
-        if (index == VarClientInt.INPUT_TYPE.getIndex() && client.getVarbitValue(VarClientInt.INPUT_TYPE.getIndex()) == 7) {
+        if (index == VarClientInt.INPUT_TYPE && client.getVarbitValue(VarClientInt.INPUT_TYPE) == 7) {
             if (game.closeWidget) {
                 log.info("Clearing input dialogue");
                 clientThread.invokeLater(() -> client.runScript(138));

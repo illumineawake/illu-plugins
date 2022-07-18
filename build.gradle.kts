@@ -1,101 +1,74 @@
-//this works
-
-import ProjectVersions.openosrsVersion
+import ProjectVersions.unethicaliteVersion
 
 buildscript {
     repositories {
+        mavenCentral()
         gradlePluginPortal()
     }
 }
 
 plugins {
-    java //this enables annotationProcessor and implementation in dependencies
+    `java-library`
     checkstyle
+    kotlin("jvm") version "1.6.21"
 }
 
 project.extra["GithubUrl"] = "https://github.com/illumineawake/illu-plugins"
+project.extra["GithubUserName"] = "illumineawake"
+project.extra["GithubRepoName"] = "illu-plugins"
 
 apply<BootstrapPlugin>()
 
 allprojects {
     group = "com.openosrs.externals"
+//    group = "net.unethicalite"
     apply<MavenPublishPlugin>()
-}
-
-allprojects {
-    apply<MavenPublishPlugin>()
-
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        jcenter()
-    }
-}
-
-subprojects {
-    group = "com.openosrs.externals"
 
     project.extra["PluginProvider"] = "illumine"
     project.extra["ProjectSupportUrl"] = "https://discord.gg/9fGzEDR"
     project.extra["PluginLicense"] = "3-Clause BSD License"
 
+    apply<JavaPlugin>()
+    apply(plugin = "java-library")
+    apply(plugin = "kotlin")
+    apply(plugin = "checkstyle")
+
     repositories {
-        jcenter {
-            content {
-                excludeGroupByRegex("com\\.openosrs.*")
+        mavenCentral()
+        mavenLocal()
+        maven {
+            url = uri("https://repo.unethicalite.net/releases/")
+            mavenContent {
+                releasesOnly()
             }
         }
-
-        exclusiveContent {
-            forRepository {
-                mavenLocal()
-            }
-            filter {
-                includeGroupByRegex("com\\.openosrs.*")
-                includeGroupByRegex("com\\.owain.*")
+        maven {
+            url = uri("https://repo.unethicalite.net/snapshots/")
+            mavenContent {
+                snapshotsOnly()
             }
         }
     }
-
-    apply<JavaPlugin>()
 
     dependencies {
         annotationProcessor(Libraries.lombok)
         annotationProcessor(Libraries.pf4j)
 
-        compileOnly("com.openosrs:http-api:$openosrsVersion+")
-        compileOnly("com.openosrs:runelite-api:$openosrsVersion+")
-        compileOnly("com.openosrs:runelite-client:$openosrsVersion+")
-        compileOnly("com.openosrs.rs:runescape-api:$openosrsVersion+")
+        compileOnly("net.unethicalite:http-api:$unethicaliteVersion+")
+        compileOnly("net.unethicalite:runelite-api:$unethicaliteVersion+")
+        compileOnly("net.unethicalite:runelite-client:$unethicaliteVersion+")
+        compileOnly("net.unethicalite.rs:runescape-api:$unethicaliteVersion+")
 
-        compileOnly(Libraries.findbugs)
         compileOnly(Libraries.apacheCommonsText)
-        compileOnly(Libraries.gson)
         compileOnly(Libraries.guice)
+        compileOnly(Libraries.javax)
         compileOnly(Libraries.lombok)
-        compileOnly(Libraries.okhttp3)
         compileOnly(Libraries.pf4j)
-        compileOnly(Libraries.rxjava)
-
-
     }
 
     configure<JavaPluginConvention> {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    configure<PublishingExtension> {
-        repositories {
-            maven {
-                url = uri("$buildDir/repo")
-            }
-        }
-        publications {
-            register("mavenJava", MavenPublication::class) {
-                from(components["java"])
-            }
-        }
     }
 
     tasks {
@@ -122,6 +95,10 @@ subprojects {
             isReproducibleFileOrder = true
             dirMode = 493
             fileMode = 420
+        }
+
+        compileKotlin {
+            kotlinOptions.jvmTarget = "11"
         }
     }
 }

@@ -414,7 +414,7 @@ public class Game {
         closeWidget = false;
         clientThread.invoke(() -> {
             client.runScript(108, "Enter amount:");
-            client.setVar(VarClientStr.INPUT_TEXT, "" + number);
+            client.setVarcStrValue(VarClientStr.INPUT_TEXT, "" + number);
             client.runScript(112, 84, 0, "");
             client.runScript(112, -1, 10, "");
         });

@@ -23,10 +23,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "5.0.3"
+version = "5.0.5"
 
 project.extra["PluginName"] = "iUtils"
-project.extra["PluginDescription"] = "Illumine - Utils required for plugins to function with added automation"
+project.extra["PluginDescription"] = "iUtils Unethicalite"
 
 tasks {
     jar {
@@ -40,4 +40,10 @@ tasks {
             ))
         }
     }
+}
+
+dependencies {
+    compileOnly(Libraries.apacheCommonsText)
+    compileOnly(Libraries.gson)
+    compileOnly(Libraries.okhttp3)
 }

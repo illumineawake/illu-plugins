@@ -67,7 +67,7 @@ public class LegacyInventoryAssistant {
 
     public int itemOptionToId(int itemId, String match)
     {
-        return itemOptionToId(itemId, java.util.List.of(match));
+        return itemOptionToId(itemId, List.of(match));
     }
 
     public int itemOptionToId(int itemId, List<String> match)
