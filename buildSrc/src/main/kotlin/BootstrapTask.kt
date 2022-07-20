@@ -1,8 +1,4 @@
 import com.savvasdalkitsis.jsonmerger.JsonMerger
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.extra
@@ -23,15 +19,11 @@ open class BootstrapTask : DefaultTask() {
     }
 
     private fun hash(file: ByteArray): String {
-        return MessageDigest.getInstance("SHA-512").digest(file).fold("", { str, it -> str + "%02x".format(it) })
-            .toUpperCase()
+        return MessageDigest.getInstance("SHA-512").digest(file).fold("", { str, it -> str + "%02x".format(it) }).toUpperCase()
     }
 
     private fun getBootstrap(filename: String): JSONArray? {
-        val bootstrapFile = File(filename).readText()
-        if (bootstrapFile.isBlank()) {
-            return JSONArray()
-        }
+        val bootstrapFile = File(filename).readLines()
 
         return JSONObject("{\"plugins\":$bootstrapFile}").getJSONArray("plugins")
     }
@@ -55,20 +47,13 @@ open class BootstrapTask : DefaultTask() {
 
                     val releases = ArrayList<JsonBuilder>()
 
-                    val sha512 = hash(plugin.readBytes())
-                    releases.add(
-                        JsonBuilder(
-                            "version" to it.project.version,
-                            "requires" to ProjectVersions.apiVersion,
-                            "date" to formatDate(Date()),
-                            "url" to "https://raw.githubusercontent.com/${project.rootProject.extra.get("GithubUserName")}/${
-                                project.rootProject.extra.get(
-                                    "GithubRepoName"
-                                )
-                            }/master/${it.project.name}-${it.project.version}.jar",
-                            "sha512sum" to sha512
-                        )
-                    )
+                    releases.add(JsonBuilder(
+                        "version" to it.project.version,
+                        "requires" to ProjectVersions.apiVersion,
+                        "date" to formatDate(Date()),
+                        "url" to "${project.rootProject.extra.get("GithubUrl")}/blob/master/release/${it.project.name}-${it.project.version}.jar?raw=true",
+                        "sha512sum" to hash(plugin.readBytes())
+                    ))
 
                     val pluginObject = JsonBuilder(
                         "name" to it.project.extra.get("PluginName"),
@@ -86,12 +71,9 @@ open class BootstrapTask : DefaultTask() {
                             continue
                         }
 
-                        val itemReleases = item.getJSONArray("releases")
-                        if (it.project.version.toString() in itemReleases.toString()) {
-                            val last = itemReleases.get(itemReleases.length() - 1) as JSONObject
-                            last.put("sha512sum", sha512)
-                            plugins.add(item)
+                        if (it.project.version.toString() in item.getJSONArray("releases").toString()) {
                             pluginAdded = true
+                            plugins.add(item)
                             break
                         }
 
@@ -99,25 +81,16 @@ open class BootstrapTask : DefaultTask() {
                         pluginAdded = true
                     }
 
-                    if (!pluginAdded)
-                    {
+                    if (!pluginAdded) {
                         plugins.add(pluginObject)
                     }
 
-                    plugin.copyTo(
-                        Paths.get(bootstrapReleaseDir.toString(), "${it.project.name}-${it.project.version}.jar").toFile(),
-                        overwrite = true
-                    )
+                    plugin.copyTo(Paths.get(bootstrapReleaseDir.toString(), "${it.project.name}-${it.project.version}.jar").toFile())
                 }
             }
 
-            val pluginsOut = ArrayList<String>()
-            for (json in plugins) {
-                pluginsOut.add(json.toString(2))
-            }
-
             File(bootstrapDir, "plugins.json").printWriter().use { out ->
-                out.println(pluginsOut.toString())
+                out.println(plugins.toString())
             }
         }
 
