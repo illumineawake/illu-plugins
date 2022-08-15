@@ -1,7 +1,6 @@
 package net.runelite.client.plugins.iutils.ui;
 
 import net.runelite.api.Item;
-import net.runelite.api.ItemContainer;
 import net.runelite.client.plugins.iutils.api.EquipmentSlot;
 import net.runelite.client.plugins.iutils.game.Game;
 

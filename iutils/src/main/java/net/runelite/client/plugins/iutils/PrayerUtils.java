@@ -1,7 +1,12 @@
 package net.runelite.client.plugins.iutils;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.MenuAction;
+import net.runelite.api.Point;
+import net.runelite.api.Prayer;
+import net.runelite.api.Skill;
+import net.runelite.api.Varbits;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 

@@ -1,7 +1,13 @@
 package net.runelite.client.plugins.iutils.game;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.GameObject;
+import net.runelite.api.MenuAction;
+import net.runelite.api.ObjectComposition;
+import net.runelite.api.Point;
+import net.runelite.api.TileObject;
+import net.runelite.api.WallObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.client.plugins.iutils.api.Interactable;
 import net.runelite.client.plugins.iutils.scene.Locatable;
@@ -15,7 +21,7 @@ import java.util.stream.Collectors;
 public class iObject implements Locatable, Interactable {
 
     private final Game game;
-    private final TileObject tileObject;
+    public final TileObject tileObject;
     private final ObjectComposition definition;
 
     public iObject(Game game, TileObject tileObject, ObjectComposition definition) {
@@ -90,14 +96,16 @@ public class iObject implements Locatable, Interactable {
 
     @Override
     public void interact(String action) {
-        for (int i = 0; i < actions().size(); i++) {
-            log.info("Action: {}", actions().get(i));
-            if (action.equalsIgnoreCase(actions().get(i))) {
-                interact(i);
-                return;
-            }
-        }
-        throw new IllegalArgumentException("no action \"" + action + "\" on object " + id() +". Actions found: " + actions().toString());
+        tileObject.interact(action);
+        game.sleepDelay();
+//        for (int i = 0; i < actions().size(); i++) {
+//            log.info("Action: {}", actions().get(i));
+//            if (action.equalsIgnoreCase(actions().get(i))) {
+//                interact(i);
+//                return;
+//            }
+//        }
+//        throw new IllegalArgumentException("no action \"" + action + "\" on object " + id() +". Actions found: " + actions().toString());
     }
 
     private int getActionId(int action) {
@@ -118,10 +126,12 @@ public class iObject implements Locatable, Interactable {
     }
 
     public void interact(int action) {
-        game.interactionManager().interact(id(),
-                getActionId(action),
-                menuPoint().getX(),
-                menuPoint().getY()
-        );
+        tileObject.interact(action);
+        game.sleepDelay();
+//        game.interactionManager().interact(id(),
+//                getActionId(action),
+//                menuPoint().getX(),
+//                menuPoint().getY()
+//        );
     }
 }

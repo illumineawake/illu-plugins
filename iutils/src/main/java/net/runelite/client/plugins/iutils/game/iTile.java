@@ -1,7 +1,12 @@
 package net.runelite.client.plugins.iutils.game;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.DecorativeObject;
+import net.runelite.api.GameObject;
+import net.runelite.api.GroundObject;
+import net.runelite.api.Tile;
+import net.runelite.api.WallObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.client.plugins.iutils.scene.Locatable;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;

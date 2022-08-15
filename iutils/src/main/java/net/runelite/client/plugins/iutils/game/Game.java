@@ -1,17 +1,31 @@
 package net.runelite.client.plugins.iutils.game;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.GameState;
+import net.runelite.api.GrandExchangeOffer;
+import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.Skill;
+import net.runelite.api.Tile;
+import net.runelite.api.TileObject;
+import net.runelite.api.WorldType;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.geometry.Cuboid;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
-import net.runelite.client.plugins.iutils.*;
+import net.runelite.client.plugins.iutils.ActionQueue;
+import net.runelite.client.plugins.iutils.CalculationUtils;
+import net.runelite.client.plugins.iutils.KeyboardUtils;
+import net.runelite.client.plugins.iutils.WalkUtils;
 import net.runelite.client.plugins.iutils.actor.NpcStream;
 import net.runelite.client.plugins.iutils.actor.PlayerStream;
 import net.runelite.client.plugins.iutils.api.EquipmentSlot;
+import net.runelite.client.plugins.iutils.iUtils;
+import net.runelite.client.plugins.iutils.iUtilsConfig;
 import net.runelite.client.plugins.iutils.scene.GameObjectStream;
 import net.runelite.client.plugins.iutils.scene.GroundItemStream;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
@@ -19,12 +33,18 @@ import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.ui.EquipmentItemStream;
 import net.runelite.client.plugins.iutils.ui.InventoryItemStream;
 import net.runelite.client.plugins.iutils.util.LegacyInventoryAssistant;
+import net.unethicalite.api.widgets.Dialog;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.awt.*;
+import java.awt.Polygon;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.BooleanSupplier;
@@ -411,14 +431,15 @@ public class Game {
     }
 
     public void chooseNumber(int number) {
-        closeWidget = false;
-        clientThread.invoke(() -> {
-            client.runScript(108, "Enter amount:");
-            client.setVarcStrValue(VarClientStr.INPUT_TEXT, "" + number);
-            client.runScript(112, 84, 0, "");
-            client.runScript(112, -1, 10, "");
-        });
-        closeWidget = true;
+        Dialog.enterAmount(number);
+//        closeWidget = false;
+//        clientThread.invoke(() -> {
+//            client.runScript(108, "Enter amount:");
+//            client.setVarcStrValue(VarClientStr.INPUT_TEXT, "" + number);
+//            client.runScript(112, 84, 0, "");
+//            client.runScript(112, -1, 10, "");
+//        });
+//        closeWidget = true;
     }
 
     public void typeNumber(int number) {

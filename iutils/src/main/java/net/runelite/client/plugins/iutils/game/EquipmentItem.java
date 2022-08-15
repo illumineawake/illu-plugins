@@ -2,7 +2,6 @@ package net.runelite.client.plugins.iutils.game;
 
 import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
-import net.runelite.api.MenuAction;
 import net.runelite.client.plugins.iutils.api.EquipmentSlot;
 import net.runelite.client.plugins.iutils.api.Interactable;
 
@@ -64,25 +63,29 @@ public class EquipmentItem implements Interactable {
 
     @Override
     public void interact(String action) {
-        List<String> actions = actions();
-
-        for (int i = 0; i < actions.size(); i++) {
-            if (action.equalsIgnoreCase(actions.get(i))) {
-                interact(i + 1);
-                return;
-            }
-        }
-
-        throw new IllegalArgumentException("no action \"" + action + "\" on item " + id());
+        item.interact(action);
+        game.sleepDelay();
+//        List<String> actions = actions();
+//
+//        for (int i = 0; i < actions.size(); i++) {
+//            if (action.equalsIgnoreCase(actions.get(i))) {
+//                interact(i + 1);
+//                return;
+//            }
+//        }
+//
+//        throw new IllegalArgumentException("no action \"" + action + "\" on item " + id());
     }
 
     public void interact(int action) {
-        game.interactionManager().interact(
-                action,
-                MenuAction.CC_OP.getId(),
-                -1,
-                equipmentSlot.widgetInfo.getId()
-        );
+        item.interact(action);
+        game.sleepDelay();
+//        game.interactionManager().interact(
+//                action,
+//                MenuAction.CC_OP.getId(),
+//                -1,
+//                equipmentSlot.widgetInfo.getId()
+//        );
     }
 
     public String toString() {

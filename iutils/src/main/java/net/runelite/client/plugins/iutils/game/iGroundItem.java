@@ -1,6 +1,10 @@
 package net.runelite.client.plugins.iutils.game;
 
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.ItemComposition;
+import net.runelite.api.MenuAction;
+import net.runelite.api.Tile;
+import net.runelite.api.TileItem;
 import net.runelite.client.plugins.iutils.api.Interactable;
 import net.runelite.client.plugins.iutils.scene.Locatable;
 import net.runelite.client.plugins.iutils.scene.Position;
@@ -56,13 +60,15 @@ public class iGroundItem implements Locatable, Interactable {
 
     @Override
     public void interact(String action) {
-        for (int i = 0; i < actions().size(); i++) {
-            if (action.equalsIgnoreCase(actions().get(i))) {
-                interact(i);
-                return;
-            }
-        }
-        throw new IllegalArgumentException("no action \"" + action + "\" on ground item " + id());
+        tileItem.interact(action);
+        game.sleepDelay();
+//        for (int i = 0; i < actions().size(); i++) {
+//            if (action.equalsIgnoreCase(actions().get(i))) {
+//                interact(i);
+//                return;
+//            }
+//        }
+//        throw new IllegalArgumentException("no action \"" + action + "\" on ground item " + id());
     }
 
     private int getActionId(int action) {
@@ -83,12 +89,14 @@ public class iGroundItem implements Locatable, Interactable {
     }
 
     public void interact(int action) {
-        game.interactionManager().interact(
-                id(),
-                MenuAction.GROUND_ITEM_THIRD_OPTION.getId(), //TODO configure for other menu actions for ground items
-                tileItem.getTile().getSceneLocation().getX(),
-                tileItem.getTile().getSceneLocation().getY()
-        );
+        tileItem.interact(action);
+        game.sleepDelay();
+//        game.interactionManager().interact(
+//                id(),
+//                MenuAction.GROUND_ITEM_THIRD_OPTION.getId(), //TODO configure for other menu actions for ground items
+//                tileItem.getTile().getSceneLocation().getX(),
+//                tileItem.getTile().getSceneLocation().getY()
+//        );
     }
 
     public String toString() {

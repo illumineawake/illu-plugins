@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class iNPC extends iActor {
-    private final NPC npc;
+    public final NPC npc;
     private final NPCComposition definition;
 
     public iNPC(Game game, NPC npc, NPCComposition definition) {
@@ -96,16 +96,18 @@ public class iNPC extends iActor {
 
     @Override
     public void interact(String action) {
-        String[] actions = definition().getActions();
-
-        for (int i = 0; i < actions.length; i++) {
-            if (action.equalsIgnoreCase(actions[i])) {
-                interact(i);
-                return;
-            }
-        }
-
-        throw new IllegalArgumentException("action \"" + action + "\" not found on NPC " + id());
+        npc.interact(action);
+        game.sleepDelay();
+//        String[] actions = definition().getActions();
+//
+//        for (int i = 0; i < actions.length; i++) {
+//            if (action.equalsIgnoreCase(actions[i])) {
+//                interact(i);
+//                return;
+//            }
+//        }
+//
+//        throw new IllegalArgumentException("action \"" + action + "\" not found on NPC " + id());
     }
 
     private int getActionId(int action) {
@@ -126,9 +128,9 @@ public class iNPC extends iActor {
     }
 
     public void interact(int action) {
-        System.out.println("NPC interact");
-        game().interactionManager().interact(index(), getActionId(action), 0, 0);
-        System.out.println("NPC finished interact");
+        npc.interact(action);
+        game.sleepDelay();
+//        game().interactionManager().interact(index(), getActionId(action), 0, 0);
     }
 
     public String toString() {

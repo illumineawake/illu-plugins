@@ -2,7 +2,6 @@ package net.runelite.client.plugins.iutils.actor;
 
 
 import net.runelite.client.plugins.iutils.game.iNPC;
-import net.runelite.client.plugins.iutils.game.iObject;
 
 import java.util.Arrays;
 import java.util.Collection;

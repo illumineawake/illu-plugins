@@ -7,9 +7,12 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 
 import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
 
 public class ContainerUtils {
     public static int getQuantity(final int itemId, Client client) {

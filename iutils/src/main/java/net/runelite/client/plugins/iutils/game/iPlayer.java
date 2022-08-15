@@ -1,6 +1,11 @@
 package net.runelite.client.plugins.iutils.game;
 
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.HeadIcon;
+import net.runelite.api.MenuAction;
+import net.runelite.api.Player;
+import net.runelite.api.PlayerComposition;
+import net.runelite.api.SkullIcon;
 
 import java.util.Arrays;
 import java.util.List;
@@ -133,16 +138,18 @@ public class iPlayer extends iActor {
 
     @Override
     public void interact(String action) {
-        String[] actions = client().getPlayerOptions();
-
-        for (int i = 0; i < actions.length; i++) {
-            if (action.equalsIgnoreCase(actions[i])) {
-                interact(i);
-                return;
-            }
-        }
-
-        throw new IllegalArgumentException("action \"" + action + "\" not found on NPC " + index());
+        player.interact(action);
+        game.sleepDelay();
+//        String[] actions = client().getPlayerOptions();
+//
+//        for (int i = 0; i < actions.length; i++) {
+//            if (action.equalsIgnoreCase(actions[i])) {
+//                interact(i);
+//                return;
+//            }
+//        }
+//
+//        throw new IllegalArgumentException("action \"" + action + "\" not found on NPC " + index());
     }
 
     private int getActionId(int action) {
@@ -169,7 +176,9 @@ public class iPlayer extends iActor {
     }
 
     public void interact(int action) {
-        game.interactionManager().interact(index(), getActionId(action), 0, 0);
+        player.interact(action);
+        game.sleepDelay();
+//        game.interactionManager().interact(index(), getActionId(action), 0, 0);
     }
 
     public String toString() {

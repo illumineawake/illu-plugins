@@ -5,8 +5,18 @@ import net.runelite.client.plugins.iutils.walking.TeleportLoader;
 import net.runelite.client.plugins.iutils.walking.TeleportSpell;
 import net.runelite.client.plugins.iutils.walking.TeleportTab;
 
-import static net.runelite.client.plugins.iutils.walking.TeleportSpell.*;
-import static net.runelite.client.plugins.iutils.walking.TeleportTab.*;
+import static net.runelite.client.plugins.iutils.walking.TeleportSpell.ARDOUGNE_TELEPORT;
+import static net.runelite.client.plugins.iutils.walking.TeleportSpell.CAMELOT_TELEPORT;
+import static net.runelite.client.plugins.iutils.walking.TeleportSpell.FALADOR_TELEPORT;
+import static net.runelite.client.plugins.iutils.walking.TeleportSpell.LUMBRIDGE_TELEPORT;
+import static net.runelite.client.plugins.iutils.walking.TeleportSpell.VARROCK_TELEPORT;
+import static net.runelite.client.plugins.iutils.walking.TeleportTab.ARDOUGNE_TELEPORT_TAB;
+import static net.runelite.client.plugins.iutils.walking.TeleportTab.CAMELOT_TELEPORT_TAB;
+import static net.runelite.client.plugins.iutils.walking.TeleportTab.FALADOR_TELEPORT_TAB;
+import static net.runelite.client.plugins.iutils.walking.TeleportTab.LUMBRIDGE_TELEPORT_TAB;
+import static net.runelite.client.plugins.iutils.walking.TeleportTab.SALVE_GRAVEYARD_TELEPORT_TAB;
+import static net.runelite.client.plugins.iutils.walking.TeleportTab.VARROCK_TELEPORT_TAB;
+import static net.runelite.client.plugins.iutils.walking.TeleportTab.WEST_ARDOUGNE_TELEPORT_TAB;
 
 @Getter
 public enum TeleportLocation {

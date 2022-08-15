@@ -33,11 +33,11 @@ public class GrandExchangePrices {
                 update();
             }
         } finally {
-            log.info("Unlocking price get thread");
+//            log.info("Unlocking price get thread");
             UPDATE_LOCK.unlock();
-            log.info("Successfully unlocked");
+//            log.info("Successfully unlocked");
         }
-        log.info("Returning ItemPrice data for id: {} - {}", id, data.data.get(id).toString());
+//        log.info("Returning ItemPrice data for id: {} - {}", id, data.data.get(id).toString());
         return data.data.get(id);
     }
 

@@ -2,10 +2,10 @@ package net.runelite.client.plugins.iutils.game;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ItemComposition;
-import net.runelite.api.MenuAction;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.iutils.api.Interactable;
+import net.unethicalite.api.items.Inventory;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class InventoryItem implements Interactable, Useable {
 
     private final Game game;
-    private final WidgetItem widgetItem;
+    public final WidgetItem widgetItem;
     private final ItemComposition definition;
 
     public InventoryItem(Game game, WidgetItem widgetItem, ItemComposition definition) {
@@ -55,16 +55,18 @@ public class InventoryItem implements Interactable, Useable {
 
     @Override
     public void interact(String action) {
-        List<String> actions = actions();
-
-        for (int i = 0; i < actions.size(); i++) {
-            if (action.equalsIgnoreCase(actions.get(i))) {
-                interact(i);
-                return;
-            }
-        }
-
-        throw new IllegalArgumentException("no action \"" + action + "\" on item " + id());
+        Inventory.getFirst(id()).interact(action);
+        game.sleepDelay();
+//        List<String> actions = actions();
+//
+//        for (int i = 0; i < actions.size(); i++) {
+//            if (action.equalsIgnoreCase(actions.get(i))) {
+//                interact(i);
+//                return;
+//            }
+//        }
+//
+//        throw new IllegalArgumentException("no action \"" + action + "\" on item " + id());
     }
 
 //    @Override
@@ -104,71 +106,79 @@ public class InventoryItem implements Interactable, Useable {
     }
 
     public void interact(int action) {
-        game.interactionManager().interact(
-                getMenuId(action),
-                getMenuAction(action),
-                slot(),
-                WidgetInfo.INVENTORY.getId()
-        );
+        Inventory.getFirst(id()).interact(action + 1);
+        game.sleepDelay();
+//        game.interactionManager().interact(
+//                getMenuId(action),
+//                getMenuAction(action),
+//                slot(),
+//                WidgetInfo.INVENTORY.getId()
+//        );
     }
 
     @Override
     public void useOn(InventoryItem item) {
-        game.interactionManager().submit(() -> {
-            game.clientThread.invoke(() -> {
-                //game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-                //game.client.setSelectedItemSlot(item.slot());
-                //game.client.setSelectedItemID(item.id());
-
-                game.client.setSelectedSpellWidget(WidgetInfo.INVENTORY.getId());
-                game.client.setSelectedSpellChildIndex(item.slot());
-                game.client.setSelectedSpellItemId(item.id());
-                game.client.setSpellSelected(true);
-
-                //game.client.invokeMenuAction("", "", id(),
-                //        MenuAction.ITEM_USE_ON_ITEM.getId(), slot(), WidgetInfo.INVENTORY.getId());
-                game.client.invokeMenuAction("", "", 0,
-                        MenuAction.WIDGET_TARGET_ON_WIDGET.getId(), slot(), WidgetInfo.INVENTORY.getId());
-            });
-        });
+        Inventory.getFirst(item.id()).useOn(widgetItem.getWidget());
+        game.sleepDelay();
+//        game.interactionManager().submit(() -> {
+//            game.clientThread.invoke(() -> {
+//                //game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+//                //game.client.setSelectedItemSlot(item.slot());
+//                //game.client.setSelectedItemID(item.id());
+//
+//                game.client.setSelectedSpellWidget(WidgetInfo.INVENTORY.getId());
+//                game.client.setSelectedSpellChildIndex(item.slot());
+//                game.client.setSelectedSpellItemId(item.id());
+//                game.client.setSpellSelected(true);
+//
+//                //game.client.invokeMenuAction("", "", id(),
+//                //        MenuAction.ITEM_USE_ON_ITEM.getId(), slot(), WidgetInfo.INVENTORY.getId());
+//                game.client.invokeMenuAction("", "", 0,
+//                        MenuAction.WIDGET_TARGET_ON_WIDGET.getId(), slot(), WidgetInfo.INVENTORY.getId());
+//            });
+//        });
     }
 
     @Override
     public void useOn(iObject object) {
-        game.interactionManager().submit(() -> {
-            game.clientThread.invoke(() -> {
-                //game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-                //game.client.setSelectedItemSlot(slot());
-                //game.client.setSelectedItemID(id());
-
-                game.client.setSelectedSpellWidget(WidgetInfo.INVENTORY.getId());
-                game.client.setSelectedSpellChildIndex(slot());
-                game.client.setSelectedSpellItemId(id());
-                game.client.setSpellSelected(true);
-
-                game.client.invokeMenuAction("", "", object.id(),
-                        MenuAction.WIDGET_TARGET_ON_GAME_OBJECT.getId(), object.menuPoint().getX(), object.menuPoint().getY());
-            });
-        });
+        Inventory.getFirst(id()).useOn(object.tileObject);
+        game.sleepDelay();
+//        game.interactionManager().submit(() -> {
+//            game.clientThread.invoke(() -> {
+//                //game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+//                //game.client.setSelectedItemSlot(slot());
+//                //game.client.setSelectedItemID(id());
+//
+//                game.client.setSelectedSpellWidget(WidgetInfo.INVENTORY.getId());
+//                game.client.setSelectedSpellChildIndex(slot());
+//                game.client.setSelectedSpellItemId(id());
+//                game.client.setSpellSelected(true);
+//
+//                game.client.invokeMenuAction("", "", object.id(),
+//                        MenuAction.WIDGET_TARGET_ON_GAME_OBJECT.getId(), object.menuPoint().getX(), object.menuPoint().getY());
+//            });
+//        });
     }
 
     @Override
     public void useOn(iNPC npc) {
-        game.interactionManager().submit(() -> {
-            game.clientThread.invoke(() -> {
-                //game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-                //game.client.setSelectedItemSlot(slot());
-                //game.client.setSelectedItemID(id());
-
-                game.client.setSelectedSpellWidget(WidgetInfo.INVENTORY.getId());
-                game.client.setSelectedSpellChildIndex(slot());
-                game.client.setSelectedSpellItemId(id());
-                game.client.setSpellSelected(true);
-
-                game.client.invokeMenuAction("", "", npc.index(),
-                        MenuAction.ITEM_USE_ON_NPC.getId(), 0, 0);
-            });
-        });
+        Inventory.getFirst(id()).useOn(npc.npc);
+        game.sleepDelay();
+//        game.interactionManager().submit(() -> {
+//            game.clientThread.invoke(() -> {
+//                //game.client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+//                //game.client.setSelectedItemSlot(slot());
+//                //game.client.setSelectedItemID(id());
+//
+//                game.client.setSelectedSpellWidget(WidgetInfo.INVENTORY.getId());
+//                game.client.setSelectedSpellChildIndex(slot());
+//                game.client.setSelectedSpellItemId(id());
+//                game.client.setSpellSelected(true);
+//
+//                game.client.invokeMenuAction("", "", npc.index(),
+//                        MenuAction.ITEM_USE_ON_NPC.getId(), 0, 0);
+//            });
+//        });
     }
 //
 //    @Override

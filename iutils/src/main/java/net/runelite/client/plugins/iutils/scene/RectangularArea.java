@@ -1,6 +1,8 @@
 package net.runelite.client.plugins.iutils.scene;
 
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.coords.WorldArea;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.plugins.iutils.CalculationUtils;
 
 @Slf4j
@@ -38,6 +40,12 @@ public class RectangularArea implements Area {
         return position.x >= minX && position.x <= maxX &&
                 position.y >= minY && position.y <= maxY &&
                 position.z >= minZ && position.z <= maxZ;
+    }
+
+    public boolean contains(WorldPoint worldPoint) {
+        return worldPoint.getX() >= minX && worldPoint.getX() <= maxX &&
+                worldPoint.getY() >= minY && worldPoint.getY() <= maxY &&
+                worldPoint.getPlane() >= minZ && worldPoint.getPlane() <= maxZ;
     }
 
     public double distanceTo(Position other) {
@@ -82,6 +90,15 @@ public class RectangularArea implements Area {
         log.info("Random Position: {} found from Rectangular Area: {}", position, this);
 
         return position;
+    }
+
+    public WorldArea toWorldArea() {
+        var worldArea = new WorldArea(minX, minY, maxX - minX, maxY - minY, minZ);
+        log.info("Rectangular Area: {}, converted to WorldArea: ({}, {}, {}, {}, {})",
+                this.toString(), worldArea.getX(), worldArea.getY(),
+                worldArea.getWidth() + worldArea.getX(), worldArea.getHeight() + worldArea.getY(),
+                worldArea.getPlane());
+        return worldArea;
     }
 
     public String toString() {

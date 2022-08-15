@@ -1,9 +1,13 @@
 package net.runelite.client.plugins.iutils.scene;
 
+import net.runelite.api.coords.WorldPoint;
+
 import java.util.Arrays;
 
 public interface Area {
     boolean contains(Position position);
+
+//    boolean contains(WorldPoint worldPoint);
 
     static Area union(Area... areas) {
         return position -> Arrays.stream(areas).anyMatch(a -> a.contains(position));

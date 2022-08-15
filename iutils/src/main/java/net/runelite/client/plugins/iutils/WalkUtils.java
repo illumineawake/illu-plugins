@@ -2,13 +2,20 @@ package net.runelite.client.plugins.iutils;
 
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.MenuAction;
+import net.runelite.api.Player;
+import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.rs.api.RSClient;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

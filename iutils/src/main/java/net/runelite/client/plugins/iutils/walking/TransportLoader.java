@@ -1,8 +1,6 @@
 package net.runelite.client.plugins.iutils.walking;
 
 import net.runelite.api.Skill;
-import net.runelite.api.coords.WorldPoint;
-import net.runelite.client.plugins.iutils.api.EquipmentSlot;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.ui.Chatbox;
@@ -11,7 +9,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 public class TransportLoader {

@@ -4,21 +4,48 @@ import com.google.inject.Injector;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.Skill;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.iutils.api.*;
-import net.runelite.client.plugins.iutils.game.*;
+import net.runelite.client.plugins.iutils.api.Combat;
+import net.runelite.client.plugins.iutils.api.EquipmentSlot;
+import net.runelite.client.plugins.iutils.api.Prayers;
+import net.runelite.client.plugins.iutils.api.Spells;
+import net.runelite.client.plugins.iutils.api.TeleportLocation;
+import net.runelite.client.plugins.iutils.api.TeleportMethod;
+import net.runelite.client.plugins.iutils.game.Game;
+import net.runelite.client.plugins.iutils.game.InventoryItem;
+import net.runelite.client.plugins.iutils.game.ItemQuantity;
+import net.runelite.client.plugins.iutils.game.iNPC;
+import net.runelite.client.plugins.iutils.game.iWidget;
 import net.runelite.client.plugins.iutils.scene.Area;
 import net.runelite.client.plugins.iutils.scene.RectangularArea;
-import net.runelite.client.plugins.iutils.ui.*;
+import net.runelite.client.plugins.iutils.ui.Bank;
+import net.runelite.client.plugins.iutils.ui.Chatbox;
+import net.runelite.client.plugins.iutils.ui.Depositbox;
+import net.runelite.client.plugins.iutils.ui.Equipment;
+import net.runelite.client.plugins.iutils.ui.GrandExchange;
+import net.runelite.client.plugins.iutils.ui.Prayer;
+import net.runelite.client.plugins.iutils.ui.StandardSpellbook;
 import net.runelite.client.plugins.iutils.util.Util;
 import net.runelite.client.plugins.iutils.walking.BankLocations;
 import net.runelite.client.plugins.iutils.walking.Walking;
+import net.unethicalite.api.commons.Time;
+import net.unethicalite.api.entities.NPCs;
+import net.unethicalite.api.entities.Players;
+import net.unethicalite.api.magic.Magic;
+import net.unethicalite.api.magic.SpellBook;
+import net.unethicalite.api.movement.Reachable;
+import net.unethicalite.api.movement.pathfinder.model.BankLocation;
 
 import javax.inject.Inject;
 import java.awt.event.KeyEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -363,7 +390,7 @@ public abstract class UtilsScript extends Plugin {
         if (!GRAND_EXCHANGE.contains(game.localPlayer().position())) {
             if (GRAND_EXCHANGE.distanceTo(game.localPlayer().position()) > 50) {
                 TeleportMethod varrockTeleport = new TeleportMethod(game, TeleportLocation.GRAND_EXCHANGE, 1);
-                varrockTeleport.getTeleport(true);
+                log.info("Result of Varrock Tele: {}", varrockTeleport.getTeleport(true));
                 bank.close();
                 game.tick(2);
             }
@@ -448,6 +475,17 @@ public abstract class UtilsScript extends Plugin {
         game.tick();
     }
 
+    protected void chatNpc(WorldPoint worldPoint, String npcName, String... chatOptions) {
+        var npc = NPCs.getNearest(npcName);
+        if (npc == null || !Reachable.isInteractable(npc) && worldPoint != null && worldPoint.distanceTo(Players.getLocal()) > 1) {
+            walking.unethicalWalk(worldPoint);
+        }
+
+        NPCs.getNearest(npcName).interact("Talk-to");
+        chatbox.chat(chatOptions);
+        Time.sleepTick();
+    }
+
     protected void chatNpc(Area area, int npcId, String... chatOptions) {
         if (area != null && !area.contains(game.localPlayer().position())) {
             walking.walkTo(area);
@@ -501,8 +539,9 @@ public abstract class UtilsScript extends Plugin {
     }
 
     protected void castSpellNpc(iNPC npc, Spells spell) {
-        if (npc != null) {
-            game.widget(spell.getInfo()).useOn(npc);
+        var target = NPCs.getNearest(npc.name());
+        if (target != null) {
+            Magic.cast(SpellBook.Standard.valueOf(spell.name()), target);
             game.tick();
         }
     }

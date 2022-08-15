@@ -49,7 +49,7 @@ public class TeleportLoader {
 
         if (game.membersWorld()) {
             if (ringOfDueling() != null) {
-                teleports.add(new Teleport(new Position(3315, 3235, 0), 6, () -> jewelleryAction(ringOfDueling(), "Duel Arena")));
+                teleports.add(new Teleport(new Position(3315, 3235, 0), 6, () -> jewelleryAction(ringOfDueling(), "PvP Arena")));
                 teleports.add(new Teleport(new Position(2440, 3090, 0), 5, () -> jewelleryAction(ringOfDueling(), "Castle Wars")));
                 teleports.add(new Teleport(new Position(3151, 3635, 0), 5, () -> jewelleryAction(ringOfDueling(), "Ferox Enclave")));
             }

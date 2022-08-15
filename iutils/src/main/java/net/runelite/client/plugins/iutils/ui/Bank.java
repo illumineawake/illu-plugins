@@ -10,7 +10,11 @@ import net.runelite.client.plugins.iutils.game.iWidget;
 import net.runelite.client.plugins.iutils.iUtils;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 public class Bank {
@@ -316,6 +320,7 @@ public class Bank {
         if (isOpen()) {
             game.widget(12, 2, 11).interact(0);
             game.clientThread.invoke(() -> game.client.runScript(138));
+            game.tick();
         }
     }
 

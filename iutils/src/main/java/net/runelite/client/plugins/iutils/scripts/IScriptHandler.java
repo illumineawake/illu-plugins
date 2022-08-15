@@ -44,8 +44,7 @@ public class IScriptHandler implements Runnable {
                     script.stop();
                     return;
                 }
-            }
-            catch (UnsupportedOperationException e) {
+            } catch (UnsupportedOperationException e) {
                 log.info("Caught unsupported terminal failure, stopping instantly");
                 script.game.sendGameMessage("Caught unsupported terminal failure, stopping instantly");
                 e.printStackTrace();
@@ -57,3 +56,4 @@ public class IScriptHandler implements Runnable {
         }
     }
 }
+

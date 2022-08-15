@@ -6,7 +6,10 @@ import net.runelite.client.plugins.iutils.walking.Pathfinder;
 import net.runelite.client.plugins.iutils.walking.Walking;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public class Position implements Area {
     @Inject
@@ -128,6 +131,12 @@ public class Position implements Area {
     public boolean contains(Position position) {
         return Objects.equals(position, this);
     }
+
+//    public boolean contains(WorldPoint worldPoint) {
+//        return this.x == worldPoint.getX() &&
+//        this.y == worldPoint.getY() &&
+//        this.z == worldPoint.getPlane();
+//    }
 
     @Override
     public boolean equals(Object o) {

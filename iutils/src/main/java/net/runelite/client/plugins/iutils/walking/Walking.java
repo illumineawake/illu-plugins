@@ -3,14 +3,23 @@ package net.runelite.client.plugins.iutils.walking;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
+import net.runelite.api.coords.WorldArea;
+import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.game.iTile;
 import net.runelite.client.plugins.iutils.scene.Area;
 import net.runelite.client.plugins.iutils.scene.ObjectCategory;
+import net.runelite.client.plugins.iutils.scene.PolygonalArea;
 import net.runelite.client.plugins.iutils.scene.Position;
 import net.runelite.client.plugins.iutils.scene.RectangularArea;
 import net.runelite.client.plugins.iutils.ui.Chatbox;
 import net.runelite.client.plugins.iutils.util.Util;
+import net.unethicalite.api.entities.Players;
+import net.unethicalite.api.movement.Movement;
+import net.unethicalite.api.movement.pathfinder.Walker;
+import net.unethicalite.api.movement.pathfinder.model.BankLocation;
+import net.unethicalite.client.Static;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -18,8 +27,6 @@ import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,7 +51,7 @@ public class Walking {
         thread.setDaemon(true);
         return thread;
     });
-
+    public static WorldPoint destination;
     private final Game game;
     private final Chatbox chatbox;
 
@@ -64,75 +71,251 @@ public class Walking {
         chatbox = new Chatbox(game);
     }
 
+    private WorldPoint getWpFromArea(Area area) {
+        if (area instanceof PolygonalArea) {
+            return ((PolygonalArea) area).points.get(0).toWorldPoint();
+        } else if (area instanceof RectangularArea) {
+            return ((RectangularArea) area).randomPosition().toWorldPoint();
+        } else if (area instanceof Position) {
+            return ((Position) area).toWorldPoint();
+        }
+        return null;
+    }
+
+    public boolean unethicalWalk(WorldArea area) {
+        log.info("Walking unethically to: {}", area.toString());
+        var attempts = 0;
+        Movement.walkTo(area);
+        game.tick();
+        while (!area.contains(Players.getLocal()) && attempts < 15 && !Thread.currentThread().isInterrupted()) {
+            if (Players.getLocal().isMoving()) {
+                attempts = 0;
+            }
+
+            if (Movement.isWalking()) {
+                attempts = 0;
+                if (!isRunning() && game.energy() > minEnergy) {
+                    minEnergy = new Random().nextInt(MAX_MIN_ENERGY - MIN_ENERGY + 1) + MIN_ENERGY;
+                    System.out.println("[Walking] Enabling run, next minimum run energy: " + minEnergy);
+                    setRun(true);
+                }
+
+                if (game.inventory().withNamePart("Stamina potion").exists() && game.energy() < 70 && (game.varb(25) == 0 || game.energy() <= 4)) {
+                    var staminaPotion = game.inventory().withNamePart("Stamina potion").first();
+                    staminaPotion.interact("Drink");
+                    game.waitUntil(() -> game.varb(25) == 1 && game.energy() >= 20);
+                }
+
+                if (game.varb(25) == 1) {
+                    setRun(true); // don't waste stamina effect
+                }
+
+                if (game.modifiedLevel(Skill.HITPOINTS) < 8 || game.modifiedLevel(Skill.HITPOINTS) < game.baseLevel(Skill.HITPOINTS) - 22) {
+                    var food = game.inventory().withoutId(ItemID.DWARVEN_ROCK_CAKE_7510).withAction("Eat").first();
+
+                    if (food != null) {
+                        food.interact("Eat");
+                    }
+                }
+            /*} else if (Movement.getDestination() != null && area.contains(Movement.getDestination())) {
+                log.info("Last walk step: {}, {}", Movement.getDestination().toString(), area.toString());
+                game.waitUntil(() -> !Static.getClient().getLocalPlayer().isMoving(), 20);
+            } */
+            } else {
+                Movement.walkTo(area);
+                attempts++;
+                log.info("Attempting unethical walk, attempt: {}", attempts);
+            }
+            game.tick();
+        }
+
+        if (attempts >= 15) {
+            log.info("Walking unethically failed to walk to: {}", area.toString());
+            return false;
+        } else {
+            log.info("Walking unethically arrived at: {}", area.toString());
+            return true;
+        }
+    }
+
+    public boolean unethicalWalk(WorldPoint target) {
+        log.info("Walking unethically to: {}", target.toString());
+        var attempts = 0;
+        Movement.walkTo(target);
+        game.tick();
+        while (game.localPlayer().position().distanceTo(target) > 1 && attempts < 15 && !Thread.currentThread().isInterrupted()) {
+            if (Players.getLocal().isMoving()) {
+                attempts = 0;
+            }
+
+            if (Movement.isWalking()) {
+                attempts = 0;
+                if (!isRunning() && game.energy() > minEnergy) {
+                    minEnergy = new Random().nextInt(MAX_MIN_ENERGY - MIN_ENERGY + 1) + MIN_ENERGY;
+                    System.out.println("[Walking] Enabling run, next minimum run energy: " + minEnergy);
+                    setRun(true);
+                }
+
+                if (game.inventory().withNamePart("Stamina potion").exists() && game.energy() < 70 && (game.varb(25) == 0 || game.energy() <= 4)) {
+                    var staminaPotion = game.inventory().withNamePart("Stamina potion").first();
+                    staminaPotion.interact("Drink");
+                    game.waitUntil(() -> game.varb(25) == 1 && game.energy() >= 20);
+                }
+
+                if (game.varb(25) == 1) {
+                    setRun(true); // don't waste stamina effect
+                }
+
+                if (game.modifiedLevel(Skill.HITPOINTS) < 8 || game.modifiedLevel(Skill.HITPOINTS) < game.baseLevel(Skill.HITPOINTS) - 12) {
+                    var food = game.inventory().withoutId(ItemID.DWARVEN_ROCK_CAKE_7510).withAction("Eat").first();
+
+                    if (food != null) {
+                        food.interact("Eat");
+                    }
+                }
+            } else if (Movement.getDestination() != null && Movement.getDestination().equals(target)) {
+                log.info("Last walk step: {}, {}", Movement.getDestination().toString(), target.toString());
+                game.waitUntil(() -> !Static.getClient().getLocalPlayer().isMoving(), 20);
+            } else {
+                Movement.walkTo(target);
+                attempts++;
+                log.info("Attempting unethical walk, attempt: {}", attempts);
+            }
+            game.tick();
+        }
+
+        if (attempts >= 15) {
+            log.info("Walking unethically failed to walk to: {}", target.toString());
+            return false;
+        } else {
+            log.info("Walking unethically arrived at: {}", target.toString());
+            return true;
+        }
+    }
+
+    public boolean unethicalWalkTest(WorldPoint target) {
+        log.info("Walking unethically test to: {}, distance: {}", target.toString(), target.distanceTo(Players.getLocal()));
+        Movement.walkTo(target);
+        game.tick();
+        if (game.localPlayer().position().distanceTo(target) > 1) {
+            if (Movement.isWalking()) {
+                if (!isRunning() && game.energy() > minEnergy) {
+                    minEnergy = new Random().nextInt(MAX_MIN_ENERGY - MIN_ENERGY + 1) + MIN_ENERGY;
+                    System.out.println("[Walking] Enabling run, next minimum run energy: " + minEnergy);
+                    setRun(true);
+                }
+
+                if (game.inventory().withNamePart("Stamina potion").exists() && game.energy() < 70 && (game.varb(25) == 0 || game.energy() <= 4)) {
+                    var staminaPotion = game.inventory().withNamePart("Stamina potion").first();
+                    staminaPotion.interact("Drink");
+                    game.waitUntil(() -> game.varb(25) == 1 && game.energy() >= 20);
+                }
+
+                if (game.varb(25) == 1) {
+                    setRun(true); // don't waste stamina effect
+                }
+
+                if (game.modifiedLevel(Skill.HITPOINTS) < 8 || game.modifiedLevel(Skill.HITPOINTS) < game.baseLevel(Skill.HITPOINTS) - 12) {
+                    var food = game.inventory().withoutId(ItemID.DWARVEN_ROCK_CAKE_7510).withAction("Eat").first();
+
+                    if (food != null) {
+                        food.interact("Eat");
+                    }
+                }
+            } else if (Movement.getDestination() != null && Movement.getDestination().equals(target)) {
+                log.info("Last walk step: {}, {}", Movement.getDestination().toString(), target.toString());
+                return game.waitUntil(() -> !Static.getClient().getLocalPlayer().isMoving(), 20);
+            } else {
+                Movement.walkTo(target);
+                log.info("Attempting unethical test walk");
+            }
+            game.tick();
+        }
+        return false;
+    }
+
+    public void walkTo(BankLocation bankLocation) {
+        if (bankLocation.getArea().contains(Players.getLocal())) {
+            return;
+        }
+        unethicalWalk(bankLocation.getArea());
+    }
+
     public void walkTo(Area target) {
         if (target.contains(game.localPlayer().templatePosition())) {
             return;
         }
-        if (game.client.isClientThread()) {
-            log.info("Submitting walk on executor");
-            game.executorService.submit(() -> walkTo(target));
-            return;
-        }
         Game.walking = true;
-        if (DEATHS_OFFICE.contains(game.localPlayer().templatePosition())) {
-            if (chatbox.chatState() != Chatbox.ChatState.NPC_CHAT) {
-                game.npcs().withName("Death").nearest().interact("Talk-to");
-                game.waitUntil(() -> chatbox.chatState() == Chatbox.ChatState.NPC_CHAT);
-            }
-
-            chatbox.chat(
-                    "How do I pay a gravestone fee?",
-                    "How long do I have to return to my gravestone?",
-                    "How do I know what will happen to my items when I die?",
-                    "I think I'm done here."
-            );
-
-            game.objects().withName("Portal").nearest().interact("Use");
-            game.waitUntil(() -> !DEATHS_OFFICE.contains(game.localPlayer().templatePosition()));
+        if (target instanceof RectangularArea) {
+            unethicalWalk(((RectangularArea) target).toWorldArea());
+        } else {
+            unethicalWalk(getWpFromArea(target));
         }
 
-        System.out.println("[Walking] Pathfinding " + game.localPlayer().templatePosition() + " -> " + target);
-        var transports = new HashMap<Position, List<Transport>>();
-        var transportPositions = new HashMap<Position, List<Position>>();
-
-        for (var transport : TransportLoader.buildTransports(game)) {
-            transports.computeIfAbsent(transport.source, k -> new ArrayList<>()).add(transport);
-            transportPositions.computeIfAbsent(transport.source, k -> new ArrayList<>()).add(transport.target);
-        }
-
-        var teleports = new LinkedHashMap<Position, Teleport>();
-
-        var playerPosition = game.localPlayer().position();
-        for (var teleport : new TeleportLoader(game).buildTeleports()) {
-//            if (teleport.target.distanceTo(playerPosition) > 50 && (playerPosition.distanceTo(target) > teleport.target.distanceTo(target) + 20)) {
-            teleports.putIfAbsent(teleport.target, teleport);
-//            } else {
-//                log.info("Teleport not added due to distance reqs: {}", teleport.target);
+//        if (game.client.isClientThread()) {
+//            log.info("Submitting walk on executor");
+//            game.executorService.submit(() -> walkTo(target));
+//            return;
+//        }
+//        if (DEATHS_OFFICE.contains(game.localPlayer().templatePosition())) {
+//            if (chatbox.chatState() != Chatbox.ChatState.NPC_CHAT) {
+//                game.npcs().withName("Death").nearest().interact("Talk-to");
+//                game.waitUntil(() -> chatbox.chatState() == Chatbox.ChatState.NPC_CHAT);
 //            }
-        }
-
-        var starts = new ArrayList<>(teleports.keySet());
-        starts.add(game.localPlayer().templatePosition());
-        var path = pathfind(starts, target, transportPositions);
-
-        if (path == null) {
-            Game.walking = false;
-            throw new IllegalStateException("couldn't pathfind " + game.localPlayer().templatePosition() + " -> " + target);
-        }
-
-        System.out.println("[Walking] Done pathfinding");
-
-        var startPosition = path.get(0);
-        var teleport = teleports.get(startPosition);
-
-        if (teleport != null) {
-            System.out.println("[Walking] Teleporting to path start");
-            teleport.handler.run();
-            game.waitUntil(() -> game.localPlayer().templatePosition().distanceTo(teleport.target) <= teleport.radius);
-            game.tick();
-        }
-
-        walkAlong(path, transports);
+//
+//            chatbox.chat(
+//                    "How do I pay a gravestone fee?",
+//                    "How long do I have to return to my gravestone?",
+//                    "How do I know what will happen to my items when I die?",
+//                    "I think I'm done here."
+//            );
+//
+//            game.objects().withName("Portal").nearest().interact("Use");
+//            game.waitUntil(() -> !DEATHS_OFFICE.contains(game.localPlayer().templatePosition()));
+//        }
+//
+//        System.out.println("[Walking] Pathfinding " + game.localPlayer().templatePosition() + " -> " + target);
+//        var transports = new HashMap<Position, List<Transport>>();
+//        var transportPositions = new HashMap<Position, List<Position>>();
+//
+//        for (var transport : TransportLoader.buildTransports(game)) {
+//            transports.computeIfAbsent(transport.source, k -> new ArrayList<>()).add(transport);
+//            transportPositions.computeIfAbsent(transport.source, k -> new ArrayList<>()).add(transport.target);
+//        }
+//
+//        var teleports = new LinkedHashMap<Position, Teleport>();
+//
+//        var playerPosition = game.localPlayer().position();
+//        for (var teleport : new TeleportLoader(game).buildTeleports()) {
+////            if (teleport.target.distanceTo(playerPosition) > 50 && (playerPosition.distanceTo(target) > teleport.target.distanceTo(target) + 20)) {
+//            teleports.putIfAbsent(teleport.target, teleport);
+////            } else {
+////                log.info("Teleport not added due to distance reqs: {}", teleport.target);
+////            }
+//        }
+//
+//        var starts = new ArrayList<>(teleports.keySet());
+//        starts.add(game.localPlayer().templatePosition());
+//        var path = pathfind(starts, target, transportPositions);
+//
+//        if (path == null) {
+//            Game.walking = false;
+//            throw new IllegalStateException("couldn't pathfind " + game.localPlayer().templatePosition() + " -> " + target);
+//        }
+//
+//        System.out.println("[Walking] Done pathfinding");
+//
+//        var startPosition = path.get(0);
+//        var teleport = teleports.get(startPosition);
+//
+//        if (teleport != null) {
+//            System.out.println("[Walking] Teleporting to path start");
+//            teleport.handler.run();
+//            game.waitUntil(() -> game.localPlayer().templatePosition().distanceTo(teleport.target) <= teleport.radius);
+//            game.tick();
+//        }
+//
+//        walkAlong(path, transports);
         Game.walking = false;
     }
 
@@ -414,8 +597,8 @@ public class Walking {
 
     public void setRun(boolean run) {
         if (isRunning() != run) {
-            game.widget(160, 23).interact(0);
-            game.waitUntil(() -> isRunning() == run);
+            game.widget(WidgetInfo.MINIMAP_TOGGLE_RUN_ORB).interact(0);
+            game.waitUntil(() -> isRunning() == run, 10);
         }
     }
 

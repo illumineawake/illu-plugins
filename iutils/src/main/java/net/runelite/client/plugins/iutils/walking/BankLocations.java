@@ -3,10 +3,10 @@ package net.runelite.client.plugins.iutils.walking;
 import net.runelite.client.plugins.iutils.game.Game;
 import net.runelite.client.plugins.iutils.scene.Area;
 import net.runelite.client.plugins.iutils.scene.RectangularArea;
-
-import java.util.ArrayList;
+import net.unethicalite.api.movement.pathfinder.model.BankLocation;
 
 public class
+
 BankLocations {
     public static final Area LUMBRIDGE_BANK = new RectangularArea(3207, 3222, 3210, 3215, 2);
     public static final Area VARROCK_WEST_BANK = new RectangularArea(3180, 3447, 3190, 3433, 0);
@@ -46,49 +46,51 @@ BankLocations {
     public static final Area VER_SINHAZA_BANK = new RectangularArea(3649, 3208, 3652, 3209);
 
     public static void walkToBank(Game game) {
-        var validBanks = new ArrayList<Area>();
-        validBanks.add(LUMBRIDGE_BANK);
-        validBanks.add(VARROCK_WEST_BANK);
-        validBanks.add(VARROCK_EAST_BANK);
-        validBanks.add(GRAND_EXCHANGE_BANK);
-        validBanks.add(EDGEVILLE_BANK);
-        validBanks.add(FALADOR_EAST_BANK);
-        validBanks.add(FALADOR_WEST_BANK);
-        validBanks.add(DRAYNOR_BANK);
-        validBanks.add(DUEL_ARENA_BANK);
-        validBanks.add(SHANTAY_PASS_BANK);
-        validBanks.add(AL_KHARID_BANK);
-        validBanks.add(CATHERBY_BANK);
-        validBanks.add(SEERS_VILLAGE_BANK);
-        validBanks.add(ARDOUGNE_NORTH_BANK);
-        validBanks.add(ARDOUGNE_SOUTH_BANK);
-        validBanks.add(PORT_KHAZARD_BANK);
-        validBanks.add(YANILLE_BANK);
-        validBanks.add(CORSAIR_COVE_BANK);
-        validBanks.add(CASTLE_WARS_BANK);
-        validBanks.add(LLETYA_BANK);
-        validBanks.add(GRAND_TREE_WEST_BANK);
-        validBanks.add(GRAND_TREE_SOUTH_BANK);
-        validBanks.add(TREE_GNOME_STRONGHOLD_BANK);
-        validBanks.add(SHILO_VILLAGE_BANK);
-        validBanks.add(NEITIZNOT_BANK);
-        validBanks.add(JATIZSO_BANK);
-        validBanks.add(BARBARIAN_OUTPOST_BANK);
-        validBanks.add(ETCETARIA_BANK);
-        validBanks.add(DARKMEYER_BANK);
-        validBanks.add(CHARCOAL_BURNERS_BANK);
-        validBanks.add(HOSIDIUS_BANK);
-        validBanks.add(HALLOWED_SEPULCHRE_BANK);
-        validBanks.add(VER_SINHAZA_BANK);
+        new Walking(game).walkTo(BankLocation.getNearest());
 
-        if (game.varp(302) >= 61) {
-            validBanks.add(CANIFIS_BANK);
-        }
+//        var validBanks = new ArrayList<Area>();
+//        validBanks.add(LUMBRIDGE_BANK);
+//        validBanks.add(VARROCK_WEST_BANK);
+//        validBanks.add(VARROCK_EAST_BANK);
+//        validBanks.add(GRAND_EXCHANGE_BANK);
+//        validBanks.add(EDGEVILLE_BANK);
+//        validBanks.add(FALADOR_EAST_BANK);
+//        validBanks.add(FALADOR_WEST_BANK);
+//        validBanks.add(DRAYNOR_BANK);
+//        validBanks.add(DUEL_ARENA_BANK);
+//        validBanks.add(SHANTAY_PASS_BANK);
+//        validBanks.add(AL_KHARID_BANK);
+//        validBanks.add(CATHERBY_BANK);
+//        validBanks.add(SEERS_VILLAGE_BANK);
+//        validBanks.add(ARDOUGNE_NORTH_BANK);
+//        validBanks.add(ARDOUGNE_SOUTH_BANK);
+//        validBanks.add(PORT_KHAZARD_BANK);
+//        validBanks.add(YANILLE_BANK);
+//        validBanks.add(CORSAIR_COVE_BANK);
+//        validBanks.add(CASTLE_WARS_BANK);
+//        validBanks.add(LLETYA_BANK);
+//        validBanks.add(GRAND_TREE_WEST_BANK);
+//        validBanks.add(GRAND_TREE_SOUTH_BANK);
+//        validBanks.add(TREE_GNOME_STRONGHOLD_BANK);
+//        validBanks.add(SHILO_VILLAGE_BANK);
+//        validBanks.add(NEITIZNOT_BANK);
+//        validBanks.add(JATIZSO_BANK);
+//        validBanks.add(BARBARIAN_OUTPOST_BANK);
+//        validBanks.add(ETCETARIA_BANK);
+//        validBanks.add(DARKMEYER_BANK);
+//        validBanks.add(CHARCOAL_BURNERS_BANK);
+//        validBanks.add(HOSIDIUS_BANK);
+//        validBanks.add(HALLOWED_SEPULCHRE_BANK);
+//        validBanks.add(VER_SINHAZA_BANK);
+//
+//        if (game.varp(302) >= 61) {
+//            validBanks.add(CANIFIS_BANK);
+//        }
+//
+//        if (game.varb(1990) >= 200) {
+//            validBanks.add(BURGH_DE_ROTT_BANK);
+//        }
 
-        if (game.varb(1990) >= 200) {
-            validBanks.add(BURGH_DE_ROTT_BANK);
-        }
-
-        new Walking(game).walkTo(Area.union(validBanks.toArray(new Area[0])));
+//        new Walking(game).walkTo(Area.union(validBanks.toArray(new Area[0])));
     }
 }

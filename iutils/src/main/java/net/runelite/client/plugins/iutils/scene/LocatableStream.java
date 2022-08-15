@@ -1,10 +1,8 @@
 package net.runelite.client.plugins.iutils.scene;
 
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.client.plugins.iutils.game.iObject;
 import net.runelite.client.plugins.iutils.util.RandomizedStreamAdapter;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.stream.Stream;
 
